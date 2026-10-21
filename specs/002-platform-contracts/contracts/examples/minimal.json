@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1",
+  "id": "org.example.notes",
+  "version": "0.1.0",
+  "displayName": "Notes",
+  "hostContract": ">=1.0.0 <2.0.0",
+  "capabilities": [],
+  "dependencies": [],
+  "permissions": [],
+  "storage": {
+    "relational": false
+  }
+}

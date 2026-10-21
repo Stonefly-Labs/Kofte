@@ -49,12 +49,19 @@ branch/PR. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) is human-merge
 with its accepted ledger and evidence on main. Modules, SDKs, workers
 and Helm remain reserved. Bootstrap acceptance is not MVP or production readiness.
 
-**002 / specify and clarify are complete** on `feature/002-platform-contracts`: the
+**002 / specify, clarify and plan are complete** on `feature/002-platform-contracts`: the
 [draft specification](../specs/002-platform-contracts/spec.md) and
 [author checklist](../specs/002-platform-contracts/checklists/requirements.md)
 cover minimal platform contracts, immutable reverse-DNS identity, versioned
 manifests, compatibility and safe diagnostics. All 16 author criteria are
 satisfied; clarification found all ten ambiguity categories clear, with zero
 questions and no spec/checklist changes. This is not the later human-owned
-quality review. No product code or module runtime is added. Plan is next on the same branch/draft PR,
-without an intermediate merge or inferred acceptance.
+quality review. The [plan](../specs/002-platform-contracts/plan.md),
+[research](../specs/002-platform-contracts/research.md),
+[data model](../specs/002-platform-contracts/data-model.md),
+[contracts](../specs/002-platform-contracts/contracts/validation.md) and
+[future guide](../specs/002-platform-contracts/quickstart.md) choose strict JSON,
+SemVer range rules, immutable descriptions and safe bounded validation.
+[ADR 0004](adr/0004-module-manifest-contract.md) remains Proposed. No product
+code or module runtime is added. Checklist is next on the same draft PR, with
+human-owned quality review and no intermediate merge or inferred acceptance.

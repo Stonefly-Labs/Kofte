@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "1",
+  "id": "org.example.notes",
+  "version": "0.2.0+example",
+  "displayName": "Köfte Notes",
+  "hostContract": ">=1.0.0 <2.0.0",
+  "capabilities": [
+    { "kind": "backend", "contractVersion": "1.0.0" },
+    { "kind": "frontend", "contractVersion": "1.0.0" },
+    { "kind": "resources", "contractVersion": "1.0.0" },
+    { "kind": "providers", "contractVersion": "1.0.0" },
+    { "kind": "events", "contractVersion": "1.0.0" },
+    { "kind": "workflows", "contractVersion": "1.0.0" },
+    { "kind": "jobs", "contractVersion": "1.0.0" },
+    { "kind": "permissions", "contractVersion": "1.0.0" },
+    { "kind": "mcp-tools", "contractVersion": "1.0.0" }
+  ],
+  "dependencies": [
+    { "id": "org.example.absent", "versionRange": ">=0.1.0 <1.0.0" }
+  ],
+  "permissions": [
+    { "name": "notes.read", "description": "Read module notes." }
+  ],
+  "storage": {
+    "relational": true
+  }
+}

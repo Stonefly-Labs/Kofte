@@ -10,8 +10,11 @@ no actionable gaps or appended tasks.
 no acceptance defect and a fresh complete 170-step local gate reconciled with
 actual assessed-head CI.
 [Explicit human acceptance](../../specs/001-repository-bootstrap/acceptance.md)
-is now recorded for spec 001's bootstrap scope and limits. Its original PR
-awaits human merge before spec 002 may begin.
+is now recorded for spec 001's bootstrap scope and limits. Its original
+[PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) is human-merged.
+Spec 002's [planning guide](../../specs/002-platform-contracts/quickstart.md)
+describes future manifest-validation commands; those projects are not implemented
+by the planning stage and do not change the runnable bootstrap documented here.
 This is not a feature-acceptance or production guide.
 See the [implementation evidence](../../specs/001-repository-bootstrap/implementation.md).
 

@@ -190,8 +190,33 @@ schema/host/capability versions, numeric budgets, reference conditions and
 package/invocation design remain planning work, not unanswered product-policy
 questions. No before/after clarification hooks are configured
 (`.specify/extensions.yml` is absent). No plan, tasks, product code, package
-installation, runtime proof or feature acceptance was produced. **Plan is next**
-on the same branch/draft PR, without an intermediate merge.
+installation, runtime proof or feature acceptance was produced by clarification.
+
+**002 / plan is now complete** on the same branch and
+[draft PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5).
+The installed planning skill used the explicit recorded directory and resolved
+project template. Its setup output's `BRANCH` value is the feature-directory
+basename, not a branch change; actual Git remains `feature/002-platform-contracts`.
+The [plan](../../specs/002-platform-contracts/plan.md),
+[research](../../specs/002-platform-contracts/research.md),
+[data model](../../specs/002-platform-contracts/data-model.md),
+[contracts](../../specs/002-platform-contracts/contracts/validation.md) and
+[future quickstart](../../specs/002-platform-contracts/quickstart.md) define strict
+JSON/schema `1`, distinct initial host/capability contract versions `1.0.0`,
+immutable canonical identity, a small SemVer range grammar, explicit context,
+non-authoritative declarations and bounded deterministic safe rejection.
+The machine-readable schema, examples and independently expected corpus
+distinguish structural from semantic/contextual acceptance. One minimal shared
+library and test-owned public consumers avoid a new endpoint/runtime/package.
+
+Pre-research and post-design constitutional gates pass at design level, with all
+requirements/scenarios mapped to future evidence. Official standards/.NET web
+sources were used because Microsoft Learn/Context7 MCP tools are not connected.
+No planning hooks are configured. [ADR 0004](../adr/0004-module-manifest-contract.md)
+is Proposed pending human review, not an implementation approval. No product
+source, dependency adoption, runtime proof, quality-checklist marking or feature
+acceptance was added. **Checklist is next** on the same draft PR, including its
+human-owned review gate; no intermediate merge or next stage is executed here.
 
 The human-directed [workflow correction](../adr/0001-feature-delivery-lifecycle.md)
 removes per-step merge gates. Its constitution v2.0.0 amendment travels with this
