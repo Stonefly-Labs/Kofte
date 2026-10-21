@@ -400,6 +400,7 @@
       "kofte.host": {
         "type": "Project",
         "dependencies": {
+          "Kofte.Platform": "[1.0.0, )",
           "Microsoft.AspNetCore.OpenApi": "[10.0.13, )",
           "Microsoft.Data.Sqlite": "[10.0.13, )",
           "Npgsql": "[10.0.3, )",
@@ -408,6 +409,9 @@
           "OpenTelemetry.Instrumentation.AspNetCore": "[1.20.0, )",
           "OpenTelemetry.Instrumentation.Http": "[1.20.0, )"
         }
+      },
+      "kofte.platform": {
+        "type": "Project"
       },
       "Microsoft.AspNetCore.OpenApi": {
         "type": "CentralTransitive",

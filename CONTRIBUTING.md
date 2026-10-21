@@ -7,25 +7,18 @@ the decision and limits; the [review](specs/001-repository-bootstrap/review.md)
 records source/test coverage and the complete local gate.
 The local host/web, real-provider verification, guarded recovery and generated
 contract do not introduce feature modules or prove production readiness.
-Spec 002 has a [draft contracts/identity specification](specs/002-platform-contracts/spec.md)
-and its built-in author checklist. Clarify needed zero questions; the author
-checklist remains 16/16. The [plan](specs/002-platform-contracts/plan.md) now
-defines the proposed JSON/schema, compatibility and public validation contract,
-with [ADR 0004](docs/adr/0004-module-manifest-contract.md) now human-approved
-for implementation.
-At the reviewer's explicit request, the [quality checklist](specs/002-platform-contracts/checklists/quality.md)
-was generated unchecked, then evaluated and marked with evidence: 36/36
-requirements-quality criteria satisfied, no blocking gap. ADR 0004's approval
-resolves the design decision; later unfamiliar-author/reference-timing evidence
-still needs human participation, alongside mandatory implementation evidence.
-The [48-task list](specs/002-platform-contracts/tasks.md) now maps all four stories,
-15 requirements, six outcomes and 14 scenarios to unchecked path-specific work,
-explicit dependencies and mandatory evidence. The read-only
-[analysis](specs/002-platform-contracts/analysis.md) passes with concrete coverage
-of all 21 requirements/outcomes and 14 scenarios, no unmapped task and no
-actionable or constitutional finding. Its inputs and task markers are unchanged.
-Implement is next on the same feature branch/draft PR. No spec 002 product code,
-module runtime or feature acceptance is claimed.
+Spec 002 now implements the [approved manifest/identity contract](docs/adr/0004-module-manifest-contract.md)
+in `Kofte.Platform` with dedicated unit/public-consumer/schema tests. Follow the
+[executable author guide](specs/002-platform-contracts/quickstart.md); no host,
+module loading or database is needed after restore. The
+[implementation report](specs/002-platform-contracts/implementation.md) records
+actual evidence. The human-directed benchmark amendment allows measured available
+workstations/CI runners, without fixed Ubuntu/CPU/RAM. T044 has actual local
+evidence; T045's unfamiliar-author exercise remains blocked. Final gate/reconciliation and stage completion
+remain pending their prerequisites. Do not infer acceptance or advance stages.
+The author/quality checklists remain 16/16 and 36/36, and
+[analysis](specs/002-platform-contracts/analysis.md) passes. Continue on the same
+feature branch and draft PR #5; module runtimes remain future work.
 See the [current local guide](docs/development/local-development.md).
 
 ## Prerequisites

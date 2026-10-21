@@ -98,20 +98,27 @@ for minimal platform contracts and module identity; clarification is complete
 with no material ambiguity or spec changes. Its [plan](../specs/002-platform-contracts/plan.md)
 now proposes a minimal shared library, strict JSON/schema and bounded pure
 validation with explicit SemVer compatibility. [ADR 0004](adr/0004-module-manifest-contract.md)
-records the now human-approved design choices; they are not implemented.
+records the human-approved design choices.
 Its [quality review](../specs/002-platform-contracts/checklists/quality.md)
 now satisfies all 36 requirements-quality criteria after explicit reviewer
 authorization, with no blocking gap. The subsequent explicit ADR 0004 approval
 resolves that design gate; adoption, runtime, unfamiliar-author and reference-timing
-evidence is still future work. The [48 unchecked tasks](../specs/002-platform-contracts/tasks.md)
+evidence is tracked separately. The [48 tasks](../specs/002-platform-contracts/tasks.md)
 now order identity and compatibility components before the complete public
 validation path, then safe correction and cross-cutting evidence. All requirements,
 outcomes and scenarios are mapped. The read-only
 [analysis](../specs/002-platform-contracts/analysis.md) passes with concrete coverage
 of all 21 requirements/outcomes and 14 scenarios, no unmapped task and no
-actionable or constitutional finding. Design inputs and task markers are unchanged;
-implement is next, with no module loader, storage registry or spec 002 product
-code added yet.
+actionable or constitutional finding at its analyzed checkpoint.
+The current [implementation](../specs/002-platform-contracts/implementation.md)
+adds the pure platform library and test-owned author/host-facing consumers,
+not a module loader or storage registry. Its
+[author guide](../specs/002-platform-contracts/quickstart.md) is executable.
+The human-directed ADR amendment accepts actual available-workstation/CI timing,
+not a fixed Ubuntu/CPU/RAM profile. Implement remains blocked on unfamiliar-author evidence,
+with final stage completion pending; focused automated proof does not accept
+the feature. The host only gains a library project reference; its startup,
+routes, stores and web console remain module-free.
 The broader stack/module/deployment proposals below remain future work, not
 installed features or proof of module isolation, production readiness or acceptance.
 
@@ -177,6 +184,12 @@ permissions:
   - environments.read
   - environments.write
 ```
+
+The YAML above is conceptual background, **not accepted spec 002 input**.
+The implemented [schema 1 contract](../specs/002-platform-contracts/contracts/validation.md)
+uses strict UTF-8 JSON, explicit collections, `hostContract`, separate versioned
+capability objects and `storage.relational` only. Its example/grammar/budgets
+are governed by Accepted ADR 0004; schema success alone is not full acceptance.
 
 ### 5.2 Extension points (level 3)
 

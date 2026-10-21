@@ -80,3 +80,25 @@ reference-timing or unfamiliar-author evidence, accept numbered feature 002 or
 the MVP, or authorize a merge. Those gates remain mandatory; the feature PR stays
 draft and the next recorded stage remains tasks. No implementation is performed
 by recording this decision.
+
+## Human-directed benchmark amendment
+
+On 2026-10-21 the human explicitly directed: **"bro that ubuntu benchmark you're
+trying to hit, we don't have the hardware, so we have to losen that restriction
+way up"**.
+
+Remove the fixed Ubuntu 24.04 x64 / 2-vCPU / 8-GiB benchmark requirement for
+**spec 002**. SC-004 may run on any available supported developer workstation
+or CI runner, with the actual source revision, pinned SDK/runtime, OS,
+architecture, CPU and memory recorded. No exact CPU count, RAM size, dedicated
+benchmark host, VM sizing or matching cross-machine performance is required.
+Retain initialization followed by 100 representative individually timed calls,
+including invalid/oversized/deep input, each below one second. This preserves
+bounded-failure evidence without inaccessible hardware becoming a delivery gate.
+
+The spec, plan, tasks, guide and implementation report are updated together.
+Earlier analysis and reviewer-owned checklist evidence describe the earlier
+requirement at their checkpoint; they are preserved, not silently re-marked.
+The existing macOS measurements can satisfy the amended environment requirement;
+they are not relabeled Ubuntu measurements. This does not waive unfamiliar-human
+SC-001, change spec 001's historical evidence, accept spec 002, or authorize merge.

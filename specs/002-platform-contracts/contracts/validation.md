@@ -1,6 +1,7 @@
 # Module Manifest and Validation Contract
 
-**Status:** Proposed public contract for spec 002; not implemented.
+**Status:** Implemented under Accepted ADR 0004; spec 002 is not accepted.
+See [implementation evidence and remaining gates](../implementation.md).
 **Schema:** [module-manifest.schema.json](module-manifest.schema.json)
 **Schema ID:** `urn:kofte:module-manifest:1` (identifier only, never fetched).
 
@@ -120,7 +121,7 @@ targets `net10.0` without ASP.NET Core, EF, database or IO dependencies.
   Known parsing/input exceptions become safe rejection; unexpected defects must
   fail the caller, not be misclassified as valid or silently swallowed.
 
-The future `tests/contract/Kofte.Manifest.Consumer` console reads bounded raw
+The test-owned `tests/contract/Kofte.Manifest.Consumer` console reads bounded raw
 UTF-8 bytes from stdin and takes `--host-contract VERSION` plus optional
 `--previous-id ID`. Do not accept input filenames or use host environment defaults.
 Read at most 65,537 bytes (one sentinel beyond the input budget) before validation.
@@ -129,6 +130,11 @@ or input. On rejection stdout is an object with `status:"rejected"` and the same
 safe ordered `diagnostics`. Exit codes: 0 accepted; 2 rejected/invalid invocation;
 1 operational IO/internal failure. Invocation/operational failures emit only a
 fixed safe code, no command argument, raw exception or path. No file is written.
+
+Optional test-proof arguments are `--culture en-US|tr-TR` (fixed verified
+culture/decimal confirmation on stderr) and `--repeat N` (1-100, one result per
+independent call). Defaults preserve one result and no culture confirmation.
+Neither changes context or acceptance rules; invalid/duplicate options reject.
 
 This independent author adapter uses only the public library. A host-facing
 contract-test consumer references the host/library and consumes the same public

@@ -35,7 +35,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 | 🔐 Explicit boundaries | Team-scoped authorization, audited actions and module-owned storage |
 
 > [!IMPORTANT]
-> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002 now has a specification and proposed contract design, not product implementation. Nothing here claims production readiness or MVP completion.
+> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002 now implements offline manifest validation, but its implementation stage remains blocked on unfamiliar-author evidence. Nothing here claims production readiness or MVP completion.
 
 ## 🧭 The shape of things to come
 
@@ -68,7 +68,24 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**Spec 002 / specify, clarify, plan, checklist, tasks and analyze are complete.** Its [draft specification](specs/002-platform-contracts/spec.md) and [16-item author checklist](specs/002-platform-contracts/checklists/requirements.md) define four stories, 15 functional requirements and six measurable outcomes. Clarification needed zero questions or spec changes. The [plan](specs/002-platform-contracts/plan.md), research, data model, [manifest/public contracts](specs/002-platform-contracts/contracts/validation.md) and [future validation guide](specs/002-platform-contracts/quickstart.md) choose strict JSON, immutable identity, explicit SemVer compatibility, bounded safe diagnostics and a minimal shared library with independent consumers. At the reviewer's explicit request, agent-assisted evaluation of the [quality checklist](specs/002-platform-contracts/checklists/quality.md) satisfied all 36 requirements-quality criteria with per-item evidence and no blocking gap. [ADR 0004](docs/adr/0004-module-manifest-contract.md) is human-approved for implementation. The [48-task implementation list](specs/002-platform-contracts/tasks.md) is entirely unchecked, with explicit dependencies, all requirement/scenario mappings, 17 parallel markers and mandatory consumer/schema/privacy/bootstrap checks. P1 identity and compatibility components precede complete public author validation; safe correction follows. The read-only [analysis](specs/002-platform-contracts/analysis.md) passes: all 21 requirements/outcomes and 14 scenarios have concrete task coverage, with no unmapped task, actionable finding or constitutional conflict. Analyzed inputs and task markers are unchanged. Dependency adoption, actual runtime, unfamiliar-author and reference-timing evidence remain future gates. The schema/examples and task list are not a running parser or module runtime. **Implement is next**, on `feature/002-platform-contracts` and [draft PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5). No intermediate merge or inferred acceptance. **Installing a skill does not execute it.**
+**Spec 002 / implement is in progress, blocked on unfamiliar-author evidence.**
+The [approved design](docs/adr/0004-module-manifest-contract.md) now has a pure
+`Kofte.Platform` library with strict bounded JSON, immutable identity, SemVer
+compatibility, safe ordered diagnostics and non-authoritative declarations.
+The [executable author guide](specs/002-platform-contracts/quickstart.md) uses a
+test-owned console; host-facing and structural consumers verify the same contract
+without loading modules or adding routes/storage. [Implementation evidence](specs/002-platform-contracts/implementation.md)
+records focused tests, observed privacy/retry behavior, dependency review and
+remaining gates. The human removed the fixed Ubuntu/CPU/RAM benchmark profile;
+T044 is evidenced on the available supported workstation with actual metadata
+and 100 individually timed checks. T045 needs an unfamiliar human's timed guide exercise. Final gate/reconciliation and
+stage completion remain unchecked pending those prerequisites.
+The [48-task list](specs/002-platform-contracts/tasks.md), passing
+[analysis](specs/002-platform-contracts/analysis.md), 16/16 author checklist and
+36/36 reviewer-authorized quality checklist preserve traceability, not acceptance.
+Continue the same implement stage on `feature/002-platform-contracts` and
+[draft PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5); do not advance to
+converge or merge. **Installing a skill does not execute it.**
 
 ```mermaid
 flowchart LR
@@ -88,7 +105,7 @@ See [Spec Kit workflow and recovery](docs/development/spec-workflow.md) for stag
 .specify/      Existing Spec Kit templates/scripts and tracked driver progress
 .vscode/       Shared editor MCP configuration
 apps/web/      Minimal Next.js bootstrap page and fixed readiness adapter
-src/           .NET host, local storage/configuration and health slice
+src/           .NET host and pure platform manifest/identity contracts
 modules/       Reserved for independently packaged reference modules
 packages/      Bootstrap contract; UI/module SDK placeholders remain reserved
 tests/         Dedicated .NET test projects, HTTP contract and browser tests
@@ -98,8 +115,8 @@ specs/         Numbered Spec Kit artifacts (not docs/specs/)
 docs/          Product context, decisions, contributor guides and visual assets
 ```
 
-Only the approved bootstrap boundaries are being implemented: one host, one web
-app and their narrow shared contract. Modules, module/UI SDKs, workers and Helm
+The bootstrap and approved platform manifest contracts are implemented: one host,
+one web app and narrow shared contracts. Modules, module/UI SDKs, workers and Helm
 remain reserved. No application tables, fake identity, feature/admin/MCP routes
 or module isolation are introduced by this foundation.
 

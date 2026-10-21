@@ -5,6 +5,12 @@
 **Constitution**: Adopted v2.0.1
 **Status**: Planning checkpoint; no product implementation or feature acceptance.
 
+**Implementation amendment (2026-10-21):** The human removed SC-004's fixed
+Ubuntu/CPU/RAM benchmark profile; see
+[ADR 0004](../../docs/adr/0004-module-manifest-contract.md#human-directed-benchmark-amendment).
+Available supported workstations/CI runners with actual measured metadata are
+valid evidence. Earlier design-only statements remain historical.
+
 ## Summary
 
 Give authors and host consumers one small, offline .NET contract for interpreting
@@ -183,7 +189,7 @@ checks are executed for this checkpoint and reported in its PR.
 | US2.1-3; SC-002 | ID label lengths 63/64, total lengths 253/254, all alias/path/Unicode cases, changed display/release without ID change, prior-ID mismatch, immutable outputs |
 | US3.1-4; SC-002/006 | Every range boundary/operator, prerelease opt-in and build case, malformed/empty ranges, each supported kind and contract version, duplicate/self/absent dependencies; installed sets explicitly not inspected |
 | US4.1-3; SC-004/005 | Every limit at/one-over, malformed/deep/large input, fixed max diagnostics, value/key/control-character canaries, no outbound requests/code activation/module-owned files or schemas, corrected retry without state |
-| US1-4; SC-001/004 | Author guide timing by unfamiliar reviewer; Ubuntu 24.04 x64, 2 vCPU/8 GiB reference, actual measured machine metadata; 100 initialized checks each below 1 second, not aggregate/p95 or cold process startup |
+| US1-4; SC-001/004 | Author guide timing by unfamiliar reviewer; available supported workstation/CI runner with actual revision/SDK/runtime/OS/architecture/CPU/memory, no fixed resource profile; 100 initialized checks each below 1 second, not aggregate/p95 or cold process startup |
 | FR-015; SC-006 | Named unit/contract plus existing real SQLite/PostgreSQL, health, startup and browser suites; wiring into existing quality/CI/fail-closed verifier, no zero-test or skipped-project success |
 | Principles III/X/XI/XII | Dedicated test source, reviewed locks/dependency graph, no generated/local artifacts; exact command/outcome/revision reports and no invented runtime/human proof |
 

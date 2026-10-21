@@ -49,7 +49,7 @@ branch/PR. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) is human-merge
 with its accepted ledger and evidence on main. Modules, SDKs, workers
 and Helm remain reserved. Bootstrap acceptance is not MVP or production readiness.
 
-**002 / specify, clarify, plan, checklist, tasks and analyze are complete** on `feature/002-platform-contracts`: the
+**002 / specify, clarify, plan, checklist, tasks and analyze are complete** on `feature/002-platform-contracts`. The following is the design-stage history, not current implementation status: the
 [draft specification](../specs/002-platform-contracts/spec.md) and
 [author checklist](../specs/002-platform-contracts/checklists/requirements.md)
 cover minimal platform contracts, immutable reverse-DNS identity, versioned
@@ -68,11 +68,20 @@ requirements-quality criteria are satisfied with evidence and no blocking gap.
 [ADR 0004](adr/0004-module-manifest-contract.md) is now human-approved for
 implementation, resolving the design-approval attention item. Later adoption,
 runtime, unfamiliar-author and reference-timing evidence remains required.
-The [48-task list](../specs/002-platform-contracts/tasks.md) is entirely unchecked,
-with explicit dependencies, 17 parallel markers and full requirement/scenario
+The [48-task list](../specs/002-platform-contracts/tasks.md) has
+explicit dependencies, 17 parallel markers and full requirement/scenario
 traceability, including consumer/schema/privacy/bootstrap and human/reference
 gates. The read-only [analysis](../specs/002-platform-contracts/analysis.md)
 passes with all 21 requirements/outcomes and 14 scenarios covered, no unmapped
-task and no actionable or constitutional finding; analyzed inputs remain unchanged.
-No product code, module runtime or feature acceptance is added.
-Implement is next on the same draft PR, without an intermediate merge.
+task and no actionable or constitutional finding.
+
+**002 / implement is now in progress, blocked on unfamiliar-author evidence.**
+The pure library and test-owned consumers implement the approved design; the
+[author guide](../specs/002-platform-contracts/quickstart.md) is executable.
+[Implementation evidence](../specs/002-platform-contracts/implementation.md)
+records focused tests, unchanged dependency identities, deterministic cultures,
+bounded safe failures, observers and retry. The human-directed ADR amendment
+removes fixed Ubuntu/CPU/RAM; actual available-workstation timing satisfies T044.
+T045's actual unfamiliar-human exercise remains unavailable; final evidence
+reconciliation/stage completion must wait. No module runtime or feature acceptance
+is claimed. Resume implement on the same draft PR, not converge or a new branch.

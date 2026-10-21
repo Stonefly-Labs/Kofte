@@ -13,7 +13,15 @@
       "next_step": "implement"
     }
   },
-  "active": null,
+  "active": {
+    "spec": "002",
+    "step": "implement",
+    "directory": "specs/002-platform-contracts",
+    "status": "blocked",
+    "branch": "feature/002-platform-contracts",
+    "reason": "T045 requires an unfamiliar human to follow the executable guide and attest actual example validation plus identity/compatibility correction within ten minutes after readiness. Automation/autopilot cannot substitute. T001-T044 have available evidence; human-directed ADR 0004 amendment removes fixed Ubuntu/CPU/RAM and accepts measured supported-workstation timing. T046-T048 remain pending T045. Preserve this implementation checkpoint on the existing draft PR; resume implement on this branch, not converge.",
+    "started_at": "2026-10-21T22:01:10+00:00"
+  },
   "history": [
     {
       "spec": null,

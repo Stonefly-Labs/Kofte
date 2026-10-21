@@ -3,6 +3,13 @@
 **Date:** 2026-10-21
 **Status:** Planning research, not implementation/adoption evidence.
 
+**Implementation amendment:** The human subsequently removed the fixed
+Ubuntu/CPU/RAM benchmark environment; see
+[ADR 0004](../../docs/adr/0004-module-manifest-contract.md#human-directed-benchmark-amendment).
+SC-004 now accepts an available supported workstation/CI runner with actual
+metadata and unchanged 100 individual one-second checks. No new dependency or
+runtime design follows from this hardware-policy change.
+
 Read the accepted bootstrap source, solution/project settings, verification
 wrapper, local guide, canonical product sources and constitution v2.0.1 before
 choosing the following designs. The pre-research constitutional gate found no

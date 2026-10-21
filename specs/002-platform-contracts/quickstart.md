@@ -1,18 +1,18 @@
 # Quickstart and Validation: 002
 
-**Status:** Future implementation validation guide. New project commands below
-do not run yet; planning added no product source, restored no dependencies and
-does not claim these tests passed. For today's bootstrap use the
-[local guide](../../docs/development/local-development.md).
+**Status:** Executable author guide for the implemented, unaccepted contract.
+Focused evidence is in [implementation.md](implementation.md). Implementation
+remains blocked on the unfamiliar-author exercise; the feature is not accepted. The
+[local guide](../../docs/development/local-development.md) covers the unchanged host.
 
 ## Prerequisites
 
 Use the accepted SDK 10.0.402/runtime 10.0.13, Node 24.22.0/npm 11.19.1 and Python
-3.11+ on macOS 15+ arm64 or Ubuntu 24.04 x64. Implementation must add/review the
-new project locks and dependency inventory before locked restore. Existing Ajv/
-xUnit are reused; do not install a new version/range or production schema package.
+3.11+ on macOS 15+ arm64 or Ubuntu 24.04 x64. The project locks and unchanged
+dependency graph are [reviewed](../../docs/development/dependencies.md).
+Existing Ajv/xUnit are reused; no version/range or production schema package is added.
 
-From the repository root, once those implementation changes exist:
+From the repository root:
 
 ```bash
 dotnet restore Kofte.slnx --locked-mode
@@ -51,16 +51,27 @@ dotnet run --project tests/contract/Kofte.Manifest.Consumer --no-build -c Releas
 ```
 
 Expected exit 2 and `identity_changed` at `/id`, never implicit rename.
-Privately copy the minimal example, change its ID to `Org.example.notes` and
-pipe that copy to the first command: expect `module_id_invalid`. Correct it to
-lowercase canonical text and retry. The validator itself never normalizes IDs.
-Remove only that explicit temporary copy when done; never reset bootstrap data.
+For an identity error without writing a file, pipe an edited declaration:
+
+```bash
+python3 -c 'import json,sys; m=json.load(sys.stdin); m["id"]="Org.example.notes"; print(json.dumps(m))' < specs/002-platform-contracts/contracts/examples/minimal.json | dotnet run --project tests/contract/Kofte.Manifest.Consumer --no-build -c Release -- --host-contract 1.0.0
+```
+
+Expected exit 2, `module_id_invalid` at `/id`. Correct the author's value to
+`org.example.notes`, or rerun the unchanged minimal-example command: exit 0.
+The validator never normalizes IDs. Never reset bootstrap data for validation.
 Invalid invocation exits 2; IO/internal failures exit 1 with fixed safe output.
+
+The test-owned console also accepts `--culture en-US` or `--culture tr-TR`
+and `--repeat N` (1-100) for proof fixtures. The former writes a fixed culture
+confirmation to stderr; the latter emits one independent decision per repetition.
+Without these switches, output remains the single documented result. Neither
+option supplies host context, fetches input or activates modules.
 
 ## Focused automated proof
 
-These **planned selectors** must become required named verifier/CI steps, not
-optional `--if-present` additions. Minimum expected tests prevents empty success.
+These selectors are required named verifier/CI steps, not optional
+`--if-present` additions. Minimum expected tests prevents empty success.
 All .NET test source stays inside its dedicated project under `tests/`.
 
 ```bash
@@ -87,8 +98,8 @@ public validator, not be parsed/reserialized by a harness.
 ## Foundation preservation and complete implementation gate
 
 Select existing pinned tools and restore browser/image prerequisites per the
-local guide. Wire new unit/contract commands into `scripts/verify.py`; retain
-owned fixtures and all prior required steps. Existing real-provider regressions
+local guide. `scripts/verify.py` includes the new unit/contract commands and
+required-target inventory, retaining owned fixtures and prior steps. Existing real-provider regressions
 must not silently become mocks or get skipped because the new library is pure.
 
 ```bash
@@ -108,17 +119,20 @@ Focused checks are not the complete implementation gate. Run the existing
 before final implementation handoff, with actual current-head Ubuntu CI
 inspection. Do not weaken the wrapper's required script/file inventory or
 failure-propagation checks. Record exact commands, exit results, assessed revision
-and safe reports in the later `implementation.md`; unavailable infrastructure
+and safe reports in `implementation.md`; unavailable infrastructure
 is an explicit blocker, not a pass.
 
-## Reference timing and human evidence
+## Available-machine timing and human evidence
 
-Use Ubuntu 24.04 x64, 2 vCPU and 8 GiB RAM as the SC-004 reference environment,
-with exact SDK/runtime and actual recorded resource measurements. Initialize/JIT
+Use any available supported developer workstation or CI runner for SC-004.
+There is **no fixed OS/CPU/RAM benchmark profile or dedicated-machine requirement**,
+following the [human-directed ADR amendment](../../docs/adr/0004-module-manifest-contract.md#human-directed-benchmark-amendment).
+Record source revision, exact SDK/runtime, actual OS/architecture/CPU/memory
+and per-case results; do not claim equivalent performance across machines. Initialize/JIT
 before timing pure calls (not process startup); every one of 100 consecutive
 representative checks must finish below one second, including byte/depth-limit
 rejections. Retain safe numeric per-case durations, counts, locale and environment
-only; a p95/aggregate pass or another machine does not prove the reference bound.
+only; a p95/aggregate pass does not prove the individual-call bound.
 
 For SC-001 an unfamiliar author follows only this guide and the linked contract,
 validates M and corrects one identity and one compatibility error within ten
@@ -129,6 +143,20 @@ explicit numbered-feature decision.
 
 ## Failure and rollback boundaries
 
+Supported initial combination: schema `1`, published host contract `1.0.0`,
+capability contracts stable `1.0.0` (build metadata is ignored). Other explicit
+valid host versions can be compared mathematically, not certified as executable
+host APIs. The module release is a separate SemVer domain.
+
+Ranges accept only one full SemVer or a lower (`>`/`>=`) and upper (`<`/`<=`)
+pair separated by exactly one ASCII space, such as `>=1.0.0 <2.0.0`.
+No one-sided, wildcard, caret, tilde, shorthand or extra-whitespace forms exist.
+Empty/reversed intervals reject. Build metadata does not affect membership;
+prerelease targets require a same-core prerelease endpoint. See the
+[complete boundary table](contracts/validation.md#version-and-range-semantics).
+Permission ownership is `(moduleId,localName)`, not a grant; relational storage
+is a need, not a path/schema allocation.
+
 Correct source input/context and resubmit; do not reinstall, create a registry,
 disable permissions or clear any store. Unknown schema/capability versions need
 a reviewed contract update, not silent fallback. Accepted declaration means
@@ -136,3 +164,8 @@ neither publisher trust nor installation, permissions, data isolation, dependenc
 resolution or executable compatibility. No new HTTP/UI/MCP surface or migration
 exists to roll back in 002; source/library/schema changes use ordinary reviewed
 version control.
+
+Breaking grammar, fields, kinds, budgets or diagnostic identities require a
+reviewed schema/host-contract compatibility decision and ADR update. Revert
+source/library/schema through normal review, retaining original authored input;
+there is no installed-data migration or automatic reinterpretation in this feature.

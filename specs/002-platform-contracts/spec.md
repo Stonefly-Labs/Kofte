@@ -388,7 +388,9 @@ version identifier is not a network location to fetch during validation.
 - **SC-003**: Across 100 repeated runs of the acceptance corpus in at least two
   distinct supported locale settings and two independent consumers, acceptance
   decisions and ordered diagnostic identities agree in every run.
-- **SC-004**: On the documented reference environment after initialization, each
+- **SC-004**: On an available supported developer workstation or CI runner after
+  initialization, with actual source revision, pinned SDK/runtime, OS,
+  architecture, CPU and memory recorded (no fixed hardware/OS resource profile), each
   of 100 consecutive representative valid/invalid checks within the documented
   input limits completes within 1 second; oversized/deep inputs reach an explicit
   failure within that same bound rather than hanging or returning success.
@@ -402,6 +404,12 @@ version identifier is not a network location to fetch during validation.
   new mandatory infrastructure.
 
 ### Required Validation
+
+**Human-directed implementation amendment (2026-10-21):** SC-004 no longer
+requires the fixed Ubuntu x64 2-vCPU/8-GiB machine. Accepted
+[ADR 0004](../../docs/adr/0004-module-manifest-contract.md#human-directed-benchmark-amendment)
+records the explicit direction and available-machine evidence policy. The
+100-call/per-call bound and SC-001's actual unfamiliar-human exercise remain.
 
 These are **future implementation acceptance obligations**, not checks executed
 or behavior delivered by this specify stage. Evidence must name the revision,
