@@ -59,7 +59,7 @@ This is the **planned architecture**, not a diagram of implemented services. Pos
 2. Follow the [contributor workflow](CONTRIBUTING.md) and [assistant/MCP setup](docs/development/assistant-tooling.md).
 3. When ready to begin product work, invoke **`drive-speckit`**. Each invocation performs one stage and publishes its result on the **same branch and draft PR for that numbered feature**. No merges between steps; request human merge only after final review and explicit feature acceptance.
 
-The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendment](.specify/memory/constitution.md) records the human-directed [one-feature/one-branch correction](docs/adr/0001-feature-delivery-lifecycle.md). Spec **001 / specify** has a [draft specification](specs/001-repository-bootstrap/spec.md) and its [author quality checklist](specs/001-repository-bootstrap/checklists/requirements.md), generated from the exact [inventory prompt](docs/master-spec-inventory.md). **001 / clarify is complete:** no material requirements ambiguity required a question or specification change; the author checklist remains 16/16. **Plan** is next on the existing branch and [draft PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4), without a merge. There is still no product implementation or accepted numbered spec. **Installing a skill does not execute it.**
+The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendment](.specify/memory/constitution.md) records the human-directed [one-feature/one-branch correction](docs/adr/0001-feature-delivery-lifecycle.md). Spec **001 / specify** has a [draft specification](specs/001-repository-bootstrap/spec.md) and its [author quality checklist](specs/001-repository-bootstrap/checklists/requirements.md), generated from the exact [inventory prompt](docs/master-spec-inventory.md). **Clarify and plan are complete:** no material requirements ambiguity remained; the [implementation plan](specs/001-repository-bootstrap/plan.md), research, data model, HTTP/UI contracts and future validation guide now define the bounded foundation. [Proposed ADR 0002](docs/adr/0002-bootstrap-development-baseline.md) selects native .NET/Next.js startup, SQLite and disposable PostgreSQL verification without application tables. **Checklist** is next on the existing branch and [draft PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4), without a merge; its quality review belongs to the human reviewer. Planned product commands are not runnable yet. There is no product implementation or accepted numbered spec. **Installing a skill does not execute it.**
 
 ```mermaid
 flowchart LR
@@ -89,7 +89,7 @@ specs/         Numbered Spec Kit artifacts (not docs/specs/)
 docs/          Product context, decisions, contributor guides and visual assets
 ```
 
-Reserved product directories contain only `.gitkeep` markers. Project/assembly/package boundaries will be decided during spec 001 planning, not frozen by empty scaffolding or its specification.
+Reserved product directories contain only `.gitkeep` markers. Spec 001's plan proposes one host, one web app and a narrow shared bootstrap-contract package; those boundaries are design artifacts, not implemented scaffolding or a module SDK.
 
 ## 📚 Project bookshelf
 

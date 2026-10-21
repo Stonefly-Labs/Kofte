@@ -23,9 +23,20 @@ all ten ambiguity categories were clear at requirements level, with zero questio
 asked or answered. The specification needed no changes, and its author checklist
 was revalidated at **16/16 to 16/16**, with no newly passing items, regressions or
 unchecked criteria. The ledger completion note records the category-to-requirement
-evidence. No clarification hooks were configured. Exact toolchain versions,
-orchestration, reference environment and route/schema details remain planning
-decisions, not unanswered product questions. **Plan** is next on
+evidence. No clarification hooks were configured. At clarification, exact toolchain
+versions, orchestration, reference environment and route/schema details were
+reserved for planning, not unanswered product questions. **001 / plan is now complete**:
+[`plan.md`](../../specs/001-repository-bootstrap/plan.md),
+[`research.md`](../../specs/001-repository-bootstrap/research.md),
+[`data-model.md`](../../specs/001-repository-bootstrap/data-model.md),
+[`contracts/`](../../specs/001-repository-bootstrap/contracts/) and
+[`quickstart.md`](../../specs/001-repository-bootstrap/quickstart.md)
+define supported baselines, native local host/web startup, platform-only storage,
+minimal safe diagnostics, accessible status states and the required validation.
+The pre-research and post-design constitution checks pass at design level;
+no implementation behavior is claimed. No planning hooks were configured.
+[Proposed ADR 0002](../adr/0002-bootstrap-development-baseline.md) records the
+consequential choices. **Checklist** is next on
 `feature/001-specify-repository-bootstrap` and the same
 [draft PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4), **without an intermediate merge**.
 
@@ -35,10 +46,14 @@ feature; product principles and explicit human acceptance remain unchanged.
 
 Spec 001 is broader than repository setup: it requires a future working API/UI
 skeleton and test/local profiles. This specification stage creates no product
-code, plan or tasks and does not accept the feature. Clarification likewise adds
-no product implementation or human approval. The checked requirements
+code or tasks and does not accept the feature. Clarification and planning likewise
+add no product implementation or human approval. All quickstart product commands
+are future implementation targets, not available commands or passing evidence.
+The checked requirements
 checklist records the specification author's review only; the later `quality.md`
-is a separate human-owned review gate.
+is a separate human-owned review gate. The next invocation generates it unchecked
+and blocks for reviewer completion unless the human explicitly requests assistance
+with evaluation; planning does not pre-approve those checks.
 
 Project-specific templates in `.specify/templates/overrides/` carry the constitution
 into specification, planning and tasks through the installed resolver. They require
