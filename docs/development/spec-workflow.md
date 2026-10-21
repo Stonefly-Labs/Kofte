@@ -86,12 +86,13 @@ contracts and all-state browser/axe checks have actual local evidence.
 All ten local automated groups now pass, including controlled failures and
 ten validated private-fixture starts. T001-T055 and T057 are evidenced.
 Actual Ubuntu CI subsequently exposed dependency-evidence and 200%-text reflow
-failures; those remain implementation work until the corrected revision passes.
-T056's human WCAG review, target/CI evidence and T059's Ubuntu reference/
+failures. Both were corrected without weakening their checks; all ten jobs
+passed at `6cab683`, and supported-target T058 is now evidenced.
+T056's human WCAG review and T059's Ubuntu reference/
 unfamiliar-contributor evidence remain open; dependent final tasks are not
 automatically complete. The human was unavailable to supply the required
 observations, so the driver now records this same implement run as **blocked**.
-After actual evidence resolves the gates, resume this same implement stage on
+After actual human/reference evidence resolves the gates, resume this same implement stage on
 `feature/001-specify-repository-bootstrap` and the same
 [draft PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4),
 **without an intermediate merge**. Converge has not begun.

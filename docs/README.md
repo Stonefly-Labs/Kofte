@@ -34,7 +34,8 @@ records the human correction: .NET test source physically belongs to its test
 project, never a production slice or source link. The
 [implementation report](../specs/001-repository-bootstrap/implementation.md)
 distinguishes working behavior from the remaining full
-verification/CI/manual gates. All ten local automated groups pass; the stage is
-blocked on unavailable human evidence on the same branch and
+verification/CI/manual gates. All ten local automated groups and all ten
+Ubuntu CI jobs pass; supported-target T058 is evidenced. The stage is
+blocked on unavailable human accessibility/reference/contributor evidence on the same branch and
 draft PR, without an intermediate merge. Spec 001 and final human acceptance
 remain incomplete; modules, SDKs, workers and Helm remain reserved.

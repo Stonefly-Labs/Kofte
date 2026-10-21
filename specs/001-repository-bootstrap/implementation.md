@@ -481,3 +481,71 @@ base `7c3b399` plus checker overlay SHA-256
 `643d03da29cad7bd85a1bd988c1b05c15e618b87b9ebb5ac0e86c3445f96156a`.
 This is dependency-only Docker-helper evidence, **not** full quality,
 native Ubuntu CI, reference-hardware or feature-acceptance evidence.
+
+### Corrected implementation-revision CI and supported targets
+
+Published/pushed `6cab683e585814c560bf04378bc1465564d79479` immediately.
+[Repository checks 39634960843](https://github.com/Stonefly-Labs/Kofte/actions/runs/39634960843)
+and [product checks 39634960839](https://github.com/Stonefly-Labs/Kofte/actions/runs/39634960839)
+**passed**. All ten product jobs completed successfully; all ten uploaded safe
+JSON reports and their child outcomes were inspected. The actual Ubuntu
+dependency review, full browser including the formerly failing 200%-text
+assertion, and controlled-failure baselines now pass. Earlier failures above
+remain historical evidence, not erased or waived.
+
+The run's PR head is `6cab683`; reports correctly identify the tested GitHub
+PR merge snapshot `6aae5a5d0f12f15e2dd5a9420cf5d97e6d8940a8`. GitHub's commit
+API confirms its two parents are main
+`5e72fcc61724db6b2f68c53987ccb64f3debad72` and the exact published head
+`6cab683e585814c560bf04378bc1465564d79479`; no head-only checkout is invented.
+Each job's runner label was verified as `ubuntu-24.04`. Actual reports record
+Linux x86_64, four logical CPUs, physical RAM
+**16,759,308,288-16,770,748,416 bytes**, Python 3.12.3, .NET SDK 10.0.402,
+Node 24.22.0 and npm 11.19.1. Kernels were `6.17.0-1022-azure` or
+`7.0.0-1017-azure`. Hosted-runner labels do not introduce an Azure deployment
+dependency.
+
+The jobs invoke the named local verification suites, not CI-only substitutes.
+Durations below are measured suite durations, excluding tool setup:
+
+| Job / suite | Actual result | Seconds |
+| --- | --- | --- |
+| quality | All quality children, locked restores and dependency enforcement passed | 56.009 |
+| unit | Native/web/shared-contract/Python tests passed | 15.860 |
+| integration-sqlite | Real SQLite checks passed | 15.768 |
+| integration-postgres | Real owned PG17 checks passed | 21.523 |
+| recovery | Both-provider guarded recovery and real browser/store/host journeys passed | 147.880 |
+| contract | Both-provider runtime generation, policy and HTTP/adapter parity passed | 48.589 |
+| browser | Status/recovery, all-state axe/keyboard/focus and narrow enlarged-text reflow passed | 67.160 |
+| privacy | Both-provider actual runtime canary scans passed | 40.910 |
+| startup | Ten actual warm private-fixture cycles passed | 34.747 |
+| failure-propagation | Green baselines followed by the expected actual controlled failures passed | 174.231 |
+
+Every uploaded report remains `scope: targeted`, `completeGate: false`.
+Together they establish the ten-job Ubuntu result, not a fabricated local
+`--suite all` invocation or satisfaction of unavailable human prerequisites.
+The startup report retains all ten validated observations, rounded here to
+six decimal places; every cycle preserved its exact private fixture:
+
+| Cycle | Ready seconds | Usable-page seconds |
+| --- | --- | --- |
+| 1 | 1.420130 | 0.187577 |
+| 2 | 0.952114 | 0.084909 |
+| 3 | 0.969674 | 0.075012 |
+| 4 | 0.963160 | 0.100484 |
+| 5 | 0.974997 | 0.078195 |
+| 6 | 0.958160 | 0.073383 |
+| 7 | 0.969143 | 0.079776 |
+| 8 | 0.983076 | 0.074961 |
+| 9 | 0.964390 | 0.072711 |
+| 10 | 0.970944 | 0.076394 |
+
+Together with the actual supported macOS arm64 all-suite evidence and the
+corrected source's local quality/browser/100-Python-test passes, this satisfies
+**T058**. Local locked restores left tracked manifests/locks unchanged and the
+published worktree clean. No native Windows/Kubernetes result is claimed.
+This hardware is **not** the required eight-GiB timing reference, and no
+unfamiliar contributor or human WCAG review was supplied. T056, T059 and
+dependent T060-T064 therefore remain unchecked. The same implement run stays
+blocked solely on genuine human/reference evidence and its dependent final
+gates; no converge, final review, feature acceptance or merge transition occurs.

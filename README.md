@@ -35,7 +35,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 | 🔐 Explicit boundaries | Team-scoped authorization, audited actions and module-owned storage |
 
 > [!IMPORTANT]
-> **Bootstrap implementation is in progress, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All ten local automated verification groups passed on macOS; actual Ubuntu CI exposed dependency-evidence and 200%-text reflow failures under repair. Spec **001** remains open for passing supported-target/CI and human accessibility/reference/contributor evidence. Nothing here claims feature acceptance, production readiness or MVP completion.
+> **Bootstrap implementation is in progress, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All ten local automated verification groups passed on macOS, and all ten Ubuntu CI jobs now pass after correcting dependency-evidence and enlarged-text reflow failures. Spec **001** remains open for human accessibility/reference/contributor evidence and its dependent final gates. Nothing here claims feature acceptance, production readiness or MVP completion.
 
 ## 🧭 The shape of things to come
 
