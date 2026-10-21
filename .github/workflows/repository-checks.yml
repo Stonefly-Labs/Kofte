@@ -18,10 +18,13 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          fetch-depth: 0
           persist-credentials: false
       - name: Check repository assets and configuration
         run: python3 scripts/check_repository.py
       - name: Check driver transitions
         run: python3 -m unittest discover -s scripts/tests -v
       - name: Check whitespace
-        run: git show --format= --check HEAD
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before || 'HEAD^' }}
+        run: git diff --check "$BASE_REF" HEAD

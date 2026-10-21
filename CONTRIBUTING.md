@@ -35,6 +35,9 @@ python3 -m unittest discover -s scripts/tests -v
 git diff --check
 ```
 
+CI fetches full history and checks the actual PR-base-to-head diff (or the push
+range), rather than treating a shallow merge checkout as an entirely new tree.
+
 Once product tools exist, also run the smallest relevant tests, formatting, lint and type/build checks required by that feature. Do not replace failed checks with a success claim.
 
 Use an intent-based commit such as `chore: bootstrap repository workflow`. Assistant-authored commits include:
