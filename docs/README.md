@@ -39,6 +39,10 @@ including supported targets and human-confirmed T056/T059. Implement and
 [converge](../specs/001-repository-bootstrap/convergence.md) are complete.
 Convergence assessed all 38 requirements/acceptance scenarios, twelve plan
 decisions, 64 tasks and twelve principles, with no actionable gap or appended
-task. Spec 001 remains unaccepted on its original branch and draft PR, without
-an intermediate merge. Final review is next; explicit human acceptance remains
-a separate gate. Modules, SDKs, workers and Helm remain reserved.
+task. The independent [final review](../specs/001-repository-bootstrap/review.md)
+also passes with no acceptance defect, source/test coverage of all 38
+requirements/acceptance scenarios and a fresh 170-step complete local gate
+reconciled with actual assessed-head CI. Spec 001 remains unaccepted on its
+original branch and draft PR, without an intermediate merge. Explicit human
+acceptance is next; it is not inferred from review or prior task attestations.
+Modules, SDKs, workers and Helm remain reserved.

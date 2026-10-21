@@ -113,12 +113,27 @@ repository CI and all ten product jobs also passed. `tasks.md` remains
 byte-for-byte unchanged, with no empty convergence phase or product edits.
 No convergence hooks are configured. The driver selects **review**;
 final review is not executed by convergence, and feature acceptance is not
-inferred from its passing result.
+inferred from its passing result. **001 / review is now complete**:
+[`review.md`](../../specs/001-repository-bootstrap/review.md) records the
+independent read-only `spec-review` assessment of actual source/tests against
+all 17 functional requirements, six success criteria, 15 acceptance scenarios
+and twelve constitutional principles. No acceptance defect, constitutional
+conflict or scope expansion was identified; no remediation task was appended.
+The caller closed the reviewer's execution-evidence requests with a fresh
+complete local gate: all ten groups and all 170 named steps pass, including
+ten validated persistent-fixture warm starts and five exact deliberate failure
+checks. Actual assessed-head CI and its ten uploaded reports also pass with
+identical ordered suite coverage; synthetic merge parents were verified.
+The report preserves human T056/T059 attestations and reference-machine/manual
+accessibility limitations without inventing observations. Product source,
+tests, configuration, locks, spec, plan and tasks remain unchanged by review.
+The driver selects **accept**, not accepted. No human feature decision or
+acceptance artifact is created by review.
 Continue future stages on
 `feature/001-specify-repository-bootstrap` and the same
 [draft PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4),
-**without an intermediate merge**. Final review and explicit human feature
-acceptance have not begun; PR #4 stays draft.
+**without an intermediate merge**. Final review passes; explicit human feature
+acceptance has not begun and is next. PR #4 stays draft.
 
 The human-directed [workflow correction](../adr/0001-feature-delivery-lifecycle.md)
 removes per-step merge gates. Its constitution v2.0.0 amendment travels with this

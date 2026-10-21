@@ -86,9 +86,11 @@ Both supported targets have automated evidence; the human has confirmed the
 manual/reference tasks. All 64 implementation tasks and the final local/CI
 verification are evidenced.
 [Convergence](../specs/001-repository-bootstrap/convergence.md) found no
-actionable spec/plan/task/constitutional gaps and left the task list unchanged;
-final feature review and explicit human acceptance remain separate, unexecuted
-stages.
+actionable spec/plan/task/constitutional gaps and left the task list unchanged.
+[Final review](../specs/001-repository-bootstrap/review.md) also passes:
+independent code/test assessment found no acceptance defect, and a fresh complete
+local gate passes all 170 named steps with assessed-head CI parity. Explicit
+human feature acceptance remains the next separate, unexecuted stage.
 The broader stack/module/deployment proposals below remain future work, not
 installed features or proof of module isolation, production readiness or acceptance.
 

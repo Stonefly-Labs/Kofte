@@ -1,8 +1,10 @@
 # Contributing to Köfte
 
-Welcome! **Spec 001's bootstrap implementation and convergence are complete**;
-final review and explicit human acceptance remain separate gates in the
-numbered Spec Kit workflow. The local host/web, real-provider verification,
+Welcome! **Spec 001's bootstrap implementation, convergence and final review pass**;
+explicit human acceptance is the next separate gate in the
+numbered Spec Kit workflow. The [review](specs/001-repository-bootstrap/review.md)
+records source/test coverage and a fresh complete local gate.
+The local host/web, real-provider verification,
 guarded recovery and generated contract do not alone complete spec 001,
 introduce feature modules or prove production readiness.
 See the [current local guide](docs/development/local-development.md).
