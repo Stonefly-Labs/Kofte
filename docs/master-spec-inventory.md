@@ -26,6 +26,11 @@ The goal is a *portable self-hosted composable internal developer platform*, **n
 
 ## Spec Kit workflow
 
+The repository's [`drive-speckit` workflow](development/spec-workflow.md) automates
+selection and one stage per invocation, with tracked progress, human PR merges and
+explicit final acceptance. Repository-only setup is preparation for spec 001, not
+completion of its working API/UI skeleton. The prompts below remain authoritative.
+
 1. Create the constitution from `constitution-prompt.md`.
 2. Place foundation documents in repo `docs/` and tell the coding assistant to treat them as canonical product context.
 3. For each numbered spec below, paste the prompt into `/speckit.specify`; review the generated spec's acceptance criteria and unresolved questions before `/speckit.plan`, `/speckit.tasks` and implementation.

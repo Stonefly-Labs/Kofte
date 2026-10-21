@@ -98,12 +98,12 @@ kofte/
   deploy/
     docker/
     helm/
+  specs/                       # numbered Spec Kit feature artifacts
   docs/
     product-charter.md
     product-vision.md
     architecture.md
     adr/
-    specs/
 ```
 
 This is a **starting convention**; avoid prematurely splitting every abstraction into another assembly. Module package boundaries and independently versioned SDKs should follow demonstrated extension needs.

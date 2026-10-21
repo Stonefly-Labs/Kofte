@@ -1,0 +1,30 @@
+name: Feature or spec proposal
+description: Propose an outcome, not an unbounded implementation.
+title: "feature: "
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Who needs this, and why?
+      description: Name the actor, problem and desired observable outcome.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and roadmap placement
+      description: Link the inventory spec, list dependencies, and distinguish MVP from post-MVP.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Include verifiable behavior, failure cases and applicable UI/API/MCP, permission and storage boundaries.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives and non-goals
+      description: Keep optional providers and modules optional.

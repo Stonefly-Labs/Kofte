@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320" role="img" aria-labelledby="title description">
+  <title id="title">Köfte</title>
+  <desc id="description">A warm coral modular mark beside the Köfte wordmark on a deep navy background. Your platform. Your ingredients.</desc>
+  <defs>
+    <linearGradient id="background" x2="1" y2="1">
+      <stop stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#172b3b"/>
+    </linearGradient>
+    <linearGradient id="coral" x2="1" y2="1">
+      <stop stop-color="#ffb086"/>
+      <stop offset="1" stop-color="#fb7185"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="320" rx="28" fill="url(#background)"/>
+  <g fill="none" stroke="#294354" stroke-width="1">
+    <path d="M0 80H960M0 160H960M0 240H960M80 0V320M160 0V320M240 0V320M320 0V320M400 0V320M480 0V320M560 0V320M640 0V320M720 0V320M800 0V320M880 0V320" opacity=".35"/>
+  </g>
+  <g transform="translate(72 64)">
+    <rect x="0" y="0" width="82" height="82" rx="27" fill="url(#coral)"/>
+    <rect x="96" y="0" width="82" height="82" rx="27" fill="#5eead4"/>
+    <rect x="0" y="96" width="82" height="82" rx="27" fill="#5eead4"/>
+    <rect x="96" y="96" width="82" height="82" rx="27" fill="url(#coral)"/>
+    <path d="M34 41h14M41 34v14M130 137h14M137 130v14" stroke="#172b3b" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="137" cy="41" r="8" fill="#172b3b"/>
+    <circle cx="41" cy="137" r="8" fill="#172b3b"/>
+  </g>
+  <text x="298" y="171" font-family="ui-rounded, system-ui, -apple-system, sans-serif" font-size="108" font-weight="750" letter-spacing="-5" fill="#f8fafc">Köfte</text>
+  <text x="305" y="219" font-family="system-ui, -apple-system, sans-serif" font-size="23" fill="#b7cbd9">Your platform. Your ingredients.</text>
+  <rect x="305" y="247" width="88" height="5" rx="2.5" fill="#fb7185"/>
+  <rect x="403" y="247" width="40" height="5" rx="2.5" fill="#5eead4"/>
+</svg>
