@@ -59,7 +59,7 @@ This is the **planned architecture**, not a diagram of implemented services. Pos
 2. Follow the [contributor workflow](CONTRIBUTING.md) and [assistant/MCP setup](docs/development/assistant-tooling.md).
 3. When ready to begin product work, invoke **`drive-speckit`**. Each invocation performs one stage, records its result, opens a PR and waits for a human merge before the next stage.
 
-The driver starts with the [constitution prompt](docs/constitution-prompt.md), then selects the first unaccepted entry from the [spec inventory](docs/master-spec-inventory.md). **Installing the skill does not execute it.** The constitution is intentionally still a template.
+The first driver stage has generated the [v1.0.0 constitution](.specify/memory/constitution.md) from the exact [constitution prompt](docs/constitution-prompt.md), with project-specific specification, plan and task template gates. Its adoption and recorded progress are **proposed until human merge**. No numbered spec has started; after that merge, the next invocation selects **001 / specify** from the [spec inventory](docs/master-spec-inventory.md). **Installing a skill does not execute it.**
 
 ```mermaid
 flowchart LR
@@ -98,6 +98,7 @@ Reserved directories contain only `.gitkeep` markers. Project/assembly/package b
 | [Product charter](docs/product-charter.md) | Mandate, boundaries and required outcomes |
 | [Product vision](docs/product-vision.md) | People, experience and long-term direction |
 | [Technical architecture](docs/architecture.md) | Canonical architecture requirements and proposals |
+| [Constitution](.specify/memory/constitution.md) | Twelve enforceable principles and delivery gates; adoption requires human merge |
 | [Master spec inventory](docs/master-spec-inventory.md) | Ordered prompts; **001–024 MVP**, **025–038 post-MVP** |
 | [Contributing](CONTRIBUTING.md) | Fresh branches, checks, commits, pushes and PR handoffs |
 | [Assistant tooling](docs/development/assistant-tooling.md) | Microsoft Learn, Context7, Next.js, shadcn/ui and Playwright |

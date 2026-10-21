@@ -6,7 +6,7 @@
 2. [Product vision](product-vision.md): audience and experience.
 3. [Technical architecture](architecture.md): architecture invariants and recommendations.
 4. [Master spec inventory](master-spec-inventory.md): exact MVP boundary and ordered prompts.
-5. [Constitution prompt](constitution-prompt.md): input for the first future driver invocation, not an adopted constitution.
+5. [Constitution](../.specify/memory/constitution.md): generated v1.0.0 principles and review gates, proposed until human merge; the [constitution prompt](constitution-prompt.md) remains its exact generation input.
 
 These are the canonical product inputs. Once generated and adopted, `.specify/memory/constitution.md` governs delivery; a conflict with canonical inputs must be surfaced for a human decision and documented amendment, not silently resolved by an assistant.
 

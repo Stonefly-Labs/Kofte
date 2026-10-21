@@ -4,7 +4,7 @@ The repository already has GitHub Spec Kit skills, scripts and templates. The
 project-specific `drive-speckit` skill coordinates them without replacing upstream
 assets or running a fleet. **Creating this driver does not execute product work.**
 
-## Invocation and initial state
+## Invocation and current progress
 
 In Copilot, reload project skills with `/skills reload`, then ask:
 
@@ -12,15 +12,21 @@ In Copilot, reload project skills with `/skills reload`, then ask:
 Use /drive-speckit to perform the next stage.
 ```
 
-The checked-in `.specify/drive-state.json` starts with a pending constitution, no
-features and no history. The current `.specify/memory/constitution.md` is still an
-unfilled template. On first execution, the driver invokes `speckit-constitution`
-with the exact fenced prompt from `docs/constitution-prompt.md`. It stops after
-publishing that stage's PR.
+The first execution has generated `.specify/memory/constitution.md` v1.0.0 from
+the exact fenced prompt in `docs/constitution-prompt.md`. The ledger records that
+constitution stage only, with no numbered features started. The constitution and
+transition are **proposed until a human merges the stage PR**.
 
-After a **human merges** it, the next execution starts spec **001**, using its exact
-fenced inventory prompt. This spec is broader than repository setup: it includes a
-working API/UI skeleton and test/local profiles. This bootstrap does not pre-accept it.
+After that merge, the next execution starts spec **001 / specify**, using its exact
+fenced inventory prompt. This spec is broader than repository setup: it includes
+a working API/UI skeleton and test/local profiles. Constitution generation does
+not implement or pre-accept it.
+
+Project-specific templates in `.specify/templates/overrides/` carry the constitution
+into specification, planning and tasks through the installed resolver. They require
+explicit applicability/traceability, pre/post-design checks and mandatory relevant
+validation, rather than upstream generic optional-test examples. Upstream template
+sources remain unchanged; amendment review must keep the project overrides aligned.
 
 ## Sequence and evidence
 
