@@ -15,6 +15,8 @@ dependencies and acceptance/requirement traceability.
 - Use `- [ ] T001 [P] [US1] Description with exact path and requirement/principle IDs`.
 - `[P]` means genuinely independent work on different files, not implied stage concurrency.
 - Use the approved plan's actual module-local paths, not generic backend/frontend trees.
+- Put .NET test-source tasks inside dedicated .NET test projects under `tests/`;
+  never store test source in production projects or link it from production slices.
 - List prerequisites explicitly; do not infer dependencies from list order alone.
 - Replace the sample tasks below with feature-specific work; omit inapplicable work
   with an explanation rather than silently skipping a required gate.

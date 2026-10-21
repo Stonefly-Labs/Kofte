@@ -64,6 +64,7 @@ __pycache__/
 *.db
 *.db-shm
 *.db-wal
+*.db-journal
 *.sqlite
 *.sqlite3
 !tests/**/fixtures/*.db

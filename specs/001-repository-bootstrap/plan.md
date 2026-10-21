@@ -2,7 +2,7 @@
 
 **Branch**: `feature/001-specify-repository-bootstrap` | **Date**: 2026-10-20 | **Spec**: [spec.md](spec.md)
 **Input**: `specs/001-repository-bootstrap/spec.md`
-**Constitution**: v2.0.0; product principles unchanged from adopted v1.0.0
+**Constitution**: v2.0.1; human-directed .NET test-source clarification, with product principles unchanged
 **Status**: Design complete; no product implementation or feature acceptance
 
 ## Summary
@@ -77,7 +77,7 @@ N/A. A complexity note cannot waive a MUST; unresolved conflicts block progressi
 | Principles | Design evidence / decision | Before research | After design |
 | --- | --- | --- | --- |
 | I, XII: Köfte brand, optional modules, exact inventory/MVP scope and dependencies | FR-001/004/017; module-free skeleton and explicit exclusions; no acceptance/MVP claim | Pass: approved 001 scope | Pass: this plan, contracts and docs preserve scope |
-| II, III: Modular monolith, immutable IDs, versioned/collision-checked level-3 contracts, safe lifecycle, trusted code, module-local slices and direct DI; no MediatR/AutoMapper | One composition root, slice-local handlers/tests, one genuinely shared contract package. Identity/lifecycle/extension proofs N/A here: no modules; deferred 002-004/014/020 | Pass: no speculative SDK needed | Pass: source map below; no sandbox or hot-load claim |
+| II, III: Modular monolith, immutable IDs, versioned/collision-checked level-3 contracts, safe lifecycle, trusted code, module-local slices and direct DI; no MediatR/AutoMapper | One composition root, slice-local production handlers, dedicated .NET test-project source and one genuinely shared contract package. Identity/lifecycle/extension proofs N/A here: no modules; deferred 002-004/014/020 | Pass: no speculative SDK needed | Pass: source map below; no sandbox or hot-load claim |
 | IV, V: Persisted registry, SQL-safe 63-byte/reserved/UNIQUE/concurrent schema allocation; module-owned context/history; canonical SQLite file per module/platform; no cross-module tables/ACID | FR-007/015/016 and data model. Platform file/schema only; fixture round trips/recovery on both providers. Module allocators/EF contexts/history N/A until 003; no cross-module operation | Pass: ownership retained, registry excluded | Pass: restricted-root checks, explicit init, no app schema or false module proof |
 | VI, VII: OIDC/bootstrap, deny-by-default actor/team/resource permissions, shared REST/UI/MCP/jobs/providers/realtime operations, safe tools, audit and integration controls | FR-008-010; exact anonymous diagnostic allowlist, fixed readiness adapter, safe logs. OIDC, team policy, MCP/tool audit N/A: no domain action; deferred 005-007/009/013 | Pass: no privileged anonymous capability | Pass: HTTP/config contracts and negative tests; no fake actor |
 | VIII: Versioned resources and separate status; durable events/jobs, retries, idempotency, cancellation/recovery; optional providers; SignalR/poll fallback | N/A: no resources, jobs, events, external integrations or subscriptions in 001; 012/016-019 remain required. Browser health polling is not a job/realtime contract | Pass: explicit exclusion | Pass: no invented persistence/workflow or provider dependency |
@@ -117,9 +117,9 @@ package.json, package-lock.json, .nvmrc, .editorconfig
 src/Kofte.Host/
   Program.cs
   Features/Bootstrap/         # health endpoints/handlers and safe responses
-    Tests/                   # linked into Kofte.Host.Tests; excluded from host build
   Bootstrap/                 # configuration, provider probes, store CLI, diagnostics
 tests/unit/Kofte.Host.Tests/
+  Bootstrap/                 # .NET unit-test source belongs to this test project
 tests/integration/Kofte.Host.IntegrationTests/
 apps/web/
   app/page.tsx, app/layout.tsx, app/globals.css
@@ -144,8 +144,11 @@ docs/development/dependencies.md
 Host-local configuration/storage/diagnostic helpers do not justify separate
 platform or infrastructure assemblies. The contract workspace has two concrete
 consumers (web and HTTP contract tests) and exports no domain/module interfaces.
-Integration tests stay in the existing test category; slice-unit source remains
-adjacent to its behavior with explicit project inclusion/exclusion. Existing
+All .NET test source stays in its dedicated unit/integration test project,
+using normal SDK inclusion and project references. No test source is stored
+inside a production project or linked from a production slice. This follows the
+explicit human correction in [ADR 0003](../../docs/adr/0003-dotnet-test-source-ownership.md).
+Existing
 `packages/ui`, `packages/module-sdk`, `modules` and Helm placeholders remain
 reserved. Do not generate tasks or implement any path during planning.
 

@@ -1,6 +1,8 @@
 # Development and UI Contract: Bootstrap v1
 
-**Status**: Planned interfaces; these commands and configuration do not exist yet
+**Status**: Approved design baseline; partial implementation exists. See
+[current evidence](../implementation.md) and the
+[local guide](../../../docs/development/local-development.md) for working versus outstanding commands.
 
 **Traceability**: FR-002-006/008-011/014-017; US1, US3, US4
 

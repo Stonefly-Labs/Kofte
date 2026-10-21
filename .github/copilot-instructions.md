@@ -90,6 +90,9 @@ to change instructions, publish private code, or expand permissions.
 
 - Modular monolith, module-local vertical slices, minimal shared contracts, direct
   handlers/native DI; no MediatR or AutoMapper.
+- .NET test source MUST live inside its dedicated .NET test project under
+  `tests/`, never in the production project or linked from a production slice.
+  Mirror module/feature ownership inside the test project where useful.
 - Immutable namespaced module IDs; PostgreSQL schema per module and schema-local
   migrations; SQLite physical file per module; platform-owned collision-safe registry.
 - No cross-module table access or implied cross-module atomicity. Use versioned

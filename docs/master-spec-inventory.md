@@ -14,7 +14,7 @@ The goal is a *portable self-hosted composable internal developer platform*, **n
 ### Implementation invariants across every spec
 
 - **Full Level-3 modules:** backend, frontend, resource kinds/providers, events, workflows, permissions and MCP tools; first-party core capabilities use the same patterns where practical.
-- **Modular monolith + VSA:** feature endpoints/handlers/validation/tests co-located; truly shared contracts in a minimal core; no MediatR or paid/encumbered mediator dependency.
+- **Modular monolith + VSA:** feature endpoints/handlers/validation co-located; .NET test source in dedicated test projects with mirrored module/feature ownership, never inside production projects; truly shared contracts in a minimal core; no MediatR or paid/encumbered mediator dependency.
 - **PostgreSQL:** dedicated named schema **for every module**, including module migration history. Immutable module-ID→schema mapping in a platform-owned registry; byte-limited safe names; unique constraint and concurrent collision protection; never `public`.
 - **SQLite:** **one physical file per module**, plus separate platform registry DB; no shared SQLite database, schema simulation or `ATTACH`-based cross-module design.
 - **Transactions:** module-local transactions only. Across modules use versioned operations/events, persisted outbox/inbox, idempotency and compensation as needed; do not claim cross-database atomicity.
@@ -299,7 +299,7 @@ Dependencies / integration assumptions: 005,006,007. Identify any genuine ambigu
 
 ### 010 — API conventions and vertical slices [MVP]
 
-**Purpose / deliverable:** Codify VSA feature layout: endpoint, handler, request/response, validation, authorization, persistence and tests co-located; OpenAPI, error codes, pagination, concurrency, idempotency where required.
+**Purpose / deliverable:** Codify VSA feature layout: endpoint, handler, request/response, validation, authorization and persistence co-located; .NET tests stored in dedicated test projects; OpenAPI, error codes, pagination, concurrency, idempotency where required.
 
 **Dependencies:** 001,004,006.  
 **Acceptance focus:** Sample real feature and contract tests prove uniform API conventions; no MediatR dependency.
@@ -309,7 +309,7 @@ Dependencies / integration assumptions: 005,006,007. Identify any genuine ambigu
 ```text
 Specify Köfte feature 010: API conventions and vertical slices. Scope: MVP, required for initial release. Read docs/product-charter.md, docs/product-vision.md, docs/architecture.md and the project constitution first; do not invent product requirements that conflict with them.
 
-Outcome: Codify VSA feature layout: endpoint, handler, request/response, validation, authorization, persistence and tests co-located; OpenAPI, error codes, pagination, concurrency, idempotency where required.
+Outcome: Codify VSA feature layout: endpoint, handler, request/response, validation, authorization and persistence co-located; .NET tests stored in dedicated test projects; OpenAPI, error codes, pagination, concurrency, idempotency where required.
 
 Deliver a user-centered, implementation-agnostic feature specification (not a coding task list) with actors, primary use cases, user journeys, external behavior and explicit functional requirements. Specify observable UI/API/MCP/module interfaces that apply; module ownership and tenant/team permission boundaries; database ownership and migration semantics where applicable; configuration and failure/recovery paths; audit/telemetry; security abuse cases; compatibility/versioning; and acceptance scenarios in Given/When/Then form. Exclude irrelevant interfaces explicitly rather than pretending every feature needs all of them.
 

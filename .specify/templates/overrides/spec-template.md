@@ -77,7 +77,9 @@ unresolved implementation details.]
 real PostgreSQL and SQLite isolation/migration integration; module/REST/event/MCP
 contracts; Playwright journeys; negative authorization/collision/path/tool/restart
 cases; deployment smoke and reference-module proof at their release gates.
-Map acceptance scenarios to evidence and explain every inapplicable category.]
+Map acceptance scenarios to evidence and explain every inapplicable category.
+.NET test source belongs physically to its dedicated test project, not the
+production project or vertical slice it tests.]
 
 ## Assumptions and Constitutional Review
 

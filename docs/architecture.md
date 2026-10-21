@@ -207,8 +207,16 @@ Modules/Catalog/Features/Services/Create/
   Validator.cs
   Handler.cs
   Response.cs
-  Tests/
+
+tests/unit/Kofte.Modules.Catalog.Tests/Features/Services/Create/
+  CreateTests.cs
 ```
+
+All .NET test source MUST reside in its dedicated .NET test project, not in the
+production project or linked from a production vertical slice. Mirrored module/
+feature folders retain logical slice ownership without shipping test source
+beside application code. See [ADR 0003](adr/0003-dotnet-test-source-ownership.md).
+Frontend colocated tests are unaffected by this .NET-specific rule.
 
 Endpoints SHOULD call feature handlers directly via DI rather than require a mediator library. Domain entities, EF mappings and slice-private helpers stay module-local. Shared platform code is justified only for identity/authorization, module/runtime contracts, data isolation registry, event/job abstractions, telemetry, API error conventions and other truly cross-cutting behavior.
 

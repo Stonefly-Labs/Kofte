@@ -1,6 +1,9 @@
 # Contributing to Köfte
 
-Welcome! This is currently **repository setup only**. Product implementation starts through the numbered Spec Kit workflow; this bootstrap does not complete spec 001.
+Welcome! **Spec 001's bootstrap implementation is in progress** through the
+numbered Spec Kit workflow. The working local SQLite/host/web increment does not
+complete spec 001, introduce feature modules or prove production readiness.
+See the [current local guide](docs/development/local-development.md).
 
 ## Prerequisites
 
@@ -38,7 +41,18 @@ git diff --check
 CI fetches full history and checks the actual PR-base-to-head diff (or the push
 range), rather than treating a shallow merge checkout as an entirely new tree.
 
-Once product tools exist, also run the smallest relevant tests, formatting, lint and type/build checks required by that feature. Do not replace failed checks with a success claim.
+Also run the smallest relevant .NET/web tests, formatting, lint and type/build
+checks in the [local guide](docs/development/local-development.md). The complete
+named verification runner is still being implemented; focused results do not
+replace the eventual full gate. Do not replace failed checks with a success claim.
+
+### .NET test source ownership
+
+Store .NET test source inside the .NET test project that compiles it, under
+`tests/unit/` or `tests/integration/`. Production projects and their vertical
+slices must not contain test classes. Test projects may mirror the tested
+module/feature structure, but must not link test source from `src/` or a
+production module. See [ADR 0003](docs/adr/0003-dotnet-test-source-ownership.md).
 
 Use an intent-based commit such as `chore: bootstrap repository workflow`. Assistant-authored commits include:
 

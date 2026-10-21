@@ -17,6 +17,22 @@ The [technology-stack exploration](kofte-technology-stack-architecture.md) is hi
 - [Contributing](../CONTRIBUTING.md): branch, change, checks, commit, push, PR and human merge.
 - [Assistant tooling](development/assistant-tooling.md): shared MCP servers, trust and smoke checks.
 - [Spec workflow](development/spec-workflow.md): state, stage gates, recovery and acceptance.
+- [Local bootstrap](development/local-development.md): current SQLite/host/web startup, focused checks and unfinished gates.
+- [Dependency adoption](development/dependencies.md): exact reviewed graph, compatibility, provenance, licenses and retained notices.
 - [ADRs](adr/README.md): record consequential decisions.
 
-Feature specs live in root **`specs/`** to match the installed Spec Kit scripts, rather than a second `docs/specs/` tree. The first [draft specification, 001](../specs/001-repository-bootstrap/spec.md), defines the future working foundation. Clarification found no material requirements ambiguity; its [plan and design artifacts](../specs/001-repository-bootstrap/plan.md) define local startup, minimal contracts and required verification. [ADR 0002](adr/0002-bootstrap-development-baseline.md) records the human-approved technical design baseline, not dependency or feature acceptance. At the reviewer's explicit request, agent-assisted evaluation of the [human-owned quality checklist](../specs/001-repository-bootstrap/checklists/quality.md) satisfied 36/36 criteria with evidence, no blocking requirements gaps and explicit attention items. Task generation produced [64 tasks](../specs/001-repository-bootstrap/tasks.md) covering all four stories with explicit dependencies, requirement/constitution mappings and mandatory validation. The subsequent read-only [analysis](../specs/001-repository-bootstrap/analysis.md) passed: all 23 requirements/outcomes and 15 acceptance scenarios have task coverage, with no unmapped tasks or actionable/constitutional findings. The [implementation entry checkpoint](../specs/001-repository-bootstrap/implementation.md) records the human ADR approval, T001 completion and same-stage resumption on the existing feature branch/draft PR without merging. T002's dependency adoption is next; 63 tasks remain unchecked. Design coverage is not runtime evidence. Dependency-adoption gates, actual product/manual evidence and final human acceptance are not claimed complete. Product commands in the planning guide are future targets; reserved product directories remain placeholders, not implemented components.
+Feature specs live in root **`specs/`** to match the installed Spec Kit scripts,
+rather than a second `docs/specs/` tree. Spec 001 has completed specify, clarify,
+plan, reviewer-owned requirements-quality review, tasks and read-only analysis.
+Those artifacts establish design coverage, not runtime proof or acceptance.
+[ADR 0002](adr/0002-bootstrap-development-baseline.md) records the human-approved
+technical baseline. Implementation now includes reviewed locked dependencies,
+host/web foundations, actual SQLite/HTTP checks, native local startup/restart and
+initial browser/axe evidence. [ADR 0003](adr/0003-dotnet-test-source-ownership.md)
+records the human correction: .NET test source physically belongs to its test
+project, never a production slice or source link. The
+[implementation report](../specs/001-repository-bootstrap/implementation.md)
+distinguishes working behavior from the remaining PostgreSQL/recovery/full
+verification/CI/manual gates. The stage remains running on the same branch and
+draft PR, without an intermediate merge. Spec 001 and final human acceptance
+remain incomplete; modules, SDKs, workers and Helm remain reserved.

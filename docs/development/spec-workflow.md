@@ -73,9 +73,14 @@ the report is design/task evidence, not runtime proof or human acceptance.
 [`implementation.md`](../../specs/001-repository-bootstrap/implementation.md)
 records passing entry/checklist gates, the initial unavailable reviewer and the
 subsequent explicit decision: "bro I approve adr 002". ADR 0002 is Accepted,
-T001 is complete and the driver resumed the same active stage; T002-T064 remain
-unchecked. Dependency adoption is next, not implicitly approved by this design
-decision. No product files or dependencies were introduced. Continue this same
+T001 is complete and the driver resumed the same active stage. The later
+implementation checkpoint records the complete dependency review and adopted
+locks, host/web/configuration/telemetry foundations, private SQLite persistence,
+actual HTTP checks and initial local/browser evidence. The human-directed
+[.NET source ownership correction](../adr/0003-dotnet-test-source-ownership.md)
+keeps tests physically in their .NET test projects; constitution v2.0.1 and the
+affected plan/task paths agree. The full PostgreSQL, recovery, contract/privacy,
+verification/CI and human evidence remain outstanding. Continue this same
 implement stage on
 `feature/001-specify-repository-bootstrap` and the same
 [draft PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4),
@@ -85,7 +90,7 @@ The human-directed [workflow correction](../adr/0001-feature-delivery-lifecycle.
 removes per-step merge gates. Its constitution v2.0.0 amendment travels with this
 feature; product principles and explicit human acceptance remain unchanged.
 
-Spec 001 is broader than repository setup: it requires a future working API/UI
+Spec 001 is broader than repository setup: it requires a working API/UI
 skeleton and test/local profiles. Specification, clarification, planning,
 checklist review, task generation and analysis add no product implementation or human
 feature acceptance. All quickstart product commands

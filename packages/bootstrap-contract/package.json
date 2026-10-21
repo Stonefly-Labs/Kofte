@@ -1,0 +1,20 @@
+{
+  "name": "@kofte/bootstrap-contract",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/status.ts"
+  },
+  "scripts": {
+    "generate": "openapi-typescript openapi.json -o src/generated.ts && prettier --write src/generated.ts",
+    "lint": "eslint src",
+    "typecheck": "node ../../node_modules/typescript/bin/tsc --strict --noEmit --skipLibCheck --target ES2022 --moduleResolution bundler --module esnext src/status.ts",
+    "build": "npm run typecheck",
+    "test:unit": "vitest run src/status.test.ts"
+  },
+  "devDependencies": {
+    "openapi-typescript": "7.13.0",
+    "typescript": "5.9.3"
+  }
+}

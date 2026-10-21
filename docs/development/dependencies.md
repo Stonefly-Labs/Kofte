@@ -1,0 +1,114 @@
+# Bootstrap dependency adoption
+
+**Review date:** 2026-10-21. **Scope:** spec 001, T002; not feature acceptance.
+The [ADR 0002](../adr/0002-bootstrap-development-baseline.md) design is human-approved.
+The generated [inventory](dependency-inventory.json) records every resolved npm
+and NuGet identity, archive source/integrity, declared license, available notice
+hashes, source commits where published, image digest and action SHAs.
+No floating direct dependency is approved.
+
+## Adopted baseline and compatibility
+
+Use .NET SDK **10.0.402**, runtime **10.0.13**, Node **24.22.0** and bundled npm
+**11.19.1**. Official release metadata confirmed these releases. The isolated
+macOS tool archives were verified before use: Node SHA-256
+`6a9724d9b50a5f22b4816cded441b5a8d9ddae546191a5e5b7efa5a5e2ee26d5`;
+SDK SHA-512
+`ee0d379c144ebddef6efe851e1514883d1b695430d13b3fb13e8153f8476e1e5ac7abc42c08668471aaf4d738ff367cf53009845f94d224ba126febe74d00b75`.
+No global tool installation or trust-store modification is required.
+
+Next **16.4.2**, React/React DOM **19.3.1**, TypeScript **6.0.3**, Tailwind
+**4.3.3**, Radix Slot **1.5.0** and Lucide **1.60.0** form the runtime UI baseline.
+The actual complete graph, not this short direct-dependency summary, controls adoption.
+
+Two compatibility corrections were necessary:
+
+- ESLint **10.13.0**, `@eslint/js` **10.0.1**, `typescript-eslint` **8.72.0**
+  and React Hooks rules **7.1.1** use native flat configuration. Next's
+  `eslint-config-next` 16.4.2 requires an import plugin incompatible with ESLint
+  10; ESLint 9.39.5 is unsupported. Its Next plugin also pulls the unpatched
+  braces stack-exhaustion advisory
+  [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm).
+  Neither unsupported ESLint nor that preset/plugin is adopted. Next compilation,
+  typed lint and React Hooks checks remain required; no peer override or forced
+  installation is used.
+- `openapi-typescript` **7.13.0** has a TypeScript `^5.x` peer. The generation-only
+  workspace pins **5.9.3** locally, while application/contract type checking uses
+  **6.0.3**. Both versions are reviewed and locked. This is not a downgrade of
+  the application baseline. Vite **7.3.7**, React plugin **5.1.4** and Vitest
+  **5.0.5** have compatible peers.
+
+The remaining exact direct/transitive versions are in the inventory and locks.
+They include xUnit, Microsoft.NET.Test.Sdk, real SQLite/Npgsql, OpenTelemetry,
+Playwright/axe, Testing Library, JSON-schema validation and formatting.
+PostgreSQL 17 and GitHub Actions use the immutable references in the inventory.
+
+## License and notice decisions
+
+This is a source checkout/local-development adoption, not approval to discard
+notices in a later binary/container distribution. Restore retains each package's
+original LICENSE/NOTICE files; the inventory hashes available installed notices.
+Do not strip them from future standalone output, images or browser bundles.
+The following decisions cover the complete observed license-expression set:
+
+| License family / component | Decision and required compliance |
+| --- | --- |
+| MIT, MIT-0, ISC, 0BSD, BSD-2/3-Clause, BlueOak-1.0.0, PostgreSQL | Approved with original copyright, license and disclaimer retention; no endorsement claims. |
+| Apache-2.0, including compound expressions | Approved; retain license/NOTICE, preserve attribution, identify modifications and observe patent terms. |
+| CC0-1.0 / MIT OR CC0-1.0 | Approved; choose MIT where dual-licensed and retain its notice. |
+| Python-2.0 (`argparse`) | Approved; retain the complete Python-derived license/disclaimer and attribution; no trademark endorsement. |
+| CC-BY-4.0 (`caniuse-lite`) | Approved with attribution to the original caniuse contributors, license/source link and modification indication in redistributed notices. |
+| MPL-2.0 (axe, lightningcss and platform binaries) | Approved with file-level copyleft compliance. Preserve MPL notices and corresponding source/version links; disclose modifications to covered files if any. Test-only use is not an exemption. No covered source modification is planned; MIT application files are not relicensed. |
+| LGPL-3.0-or-later and compound sharp binary expressions | Approved for unmodified, dynamically linked upstream libraries, retaining all upstream notices. Redistribution must provide exact corresponding source, build/relink information and LGPL/GPL license texts, permit replacement/debugging of the library, and retain copyright/patent notices. Do not statically combine these libraries into a restricted binary or strip source offers. Production packaging must verify compliance again. |
+
+Sharp's libvips bundles contain additional native libraries not represented as
+separate npm nodes. Their shipped README was inspected: aom (BSD plus AOM patent
+license), cairo (MPL-1.1), fontconfig/FreeType/libpng/libtiff (their permissive
+notices), mozjpeg (zlib/IJG/BSD), and the listed LGPLv3 GLib/Pango/libvips family.
+These obligations are retained together, not collapsed to an MIT claim.
+Sources/build recipes and exact native versions come from the
+[sharp-libvips release](https://github.com/lovell/sharp-libvips/releases/tag/v1.3.4)
+and its package metadata. Preserve the package README and upstream source offers
+if distributing its binaries. This bootstrap does not distribute compiled assets.
+
+Minimal shadcn-style source must retain the
+[shadcn MIT notice](https://github.com/shadcn-ui/ui/blob/main/LICENSE.md)
+(reviewed license blob `fad4d887a681dd49233e5ed01ee2c7a1513089a0`);
+Lucide retains ISC and icon-specific notices in its package. No commercial
+mediator, AutoMapper, cloud SDK or Docker Desktop license is introduced.
+Compatible Docker Engine/Compose suffices; Desktop remains optional under its
+own terms. Unknown/new obligations block adoption until explicitly reviewed.
+
+## Provenance and vulnerability evidence
+
+Review used a disposable manifest/lock graph outside the source tree, with
+`npm install --package-lock-only --ignore-scripts --strict-peer-deps` and
+`npm ci --ignore-scripts`. No dependency lifecycle script ran during inspection.
+Every external npm lock entry has an archive source and integrity hash.
+The adopted npm 11.19.1 installation policy leaves the unapproved esbuild and
+optional fsevents lifecycle scripts blocked; `npm ci` reports that explicitly.
+No script approval was added. The actual builds and tests work without those
+scripts. Next CLI telemetry is disabled in all web workspace lifecycle commands,
+not only when the local supervisor supplies the environment.
+The candidate complete graph has **413 external lock entries**, including
+cross-platform optional packages; deduplicated identities are in the inventory.
+`npm sbom --sbom-format cyclonedx` passed. `npm audit` reported **zero findings**.
+`npm audit signatures` verified **310 registry signatures and 128 attestations**
+on installed packages; uninstalled platform-optionals remain integrity-pinned,
+not falsely counted as locally verified signatures.
+
+The resolved NuGet graph contains **69 packages**, all MIT/Apache/PostgreSQL
+licensed, with no reported direct/transitive vulnerability. Native macOS
+`dotnet nuget verify --all` failed certificate/timestamp trust chains. Microsoft
+[documents this verification as unsupported on macOS](https://learn.microsoft.com/en-us/dotnet/core/tools/nuget-signed-package-verification).
+No check was disabled and no certificate was trusted manually: the same 69
+archives were verified **successfully** using Microsoft's pinned Linux SDK
+image and its supported code-signing/timestamp bundles. Restore source is
+`https://api.nuget.org/v3/index.json`; integrity and published source commits are
+recorded. This platform difference must remain visible in verification guidance.
+
+Any manifest/lock change must reconcile the entire graph, notices, integrity,
+peer compatibility and advisory results. A name allowlist or zero-vulnerability
+scan alone is not a license/provenance review. Generated inventory mismatch,
+missing mandatory evidence or unknown license fails closed. This review does
+not replace the later both-provider/browser/privacy/manual/CI acceptance gates.

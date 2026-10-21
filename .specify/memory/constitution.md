@@ -25,8 +25,11 @@ hostile-code isolation, hot-unload or arbitrary remote frontend execution.
 
 ### III. Module-Local Vertical Slices
 
-Handlers, endpoints, validation, authorization and tests MUST stay close to their
-feature within module boundaries. Shared platform packages MUST contain only
+Handlers, endpoints, validation and authorization MUST stay close to their
+feature within module boundaries. .NET test source MUST live in dedicated .NET
+test projects, never in production projects or linked from production slices;
+test-project folders SHOULD mirror the tested module/feature ownership.
+Shared platform packages MUST contain only
 demonstrably common contracts or cross-cutting concerns. Slices MUST be independently
 testable and use native .NET DI/direct handlers, not MediatR or AutoMapper.
 Ceremonial layers and speculative abstractions MUST NOT be introduced.
@@ -255,5 +258,9 @@ Change history:
   merge before the next feature. Major version reflects removal of a mandatory
   delivery gate; product principles are unchanged. See
   [ADR 0001](../../docs/adr/0001-feature-delivery-lifecycle.md).
+- **2.0.1 - 2026-10-21:** Explicit human clarification of .NET test source
+  ownership: source lives with its test project, not in production slices.
+  Logical module-local coverage and mandatory tests are unchanged. See
+  [ADR 0003](../../docs/adr/0003-dotnet-test-source-ownership.md).
 
-**Version**: 2.0.0 | **Ratified**: 2026-10-20 | **Last Amended**: 2026-10-20
+**Version**: 2.0.1 | **Ratified**: 2026-10-20 | **Last Amended**: 2026-10-21

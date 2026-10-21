@@ -1,8 +1,10 @@
 # Quickstart Validation Guide: 001
 
-**Status**: Implementation target, **not runnable in the current setup-only repository**.
-No commands below were run as product verification during planning. Later tasks
-must supply the named scripts/projects and demonstrate these results.
+**Status**: Approved full validation target; the local SQLite/host/web increment
+now runs, but the complete named verification/provider/recovery/CI gate remains
+under implementation. Use the [current local guide](../../docs/development/local-development.md)
+for available commands and [implementation evidence](implementation.md) for actual
+results. No commands were run as product verification during planning.
 
 ## Prerequisites and explicit setup
 
@@ -14,7 +16,7 @@ Engine/Compose installation, the pinned PostgreSQL 17 image, and matching
 optional and subject to its own entitlement. Browser suites require the pinned
 Playwright Chromium and OS libraries.
 
-On a fresh checkout, follow the future `docs/development/local-development.md`:
+On a fresh checkout, follow `docs/development/local-development.md`:
 
 ```bash
 dotnet --version

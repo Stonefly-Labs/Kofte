@@ -55,7 +55,10 @@ specs/[NNN-short-name]/
 ### Source Code (repository root)
 
 [Concrete feature paths within apps/web, src, modules, packages and tests as
-applicable. Keep slices module-local; do not create speculative assemblies.]
+applicable. Keep production slices module-local; .NET test source MUST live in
+dedicated .NET test projects under tests/, never in production projects or linked
+from production slices. Mirror module/feature ownership inside test projects.
+Do not create speculative assemblies.]
 
 **Structure Decision**: [Rationale and actual boundaries]
 
