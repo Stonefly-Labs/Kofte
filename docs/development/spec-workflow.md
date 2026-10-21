@@ -36,7 +36,19 @@ minimal safe diagnostics, accessible status states and the required validation.
 The pre-research and post-design constitution checks pass at design level;
 no implementation behavior is claimed. No planning hooks were configured.
 [Proposed ADR 0002](../adr/0002-bootstrap-development-baseline.md) records the
-consequential choices. **Checklist** is next on
+consequential choices. **001 / checklist is now complete**:
+[`checklists/quality.md`](../../specs/001-repository-bootstrap/checklists/quality.md)
+was generated with 36 unchecked requirements-quality criteria covering
+permission boundaries, storage, MCP applicability, UX and operability, with
+traceability to the spec and supporting design. The reviewer then explicitly
+requested agent-assisted evaluation. All 36 criteria were assessed and marked
+satisfied with per-item evidence; no blocking requirements-quality gap was found.
+The checklist surfaces proposed ADR 0002 for human review, exact dependency/license
+adoption gates and actual product/manual evidence as remaining attention items,
+not as completed work. This standard, risk-focused requirements review is not
+implementation verification, ADR approval, feature acceptance or the MVP release
+gate. No checklist hooks were configured; no tasks or product artifacts were
+created. **Tasks** are next on
 `feature/001-specify-repository-bootstrap` and the same
 [draft PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4), **without an intermediate merge**.
 
@@ -50,10 +62,13 @@ code or tasks and does not accept the feature. Clarification and planning likewi
 add no product implementation or human approval. All quickstart product commands
 are future implementation targets, not available commands or passing evidence.
 The checked requirements
-checklist records the specification author's review only; the later `quality.md`
-is a separate human-owned review gate. The next invocation generates it unchecked
-and blocks for reviewer completion unless the human explicitly requests assistance
-with evaluation; planning does not pre-approve those checks.
+checklist records the specification author's review only; `quality.md` is a
+separate human-owned review gate. Its generation did not approve any item.
+The reviewer's subsequent explicit request authorized this invocation's
+agent-assisted evaluation and evidence-backed marking. Without such a request,
+generation would leave the stage blocked for reviewer completion. This completed
+requirements review permits task generation on the next invocation, not product
+implementation or automatic final acceptance.
 
 Project-specific templates in `.specify/templates/overrides/` carry the constitution
 into specification, planning and tasks through the installed resolver. They require
