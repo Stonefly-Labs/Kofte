@@ -43,6 +43,7 @@ npm_lock_version_invalid npm_manifest_lock_drift npm_package_path_invalid npm_re
 npm_source_unreviewed npm_workspace_lock_drift npm_workspace_path_invalid nuget_archive_evidence_missing
 nuget_archive_integrity_drift nuget_archive_metadata_missing nuget_archive_notice_drift
 nuget_central_version_unreviewed nuget_dependency_unreviewed nuget_installed_metadata_drift
+nuget_installed_metadata_missing
 nuget_inventory_graph_drift nuget_lock_inventory_drift nuget_lock_missing nuget_lock_version_invalid
 nuget_manifest_lock_drift nuget_metadata_invalid nuget_package_evidence_missing
 nuget_project_reference_drift nuget_projects_missing nuget_provenance_drift nuget_restore_evidence_drift
@@ -335,7 +336,11 @@ def check_nuget(root, inventory, cache):
             nuspecs = [name for name in package.namelist() if name.endswith(".nuspec") and "/" not in name]
             require(len(nuspecs) == 1, "nuget_archive_metadata_missing")
             original = nuget_metadata(package.read(nuspecs[0]))
-            installed = nuget_metadata((directory / nuspecs[0]).read_bytes())
+            # NuGet normalizes the installed filename, not the ZIP member's case.
+            installed_manifest = directory / f"{name}.nuspec"
+            require(installed_manifest.is_file() and not installed_manifest.is_symlink(),
+                    "nuget_installed_metadata_missing")
+            installed = nuget_metadata(installed_manifest.read_bytes())
             require(original == installed, "nuget_installed_metadata_drift")
             require(original["name"] == reviewed["name"] and original["version"] == reviewed["version"]
                     and original["license"] == reviewed["license"] and original["licenseType"] == "expression"

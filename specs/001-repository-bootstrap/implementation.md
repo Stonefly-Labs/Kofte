@@ -439,3 +439,45 @@ explicitly for later target evidence. Focused Python coverage now passes
 generic platform font fallbacks; all three controlled-state viewport cases
 passed locally. The actual Linux browser assertion remains to be identified
 from the next safe diagnostic run, not guessed or waived.
+
+Follow-up `7c3b399` was committed/pushed immediately. Its
+[repository checks passed](https://github.com/Stonefly-Labs/Kofte/actions/runs/39632825522);
+[product run 39632825423](https://github.com/Stonefly-Labs/Kofte/actions/runs/39632825423)
+still failed quality/failure-baseline/browser while the other seven jobs passed.
+The new safe evidence narrows dependency review to
+`dependency_evidence_missing_or_invalid` and the browser failure to
+`accessibility.spec.ts:86:11`: the 320px/200%-text reflow assertion. The
+source-location diagnostic exposed that real cross-platform failure without
+persisting its raw assertion/stack.
+
+Bootstrap text now allows emergency wrapping, and the retry button has zero
+intrinsic minimum width and a 100% maximum width, preserving content and text
+scaling rather than hiding overflow or weakening the assertion. Local
+`python3 scripts/verify.py --suite browser`, web lint/typecheck and whole
+format checks pass after this correction. Linux CI must still prove it.
+Actual follow-up CI hardware reports four logical CPUs and roughly 16.77
+billion physical memory bytes, **not** the eight-GiB reference; T059 remains
+unproved regardless of startup results.
+
+The remaining dependency failure was reproduced on fresh, case-sensitive
+Docker storage in an isolated Ubuntu x64 SDK helper: NuGet installs
+`microsoft.applicationinsights.nuspec`, but the archive calls it
+`Microsoft.ApplicationInsights.nuspec`. Reading the archive's case from the
+installed directory failed on Linux; the earlier macOS-backed bind mount masked
+it. The checker now uses NuGet's canonical lowercase installed filename while
+retaining exact installed/archive metadata comparison. Missing or nonregular
+metadata fails explicitly; tampering remains rejected. No dependency, license,
+inventory decision or integrity requirement changed.
+
+The new case-sensitive regression failed before the correction and passes
+afterward. Parent verification now passes **100 Python tests**, the repository
+checker, `git diff --check` and every child of
+`python3 scripts/verify.py --suite quality`. The helper's actual
+`dotnet restore Kofte.slnx --locked-mode`, `npm ci` and
+`npm run dependencies:check` all passed with fresh native helper caches,
+reconciling 403 npm / 69 NuGet identities. Safe targeted report
+`dependency-diagnostic-none-f9a72c0347b34d22b402787d4f9282e1.json` records the
+base `7c3b399` plus checker overlay SHA-256
+`643d03da29cad7bd85a1bd988c1b05c15e618b87b9ebb5ac0e86c3445f96156a`.
+This is dependency-only Docker-helper evidence, **not** full quality,
+native Ubuntu CI, reference-hardware or feature-acceptance evidence.

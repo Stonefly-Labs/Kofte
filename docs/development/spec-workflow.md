@@ -85,6 +85,8 @@ verification. Both-provider controlled outage/privacy, full HTTP/adapter
 contracts and all-state browser/axe checks have actual local evidence.
 All ten local automated groups now pass, including controlled failures and
 ten validated private-fixture starts. T001-T055 and T057 are evidenced.
+Actual Ubuntu CI subsequently exposed dependency-evidence and 200%-text reflow
+failures; those remain implementation work until the corrected revision passes.
 T056's human WCAG review, target/CI evidence and T059's Ubuntu reference/
 unfamiliar-contributor evidence remain open; dependent final tasks are not
 automatically complete. The human was unavailable to supply the required

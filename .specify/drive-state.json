@@ -15,7 +15,7 @@
     "directory": "specs/001-repository-bootstrap",
     "status": "blocked",
     "branch": "feature/001-specify-repository-bootstrap",
-    "reason": "All ten local automated groups passed. Human unavailable for T056 running-page WCAG/accessibility review and T059 Ubuntu 4-core/8-GiB/SSD timing plus unfamiliar-contributor evidence. T058 Linux CI pending publication; dependent final T060-T064 remain unproved. Preserve same draft PR; do not advance or infer acceptance.",
+    "reason": "Same implement run: fixes for Ubuntu CI 39632825423 dependency metadata case and 320px/200%-text reflow pass local quality/browser, 100 Python tests and isolated case-sensitive Linux dependency proof. Corrected revision awaits required Ubuntu CI. Human unavailable for T056 running-page accessibility review and T059 exact Ubuntu 4-core/8-GiB/SSD reference plus unfamiliar-contributor observations. T058 and dependent T060-T064 remain unproved; retain original draft PR without advancement or inferred acceptance.",
     "started_at": "2026-10-21T03:03:27+00:00"
   },
   "history": [

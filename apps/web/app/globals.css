@@ -12,6 +12,7 @@ body {
   color: #203b32;
   font-family: ui-sans-serif, system-ui, sans-serif;
   line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 main {
   max-width: 72rem;

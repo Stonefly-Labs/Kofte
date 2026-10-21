@@ -94,9 +94,9 @@ class DependencyTests(unittest.TestCase):
         file.parent.mkdir(parents=True, exist_ok=True)
         file.write_text(json.dumps(value))
 
-    def write_nuget_archive(self, nuspec):
+    def write_nuget_archive(self, nuspec, manifest="example.nuspec"):
         with zipfile.ZipFile(self.nuget_archive, "w") as package:
-            package.writestr("example.nuspec", nuspec)
+            package.writestr(manifest, nuspec)
             package.writestr("LICENSE", self.license)
         (self.nuget_package / "example.1.2.3.nupkg.sha512").write_text(
             base64.b64encode(hashlib.sha512(self.nuget_archive.read_bytes()).digest()).decode(),
@@ -258,6 +258,27 @@ class DependencyTests(unittest.TestCase):
             "contentHash": self.nuget["example@1.2.3"]["integrity"],
         }))
         with self.assertRaisesRegex(dependencies.DependencyError, "nuget_restore_evidence_drift"):
+            self.check_nuget()
+
+    def test_nuget_normalized_installed_manifest_preserves_archive_metadata_checks(self):
+        self.write_nuget_archive(self.nuspec, manifest="Example.nuspec")
+        read_bytes = Path.read_bytes
+
+        def case_sensitive_read(path):
+            if path.parent == self.nuget_package and path.suffix == ".nuspec":
+                if path.name != "example.nuspec":
+                    raise FileNotFoundError()
+            return read_bytes(path)
+
+        with patch.object(Path, "read_bytes", autospec=True, side_effect=case_sensitive_read):
+            self.check_nuget()
+            (self.nuget_package / "example.nuspec").write_bytes(
+                self.nuspec.replace(b"b" * 40, b"c" * 40),
+            )
+            with self.assertRaisesRegex(dependencies.DependencyError, "nuget_installed_metadata_drift"):
+                self.check_nuget()
+        (self.nuget_package / "example.nuspec").unlink()
+        with self.assertRaisesRegex(dependencies.DependencyError, "nuget_installed_metadata_missing"):
             self.check_nuget()
 
     def test_central_nuget_version_changes_cannot_escape_lock_comparison(self):

@@ -5,7 +5,7 @@ import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 const styles = cva(
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[#203b32] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#345a49] disabled:pointer-events-none",
+  "inline-flex min-h-11 min-w-0 max-w-full items-center justify-center gap-2 rounded-lg bg-[#203b32] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#345a49] disabled:pointer-events-none",
 );
 
 export function Button({
