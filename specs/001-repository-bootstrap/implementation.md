@@ -393,3 +393,49 @@ no review, reference/contributor pass or acceptance was fabricated. The driver
 therefore records the same original implement run as blocked, preserving its
 start time and draft PR. Independent publication/CI work continues; a future
 resume requires the missing evidence, not another begin or replacement branch.
+
+### First implementation-revision CI inspection
+
+Published/pushed `a222c90894b039fc3831f206a3a1d96c1c5c4f1b` immediately after
+commit, retaining draft PR #4. Actual
+[repository run 39629016793](https://github.com/Stonefly-Labs/Kofte/actions/runs/39629016793)
+**passed**. Actual
+[product run 39629017094](https://github.com/Stonefly-Labs/Kofte/actions/runs/39629017094)
+**failed**, rather than being inferred green from local results:
+
+| Job | Actual outcome |
+| --- | --- |
+| unit, integration-sqlite, integration-postgres, recovery, contract, privacy, startup | Passed on Ubuntu 24.04 x64 runners; actual reports record Linux x86_64, four logical CPUs and Python 3.12.3 |
+| quality | Failed only `dependency-review` / `npm run dependencies:check`; all preceding quality children passed |
+| failure-propagation | Correctly failed its non-green quality baseline at the same dependency check; not a controlled-failure pass |
+| browser | Failed its browser test command; owned control/process/store restoration, output scan and cleanup passed |
+
+Safe verification JSON was inspected from every uploaded artifact. Raw runtime
+logs/screenshots were not uploaded or added to this repository. HTTP/2 log
+retrieval initially failed with a transport cancellation; HTTP/1 retry succeeded.
+CI fixes remain implementation work: do not waive the dependency gate or
+increase/skip browser acceptance to manufacture green. Actual RAM reporting and
+safe source-location-only test diagnostics are being completed for target
+evidence without disclosing raw exceptions or configuration.
+
+The Linux dependency failure was reproduced with a Linux/x64/glibc npm install
+in an isolated Linux helper (the helper itself is arm64, not a native x64 runtime
+test). Three existing platform packages lacked retained LICENSE hashes, and a
+cold cache lacked the immutable oxide WASM parent proving bundled identities.
+Their already reviewed archive integrities/license decisions were preserved;
+three verified notice hashes were added, and explicit pinned evidence-cache
+preparation now precedes strict validation. The isolated checker then passed
+(`dependency-linux-quality-none-42e949fc124441debd8ecf8f7672fcb0.json`), while
+the original-omission diagnostic retains `notice_unreviewed`
+(`dependency-linux-quality-none-69f97f7b49f146efb4396bf37cd6d33f.json`).
+No provider/browser acceptance or Ubuntu-native runtime result is inferred from
+that dependency-only helper.
+
+Safe failure reports now retain only allowlisted checker codes and whitelisted
+browser source basename/line/column tuples; no raw errors, expected/received
+values, private path prefixes or screenshots. Physical RAM is measured
+explicitly for later target evidence. Focused Python coverage now passes
+**99 tests**. The narrow text-zoom regression additionally checks both declared
+generic platform font fallbacks; all three controlled-state viewport cases
+passed locally. The actual Linux browser assertion remains to be identified
+from the next safe diagnostic run, not guessed or waived.

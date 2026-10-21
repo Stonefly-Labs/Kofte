@@ -291,7 +291,12 @@ remove coverage:
 
 Safe ignored reports under `artifacts/verification/` retain revision, environment,
 tool versions, start/end/duration, suite, exact commands, outcomes and safe
-failure references. Startup reports also retain a validated `startup-observations`
+failure references. Environment evidence includes actual physical `memoryBytes`
+alongside OS/architecture/CPU count; unavailable/invalid measurements fail
+instead of supplying a made-up reference size. Failed browser commands may
+retain only whitelisted source basenames and positive line/column locations;
+dependency failures retain an allowlisted checker code, never raw messages,
+configuration or stack paths. Startup reports also retain a validated `startup-observations`
 step with the exact configured cycles and each numeric readiness/page duration
 and boolean fixture comparison; missing/malformed/linked samples fail rather
 than becoming fabricated timing evidence. A targeted pass remains targeted.

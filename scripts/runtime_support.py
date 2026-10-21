@@ -32,6 +32,75 @@ class Failures:
             raise RuntimeFailure(code)
 
 
+class CommandDiagnostics:
+    locations = re.compile(
+        rb"(?<![A-Za-z0-9_.-])("
+        rb"accessibility\.spec\.ts|bootstrap\.spec\.ts|recovery\.spec\.ts|"
+        rb"privacy\.spec\.ts|startup\.spec\.ts):"
+        rb"([1-9][0-9]{0,8}):([1-9][0-9]{0,8})(?![0-9])",
+    )
+
+    def __init__(self, kind, codes=()):
+        self.kind, self.codes = kind, frozenset(codes)
+        self.failures = Failures()
+        self.sources, self.dependency_codes = set(), set()
+        self.lock = threading.Lock()
+        self.closed = False
+
+    def inspect(self, line):
+        if self.kind == "browser":
+            found = [b":".join(match.groups()).decode("ascii")
+                     for match in self.locations.finditer(line)]
+            with self.lock:
+                if not self.closed:
+                    for location in found:
+                        if len(self.sources) < 32:
+                            self.sources.add(location)
+        elif self.kind == "dependency":
+            try:
+                event = json.loads(line.decode("utf-8"))
+            except (UnicodeError, ValueError):
+                return
+            if (isinstance(event, dict) and set(event) == {"eventCode"}
+                    and isinstance(event["eventCode"], str) and event["eventCode"] in self.codes):
+                with self.lock:
+                    if not self.closed and len(self.dependency_codes) < 2:
+                        self.dependency_codes.add(event["eventCode"])
+
+    def read(self, stream):
+        pending = b""
+        try:
+            while chunk := stream.read(4096):
+                pending += chunk
+                while b"\n" in pending:
+                    line, pending = pending.split(b"\n", 1)
+                    self.inspect(line[-8192:])
+                pending = pending[-8192:]
+            self.inspect(pending)
+        except Exception:
+            self.failures.fail("command_diagnostic_capture_failed")
+        finally:
+            pending = b""
+            try:
+                stream.close()
+            except Exception:
+                self.failures.fail("command_diagnostic_capture_failed")
+
+    def safe_fields(self):
+        with self.lock:
+            if self.kind == "browser" and self.sources:
+                return {"sourceLocations": sorted(self.sources)}
+            if self.kind == "dependency" and len(self.dependency_codes) == 1:
+                return {"dependencyFailureCode": next(iter(self.dependency_codes))}
+            return {}
+
+    def clear(self):
+        with self.lock:
+            self.closed = True
+            self.sources.clear()
+            self.dependency_codes.clear()
+
+
 class OutputCapture:
     def __init__(self, failures, forbidden, limit=4 * 1024 * 1024):
         self.failures, self.limit = failures, limit

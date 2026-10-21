@@ -168,6 +168,28 @@ class RuntimeSupportTests(unittest.TestCase):
             capture.scan_and_clear()
         self.assertEqual([], capture.buffers)
 
+    def test_diagnostic_locations_split_across_chunks_are_complete_and_never_include_raw_text(self):
+        diagnostic = support.CommandDiagnostics("browser")
+
+        class Pieces(io.BytesIO):
+            def __init__(self):
+                super().__init__()
+                self.parts = iter((
+                    b"credential-canary /private/tests/e2e/accessibility.spec.ts:7",
+                    b"6:1", b"5\n/private/tests/e2e/startup.spec.ts:10:2", b"",
+                ))
+
+            def read(self, *_args):
+                return next(self.parts)
+
+        diagnostic.read(Pieces())
+        self.assertEqual({
+            "sourceLocations": ["accessibility.spec.ts:76:15", "startup.spec.ts:10:2"],
+        }, diagnostic.safe_fields())
+        self.assertNotIn("credential", json.dumps(vars(diagnostic), default=str))
+        diagnostic.clear()
+        self.assertEqual({}, diagnostic.safe_fields())
+
     def test_runtime_capture_overflow_and_reader_failure_fail_closed(self):
         capture = support.OutputCapture(self.failures, [], limit=3)
         capture.read(io.BytesIO(b"oversized output"))

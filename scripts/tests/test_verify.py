@@ -51,6 +51,7 @@ class VerifyTests(unittest.TestCase):
             verify.workspace_inventory(self.root)
 
     def test_actual_child_failure_is_named_nonzero_and_output_is_not_saved(self):
+        memory_bytes = verify.os.sysconf("SC_PHYS_PAGES") * verify.os.sysconf("SC_PAGE_SIZE")
         report = self.report()
         runner = verify.Runner(self.root, report, {})
         with self.assertRaisesRegex(verify.VerificationError, "command_failed"):
@@ -60,6 +61,9 @@ class VerifyTests(unittest.TestCase):
             ])
         report.finish(False)
         persisted = report.path.read_text()
+        environment = json.loads(persisted)["environment"]
+        self.assertIs(type(environment["memoryBytes"]), int)
+        self.assertEqual(memory_bytes, environment["memoryBytes"])
         self.assertNotIn("credential", persisted)
         self.assertNotIn("/private/sensitive", persisted)
         self.assertEqual(7, report.data["steps"][0]["exitCode"])
@@ -68,6 +72,77 @@ class VerifyTests(unittest.TestCase):
         self.assertEqual("failed", report.data["outcome"])
         self.assertFalse(report.data["completeGate"])
         self.assertRegex(report.data["steps"][0]["failureCorrelation"], "^[a-f0-9]{32}$")
+
+    def test_unavailable_or_invalid_physical_memory_cannot_publish_fabricated_report_metadata(self):
+        for values in ((-1, 4096), (1024, 0), (True, 4096), (1024, 4096.0), (None, 4096)):
+            with self.subTest(values=values), \
+                    patch.object(verify.os, "sysconf", side_effect=values), \
+                    self.assertRaisesRegex(verify.VerificationError, "physical_memory_unavailable"):
+                self.report()
+        for error in (OSError("private diagnostics"), ValueError("unsupported")):
+            with self.subTest(error=type(error).__name__), \
+                    patch.object(verify.os, "sysconf", side_effect=error), \
+                    self.assertRaisesRegex(verify.VerificationError, "physical_memory_unavailable"):
+                self.report()
+        self.assertEqual([], list((self.root / "artifacts/verification").glob("*.json")))
+
+    def test_failed_browser_command_keeps_only_whitelisted_locations_and_original_failure(self):
+        report = self.report("browser")
+        runner = verify.Runner(self.root, report, {})
+        diagnostic = verify.command_diagnostics(["npm", "run", "test", "--workspace", "tests/e2e"])
+        output = (
+            "credential-canary expected secret received /private/owned-layout\n"
+            " at /private/owned-layout/tests/e2e/accessibility.spec.ts:76:15\n"
+            " at /private/owned-layout/tests/e2e/bootstrap.spec.ts:9:2\n"
+            " at /private/owned-layout/tests/e2e/unreviewed.spec.ts:4:5\n"
+            " at /private/owned-layout/tests/e2e/privacy.spec.ts:0:4\n"
+            " at /private/owned-layout/tests/e2e/not-accessibility.spec.ts:5:6\n"
+        )
+        with self.assertRaisesRegex(verify.VerificationError, "command_failed"):
+            runner.command("browser-tests", [
+                "python3", "-c", f"import sys; print({output!r}, file=sys.stderr); sys.exit(7)",
+            ], diagnostics=diagnostic)
+        report.finish(False)
+        step = json.loads(report.path.read_text())["steps"][-1]
+        self.assertEqual(7, step["exitCode"])
+        self.assertEqual("command_failed", step["failureCode"])
+        self.assertEqual(["accessibility.spec.ts:76:15", "bootstrap.spec.ts:9:2"], step["sourceLocations"])
+        for forbidden in ("credential-canary", "owned-layout", "unreviewed.spec.ts", "expected", "received"):
+            self.assertNotIn(forbidden, report.path.read_text())
+        self.assertEqual(set(), diagnostic.sources)
+
+    def test_failed_dependency_command_exposes_only_its_allowlisted_checker_code(self):
+        report = self.report("quality")
+        runner = verify.Runner(self.root, report, {})
+        diagnostic = verify.command_diagnostics(["npm", "run", "dependencies:check"])
+        output = "\n".join((
+            json.dumps({"eventCode": "credential_canary"}),
+            json.dumps({"eventCode": "notice_drift", "message": "credential-canary /private/layout"}),
+            json.dumps({"eventCode": ["credential-canary"]}),
+            json.dumps({"eventCode": "notice_unreviewed"}),
+        ))
+        with self.assertRaisesRegex(verify.VerificationError, "command_failed"):
+            runner.command("dependency-review", [
+                "python3", "-c", f"import sys; print({output!r}, file=sys.stderr); sys.exit(3)",
+            ], diagnostics=diagnostic)
+        step = json.loads(report.path.read_text())["steps"][-1]
+        self.assertEqual(3, step["exitCode"])
+        self.assertEqual("command_failed", step["failureCode"])
+        self.assertEqual("notice_unreviewed", step["dependencyFailureCode"])
+        self.assertNotIn("credential", report.path.read_text())
+        self.assertNotIn("/private/layout", report.path.read_text())
+        self.assertEqual(set(), diagnostic.dependency_codes)
+
+    def test_successful_browser_command_never_publishes_failure_diagnostics(self):
+        report = self.report("browser")
+        runner = verify.Runner(self.root, report, {})
+        diagnostic = verify.command_diagnostics(["npm", "run", "test", "--workspace", "tests/e2e"])
+        runner.command("browser-tests", [
+            "python3", "-c", "print('credential-canary /private/tests/e2e/recovery.spec.ts:7:8')",
+        ], diagnostics=diagnostic)
+        self.assertNotIn("sourceLocations", report.data["steps"][-1])
+        self.assertNotIn("credential-canary", report.path.read_text())
+        self.assertEqual(set(), diagnostic.sources)
 
     def test_missing_tool_and_timeout_fail_instead_of_skipping(self):
         report = self.report()

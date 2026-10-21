@@ -4,9 +4,11 @@ import io
 import json
 from pathlib import Path
 import shutil
+import subprocess
 import tarfile
 import tempfile
 import unittest
+from unittest.mock import patch
 import zipfile
 
 from scripts import check_dependencies as dependencies
@@ -19,7 +21,7 @@ class DependencyTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory(dir=base)
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
-        self.npm_cache = self.root / "npm-cache"
+        self.npm_cache = self.root / "npm-cache/_cacache"
         self.nuget_cache = self.root / "nuget-cache"
         self.npm_metadata = {"name": "example", "version": "1.2.3", "license": "MIT"}
         self.npm_package = self.root / "node_modules/example"
@@ -176,6 +178,29 @@ class DependencyTests(unittest.TestCase):
         }
         self.write_json("package-lock.json", self.lock)
         self.check_npm()
+        self.lock["packages"]["node_modules/example"]["optional"] = True
+        self.write_json("package-lock.json", self.lock)
+        content = path.read_bytes()
+        path.unlink()
+        shutil.rmtree(self.npm_package)
+        with self.assertRaisesRegex(dependencies.DependencyError, "npm_bundle_archive_evidence_missing"):
+            self.check_npm()
+        with patch.object(dependencies.subprocess, "run", return_value=subprocess.CompletedProcess([], 1)):
+            with self.assertRaisesRegex(dependencies.DependencyError, "npm_bundle_archive_preparation_failed"):
+                dependencies.prepare_bundle_archives(self.root, self.npm, self.npm_cache)
+
+        def populate(command, **kwargs):
+            self.assertEqual(["npm", "cache", "add", self.npm["example@1.2.3"]["source"]], command[:4])
+            self.assertEqual(self.root, kwargs["cwd"])
+            path.write_bytes(content)
+            return subprocess.CompletedProcess(command, 0)
+
+        with patch.object(dependencies.subprocess, "run", side_effect=populate) as prepare:
+            dependencies.prepare_bundle_archives(self.root, self.npm, self.npm_cache)
+            dependencies.prepare_bundle_archives(self.root, self.npm, self.npm_cache)
+        self.assertEqual(1, prepare.call_count)
+        self.assertFalse(self.npm_package.exists())
+        self.check_npm()
         self.lock["packages"]["node_modules/example/node_modules/nested"]["version"] = "2.0.1"
         self.write_json("package-lock.json", self.lock)
         with self.assertRaisesRegex(dependencies.DependencyError, "npm_bundle_metadata_drift"):
@@ -200,6 +225,19 @@ class DependencyTests(unittest.TestCase):
         self.write_json("package-lock.json", self.lock)
         with self.assertRaisesRegex(dependencies.DependencyError, "npm_lock_inventory_drift"):
             self.check_npm()
+
+    def test_restored_platform_optional_still_requires_its_actual_notice_adoption(self):
+        self.lock["packages"]["node_modules/example"]["optional"] = True
+        self.write_json("package-lock.json", self.lock)
+        self.npm["example@1.2.3"]["notices"] = {}
+        absent = self.root / "other-platform-installation"
+        shutil.move(self.npm_package, absent)
+        self.check_npm()
+        shutil.move(absent, self.npm_package)
+        with self.assertRaisesRegex(dependencies.DependencyError, "notice_unreviewed"):
+            self.check_npm()
+        self.npm["example@1.2.3"]["notices"] = {"LICENSE": dependencies.sha256(self.license)}
+        self.check_npm()
 
     def test_nuget_lock_content_hash_and_published_provenance_must_match(self):
         self.nuget_lock["dependencies"]["net10.0"]["Example"]["contentHash"] = "changed"

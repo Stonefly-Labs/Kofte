@@ -109,9 +109,24 @@ class FailurePropagationTests(unittest.TestCase):
                     self.checked(report, exit_code)
 
     def test_expected_failure_keeps_safe_correlation_but_does_not_retain_raw_logs(self):
-        result = self.checked(self.evidence())
+        evidence = self.evidence()
+        evidence["steps"][0].update(
+            dependencyFailureCode="notice_unreviewed",
+            sourceLocations=["accessibility.spec.ts:76:15"],
+        )
+        result = self.checked(evidence)
         self.assertNotIn("credential-canary", json.dumps(result))
         self.assertEqual("b" * 32, result["steps"][0]["failureCorrelation"])
+        self.assertEqual("notice_unreviewed", result["steps"][0]["dependencyFailureCode"])
+        self.assertEqual(["accessibility.spec.ts:76:15"], result["steps"][0]["sourceLocations"])
+        for key, value in (
+            ("dependencyFailureCode", "credential-canary"),
+            ("sourceLocations", ["/private/accessibility.spec.ts:76:15"]),
+        ):
+            evidence["steps"][0][key] = value
+            with self.assertRaisesRegex(verify.VerificationError, "failure_child_report_unsafe"):
+                self.checked(evidence)
+            evidence["steps"][0][key] = result["steps"][0][key]
 
     def test_failing_baseline_is_not_accepted_as_failure_propagation_evidence(self):
         with self.assertRaisesRegex(verify.VerificationError, "failure_baseline_not_green"):

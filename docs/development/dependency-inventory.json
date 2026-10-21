@@ -859,7 +859,9 @@
       "license": "Apache-2.0",
       "source": "https://registry.npmjs.org/@img/sharp-linux-x64/-/sharp-linux-x64-0.35.5.tgz",
       "integrity": "sha512-SxFtLTeJInhAA9Q836kux2vZNeOBQEx658qvbboZScr0wIARym3IcGmW7KpVD5sbVg0Ojy+udFQdayYIZyoNog==",
-      "notices": {}
+      "notices": {
+        "LICENSE": "73ba74dfaa520b49a401b5d21459a8523a146f3b7518a833eea5efa85130bf68"
+      }
     },
     "@img/sharp-linuxmusl-arm64@0.35.5": {
       "name": "@img/sharp-linuxmusl-arm64",
@@ -1420,7 +1422,9 @@
       "license": "MIT",
       "source": "https://registry.npmjs.org/@tailwindcss/oxide-linux-x64-gnu/-/oxide-linux-x64-gnu-4.3.3.tgz",
       "integrity": "sha512-tx7us1muwOKAKWao2v/GaafFeQboE6aj88vC6ziN2NCGcRm8gWUhwjzg+YdVB1e4boAtdtma4L43onunI6NS4w==",
-      "notices": {}
+      "notices": {
+        "LICENSE": "60e0b68c0f35c078eef3a5d29419d0b03ff84ec1df9c3f9d6e39a519a5ae7985"
+      }
     },
     "@tailwindcss/oxide-linux-x64-musl@4.3.3": {
       "name": "@tailwindcss/oxide-linux-x64-musl",
@@ -2821,7 +2825,9 @@
       "license": "MPL-2.0",
       "source": "https://registry.npmjs.org/lightningcss-linux-x64-gnu/-/lightningcss-linux-x64-gnu-1.32.0.tgz",
       "integrity": "sha512-V7Qr52IhZmdKPVr+Vtw8o+WLsQJYCTd8loIfpDaMRWGUZfBOYEJeyJIkqGIDMZPwPx24pUMfwSxxI8phr/MbOA==",
-      "notices": {}
+      "notices": {
+        "LICENSE": "5eba353fe5076ac3432177f8ab1cf75e3afcd0584251e37c3bfead5f447d040e"
+      }
     },
     "lightningcss-linux-x64-musl@1.32.0": {
       "name": "lightningcss-linux-x64-musl",

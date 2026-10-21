@@ -74,11 +74,17 @@ for (const width of [320, 768, 1440]) {
       await page.evaluate(() => {
         document.documentElement.style.fontSize = "200%";
       });
-      expect(
-        await page.evaluate(
-          () => document.documentElement.scrollWidth <= window.innerWidth,
-        ),
-      ).toBe(true);
+      for (const font of ["system-ui", "sans-serif"]) {
+        await page.evaluate((family) => {
+          document.body.style.fontFamily = family;
+        }, font);
+        expect(
+          await page.evaluate(
+            () => document.documentElement.scrollWidth <= window.innerWidth,
+          ),
+          `200% text reflows with the ${font} fallback`,
+        ).toBe(true);
+      }
     }
   });
 }

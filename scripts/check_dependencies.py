@@ -1,11 +1,13 @@
 """Offline reconciliation of the reviewed complete bootstrap dependency graph."""
 
+import argparse
 import base64
 import hashlib
 import json
 import os
 from pathlib import Path
 import re
+import subprocess
 import sys
 import tarfile
 import xml.etree.ElementTree as ET
@@ -21,6 +23,31 @@ LICENSES = {
 }
 NOTICE_RE = re.compile(r"(?i)license|licence|notice|copying")
 EDGE_FIELDS = ("dependencies", "optionalDependencies", "peerDependencies", "peerDependenciesMeta")
+# Only these fixed checker codes may leave transient command output.
+FAILURE_CODES = frozenset("""
+action_pin_invalid action_reference_drift action_review_missing adoption_decisions_missing
+adoption_evidence_invalid adoption_provenance_missing adoption_provenance_unresolved
+adoption_review_date_missing adoption_review_unresolved archive_integrity_invalid
+archive_integrity_missing container_image_unreviewed copied_source_notice_drift
+dependency_evidence_missing_or_invalid dependency_identity_drift dependency_identity_invalid
+dependency_name_invalid image_inventory_invalid image_reference_drift license_unreviewed
+notice_digest_invalid notice_drift notice_evidence_missing notice_inventory_invalid
+notice_path_invalid notice_unreviewed npm_archive_evidence_missing npm_archive_integrity_drift
+npm_archive_metadata_drift npm_archive_metadata_missing npm_archive_notice_drift npm_archive_root_invalid
+npm_bundle_archive_evidence_missing npm_bundle_archive_integrity_drift npm_bundle_dependency_edges_drift
+npm_bundle_archive_preparation_failed
+npm_bundle_metadata_drift npm_bundle_metadata_missing npm_bundle_parent_drift npm_bundle_parent_unreviewed
+npm_dependency_edges_drift npm_dependency_unreviewed npm_direct_dependency_not_pinned
+npm_installed_metadata_drift npm_inventory_graph_drift npm_lock_inventory_drift npm_lock_path_invalid
+npm_lock_version_invalid npm_manifest_lock_drift npm_package_path_invalid npm_required_package_missing
+npm_source_unreviewed npm_workspace_lock_drift npm_workspace_path_invalid nuget_archive_evidence_missing
+nuget_archive_integrity_drift nuget_archive_metadata_missing nuget_archive_notice_drift
+nuget_central_version_unreviewed nuget_dependency_unreviewed nuget_installed_metadata_drift
+nuget_inventory_graph_drift nuget_lock_inventory_drift nuget_lock_missing nuget_lock_version_invalid
+nuget_manifest_lock_drift nuget_metadata_invalid nuget_package_evidence_missing
+nuget_project_reference_drift nuget_projects_missing nuget_provenance_drift nuget_restore_evidence_drift
+nuget_source_unreviewed postgres_image_pin_invalid workflow_failure_policy_invalid workflow_image_unreviewed
+""".split())
 ADOPTED_SOURCE_NOTICE = "582fe8e5fa28d4c52e052338d461217417e5f6a1327d06c7a157b3b5f728da75"
 
 
@@ -99,6 +126,43 @@ def archive_root(package):
                  if name.count("/") == 1 and name.endswith("/package.json")]
     require(len(manifests) == 1, "npm_archive_root_invalid")
     return manifests[0].rsplit("/", 1)[0]
+
+
+def prepare_bundle_archives(root, inventory, cache):
+    packages = read_json(root / "package-lock.json")["packages"]
+    prepared = set()
+    for relative, locked in packages.items():
+        if not locked.get("inBundle"):
+            continue
+        require(not Path(relative).is_absolute() and ".." not in Path(relative).parts,
+                "npm_lock_path_invalid")
+        parent_path = relative.rpartition("/node_modules/")[0]
+        parent = packages[parent_path]
+        identity = f"{npm_name(parent_path, parent)}@{parent['version']}"
+        require(identity in inventory, "npm_bundle_parent_unreviewed")
+        reviewed = inventory[identity]
+        check_identity(identity, reviewed)
+        require(all(parent.get(field) == reviewed[key] for field, key in (
+            ("version", "version"), ("resolved", "source"), ("integrity", "integrity"),
+            ("license", "license"),
+        )), "npm_bundle_parent_drift")
+        name, version = reviewed["name"], reviewed["version"]
+        require(reviewed["source"] ==
+                f"https://registry.npmjs.org/{name}/-/{name.rsplit('/', 1)[-1]}-{version}.tgz",
+                "npm_source_unreviewed")
+        archive = npm_archive(cache, reviewed["integrity"])
+        if identity in prepared or archive.exists():
+            continue
+        try:
+            result = subprocess.run(
+                ["npm", "cache", "add", reviewed["source"], "--cache", str(cache.parent.absolute())],
+                cwd=root, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=90,
+            )
+        except (OSError, subprocess.TimeoutExpired) as error:
+            raise DependencyError("npm_bundle_archive_preparation_failed") from error
+        require(result.returncode == 0, "npm_bundle_archive_preparation_failed")
+        require(archive.is_file(), "npm_bundle_archive_evidence_missing")
+        prepared.add(identity)
 
 
 def check_npm(root, inventory, cache):
@@ -307,7 +371,7 @@ def check_references(root, inventory):
             require(image in images.values(), "container_image_unreviewed")
 
 
-def check(root=ROOT, npm_cache=None, nuget_cache=None):
+def check(root=ROOT, npm_cache=None, nuget_cache=None, prepare_bundled=False):
     inventory = read_json(root / "docs/development/dependency-inventory.json")
     require(set(inventory) == {
         "schemaVersion", "reviewDate", "scope", "npm", "nuget", "verification", "images", "actions",
@@ -334,6 +398,8 @@ def check(root=ROOT, npm_cache=None, nuget_cache=None):
             == ADOPTED_SOURCE_NOTICE, "copied_source_notice_drift")
     npm_cache = Path(npm_cache or os.environ.get("npm_config_cache", Path.home() / ".npm")) / "_cacache"
     nuget_cache = Path(nuget_cache or os.environ.get("NUGET_PACKAGES", Path.home() / ".nuget/packages"))
+    if prepare_bundled:
+        prepare_bundle_archives(root, inventory["npm"], npm_cache)
     check_npm(root, inventory["npm"], npm_cache)
     check_nuget(root, inventory["nuget"], nuget_cache)
     check_references(root, inventory)
@@ -347,8 +413,14 @@ def check(root=ROOT, npm_cache=None, nuget_cache=None):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--prepare-bundled-evidence", action="store_true",
+        help="Fetch missing reviewed bundle-parent archives into npm's cache before offline checks.",
+    )
+    arguments = parser.parse_args()
     try:
-        check()
+        check(prepare_bundled=arguments.prepare_bundled_evidence)
     except DependencyError as error:
         print(json.dumps({"eventCode": str(error)}), file=sys.stderr)
         raise SystemExit(1)

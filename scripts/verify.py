@@ -22,8 +22,9 @@ import time
 import uuid
 
 if __package__:
-    from scripts import dev, runtime_support
+    from scripts import check_dependencies, dev, runtime_support
 else:
+    import check_dependencies
     import dev
     import runtime_support
 
@@ -158,6 +159,16 @@ def discard(stream):
         stream.close()
 
 
+def command_diagnostics(command):
+    if list(command[:5]) == ["npm", "run", "test", "--workspace", "tests/e2e"]:
+        return runtime_support.CommandDiagnostics("browser")
+    if list(command) in (
+        ["npm", "run", "dependencies:check"], ["python3", "scripts/check_dependencies.py"],
+    ):
+        return runtime_support.CommandDiagnostics("dependency", check_dependencies.FAILURE_CODES)
+    return None
+
+
 class OwnedProcesses:
     def __init__(self, root, environment, capture=None):
         self.root, self.environment = root, environment
@@ -234,6 +245,13 @@ class Report:
         revision_text = revision.stdout.decode(errors="replace").strip()
         if revision.returncode or not re.fullmatch(r"[a-f0-9]{40,64}", revision_text):
             raise VerificationError("revision_unavailable")
+        try:
+            pages = os.sysconf("SC_PHYS_PAGES")
+            page_size = os.sysconf("SC_PAGE_SIZE")
+        except (AttributeError, OSError, ValueError) as error:
+            raise VerificationError("physical_memory_unavailable") from error
+        if any(type(value) is not int or value <= 0 for value in (pages, page_size)):
+            raise VerificationError("physical_memory_unavailable")
         self.path = self.directory / f"{suite}-{provider or 'none'}-{uuid.uuid4().hex}.json"
         self.began = time.monotonic()
         self.data = {
@@ -243,6 +261,7 @@ class Report:
             "environment": {
                 "os": platform.system(), "osRelease": platform.release(),
                 "architecture": platform.machine(), "logicalCpus": os.cpu_count(),
+                "memoryBytes": pages * page_size,
                 "python": platform.python_version(),
             },
             "toolVersions": {"python": platform.python_version(), **{
@@ -311,9 +330,11 @@ class Runner:
         if failure:
             raise failure
 
-    def command(self, name, command, *, environment=None, timeout=900, health_check=None, capture=None):
+    def command(self, name, command, *, environment=None, timeout=900, health_check=None, capture=None,
+                diagnostics=None):
         def execute(step):
-            processes = OwnedProcesses(self.root, environment or self.environment, capture=capture)
+            diagnostic = diagnostics or command_diagnostics(command)
+            processes = OwnedProcesses(self.root, environment or self.environment, capture=capture or diagnostic)
             try:
                 child = processes.start(command, stdin=subprocess.DEVNULL)
                 try:
@@ -337,7 +358,15 @@ class Runner:
                 if step["exitCode"]:
                     raise VerificationError("command_failed")
             finally:
-                processes.stop()
+                try:
+                    processes.stop()
+                finally:
+                    if diagnostic:
+                        if step["exitCode"] not in (None, 0):
+                            step.update(diagnostic.safe_fields())
+                        diagnostic.clear()
+            if diagnostic:
+                diagnostic.failures.check()
         self.operation(name, execute, command)
 
     def versions(self):

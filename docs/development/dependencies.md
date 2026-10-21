@@ -54,6 +54,24 @@ archives. The drift checker also exposed omitted British-spelled `LICENCE`
 hashes for decimal.js and std-env; their already retained MIT notices were
 checked against the pinned archives and are now recorded.
 
+The first Ubuntu CI then exposed three Linux-only notice omissions:
+`@img/sharp-linux-x64@0.35.5` (Apache-2.0),
+`@tailwindcss/oxide-linux-x64-gnu@4.3.3` (MIT) and
+`lightningcss-linux-x64-gnu@1.32.0` (MPL-2.0). Their official archives matched
+the already reviewed SHA-512 integrities; `package/LICENSE` SHA-256 values
+matched installed Linux notices and reviewed Darwin sibling notices. The
+inventory now retains those hashes without changing identity/source/version/
+license adoption or relaxing unknown-notice enforcement.
+
+A clean npm cache also lacked the reviewed
+`@tailwindcss/oxide-wasm32-wasi@4.3.3` archive needed to prove six bundled
+identities. `dependencies:check` explicitly prepares bundled evidence via
+`python3 scripts/check_dependencies.py --prepare-bundled-evidence`, using
+`npm cache add` only for reviewed immutable sources, then checking original
+integrity, metadata, licenses and notices. This downloads evidence, not a new
+dependency or lifecycle script approval. Offline checks need that verified
+cache populated in advance; missing evidence must fail, not disappear.
+
 ## License and notice decisions
 
 This is a source checkout/local-development adoption, not approval to discard

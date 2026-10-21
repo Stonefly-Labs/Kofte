@@ -180,6 +180,20 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
         if step["outcome"] == "failed":
             selected["failureCode"] = step["failureCode"]
             selected["failureCorrelation"] = step["failureCorrelation"]
+            if "sourceLocations" in step:
+                locations = step["sourceLocations"]
+                if (not isinstance(locations, list) or len(locations) > 32 or any(
+                    not isinstance(location, str)
+                    or api.runtime_support.CommandDiagnostics.locations.fullmatch(location.encode()) is None
+                    for location in locations
+                )):
+                    raise error("failure_child_report_unsafe")
+                selected["sourceLocations"] = locations
+            if "dependencyFailureCode" in step:
+                code = step["dependencyFailureCode"]
+                if not isinstance(code, str) or code not in api.check_dependencies.FAILURE_CODES:
+                    raise error("failure_child_report_unsafe")
+                selected["dependencyFailureCode"] = code
         result["steps"].append(selected)
     failed = [step for step in steps if step["outcome"] == "failed"]
     code = None
