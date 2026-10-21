@@ -1,31 +1,75 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320" role="img" aria-labelledby="title description">
   <title id="title">Köfte</title>
-  <desc id="description">A warm coral modular mark beside the Köfte wordmark on a deep navy background. Your platform. Your ingredients.</desc>
+  <desc id="description">A ceramic plate piled with golden-brown grilled köfte, parsley, tomato and a lemon wedge, beside the Köfte wordmark. Your platform. Your ingredients.</desc>
   <defs>
     <linearGradient id="background" x2="1" y2="1">
-      <stop stop-color="#0f172a"/>
-      <stop offset="1" stop-color="#172b3b"/>
+      <stop stop-color="#142e28"/>
+      <stop offset="1" stop-color="#0d211e"/>
     </linearGradient>
-    <linearGradient id="coral" x2="1" y2="1">
-      <stop stop-color="#ffb086"/>
-      <stop offset="1" stop-color="#fb7185"/>
+    <linearGradient id="grilled" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#d69755"/>
+      <stop offset=".45" stop-color="#ad6637"/>
+      <stop offset="1" stop-color="#75422b"/>
     </linearGradient>
+    <g id="kofte">
+      <path d="M-23-28C-22-48 11-53 23-35C34-19 25 8 24 28C22 46-4 52-19 35C-29 20-27-8-23-28Z" transform="translate(3 5)" fill="#5b381f" opacity=".22"/>
+      <path d="M-23-28C-22-48 11-53 23-35C34-19 25 8 24 28C22 46-4 52-19 35C-29 20-27-8-23-28Z" fill="url(#grilled)" stroke="#78452b" stroke-width="2"/>
+      <path d="M-17-28C-16-38-6-42 3-40" fill="none" stroke="#edb577" stroke-width="3" stroke-linecap="round" opacity=".65"/>
+      <g fill="none" stroke="#583326" stroke-width="5" stroke-linecap="round">
+        <path d="M-18-21Q0-15 19-20"/>
+        <path d="M-20-2Q0 5 21 0"/>
+        <path d="M-17 19Q0 25 19 20"/>
+      </g>
+      <g fill="#e2a365">
+        <circle cx="-10" cy="-32" r="1.8"/>
+        <circle cx="13" cy="-9" r="1.5"/>
+        <circle cx="-13" cy="9" r="1.5"/>
+        <circle cx="7" cy="32" r="2"/>
+      </g>
+      <path d="M9-33L13-29M-11 31L-7 34" stroke="#667340" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
   </defs>
   <rect width="960" height="320" rx="28" fill="url(#background)"/>
-  <g fill="none" stroke="#294354" stroke-width="1">
-    <path d="M0 80H960M0 160H960M0 240H960M80 0V320M160 0V320M240 0V320M320 0V320M400 0V320M480 0V320M560 0V320M640 0V320M720 0V320M800 0V320M880 0V320" opacity=".35"/>
+  <rect x="12" y="12" width="936" height="296" rx="19" fill="none" stroke="#dcd0aa" stroke-opacity=".12"/>
+  <circle cx="127" cy="46" r="195" fill="#68936c" opacity=".06"/>
+  <circle cx="915" cy="320" r="190" fill="#d7a55f" opacity=".04"/>
+
+  <ellipse cx="180" cy="173" rx="125" ry="121" fill="#061714" opacity=".5"/>
+  <circle cx="174" cy="156" r="121" fill="#d7c9aa"/>
+  <circle cx="174" cy="153" r="120" fill="#fff4dd"/>
+  <circle cx="174" cy="153" r="110" fill="none" stroke="#769180" stroke-width="2" stroke-dasharray="1 12" stroke-linecap="round"/>
+  <circle cx="174" cy="153" r="100" fill="#eee3c8" stroke="#e1d4b5" stroke-width="1.5"/>
+
+  <g transform="translate(242 89) rotate(12)">
+    <path d="M-24-12A28 28 0 0 1 13 26L-9 5Z" fill="#e8b640" stroke="#f9de84" stroke-width="3"/>
+    <path d="M-19-10L-8 4L10 21M-7-17L-8 4L17 8" fill="none" stroke="#fff0b4" stroke-width="2"/>
   </g>
-  <g transform="translate(72 64)">
-    <rect x="0" y="0" width="82" height="82" rx="27" fill="url(#coral)"/>
-    <rect x="96" y="0" width="82" height="82" rx="27" fill="#5eead4"/>
-    <rect x="0" y="96" width="82" height="82" rx="27" fill="#5eead4"/>
-    <rect x="96" y="96" width="82" height="82" rx="27" fill="url(#coral)"/>
-    <path d="M34 41h14M41 34v14M130 137h14M137 130v14" stroke="#172b3b" stroke-width="5" stroke-linecap="round"/>
-    <circle cx="137" cy="41" r="8" fill="#172b3b"/>
-    <circle cx="41" cy="137" r="8" fill="#172b3b"/>
+
+  <g fill="none" stroke="#548556" stroke-width="3" stroke-linecap="round">
+    <path d="M107 226Q103 204 82 187M107 226Q90 219 75 221M107 226Q117 209 113 191"/>
   </g>
-  <text x="298" y="171" font-family="ui-rounded, system-ui, -apple-system, sans-serif" font-size="108" font-weight="750" letter-spacing="-5" fill="#f8fafc">Köfte</text>
-  <text x="305" y="219" font-family="system-ui, -apple-system, sans-serif" font-size="23" fill="#b7cbd9">Your platform. Your ingredients.</text>
-  <rect x="305" y="247" width="88" height="5" rx="2.5" fill="#fb7185"/>
-  <rect x="403" y="247" width="40" height="5" rx="2.5" fill="#5eead4"/>
+  <g fill="#4e8551">
+    <path d="M85 195C68 201 64 185 72 181C69 169 86 168 89 180C103 177 106 194 93 198Z"/>
+    <path d="M85 225C75 239 61 228 67 220C57 212 70 201 79 210C91 203 99 218 85 225Z"/>
+    <path d="M113 204C98 204 96 188 105 186C101 174 117 170 122 180C136 179 138 195 125 198Z"/>
+  </g>
+
+  <use href="#kofte" transform="translate(125 126) rotate(-29)"/>
+  <use href="#kofte" transform="translate(181 119) rotate(19)"/>
+  <use href="#kofte" transform="translate(222 163) rotate(31)"/>
+  <use href="#kofte" transform="translate(141 187) rotate(-43)"/>
+  <use href="#kofte" transform="translate(188 200) rotate(48)"/>
+
+  <g transform="translate(245 221) rotate(-18)">
+    <path d="M-20-2A21 21 0 0 0 21-2Z" fill="#d96342" stroke="#f0835c" stroke-width="2"/>
+    <path d="M-14 1Q0 20 15 1" fill="none" stroke="#f6a278" stroke-width="2"/>
+    <path d="M-6 3L-5 7M5 3L6 7" stroke="#ffe0a1" stroke-width="2" stroke-linecap="round"/>
+    <path d="M-7-3L0-7L7-3L2-1L0 3L-2-1Z" fill="#548556"/>
+  </g>
+  <path d="M213 232Q222 218 233 224Q234 237 213 232Z" fill="#6e9a59"/>
+  <path d="M99 150L103 154M203 78L207 75M159 236L163 233" stroke="#628a50" stroke-width="3" stroke-linecap="round"/>
+
+  <text x="353" y="88" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" letter-spacing="3" fill="#a8bd9e">SMALL CORE. GREAT INGREDIENTS.</text>
+  <text x="345" y="197" font-family="ui-rounded, system-ui, -apple-system, sans-serif" font-size="124" font-weight="800" letter-spacing="-6" fill="#fff4dd">Köfte</text>
+  <text x="353" y="244" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#bacbb9">Your platform. Your ingredients.</text>
 </svg>

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/kofte-logo.svg" alt="Köfte — the developer platform you assemble" width="720">
+  <img src="docs/assets/kofte-logo.svg" alt="Köfte — a plate of grilled köfte, herbs and lemon" width="720">
 </p>
 
 <p align="center">
