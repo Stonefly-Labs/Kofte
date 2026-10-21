@@ -8,8 +8,10 @@ human-confirmed manual tasks.
 no actionable gaps or appended tasks.
 [Final review](../../specs/001-repository-bootstrap/review.md) also passes with
 no acceptance defect and a fresh complete 170-step local gate reconciled with
-actual assessed-head CI. Explicit human feature acceptance remains the next
-separate, unexecuted gate.
+actual assessed-head CI.
+[Explicit human acceptance](../../specs/001-repository-bootstrap/acceptance.md)
+is now recorded for spec 001's bootstrap scope and limits. Its original PR
+awaits human merge before spec 002 may begin.
 This is not a feature-acceptance or production guide.
 See the [implementation evidence](../../specs/001-repository-bootstrap/implementation.md).
 

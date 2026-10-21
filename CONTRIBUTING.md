@@ -1,12 +1,13 @@
 # Contributing to Köfte
 
-Welcome! **Spec 001's bootstrap implementation, convergence and final review pass**;
-explicit human acceptance is the next separate gate in the
-numbered Spec Kit workflow. The [review](specs/001-repository-bootstrap/review.md)
-records source/test coverage and a fresh complete local gate.
-The local host/web, real-provider verification,
-guarded recovery and generated contract do not alone complete spec 001,
-introduce feature modules or prove production readiness.
+Welcome! **Spec 001's bootstrap is explicitly human-accepted** and awaits
+human merge of [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4).
+The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves
+the decision and limits; the [review](specs/001-repository-bootstrap/review.md)
+records source/test coverage and the complete local gate.
+The local host/web, real-provider verification, guarded recovery and generated
+contract do not introduce feature modules or prove production readiness.
+Spec 002 waits for the accepted feature's merge and updated main.
 See the [current local guide](docs/development/local-development.md).
 
 ## Prerequisites

@@ -127,13 +127,23 @@ identical ordered suite coverage; synthetic merge parents were verified.
 The report preserves human T056/T059 attestations and reference-machine/manual
 accessibility limitations without inventing observations. Product source,
 tests, configuration, locks, spec, plan and tasks remain unchanged by review.
-The driver selects **accept**, not accepted. No human feature decision or
-acceptance artifact is created by review.
-Continue future stages on
-`feature/001-specify-repository-bootstrap` and the same
-[draft PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4),
-**without an intermediate merge**. Final review passes; explicit human feature
-acceptance has not begun and is next. PR #4 stays draft.
+The review driver selected **accept**, not accepted; no human feature decision
+or acceptance artifact was created by review. **001 / accept is now complete**:
+after the assistant explained the exact numbered-feature scope and limits and
+linked the passing review, the human replied **"yeah bro, I accept"**.
+[`acceptance.md`](../../specs/001-repository-bootstrap/acceptance.md) preserves
+that exact affirmative decision and its context. The helper records it through
+`--approval`, completes only accept and marks feature 001 accepted. Required
+review/task/checklist evidence remains unchanged; no new product or reference
+measurements are invented. Production readiness, future feature obligations
+and MVP completion are explicitly excluded.
+All stages remained on `feature/001-specify-repository-bootstrap` and the same
+[PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4),
+**without an intermediate merge**. The accepted feature may now be marked
+ready and handed to the human for merge. Spec 002 is the next inventory entry,
+but must not begin until PR #4 is human-merged and the accepted ledger/evidence
+are on updated main. Acceptance does not create a spec 002 branch, directory
+or active stage.
 
 The human-directed [workflow correction](../adr/0001-feature-delivery-lifecycle.md)
 removes per-step merge gates. Its constitution v2.0.0 amendment travels with this

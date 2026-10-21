@@ -6,7 +6,7 @@
   "features": {
     "001": {
       "directory": "specs/001-repository-bootstrap",
-      "next_step": "accept"
+      "next_step": "accepted"
     }
   },
   "active": null,
@@ -172,6 +172,26 @@
         "specs/001-repository-bootstrap/checklists/quality.md": "a1445b8d6c41766c3fec12db9903335268b33d87e77f67da6d5ef5a9df182f78",
         "specs/001-repository-bootstrap/checklists/requirements.md": "3ce67035a40235d120982a2ee029cb1fe25b29534be3f43808c74ea5a4910d32"
       }
+    },
+    {
+      "spec": "001",
+      "step": "accept",
+      "directory": "specs/001-repository-bootstrap",
+      "status": "complete",
+      "branch": "feature/001-specify-repository-bootstrap",
+      "reason": "",
+      "started_at": "2026-10-21T18:39:05+00:00",
+      "completed_at": "2026-10-21T18:39:59+00:00",
+      "outcome": "pass",
+      "note": "Explicit human acceptance of spec 001 follows the assistant's scoped explanation, passing final-review link and production/MVP/future-feature exclusions. acceptance.md records the exact affirmative decision and context. Review checkpoint 74b12e2 has eleven successful CI checks; required review/task/checklist hashes are unchanged. Product/spec/plan/tasks/locks remain unchanged; manual/reference limitations preserved, no new observations claimed. Accept only: feature 001 is accepted; original PR may be ready for human merge. No merge, auto-merge, branch deletion or spec 002 execution; 002 waits for PR #4 human merge with accepted evidence on updated origin/main.",
+      "evidence_sha256": {
+        "specs/001-repository-bootstrap/tasks.md": "da856b91d37eb20e2cc5659d010830b4864f01a18a02d2e978c986d260d47f83",
+        "specs/001-repository-bootstrap/review.md": "c8135f7b6264242fa297ee5066bb9e5884aad64c501cb8e6293ecbbf86a5bff1",
+        "specs/001-repository-bootstrap/acceptance.md": "6d2157334b847e0a070cd88407f2eb0cc3d238fda0bdfb2af3f99fd829b23a03",
+        "specs/001-repository-bootstrap/checklists/quality.md": "a1445b8d6c41766c3fec12db9903335268b33d87e77f67da6d5ef5a9df182f78",
+        "specs/001-repository-bootstrap/checklists/requirements.md": "3ce67035a40235d120982a2ee029cb1fe25b29534be3f43808c74ea5a4910d32"
+      },
+      "human_approval": "yeah bro, I accept"
     }
   ]
 }

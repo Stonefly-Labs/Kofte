@@ -5,8 +5,9 @@ recovery, contract, browser and privacy checks. Full local/CI and required human
 evidence are recorded for the completed implementation;
 [convergence](convergence.md) passed without appended work.
 [Final review](review.md) passes with no acceptance defect and a fresh complete
-170-step local gate with actual assessed-head CI parity. Explicit human feature
-acceptance is the next separate gate. Use the [current local guide](../../docs/development/local-development.md)
+170-step local gate with actual assessed-head CI parity.
+[Explicit human acceptance](acceptance.md) is recorded for spec 001 only;
+human merge remains required before spec 002. Use the [current local guide](../../docs/development/local-development.md)
 for available commands and [implementation evidence](implementation.md) for actual
 results. No commands were run as product verification during planning.
 

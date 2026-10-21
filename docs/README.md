@@ -42,7 +42,9 @@ decisions, 64 tasks and twelve principles, with no actionable gap or appended
 task. The independent [final review](../specs/001-repository-bootstrap/review.md)
 also passes with no acceptance defect, source/test coverage of all 38
 requirements/acceptance scenarios and a fresh 170-step complete local gate
-reconciled with actual assessed-head CI. Spec 001 remains unaccepted on its
-original branch and draft PR, without an intermediate merge. Explicit human
-acceptance is next; it is not inferred from review or prior task attestations.
-Modules, SDKs, workers and Helm remain reserved.
+reconciled with actual assessed-head CI. Spec 001 now has
+[explicit human acceptance](../specs/001-repository-bootstrap/acceptance.md),
+recorded separately from review and prior task attestations on its original
+branch/PR. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) awaits human
+merge; spec 002 waits for that merge and updated main. Modules, SDKs, workers
+and Helm remain reserved. Bootstrap acceptance is not MVP or production readiness.
