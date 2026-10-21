@@ -1,6 +1,6 @@
 # 0002: Bootstrap development and verification baseline
 
-**Status:** Proposed
+**Status:** Accepted
 
 **Date:** 2026-10-20
 
@@ -64,6 +64,12 @@ than treating connectivity probes as migration infrastructure.
 
 ## Approval
 
-Proposed for human review on [draft PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4).
-Planning is not dependency approval, feature acceptance or authorization to
-skip the human-owned quality gate. No affirmative acceptance has been recorded.
+Human decision on 2026-10-20: **"bro I approve adr 002"**.
+This explicitly approves the ADR's design choices for implementation on
+[draft PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4), including native
+supervision, no shipped application tables yet and macOS/Ubuntu targets without
+native Windows support.
+
+This resolves T001. It is not approval of an unresolved dependency graph,
+runtime/manual verification, the numbered feature or the full MVP. Those gates
+remain mandatory; the feature PR remains draft.

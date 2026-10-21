@@ -287,10 +287,12 @@ implementation on later invocations; convergence/review/acceptance remain separa
 
 | Proposed complexity or unresolved choice | Need and simpler alternative | ADR / human decision |
 | --- | --- | --- |
-| Small owned-process supervisor | Two native services need bounded readiness/failure propagation; shell `&` is insufficient; Aspire/full containers unnecessary | Proposed ADR 0002; R2 |
-| Shared bootstrap contract package | Web static types and live HTTP contract tests consume the same baseline; no UI/module SDK added | Proposed ADR 0002; R4 |
-| Thin provider probes before EF modules | No application schema exists; empty contexts/migrations add no value; later module EF obligations unchanged | Proposed ADR 0002; R3 |
+| Small owned-process supervisor | Two native services need bounded readiness/failure propagation; shell `&` is insufficient; Aspire/full containers unnecessary | Accepted ADR 0002; R2 |
+| Shared bootstrap contract package | Web static types and live HTTP contract tests consume the same baseline; no UI/module SDK added | Accepted ADR 0002; R4 |
+| Thin provider probes before EF modules | No application schema exists; empty contexts/migrations add no value; later module EF obligations unchanged | Accepted ADR 0002; R3 |
 
 No complexity exception or unresolved constitutional/design dispute is requested.
 Secondary dependency pin/license adoption is an explicit implementation gate, not
-an unanswered product question. ADR 0002 remains proposed pending human review.
+an unanswered product question. ADR 0002 was explicitly human-approved; its
+approval is recorded in the ADR and implementation evidence, not inferred from
+the design-conformance checks above.

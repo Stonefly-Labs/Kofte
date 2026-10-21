@@ -73,7 +73,7 @@ The following is a **proposed stack** for implementation, not a claim that every
 
 **Dependency rule:** Do not introduce MediatR or commercially encumbered mediator/framework dependencies by default. Ordinary DI, direct handlers and small in-house dispatch contracts are sufficient. All dependency licenses should be reviewed in CI.
 
-Spec 001's [proposed bootstrap baseline](adr/0002-bootstrap-development-baseline.md)
+Spec 001's [human-approved bootstrap design](adr/0002-bootstrap-development-baseline.md)
 and [plan](../specs/001-repository-bootstrap/plan.md) narrow these proposals for
 the foundation: native local host/web processes, npm workspaces, SQLite and
 disposable PostgreSQL verification, with no application tables or empty EF model.

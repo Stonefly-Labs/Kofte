@@ -3,13 +3,14 @@
 **Input**: [spec.md](spec.md), [plan.md](plan.md), [research.md](research.md),
 [data-model.md](data-model.md), [contracts](contracts/) and [quickstart.md](quickstart.md)
 **Prerequisites**: Requirements-quality review is complete at the reviewer's
-explicit request (36/36); author checklist is complete (16/16). A passing
-`analysis.md` is still required before implementation. Proposed
-[ADR 0002](../../docs/adr/0002-bootstrap-development-baseline.md) and actual
-dependency adoption retain their review gates.
+explicit request (36/36); author checklist is complete (16/16), and
+[`analysis.md`](analysis.md) passed. Human approval of
+[ADR 0002](../../docs/adr/0002-bootstrap-development-baseline.md) resolves T001;
+actual dependency adoption retains its separate gate.
 **Constitution**: v2.0.0, principles I-XII; project task-template override applied.
-**Status**: Task generation only. All 64 tasks are unstarted; no product files,
-dependencies, runtime results, ADR approval or feature acceptance are created here.
+**Status**: Implementation entry resumed after explicit ADR approval. T001 is
+complete; the remaining 63 tasks are unchecked. No product files, dependencies,
+runtime results or feature acceptance are claimed.
 
 **Tests**: The specification and constitution require the focused tests below.
 Real SQLite/PostgreSQL, HTTP/adapter contracts, Playwright, privacy, recovery,
@@ -38,7 +39,7 @@ Markdown links or claims that those files exist.
 
 ## Phase 1: Setup and Shared Prerequisites
 
-- [ ] T001 Resolve human review of the proposed native supervisor, no-application-table and supported-OS choices in `docs/adr/0002-bootstrap-development-baseline.md`; record the actual disposition, never invent approval, and block affected work if a material objection requires design changes. Preserve the selected feature directory and one branch/draft PR. Prerequisites: passing analysis and reviewer disposition before affected implementation. (FR-001/002/014/015/017; C:III/X/XII)
+- [x] T001 Resolve human review of the proposed native supervisor, no-application-table and supported-OS choices in `docs/adr/0002-bootstrap-development-baseline.md`; record the actual disposition, never invent approval, and block affected work if a material objection requires design changes. Preserve the selected feature directory and one branch/draft PR. Prerequisites: passing analysis and reviewer disposition before affected implementation. Completed: human decision "bro I approve adr 002", recorded in the ADR and `implementation.md`. (FR-001/002/014/015/017; C:III/X/XII)
 - [ ] T002 Resolve the exact compatible direct/transitive dependency graph and record sources, versions, integrity/provenance, license evidence, retained notices and vulnerability/adoption decisions in `docs/development/dependencies.md` before adoption; include .NET SDK 10.0.402/runtime 10.0.13, Node 24.22.0/npm 11.19.1, Next 16.4/React 19.3/TypeScript 6.0 peers, test tooling, PostgreSQL 17 image digest and action SHAs. Explicitly assess axe MPL-2.0 and copied shadcn/Lucide obligations; unknown/incompatible obligations block adoption. Follow research R1's documented replacement procedure if a pin is withdrawn or unsafe, never use floating latest. Prerequisites: T001. (FR-014; C:III/X/XI)
 - [ ] T003 [P] Create `Kofte.slnx`, `global.json`, `Directory.Build.props`, `Directory.Packages.props` and `src/Kofte.Host/Kofte.Host.csproj` with approved exact versions, `net10.0`, disabled SDK roll-forward, analyzers and NuGet lock generation; keep native DI/direct handlers and no extra platform/infrastructure assemblies, MediatR or AutoMapper. Prerequisites: T002. (FR-001/012/014; C:II/III/X)
 - [ ] T004 [P] Create root `package.json`, `.nvmrc`, `.npmrc`, `apps/web/package.json` and `apps/web/tsconfig.json` with approved exact versions, strict TypeScript and npm workspaces for web, bootstrap contract, contract tests and E2E; enforce the Node/npm baseline and define required workspace scripts rather than silently relying on `--if-present`. Prerequisites: T002. (FR-001/012/014; C:III/IX/X)
@@ -298,11 +299,11 @@ scope. The overall Köfte MVP remains inventory **001-024**, not this foundation
 **Task counts**: 64 total; setup 6, foundation 6, US1 12, US2 12, US3 13,
 US4 8, cross-cutting 7. The marked parallel groups above are opportunities only.
 
-This invocation generates the task artifact and advances **tasks -> analyze**
-only. No `analysis.md`, implementation, task execution, issue conversion or
-runtime success is produced by task generation. No before/after tasks hooks are
-configured. The next invocation performs read-only cross-artifact analysis;
-unresolved critical/high/constitutional findings block implementation.
+Task generation advanced **tasks -> analyze** only; the subsequent analysis
+passed. Implementation initially blocked at T001, then resumed after the actual
+human ADR approval recorded above. T002's exact graph/license/provenance adoption
+is next; no product runtime result is claimed. No before/after implementation
+hooks are configured.
 
 Implementation must record exact commands/results, revision/environment,
 scenario/FR/SC/constitutional coverage and remaining limitations in
