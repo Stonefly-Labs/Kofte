@@ -91,18 +91,39 @@ class DevTests(unittest.TestCase):
     @patch.object(dev.platform, "mac_ver", return_value=("15.0", (), ""))
     @patch.object(dev.shutil, "which", return_value="/test/tool")
     @patch.object(dev.subprocess, "run")
-    def test_preflight_checks_every_exact_tool_version(self, run, *_):
+    def test_preflight_checks_every_exact_tool_version(self, run, which, *_):
         run.side_effect = [
             subprocess.CompletedProcess([], 0, version.encode(), b"")
             for version in dev.VERSIONS.values()
         ]
         dev.check_tools({}, time.monotonic() + 10)
         self.assertEqual(3, run.call_count)
-        run.side_effect = None
-        run.return_value = subprocess.CompletedProcess([], 0, b"wrong-canary", b"")
-        with self.assertRaises(dev.DevError) as caught:
-            dev.check_tools({}, time.monotonic() + 10)
-        self.assertNotIn("canary", str(caught.exception))
+        for tool in dev.VERSIONS:
+            which.side_effect = None
+            for exit_code in (0, 1):
+                with self.subTest(tool=tool, exit_code=exit_code):
+                    run.side_effect = [
+                        subprocess.CompletedProcess(
+                            [], 0 if name != tool else exit_code,
+                            version.encode() if name != tool else b"wrong-canary", b"",
+                        )
+                        for name, version in dev.VERSIONS.items()
+                    ]
+                    with self.assertRaises(dev.DevError) as caught:
+                        dev.check_tools({}, time.monotonic() + 10)
+                    self.assertEqual("tool_version_invalid", caught.exception.code)
+                    self.assertEqual(tool, caught.exception.component)
+                    self.assertNotIn("canary", str(caught.exception))
+            with self.subTest(tool=tool):
+                run.side_effect = [
+                    subprocess.CompletedProcess([], 0, version.encode(), b"")
+                    for version in dev.VERSIONS.values()
+                ]
+                which.side_effect = lambda name, **_: None if name == tool else "/test/tool"
+                with self.assertRaises(dev.DevError) as caught:
+                    dev.check_tools({}, time.monotonic() + 10)
+                self.assertEqual("tool_missing", caught.exception.code)
+                self.assertEqual(tool, caught.exception.component)
 
     def test_build_failure_is_explicit_and_does_not_expose_child_output(self):
         with patch.object(dev, "Children") as children, patch.object(dev, "emit"):

@@ -91,9 +91,10 @@ passed at `6cab683`, and supported-target T058 is now evidenced.
 The human subsequently confirmed T056 and T059 complete and checked both task
 markers. The confirmation is recorded verbatim in the implementation report;
 no additional reviewer observations or reference measurements are invented.
-The same implement run resumes with final documentation, verification and
-evidence reconciliation in T060-T064 still pending. This commit-only checkpoint
-does not execute those remaining tasks or complete implementation. Continue on
+The same implement run continues through all remaining tasks. T060's final
+documentation review is complete; T061-T064's full verification, CI inspection
+and evidence reconciliation are in progress. A commit checkpoint is not a
+reason to stop the active implement stage. Continue on
 `feature/001-specify-repository-bootstrap` and the same
 [draft PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4),
 **without an intermediate merge**. Converge has not begun.

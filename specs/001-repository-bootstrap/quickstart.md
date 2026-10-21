@@ -35,6 +35,10 @@ builds/starts both services, stays attached, and reports actual readiness within
 5 minutes. Open `http://127.0.0.1:3000`: Köfte, bootstrap-only/empty state, current
 host readiness and accessible retry. No module, login or cloud setup is needed.
 Initial dependency/browser downloads are setup, excluded from warm-start timing.
+If preflight reports `tool_missing` or `tool_version_invalid`, its `component`
+identifies `dotnet`, `node` or `npm`. Select the exact pinned tool in the current
+shell rather than changing repository pins; use `dotnet --list-sdks` to inspect
+installed SDKs when `global.json` prevents `dotnet --version` from succeeding.
 
 Inspect host contracts:
 

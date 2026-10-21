@@ -72,6 +72,14 @@ integrity, metadata, licenses and notices. This downloads evidence, not a new
 dependency or lifecycle script approval. Offline checks need that verified
 cache populated in advance; missing evidence must fail, not disappear.
 
+Native Ubuntu verification also exposed NuGet's normalized installed metadata
+filenames: an archive may contain `Microsoft.ApplicationInsights.nuspec` while
+the restored file is lowercase. The checker reads NuGet's canonical installed
+name and still compares the full installed/archive provenance metadata.
+Case-sensitive cold-cache regression and actual Ubuntu CI pass; missing,
+nonregular or tampered metadata remains a failure. No archive hash, license
+decision or reviewed identity changed to accommodate that platform difference.
+
 ## License and notice decisions
 
 This is a source checkout/local-development adoption, not approval to discard

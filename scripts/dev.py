@@ -151,11 +151,11 @@ def check_tools(environment, deadline):
         raise DevError("unsupported_platform")
     for tool, expected in VERSIONS.items():
         if not shutil.which(tool, path=environment.get("PATH")):
-            raise DevError("tool_missing")
+            raise DevError("tool_missing", tool)
         result = subprocess.run([tool, "--version"], cwd=ROOT, env=environment,
                                 capture_output=True, timeout=max(0.01, deadline - time.monotonic()))
         if result.returncode or result.stdout.decode(errors="replace").strip() != expected:
-            raise DevError("tool_version_invalid")
+            raise DevError("tool_version_invalid", tool)
 
 
 def check_ports(config):

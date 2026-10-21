@@ -10,10 +10,15 @@ See the [current local guide](docs/development/local-development.md).
 
 - Git and [GitHub CLI](https://cli.github.com/), authenticated for this repository.
 - Python **3.11+** for repository checks and the Spec Kit state helper (standard library only).
-- A supported Node.js **22 LTS or newer supported LTS** with `npx` for local MCP servers.
+- For the runnable bootstrap: .NET SDK **10.0.402**, Node.js **24.22.0** and npm
+  **11.19.1**, selected in the shell used to start or verify the stack.
 - GitHub Copilot CLI or VS Code with Copilot for the optional assistant workflow.
 
-.NET, container tooling, package-manager choices and runnable application commands belong to spec 001. Do not install a product toolchain just to edit this repository.
+See the [local guide](docs/development/local-development.md) for exact setup,
+locked restores and commands. Docker Engine/Compose and the pinned PostgreSQL
+image are needed for PostgreSQL verification, not ordinary SQLite startup.
+Documentation-only edits do not require installing the product toolchain;
+the optional MCP tooling has its own requirements in the assistant guide.
 
 ## Branch → change → commit → push → PR
 

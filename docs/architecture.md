@@ -82,6 +82,9 @@ The bootstrap's native host/web, SQLite store, disposable PostgreSQL fixtures,
 guarded recovery and generated Development contract are now implemented;
 see the [local guide](development/local-development.md) and
 [actual evidence](../specs/001-repository-bootstrap/implementation.md).
+Both supported targets have automated evidence; the human has confirmed the
+manual/reference tasks. Final implementation verification and evidence
+reconciliation do not constitute later feature review or acceptance.
 The broader stack/module/deployment proposals below remain future work, not
 installed features or proof of module isolation, production readiness or acceptance.
 

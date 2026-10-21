@@ -15,6 +15,21 @@ with npm **11.19.1**, and Python 3.11+. The supervisor checks exact product tool
 versions; it does not acquire tools or dependencies. See the
 [dependency review and retained notices](dependencies.md).
 
+Verify the versions in the same shell that will start the stack:
+
+```bash
+dotnet --list-sdks
+dotnet --version
+node --version
+npm --version
+```
+
+Installing a pinned tool elsewhere does not select it in this shell. Select its
+installation through your version manager or `PATH` first; keep `DOTNET_ROOT`
+consistent with a user-local .NET installation. Do not change `global.json` or
+the locks to accommodate older tools. `dotnet --list-sdks` works even when the
+SDK selected by `global.json` is missing.
+
 From the repository root, explicitly restore the reviewed locks:
 
 ```bash
@@ -315,8 +330,10 @@ only its owned clone. A missing baseline prerequisite is a failure, not a skip.
 
 ## Troubleshooting and outstanding work
 
-`tool_missing` / `tool_version_invalid`: install/select the exact baseline, then
-restore explicitly. `port_unavailable`: select distinct free ports or stop the
+`tool_missing` / `tool_version_invalid`: the safe `component` names the failed
+product tool (`dotnet`, `node` or `npm`). Install/select the exact baseline in
+the current shell using the version checks above, then restore explicitly.
+No raw tool output or installation paths are logged. `port_unavailable`: select distinct free ports or stop the
 known owner yourself; the supervisor will not take it over. `build_failed`:
 run the named host/web build directly to diagnose the local code/tool issue,
 keeping any raw output out of reports. `storage_missing` / `storage_invalid`:
@@ -330,3 +347,7 @@ Ubuntu reference exercise and
 unfamiliar-contributor evidence remain required. Automated browser/axe results
 are not manual accessibility acceptance. Authentication, modules, MCP and
 Kubernetes/production deployment belong to later specifications.
+
+The human has confirmed T056/T059 complete; the recorded attestation and actual
+automated/reference limitations are in the implementation report. This does not
+replace later feature review/acceptance or make ordinary CI a reference machine.

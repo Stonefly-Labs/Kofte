@@ -1,6 +1,6 @@
 # Development and UI Contract: Bootstrap v1
 
-**Status**: Approved design baseline; partial implementation exists. See
+**Status**: Implemented design baseline; final verification/reconciliation in progress. See
 [current evidence](../implementation.md) and the
 [local guide](../../../docs/development/local-development.md) for working versus outstanding commands.
 
@@ -124,7 +124,8 @@ Use the minimal mandated UI baseline, not a full portal/navigation system.
 
 ## Verification result contract
 
-`python3 scripts/verify.py --suite all` is the future complete gate. Each named
+`python3 scripts/verify.py --suite all --disposable-postgres --warm-starts 10`
+is the complete automated gate. Each named
 suite reports its exact child commands, start/end/duration, revision, sanitized
 environment/tool versions and pass/fail. Mandatory missing infrastructure is
 failure; a targeted invocation reports only what it ran, never implies all passed.

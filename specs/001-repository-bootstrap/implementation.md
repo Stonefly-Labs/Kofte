@@ -573,3 +573,34 @@ Commit-only validation passed: `python3 scripts/check_repository.py`,
 `python3 -m unittest discover -s scripts/tests -v` (**100 tests**) and
 `git diff --check`. Product suites were not rerun locally for these
 documentation/task/state-only changes; T061's final all-suite remains pending.
+
+### Final implementation reconciliation - 2026-10-21
+
+The human explicitly directed continuation through the rest of implement.
+The original running stage, branch and draft PR are retained; no second
+begin, converge, review or acceptance is being run.
+
+**T060 is complete.** README, contributor/docs index, architecture, local guide,
+dependency adoption and quickstart were reconciled against the implemented
+bootstrap and its exact pins. The guides distinguish installed versus selected
+tools, explicit restore/init, provider-owned recovery, local-only public
+diagnostics, unavailable future auth/modules/MCP/Kubernetes features and
+human-reported evidence from measured automation. Dependency guidance now also
+records the case-sensitive NuGet metadata correction; no adoption decision or
+lockfile changed.
+
+US1.4's final check reproduced the human's opaque tool-preflight failure:
+all three product-tool failures were incorrectly labeled `supervisor`.
+The existing regression now fails before the fix for wrong-version/nonzero
+and missing-tool cases, then passes with the actual fixed allowlisted tool
+name. Raw tool output remains suppressed. The default shell's actual CLI
+refusal now reports `tool_version_invalid` / `dotnet`, without its raw SDK
+error or installation path. `python3 -m unittest discover -s scripts/tests -v`
+passes **100 tests**; the repository checker and `git diff --check` pass.
+This small correctness fix preserves exact version enforcement rather than
+weakening it. Its final all-suite and actual CI results are recorded below
+after execution, not inferred from these focused checks.
+
+The owned manual-review supervisor was stopped before final verification;
+its persistent developer SQLite store was retained. Verification owns its own
+private roots/ports and does not use or reset that store.
