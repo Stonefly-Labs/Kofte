@@ -11,11 +11,13 @@ Spec 002 has a [draft contracts/identity specification](specs/002-platform-contr
 and its built-in author checklist. Clarify needed zero questions; the author
 checklist remains 16/16. The [plan](specs/002-platform-contracts/plan.md) now
 defines the proposed JSON/schema, compatibility and public validation contract,
-with [ADR 0004](docs/adr/0004-module-manifest-contract.md) awaiting human review.
+with [ADR 0004](docs/adr/0004-module-manifest-contract.md) now human-approved
+for implementation.
 At the reviewer's explicit request, the [quality checklist](specs/002-platform-contracts/checklists/quality.md)
 was generated unchecked, then evaluated and marked with evidence: 36/36
-requirements-quality criteria satisfied, no blocking gap. ADR 0004 approval and
-later unfamiliar-author/reference-timing evidence still need human attention.
+requirements-quality criteria satisfied, no blocking gap. ADR 0004's approval
+resolves the design decision; later unfamiliar-author/reference-timing evidence
+still needs human participation, alongside mandatory implementation evidence.
 Tasks is next on the same feature branch/draft PR. No spec 002 product code,
 module runtime or feature acceptance is claimed.
 See the [current local guide](docs/development/local-development.md).

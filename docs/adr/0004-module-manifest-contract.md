@@ -1,6 +1,6 @@
 # 0004: Minimal module manifest and validation contract
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-10-21
 **Spec:** [002 - Platform contracts and module identity](../../specs/002-platform-contracts/spec.md)
 
@@ -14,7 +14,7 @@ SDKs remain later numbered features. The accepted bootstrap stays module-free.
 
 ## Decision
 
-Propose one dependency-light `Kofte.Platform` library for immutable descriptive
+Use one dependency-light `Kofte.Platform` library for immutable descriptive
 types and a pure bounded validator, with no loader, dispatch framework, storage
 or host implementation dependency. .NET test source stays physically in its
 dedicated test projects. A console under `tests/contract` demonstrates independent
@@ -68,6 +68,15 @@ Later protected adapters still owe shared actor/team/resource permissions/audit.
 
 ## Approval
 
-Pending human review on [draft PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5).
-Planning publication is not approval to implement, adoption, numbered-feature
-acceptance or a request to merge this intermediate checkpoint.
+Human decision on 2026-10-21: **"adr 0004 is approved"**.
+This explicitly approves the ADR's design choices for implementation on
+[draft PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5), including strict JSON,
+the restricted version-range/prerelease rules, initial version domains, validation
+budgets and the minimal shared library with a test-owned author consumer.
+
+This resolves the design-approval attention item from the requirements-quality
+review. It does not approve an unresolved dependency graph, establish runtime,
+reference-timing or unfamiliar-author evidence, accept numbered feature 002 or
+the MVP, or authorize a merge. Those gates remain mandatory; the feature PR stays
+draft and the next recorded stage remains tasks. No implementation is performed
+by recording this decision.

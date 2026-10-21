@@ -249,6 +249,17 @@ The spec/design/schema/examples/corpus and built-in author checklist are unchang
 no tasks, product code or runtime proof was generated. **Tasks is next** on the
 same branch/draft PR, without an intermediate merge. It was not executed here.
 
+**Subsequent ADR 0004 approval**: On 2026-10-21 the human explicitly stated
+**"adr 0004 is approved"**. [ADR 0004](../adr/0004-module-manifest-contract.md)
+is now Accepted for its design choices, resolving the checklist's design-approval
+attention item. Earlier planning/checklist artifacts and ledger notes retain their
+historical Proposed/pending-review statements; this later explicit decision is
+the current authority for ADR status. Their requirements, markers and historical
+evidence hashes are unchanged. The approval does not adopt unreviewed dependencies,
+provide runtime/manual evidence, accept feature 002 or authorize merge.
+Recording it does not execute another stage: **tasks remains next**, with no
+active stage, on the same feature branch/draft PR.
+
 The human-directed [workflow correction](../adr/0001-feature-delivery-lifecycle.md)
 removes per-step merge gates. Its constitution v2.0.0 amendment travels with this
 feature; product principles and explicit human acceptance remain unchanged.

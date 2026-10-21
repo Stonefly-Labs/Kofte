@@ -65,7 +65,8 @@ SemVer range rules, immutable descriptions and safe bounded validation.
 The [quality checklist](../specs/002-platform-contracts/checklists/quality.md) was
 generated unchecked, then evaluated at the reviewer's explicit request: all 36
 requirements-quality criteria are satisfied with evidence and no blocking gap.
-[ADR 0004](adr/0004-module-manifest-contract.md) remains Proposed and needs human
-approval before implementation. Later unfamiliar-author and reference-timing
-evidence remains required. No product code, module runtime or feature acceptance
-is added. Tasks is next on the same draft PR, without an intermediate merge.
+[ADR 0004](adr/0004-module-manifest-contract.md) is now human-approved for
+implementation, resolving the design-approval attention item. Later adoption,
+runtime, unfamiliar-author and reference-timing evidence remains required.
+No product code, module runtime or feature acceptance is added. Tasks is next
+on the same draft PR, without an intermediate merge.
