@@ -8,7 +8,7 @@
 
 ## Documentation and workflow
 
-- [ ] Based on a fresh branch from current main (or an explicitly approved task branch).
+- [ ] Based on a fresh branch from current main, or continuing the same unfinished feature/approved task branch.
 - [ ] README and related docs updated where affected.
 - [ ] Required checks pass; failures or limitations are stated explicitly.
 - [ ] No secrets, local runtime data or generated build outputs included.

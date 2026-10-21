@@ -70,5 +70,7 @@ ADRs decide open technology choices, not silently override requirements.]
 
 [Require exact commands/results and acceptance mapping in implementation.md.
 One stage per invocation; converge/review/accept remain later stages. Commit stage
-artifacts and ledger together, push every commit, and hand off the PR for human merge.
+artifacts and ledger together and push every commit on the same feature branch/draft PR.
+Do not request merge between stages. Hand off for human merge only after passing
+final review and explicit feature acceptance.
 Checked tasks, successful tests or a merged PR never constitute final spec acceptance.]

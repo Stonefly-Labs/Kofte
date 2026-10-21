@@ -57,9 +57,9 @@ This is the **planned architecture**, not a diagram of implemented services. Pos
 
 1. Read the [product charter](docs/product-charter.md), [vision](docs/product-vision.md) and [architecture](docs/architecture.md).
 2. Follow the [contributor workflow](CONTRIBUTING.md) and [assistant/MCP setup](docs/development/assistant-tooling.md).
-3. When ready to begin product work, invoke **`drive-speckit`**. Each invocation performs one stage, records its result, opens a PR and waits for a human merge before the next stage.
+3. When ready to begin product work, invoke **`drive-speckit`**. Each invocation performs one stage and publishes its result on the **same branch and draft PR for that numbered feature**. No merges between steps; request human merge only after final review and explicit feature acceptance.
 
-The [v1.0.0 constitution](.specify/memory/constitution.md) was adopted through the human-merged constitution PR, with project-specific specification, plan and task template gates. Spec **001 / specify** now has a [draft specification](specs/001-repository-bootstrap/spec.md) and its [author quality checklist](specs/001-repository-bootstrap/checklists/requirements.md), generated from the exact [inventory prompt](docs/master-spec-inventory.md). This stage's recorded progress is **proposed until human merge**; **clarify** is next after that merge. There is still no product implementation or accepted numbered spec. **Installing a skill does not execute it.**
+The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendment](.specify/memory/constitution.md) records the human-directed [one-feature/one-branch correction](docs/adr/0001-feature-delivery-lifecycle.md). Spec **001 / specify** has a [draft specification](specs/001-repository-bootstrap/spec.md) and its [author quality checklist](specs/001-repository-bootstrap/checklists/requirements.md), generated from the exact [inventory prompt](docs/master-spec-inventory.md). **Clarify** is next on the existing branch and [draft PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4), without a merge. There is still no product implementation or accepted numbered spec. **Installing a skill does not execute it.**
 
 ```mermaid
 flowchart LR
@@ -98,7 +98,7 @@ Reserved product directories contain only `.gitkeep` markers. Project/assembly/p
 | [Product charter](docs/product-charter.md) | Mandate, boundaries and required outcomes |
 | [Product vision](docs/product-vision.md) | People, experience and long-term direction |
 | [Technical architecture](docs/architecture.md) | Canonical architecture requirements and proposals |
-| [Constitution](.specify/memory/constitution.md) | Adopted principles and delivery gates; amendments require human merge |
+| [Constitution](.specify/memory/constitution.md) | Product principles and delivery gates; v2.0.0 records the human-directed workflow correction |
 | [Master spec inventory](docs/master-spec-inventory.md) | Ordered prompts; **001–024 MVP**, **025–038 post-MVP** |
 | [Contributing](CONTRIBUTING.md) | Fresh branches, checks, commits, pushes and PR handoffs |
 | [Assistant tooling](docs/development/assistant-tooling.md) | Microsoft Learn, Context7, Next.js, shadcn/ui and Playwright |

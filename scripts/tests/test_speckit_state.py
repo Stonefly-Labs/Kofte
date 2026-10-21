@@ -29,7 +29,7 @@ class DriverTests(unittest.TestCase):
             "features": {}, "active": None, "history": [],
         })
         self.directory = self.root / "specs/001-bootstrap"
-        self.branch = "feature/001-test-stage"
+        self.branch = "feature/001-bootstrap"
 
     def write_state(self, value):
         (self.root / ".specify/drive-state.json").write_text(json.dumps(value))
@@ -155,6 +155,32 @@ class DriverTests(unittest.TestCase):
         ledger.complete(self.branch, "Answer recorded")
         self.assertEqual(ledger.next()["step"], "plan")
 
+    def test_completed_stage_keeps_original_feature_branch_after_reload(self):
+        ledger = self.prepare("specify")
+        ledger.complete(self.branch, "Requirements reviewed")
+        ledger.save()
+        ledger = self.ledger()
+        with self.assertRaisesRegex(ValueError, "original branch"):
+            ledger.begin("feature/001-clarify")
+        self.assertIsNone(ledger.state["active"])
+        self.assertEqual(ledger.next()["step"], "clarify")
+        ledger.begin(self.branch)
+        ledger.complete(self.branch, "No unresolved ambiguity")
+        ledger.save()
+        self.assertEqual(self.ledger().next()["step"], "plan")
+        self.assertEqual(
+            {entry["branch"] for entry in ledger.state["history"] if entry["spec"] == "001"},
+            {self.branch},
+        )
+
+    def test_conflicting_feature_branch_history_requires_reconciliation(self):
+        ledger = self.prepare("specify")
+        entry = ledger.complete(self.branch, "Requirements reviewed")
+        ledger.state["history"].append({**entry, "branch": "feature/001-other"})
+        ledger.save()
+        with self.assertRaisesRegex(ValueError, "history needs human reconciliation"):
+            self.ledger().begin(self.branch)
+
     def test_unanswered_clarification_prevents_plan(self):
         ledger = self.prepare("clarify")
         self.write(self.directory / "spec.md", "[NEEDS CLARIFICATION: Choose scope]\n")
@@ -192,9 +218,9 @@ class DriverTests(unittest.TestCase):
         ledger.complete(self.branch, "Appended T002", outcome="gaps")
         self.assertEqual(ledger.next()["step"], "implement")
         ledger.state["features"]["001"]["next_step"] = "review"
-        ledger.begin("feature/001-review")
+        ledger.begin(self.branch)
         self.write(self.directory / "review.md", "**Result:** changes\n\nT002 remains.\n")
-        ledger.complete("feature/001-review", "Defect requires remediation", outcome="changes")
+        ledger.complete(self.branch, "Defect requires remediation", outcome="changes")
         self.assertEqual(ledger.next()["step"], "implement")
 
     def test_acceptance_requires_human_decision_and_selects_next_spec(self):
@@ -227,11 +253,10 @@ class DriverTests(unittest.TestCase):
         for index, step in enumerate(state.STEPS):
             with self.subTest(step=step):
                 self.assertEqual(ledger.next()["step"], step)
-                branch = self.branch if index == 0 else f"feature/001-{step}"
                 if index:
-                    ledger.begin(branch)
+                    ledger.begin(self.branch)
                 ledger.complete(
-                    branch, f"Evidence reviewed for {step}",
+                    self.branch, f"Evidence reviewed for {step}",
                     approval="I accept spec 001." if step == "accept" else None,
                 )
                 ledger.save()
@@ -239,6 +264,15 @@ class DriverTests(unittest.TestCase):
                 self.assertIsNone(ledger.state["active"])
         self.assertEqual(ledger.next()["spec"], "002")
         self.assertEqual(len(ledger.state["history"]), len(state.STEPS) + 1)
+        self.assertEqual(
+            {entry["branch"] for entry in ledger.state["history"] if entry["spec"] == "001"},
+            {self.branch},
+        )
+        with self.assertRaisesRegex(ValueError, "fresh branch"):
+            ledger.begin(self.branch, "specs/002-contracts")
+        self.assertNotIn("002", ledger.state["features"])
+        ledger.begin("feature/002-module-contracts", "specs/002-contracts")
+        self.assertEqual(ledger.next()["branch"], "feature/002-module-contracts")
 
     def test_corruption_and_lock_conflicts_fail_explicitly(self):
         with state.lock(self.root):

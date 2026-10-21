@@ -13,7 +13,7 @@ Welcome! This is currently **repository setup only**. Product implementation sta
 
 ## Branch → change → commit → push → PR
 
-All work starts on a **fresh branch from current `origin/main`**. Never work directly on `main`, base a new task on an unmerged feature branch, or reuse a merged/closed PR branch.
+Each new task or numbered feature starts on a **fresh branch from current `origin/main`**. Never work directly on `main`, base unrelated work on an unmerged feature branch, or reuse a merged/closed PR branch. All Spec Kit stages for an unfinished feature continue on that feature's original branch and one draft PR.
 
 ```bash
 git status --short
@@ -23,7 +23,7 @@ git pull --ff-only origin main
 git switch -c chore/short-description
 ```
 
-Start only with a clean worktree; preserve unrelated changes and ask before moving them. Use `feature/`, `bugfix/`, `chore/`, `docs/`, `refactor/` or `test/` according to intent. For Spec Kit stages, use e.g. `feature/001-specify-repository-bootstrap` or `chore/constitution`.
+Start only with a clean worktree; preserve unrelated changes and ask before moving them. Use `feature/`, `bugfix/`, `chore/`, `docs/`, `refactor/` or `test/` according to intent. For a numbered spec, use e.g. `feature/001-repository-bootstrap`; the standalone constitution task uses `chore/constitution`. Existing unfinished feature branches keep their names even if they include a stage.
 
 An explicitly user-provided current task branch can be used after checking its base and PR state. Resume an open task only on its original branch, not a different fresh task branch.
 
@@ -55,15 +55,15 @@ gh pr create --base main --title "chore: bootstrap repository workflow" --body-f
 
 Use the [PR template](.github/pull_request_template.md). Check for an existing open PR for the branch before creating one; update it for follow-up commits. Put temporary PR bodies outside the repository.
 
-**Never merge, enable auto-merge, or close a PR as an assistant.** Do not delete its branch. A human owns disposition, acceptance and merge. Handoff with a clickable link: `Please merge [#N](PR_URL)`. If blocked or incomplete, open a draft PR and clearly describe the blocker instead of requesting merge.
+**Never merge, enable auto-merge, or close a PR as an assistant.** Do not delete its branch. A human owns disposition, acceptance and merge. Request a merge with a clickable link, `Please merge [#N](PR_URL)`, only when the task or entire feature is complete. An unfinished Spec Kit feature stays in one draft PR; report its next stage or blocker instead of requesting merge.
 
 ## Spec-driven changes
 
-Read the [canonical docs](docs/README.md), then use [drive-speckit](.github/skills/drive-speckit/SKILL.md). It advances **one stage per invocation**, with a PR/merge boundary after each stage. Do not run the complete Spec Kit workflow as an unattended batch.
+Read the [canonical docs](docs/README.md), then use [drive-speckit](.github/skills/drive-speckit/SKILL.md). It advances **one stage per invocation on the same feature branch and PR**, without merging between steps. Do not run the complete Spec Kit workflow as an unattended batch.
 
 Feature artifacts live at **`specs/NNN-short-name/`**, independent of branch naming. The tracked driver ledger is `.specify/drive-state.json`; `.specify/feature.json` remains an ignored local pointer.
 
-Acceptance requires an explicit human decision after a passing review; neither all checked tasks nor an assistant review alone makes a feature accepted.
+Acceptance requires an explicit human decision after a passing review; neither all checked tasks nor an assistant review alone makes a feature accepted. Only then is the feature PR ready for human merge. The next numbered spec starts from updated main after that merge.
 
 ## Scope and decisions
 

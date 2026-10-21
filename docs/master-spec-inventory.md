@@ -27,8 +27,9 @@ The goal is a *portable self-hosted composable internal developer platform*, **n
 ## Spec Kit workflow
 
 The repository's [`drive-speckit` workflow](development/spec-workflow.md) automates
-selection and one stage per invocation, with tracked progress, human PR merges and
-explicit final acceptance. Repository-only setup is preparation for spec 001, not
+selection and one stage per invocation on the same branch/PR for each feature,
+with tracked progress, explicit final acceptance and human merge only at feature
+completion. Repository-only setup is preparation for spec 001, not
 completion of its working API/UI skeleton. The prompts below remain authoritative.
 
 1. Create the constitution from `constitution-prompt.md`.

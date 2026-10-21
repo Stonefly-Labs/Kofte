@@ -17,8 +17,14 @@ the exact fenced prompt in `docs/constitution-prompt.md` and was human-merged.
 The next stage, **001 / specify**, produced
 [`spec.md`](../../specs/001-repository-bootstrap/spec.md) and its
 [`checklists/requirements.md`](../../specs/001-repository-bootstrap/checklists/requirements.md)
-using the exact fenced inventory prompt. Its ledger transition is **proposed
-until a human merges the specify PR**; the next invocation then performs **clarify**.
+using the exact fenced inventory prompt. Its ledger transition is a completed
+checkpoint on the unfinished feature's branch. **Clarify** is next on
+`feature/001-specify-repository-bootstrap` and the same
+[draft PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4), **without an intermediate merge**.
+
+The human-directed [workflow correction](../adr/0001-feature-delivery-lifecycle.md)
+removes per-step merge gates. Its constitution v2.0.0 amendment travels with this
+feature; product principles and explicit human acceptance remain unchanged.
 
 Spec 001 is broader than repository setup: it requires a future working API/UI
 skeleton and test/local profiles. This specification stage creates no product
@@ -58,17 +64,31 @@ fixes or longer implementation can remain active across invocations; it does not
 advance until its evidence and gates pass. Spec 024 is the MVP release gate;
 025–038 require explicit authorization to proceed with post-MVP work.
 
-## Git is the shared checkpoint
+## One feature, one branch, one PR
 
-Each stage uses a new typed branch from updated main and a PR containing both its
-artifacts and ledger transition. That transition is **proposed until human merge**.
-The driver checks the previous stage's recorded branch PR and origin/main before
-starting the next one, even if a different local branch already contains the ledger.
+Start a numbered feature on one fresh typed branch from updated main. Keep that
+branch and a single draft PR through specify, clarify, plan, checklist, tasks,
+analyze, implement, converge, review and explicit acceptance. Each invocation
+still executes only one stage, publishes artifacts and ledger together, and
+pushes every commit immediately.
 
-An open stage PR blocks the next stage. A closed-unmerged PR does not count as
-progress. Resolve rejected work explicitly; do not run subsequent stages from it.
-The helper is a state validator, **not** a GitHub permissions or merge enforcement
-system; the skill owns Git/PR checks and actual skill execution.
+Completed stages are durable branch checkpoints, **not merge gates**. On the next
+invocation, inspect the same branch/PR and begin the next recorded stage there.
+Use `resume` only for a running/blocked stage, not one already complete. An open
+draft PR is expected and does not block the next stage. Preserve existing branch
+names even if they contain an earlier stage name.
+
+Do not mark the feature PR ready or request merge until passing final review and
+explicit human acceptance. Only the next numbered spec waits for this completed
+feature PR to be human-merged with its accepted state on current `origin/main`.
+The standalone constitution task likewise must be merged before feature 001.
+A prematurely merged or closed-unmerged unfinished feature requires human
+reconciliation, not a replacement stage PR.
+
+The helper enforces recorded feature-branch continuity, but is **not** a GitHub
+permissions or merge enforcement system; the skill owns Git/PR checks and actual
+skill execution. Historical notes/hashes are not rewritten to hide the earlier
+per-stage policy; ADR 0001 records the explicit correction.
 
 Feature directories are immutable `specs/NNN-short-name/` paths. Set
 `SPECIFY_FEATURE_DIRECTORY` explicitly on each downstream Spec Kit command.
@@ -125,4 +145,6 @@ For acceptance, the driver presents the passing review and asks whether the huma
 accepts **this numbered feature**. It records the exact affirmative decision with
 `complete --approval "Human decision"` and links the evidence in `acceptance.md`.
 Silence, autopilot, "continue", task checkboxes or a previous stage merge are not
-acceptance. Only the human-merged acceptance PR lets the next spec begin.
+acceptance. Record that decision on the same feature branch, mark its existing PR
+ready, and request human merge. Only that completed feature PR's human merge lets
+the next numbered spec begin.

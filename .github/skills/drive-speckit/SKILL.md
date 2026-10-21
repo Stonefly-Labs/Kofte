@@ -20,24 +20,30 @@ request to execute it.
   python3 .github/skills/drive-speckit/scripts/state.py status
   ```
 
-- If the ledger has **no active stage** and the current completed task/stage branch
-  has an **open PR**, stop and request its human merge. Do not start the next stage
-  even if its ledger entry is ready. An unfinished active stage may resume on its
-  original branch and open/draft PR to resolve blockers; that is not a new stage.
-- Before any new stage, inspect the latest completed history entry's branch PR
+- A numbered spec uses **one branch and one PR from specify through acceptance**.
+  For another stage of the same unfinished spec, use its original recorded branch
+  and existing open/draft PR. An open PR is the checkpoint, **not a merge gate
+  between stages**. If no PR exists yet, publish one draft PR on that branch.
+  A merged or closed-unmerged PR before feature completion requires human
+  reconciliation; do not silently create a replacement stage branch/PR.
+- Only before a **new numbered spec**, inspect the preceding completed feature's
+  `accept` history entry (or the constitution entry before 001) and its branch PR
   with `gh pr list --head BRANCH --state all --json state,mergedAt,url,headRefOid`.
-  A completed entry must be present on current `origin/main`, and its stage PR
-  must be merged. An open, absent or closed-unmerged stage PR blocks progression.
-  Reconcile rejected progress on a human-authorized branch; do not treat closure
-  as acceptance. The initial empty history needs no previous-stage PR.
-- For a new stage, create a **fresh typed branch from updated origin/main**.
-  Use `chore/constitution` or `feature/NNN-STAGE-short-name` with a unique suffix
-  if the name was previously used. The spec directory stays stable across stages.
+  Its accepted ledger state and evidence must be on updated `origin/main`, and
+  that feature/constitution PR must be merged. Open, absent or closed-unmerged
+  prerequisite PRs block a new spec, not another stage of the current spec.
+- Create a **fresh typed branch from updated origin/main only for a new feature
+  or standalone constitution task**. Use `feature/NNN-short-name` or
+  `chore/constitution`, with a unique suffix if previously used. Existing
+  stage-named branches remain valid for their unfinished feature; do not rename
+  or replace them. The branch and spec directory stay stable across stages.
 - If the ledger has an active running/blocked stage, do not infer it succeeded.
   Resume only its recorded branch/open task, inspect partial output, resolve any
   reason, and use `resume --branch BRANCH`. Never create a second concurrent run.
   A dirty worktree from that same interrupted run is resumable only after verifying
-  ownership. An unexpected dirty state blocks execution.
+  ownership. With no active stage, begin the next stage on the same clean feature
+  branch; do not use `resume` for a stage already recorded complete.
+  An unexpected dirty state blocks execution.
 - If GitHub cannot be queried, stop with the error; do not assume a PR was merged.
 
 ## 2. Select intent and begin exactly once
@@ -104,9 +110,14 @@ taskstoissues unless separately requested.
   docs if affected, push, and create/update the task PR. Follow the `ship-change`
   skill's publishing checks. Do not store the PR URL in the ledger by adding a
   second bookkeeping commit: query PRs by the recorded branch on the next run.
-- A successful local transition is **proposed progress until human-merged**.
-  A human merges the stage PR; the next invocation starts from main. Acceptance
-  likewise takes effect for later specs only once its PR is merged.
-- Handoff with stage, result, next stage/blocker and
-  `Please merge [#N](PR_URL)` when ready. **Never merge, close, enable auto-merge
-  or delete a PR branch. Stop after this one stage.**
+- Intermediate transitions are durable feature-branch checkpoints. Commit and
+  push each stage to the **same draft feature PR**; the next invocation continues
+  there without a merge. Do not request merge or mark the PR ready just because
+  an intermediate stage passed.
+- After passing review and **explicit human acceptance**, mark that feature PR
+  ready and request `Please merge [#N](PR_URL)`. Only its human merge unlocks the
+  next numbered spec. A completed standalone constitution task may likewise
+  request its human merge.
+- Handoff with stage, result, next stage/blocker and the existing PR link.
+  **Never merge, close, enable auto-merge or delete a PR branch.
+  Stop after this one stage.**

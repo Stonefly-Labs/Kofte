@@ -4,7 +4,7 @@
 **Feature Directory**: `specs/001-repository-bootstrap`
 **Created**: 2026-10-20
 **Status**: Draft specification; not implemented or accepted
-**Constitution**: v1.0.0; principles I-XII reviewed below
+**Constitution**: Product principles from v1.0.0; v2.0.0's human-directed workflow correction applies (see [ADR 0001](../../docs/adr/0001-feature-delivery-lifecycle.md))
 **Input**: Exact feature description extracted by the driver's `prompt` command:
 
 ```text
@@ -425,4 +425,4 @@ this draft; the separate clarify stage must still evaluate it before planning.
 | IX - Frontend | Truthful states, baseline consistency, accessibility and bounded experience: FR-004/011, SC-002/004/005. No remote frontend loading. |
 | X - Portability/operations | Local profile, real shared-provider testing, pins, docs, probes, telemetry and safe recovery: FR-002-007/009/010/014-017; production packaging deferred to 022. |
 | XI - Evidence | Focused unit, real-provider/recovery, HTTP contracts, browser and local smoke evidence: FR-007/012/013/015/016 and validation matrix; all later release proofs remain required. |
-| XII - Scope/traceability | Inventory ID, actors, bounded scope, scenarios and mapping present; no feature acceptance or MVP-complete claim. Clarify and all later stages still require their own invocation and human merge gates. |
+| XII - Scope/traceability | Inventory ID, actors, bounded scope, scenarios and mapping present; no feature acceptance or MVP-complete claim. Clarify and all later stages use their own invocation on this same branch/draft PR; human merge follows passing review and explicit feature acceptance. |
