@@ -103,8 +103,11 @@ Its [quality review](../specs/002-platform-contracts/checklists/quality.md)
 now satisfies all 36 requirements-quality criteria after explicit reviewer
 authorization, with no blocking gap. The subsequent explicit ADR 0004 approval
 resolves that design gate; adoption, runtime, unfamiliar-author and reference-timing
-evidence is still future work. Tasks is next, with no module loader or storage
-registry added yet.
+evidence is still future work. The [48 unchecked tasks](../specs/002-platform-contracts/tasks.md)
+now order identity and compatibility components before the complete public
+validation path, then safe correction and cross-cutting evidence. All requirements,
+outcomes and scenarios are mapped; analyze is next, with no module loader,
+storage registry or spec 002 product code added yet.
 The broader stack/module/deployment proposals below remain future work, not
 installed features or proof of module isolation, production readiness or acceptance.
 

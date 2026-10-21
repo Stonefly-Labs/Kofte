@@ -18,8 +18,11 @@ was generated unchecked, then evaluated and marked with evidence: 36/36
 requirements-quality criteria satisfied, no blocking gap. ADR 0004's approval
 resolves the design decision; later unfamiliar-author/reference-timing evidence
 still needs human participation, alongside mandatory implementation evidence.
-Tasks is next on the same feature branch/draft PR. No spec 002 product code,
-module runtime or feature acceptance is claimed.
+The [48-task list](specs/002-platform-contracts/tasks.md) now maps all four stories,
+15 requirements, six outcomes and 14 scenarios to unchecked path-specific work,
+explicit dependencies and mandatory evidence. Analyze is next on the same feature
+branch/draft PR. No spec 002 product code, module runtime or feature acceptance
+is claimed.
 See the [current local guide](docs/development/local-development.md).
 
 ## Prerequisites

@@ -260,6 +260,37 @@ provide runtime/manual evidence, accept feature 002 or authorize merge.
 Recording it does not execute another stage: **tasks remains next**, with no
 active stage, on the same feature branch/draft PR.
 
+**002 / tasks is now complete** on `feature/002-platform-contracts` and the same
+[draft PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5). The installed
+`speckit-tasks` skill used the explicit recorded feature directory and resolved
+project override to generate
+[`tasks.md`](../../specs/002-platform-contracts/tasks.md): **48 unstarted tasks**,
+with four setup, five foundational, six US2 identity, eight US3 compatibility,
+nine US1 public-author-validation, eight US4 safe-correction and eight
+cross-cutting tasks. An interrupted tasks run was resumed on its recorded branch
+after verifying that the partial task list and progress-doc changes belonged to
+that run; its original start and prior evidence were preserved. The three P1
+stories are ordered by actual component
+dependencies (US2, US3, US1), followed by P2 US4; US1 remains the first useful
+author-facing increment, not feature or MVP completion.
+
+Every task has a concrete path, direct earlier-task prerequisites and requirement/
+principle traceability; the list maps all 15 FRs, six SCs, 14 scenarios and twelve
+principles. Seventeen parallel markers are conditional on completed dependencies
+and non-overlapping files. Mandatory evidence covers original-byte/schema/public
+corpus parity, identity immutability, full SemVer/range/declaration boundaries,
+two consumers and real cultures with 100 repetitions, exact budgets, private
+output, observed zero side effects, clean retry, fail-closed verifier wiring and
+unchanged real-provider/browser/startup behavior. Actual unfamiliar-author and
+specified reference-timing proof remain explicit implementation gates.
+
+Accepted ADR 0004 resolves design approval, not dependency adoption or runtime/
+human evidence. The previous spec/design/schema/examples/corpus, both reviewed
+checklists and ADR remain unchanged. No before/after tasks hooks are configured.
+No task is executed/checked, product package installed or analysis/implementation/
+acceptance report created. The ledger completes tasks only and selects
+**analyze** on the same branch/draft PR, without an intermediate merge.
+
 The human-directed [workflow correction](../adr/0001-feature-delivery-lifecycle.md)
 removes per-step merge gates. Its constitution v2.0.0 amendment travels with this
 feature; product principles and explicit human acceptance remain unchanged.

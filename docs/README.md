@@ -49,7 +49,7 @@ branch/PR. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) is human-merge
 with its accepted ledger and evidence on main. Modules, SDKs, workers
 and Helm remain reserved. Bootstrap acceptance is not MVP or production readiness.
 
-**002 / specify, clarify, plan and checklist are complete** on `feature/002-platform-contracts`: the
+**002 / specify, clarify, plan, checklist and tasks are complete** on `feature/002-platform-contracts`: the
 [draft specification](../specs/002-platform-contracts/spec.md) and
 [author checklist](../specs/002-platform-contracts/checklists/requirements.md)
 cover minimal platform contracts, immutable reverse-DNS identity, versioned
@@ -68,5 +68,8 @@ requirements-quality criteria are satisfied with evidence and no blocking gap.
 [ADR 0004](adr/0004-module-manifest-contract.md) is now human-approved for
 implementation, resolving the design-approval attention item. Later adoption,
 runtime, unfamiliar-author and reference-timing evidence remains required.
-No product code, module runtime or feature acceptance is added. Tasks is next
-on the same draft PR, without an intermediate merge.
+The [48-task list](../specs/002-platform-contracts/tasks.md) is entirely unchecked,
+with explicit dependencies, 17 parallel markers and full requirement/scenario
+traceability, including consumer/schema/privacy/bootstrap and human/reference
+gates. No product code, module runtime or feature acceptance is added.
+Analyze is next on the same draft PR, without an intermediate merge.
