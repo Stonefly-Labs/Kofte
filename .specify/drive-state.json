@@ -9,7 +9,15 @@
       "next_step": "implement"
     }
   },
-  "active": null,
+  "active": {
+    "spec": "001",
+    "step": "implement",
+    "directory": "specs/001-repository-bootstrap",
+    "status": "blocked",
+    "branch": "feature/001-specify-repository-bootstrap",
+    "reason": "T001 blocked: ADR 0002 remains Proposed with no affirmative human disposition of native supervision, no application tables and macOS/Ubuntu-only targets. PR #4 has no review/comment decision; human-input request could not obtain a response. Autopilot is not approval. Obtain actual reviewer disposition before T001/T002 or product changes; then resume this same implement stage on this branch and draft PR.",
+    "started_at": "2026-10-21T03:03:27+00:00"
+  },
   "history": [
     {
       "spec": null,

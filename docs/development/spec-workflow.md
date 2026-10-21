@@ -69,9 +69,17 @@ The report preserves the reviewed checklists, proposed ADR/dependency-adoption
 gates and actual manual/product evidence obligations. No analysis hooks were
 configured. The analyzed inputs and implementation markers remain unchanged;
 the report is design/task evidence, not runtime proof or human acceptance.
-**Implement** is next, beginning with the actual human ADR-disposition gate, on
+**001 / implement has begun and is blocked at T001**. Its
+[`implementation.md`](../../specs/001-repository-bootstrap/implementation.md)
+records passing entry/checklist gates and the unavailable human disposition of
+proposed ADR 0002. No approval was inferred from autopilot or the earlier checklist
+evaluation. The ADR stays Proposed, all 64 tasks remain unchecked, and no product
+files or dependencies were introduced. Obtain the actual reviewer decision on
+native supervision, no application tables yet and macOS/Ubuntu-only targets;
+then use `resume`, not `begin`, for the same implement stage on
 `feature/001-specify-repository-bootstrap` and the same
-[draft PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4), **without an intermediate merge**.
+[draft PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4),
+**without an intermediate merge**. Converge has not begun.
 
 The human-directed [workflow correction](../adr/0001-feature-delivery-lifecycle.md)
 removes per-step merge gates. Its constitution v2.0.0 amendment travels with this
