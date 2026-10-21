@@ -48,7 +48,18 @@ adoption gates and actual product/manual evidence as remaining attention items,
 not as completed work. This standard, risk-focused requirements review is not
 implementation verification, ADR approval, feature acceptance or the MVP release
 gate. No checklist hooks were configured; no tasks or product artifacts were
-created. **Tasks** are next on
+created during checklist. **001 / tasks is now complete**:
+[`tasks.md`](../../specs/001-repository-bootstrap/tasks.md) contains 64 unstarted,
+path-specific tasks: six setup, six foundational, 12 for US1, 12 for US2, 13 for
+US3, eight for US4 and seven cross-cutting tasks. Each states its prerequisites,
+requirement and constitutional traceability. The list preserves all 17 functional
+requirements, six measurable outcomes, real-provider/recovery/privacy/contract/
+browser/failure-propagation checks, safe parallel groups and human manual gates.
+US1 is the first internal increment, not feature or MVP completion; the full
+green local/CI gate follows all four stories. Task generation used the resolved
+project override and explicit recorded feature directory; no before/after tasks
+hooks were configured. No task was executed or checked, and no product file or
+analysis report was created. **Analyze** is next on
 `feature/001-specify-repository-bootstrap` and the same
 [draft PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4), **without an intermediate merge**.
 
@@ -57,18 +68,19 @@ removes per-step merge gates. Its constitution v2.0.0 amendment travels with thi
 feature; product principles and explicit human acceptance remain unchanged.
 
 Spec 001 is broader than repository setup: it requires a future working API/UI
-skeleton and test/local profiles. This specification stage creates no product
-code or tasks and does not accept the feature. Clarification and planning likewise
-add no product implementation or human approval. All quickstart product commands
+skeleton and test/local profiles. Specification, clarification, planning,
+checklist review and task generation add no product implementation or human
+feature acceptance. All quickstart product commands
 are future implementation targets, not available commands or passing evidence.
 The checked requirements
 checklist records the specification author's review only; `quality.md` is a
 separate human-owned review gate. Its generation did not approve any item.
-The reviewer's subsequent explicit request authorized this invocation's
+The reviewer's subsequent explicit request authorized that checklist invocation's
 agent-assisted evaluation and evidence-backed marking. Without such a request,
 generation would leave the stage blocked for reviewer completion. This completed
-requirements review permits task generation on the next invocation, not product
-implementation or automatic final acceptance.
+requirements review permitted task generation; the generated task list now needs
+the separate read-only analysis stage before implementation, not automatic final
+acceptance.
 
 Project-specific templates in `.specify/templates/overrides/` carry the constitution
 into specification, planning and tasks through the installed resolver. They require
