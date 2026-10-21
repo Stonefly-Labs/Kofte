@@ -1,8 +1,8 @@
 # Development and UI Contract: Bootstrap v1
 
-**Status**: Implemented design baseline; final verification/reconciliation in progress. See
+**Status**: Implemented and verified baseline; feature acceptance remains separate. See
 [current evidence](../implementation.md) and the
-[local guide](../../../docs/development/local-development.md) for working versus outstanding commands.
+[local guide](../../../docs/development/local-development.md) for commands and scope limits.
 
 **Traceability**: FR-002-006/008-011/014-017; US1, US3, US4
 

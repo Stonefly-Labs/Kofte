@@ -8,10 +8,11 @@ explicit request (36/36); author checklist is complete (16/16), and
 [ADR 0002](../../docs/adr/0002-bootstrap-development-baseline.md) resolves T001;
 actual dependency adoption retains its separate gate.
 **Constitution**: v2.0.1, principles I-XII; .NET test-source ownership clarified by explicit human direction in ADR 0003.
-**Status**: T001-T060 are complete, including both supported targets and the
-human-confirmed T056/T059 tasks. Final all-suite verification, CI inspection
-and evidence reconciliation in T061-T064 are in progress. Current evidence is
-in `implementation.md`; this is not stage completion or feature acceptance.
+**Status**: T001-T064 are complete, including both supported targets,
+human-confirmed T056/T059, the final all-suite gate, actual CI and explicit
+scenario/FR/SC/constitutional reconciliation in `implementation.md`.
+Implementation is complete; converge, final review and explicit human feature
+acceptance remain separate stages on the same branch/draft PR.
 
 **Tests**: The specification and constitution require the focused tests below.
 Real SQLite/PostgreSQL, HTTP/adapter contracts, Playwright, privacy, recovery,
@@ -188,10 +189,10 @@ even if all automated suites are green.
 - [x] T058 Run applicable host/web/unit/real-SQLite/recovery/contract/browser checks on the supported macOS 15+ arm64 target and Linux suites on Ubuntu 24.04 x64; verify locked restores preserve tracked files and record actual OS/tool/CPU/RAM and unsupported/unavailable environments in `specs/001-repository-bootstrap/implementation.md`. Do not claim tested macOS behavior from Linux alone or native Windows/Kubernetes support; unresolved required target failures block completion. Prerequisites: T034, T048, T055. (FR-001/002/007/012-015; C:X/XI/XII)
 - [x] T059 Execute the fresh-checkout guide and `python3 scripts/verify.py --suite startup --warm-starts 10` on the documented Ubuntu timing reference (4 logical cores, 8 GiB RAM, SSD, restored/built dependencies, loopback/no unrelated load); retain each startup-within-300-seconds, usable-page-within-2-seconds result and preserved private fixture. Obtain actual unfamiliar-contributor guide evidence, distinguish acquisition/build/navigation timing and record environment/revision/limitations in `specs/001-repository-bootstrap/implementation.md`; unavailable reference/contributor evidence is not pass. Prerequisites: T023, T024, T049, T054, T057. (US1.1-4; FR-001-004/017; SC-001/002; C:IX/X/XI/XII)
 - [x] T060 Update `README.md`, `CONTRIBUTING.md`, `docs/README.md`, `docs/architecture.md`, `docs/development/local-development.md`, `docs/development/dependencies.md` and `specs/001-repository-bootstrap/quickstart.md` to describe only the implemented startup/configuration/commands/store/recovery/security limits, exact adopted pins and evidence. Preserve proposed/unresolved decisions, later module/EF/auth/MCP/Kubernetes obligations and all post-MVP exclusions; no spec/MVP/production-ready claim. Prerequisites: T031, T036, T049, T057, T058, T059. (FR-002/009/012/014-017; C:I-XII)
-- [ ] T061 Execute the final local gate `python3 scripts/verify.py --suite all --disposable-postgres --warm-starts 10`, including every exact quality/child command in quickstart; also run `python3 scripts/check_repository.py`, `python3 -m unittest discover -s scripts/tests -v` and `git diff --check` on the final intended diff. Capture individual suite/command/results, not only wrapper exit, in ignored `artifacts/verification/` and `specs/001-repository-bootstrap/implementation.md`; resolve failed/missing mandatory checks, then re-run affected checks after fixes. Prerequisites: T035, T048, T055, T056, T058, T059, T060. (FR-001-017; SC-001-006; C:IV/VI/IX-XII)
-- [ ] T062 Inspect actual required GitHub Actions results for the implementation revision through `.github/workflows/product-checks.yml` and `.github/workflows/repository-checks.yml`; record run URLs, command/job names, results and local/CI coverage parity in `specs/001-repository-bootstrap/implementation.md`. A missing/inaccessible/failed run is not green CI; fix task-caused failures and immediately push each follow-up commit without merging/closing. Prerequisites: T033, T061. (US2.1/3; FR-012/013/017; SC-003; C:X/XI/XII)
-- [ ] T063 Review final acceptance coverage in `specs/001-repository-bootstrap/implementation.md`, mapping every US scenario, FR-001-017, SC-001-006 and applicable constitutional principle to actual commands/results/manual evidence and limitations; verify no test fixture table, fault/admin route, fake identity, module SDK, secret, local artifact or unrelated future feature ships. Leave unproved tasks unchecked and block rather than laundering unavailable checks through a report. Prerequisites: T024, T036, T048, T056, T058, T059, T061, T062. (FR-008/014-017; C:I-XII)
-- [ ] T064 Reconcile verified task markers and evidence in `specs/001-repository-bootstrap/tasks.md`, `specs/001-repository-bootstrap/implementation.md` and `docs/development/spec-workflow.md`; preserve one-stage delivery and the stable feature branch/draft PR, with required checks re-run after any final relevant edits. Only a fully evidenced implementation may complete its ledger transition; converge, final review and explicit human acceptance remain later invocations, never tasks auto-run here. Prerequisites: T063. (FR-017; C:XI/XII)
+- [x] T061 Execute the final local gate `python3 scripts/verify.py --suite all --disposable-postgres --warm-starts 10`, including every exact quality/child command in quickstart; also run `python3 scripts/check_repository.py`, `python3 -m unittest discover -s scripts/tests -v` and `git diff --check` on the final intended diff. Capture individual suite/command/results, not only wrapper exit, in ignored `artifacts/verification/` and `specs/001-repository-bootstrap/implementation.md`; resolve failed/missing mandatory checks, then re-run affected checks after fixes. Prerequisites: T035, T048, T055, T056, T058, T059, T060. (FR-001-017; SC-001-006; C:IV/VI/IX-XII)
+- [x] T062 Inspect actual required GitHub Actions results for the implementation revision through `.github/workflows/product-checks.yml` and `.github/workflows/repository-checks.yml`; record run URLs, command/job names, results and local/CI coverage parity in `specs/001-repository-bootstrap/implementation.md`. A missing/inaccessible/failed run is not green CI; fix task-caused failures and immediately push each follow-up commit without merging/closing. Prerequisites: T033, T061. (US2.1/3; FR-012/013/017; SC-003; C:X/XI/XII)
+- [x] T063 Review final acceptance coverage in `specs/001-repository-bootstrap/implementation.md`, mapping every US scenario, FR-001-017, SC-001-006 and applicable constitutional principle to actual commands/results/manual evidence and limitations; verify no test fixture table, fault/admin route, fake identity, module SDK, secret, local artifact or unrelated future feature ships. Leave unproved tasks unchecked and block rather than laundering unavailable checks through a report. Prerequisites: T024, T036, T048, T056, T058, T059, T061, T062. (FR-008/014-017; C:I-XII)
+- [x] T064 Reconcile verified task markers and evidence in `specs/001-repository-bootstrap/tasks.md`, `specs/001-repository-bootstrap/implementation.md` and `docs/development/spec-workflow.md`; preserve one-stage delivery and the stable feature branch/draft PR, with required checks re-run after any final relevant edits. Only a fully evidenced implementation may complete its ledger transition; converge, final review and explicit human acceptance remain later invocations, never tasks auto-run here. Prerequisites: T063. (FR-017; C:XI/XII)
 
 ## Dependencies and Execution Order
 
@@ -304,12 +305,14 @@ US4 8, cross-cutting 7. The marked parallel groups above are opportunities only.
 
 Task generation advanced **tasks -> analyze** only; the subsequent analysis
 passed. Implementation initially blocked at T001, then resumed after the actual
-human ADR approval recorded above. T002's exact graph/license/provenance adoption
-is next; no product runtime result is claimed. No before/after implementation
-hooks are configured.
+human ADR approval recorded above. All 64 implementation tasks now have actual
+evidence: reviewed dependency adoption, real-provider/runtime/manual checks,
+the final complete local gate, actual CI and scenario/requirement/constitutional
+reconciliation. Historical checkpoints and failures remain in the report.
+No before/after implementation hooks are configured.
 
-Implementation must record exact commands/results, revision/environment,
-scenario/FR/SC/constitutional coverage and remaining limitations in
+Implementation records exact commands/results, revision/environment,
+scenario/FR/SC/constitutional coverage and remaining scope limitations in
 `implementation.md`; reports/local data stay ignored. T001's human design review,
 dependency adoption and T056/T059 manual evidence must not be fabricated.
 An unavailable mandatory check or manual criterion leaves the applicable task

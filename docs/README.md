@@ -33,10 +33,10 @@ browser/axe evidence. [ADR 0003](adr/0003-dotnet-test-source-ownership.md)
 records the human correction: .NET test source physically belongs to its test
 project, never a production slice or source link. The
 [implementation report](../specs/001-repository-bootstrap/implementation.md)
-distinguishes working behavior from the remaining full
-verification/CI/manual gates. All ten local automated groups and all ten
-Ubuntu CI jobs pass; supported-target T058 is evidenced. The human has confirmed
-T056 and T059 complete and checked their task markers. The same implement stage
-continues with T060 reconciled and T061-T064 in progress on the original branch and draft PR, without
-an intermediate merge. Spec 001 and final human acceptance
-remain incomplete; modules, SDKs, workers and Helm remain reserved.
+records the final complete local gate, all ten passing Ubuntu CI jobs and
+170 matching named local/CI steps. All 64 implement tasks are evidenced,
+including supported targets and human-confirmed T056/T059. Implement is complete;
+converge is next and has not run. Spec 001 remains unaccepted on its original
+branch and draft PR, without an intermediate merge. Final review and explicit
+human acceptance remain separate gates; modules, SDKs, workers and Helm remain
+reserved.

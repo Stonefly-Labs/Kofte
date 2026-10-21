@@ -69,7 +69,7 @@ The report preserves the reviewed checklists, proposed ADR/dependency-adoption
 gates and actual manual/product evidence obligations. No analysis hooks were
 configured. The analyzed inputs and implementation markers remain unchanged;
 the report is design/task evidence, not runtime proof or human acceptance.
-**001 / implement has resumed after T001's human approval**. Its
+**001 / implement is now complete**, after resolving T001's human approval gate. Its
 [`implementation.md`](../../specs/001-repository-bootstrap/implementation.md)
 records passing entry/checklist gates, the initial unavailable reviewer and the
 subsequent explicit decision: "bro I approve adr 002". ADR 0002 is Accepted,
@@ -91,13 +91,19 @@ passed at `6cab683`, and supported-target T058 is now evidenced.
 The human subsequently confirmed T056 and T059 complete and checked both task
 markers. The confirmation is recorded verbatim in the implementation report;
 no additional reviewer observations or reference measurements are invented.
-The same implement run continues through all remaining tasks. T060's final
-documentation review is complete; T061-T064's full verification, CI inspection
-and evidence reconciliation are in progress. A commit checkpoint is not a
-reason to stop the active implement stage. Continue on
+The original implement run completed all 64 tasks, including final documentation,
+the fresh complete local gate, actual CI inspection and explicit coverage of
+all 15 scenarios, 17 functional requirements, six success criteria and twelve
+constitutional principles. The final source has 170 passing named steps locally
+and in CI. A macOS zombie-group probe race discovered by the final run was
+reproduced and corrected without weakening cleanup or performance bounds.
+The driver now selects **converge**, which this invocation does not execute.
+A commit checkpoint was not a reason to stop the active implement stage.
+Continue future stages on
 `feature/001-specify-repository-bootstrap` and the same
 [draft PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4),
-**without an intermediate merge**. Converge has not begun.
+**without an intermediate merge**. Converge, final review and explicit human
+feature acceptance have not begun; PR #4 stays draft.
 
 The human-directed [workflow correction](../adr/0001-feature-delivery-lifecycle.md)
 removes per-step merge gates. Its constitution v2.0.0 amendment travels with this

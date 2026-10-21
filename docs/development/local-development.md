@@ -1,9 +1,10 @@
 # Local bootstrap development
 
-**Status:** Spec 001 implementation is in progress. Local SQLite/host/web,
+**Status:** Spec 001 implementation is complete. Local SQLite/host/web,
 owned PostgreSQL verification, guarded store recovery and generated Development
-OpenAPI and fixture-owning named verification now exist; full local/CI
-and human gates remain separate.
+OpenAPI and fixture-owning named verification have final local/CI evidence and
+human-confirmed manual tasks. Convergence, final review and explicit human
+feature acceptance remain separate, unexecuted stages.
 This is not a feature-acceptance or production guide.
 See the [implementation evidence](../../specs/001-repository-bootstrap/implementation.md).
 

@@ -3,7 +3,7 @@
 **Feature Branch**: `feature/001-specify-repository-bootstrap`
 **Feature Directory**: `specs/001-repository-bootstrap`
 **Created**: 2026-10-20
-**Status**: Draft specification; not implemented or accepted
+**Status**: Implemented; convergence, final review and explicit human acceptance pending
 **Constitution**: Product principles from v1.0.0; v2.0.0's human-directed workflow correction applies (see [ADR 0001](../../docs/adr/0001-feature-delivery-lifecycle.md))
 **Input**: Exact feature description extracted by the driver's `prompt` command:
 

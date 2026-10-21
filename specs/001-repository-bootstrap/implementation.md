@@ -1,10 +1,11 @@
 # Implementation Evidence: 001 - Repository Bootstrap
 
-**Stage status:** Blocked on required human evidence after all ten local automated
-groups passed. Real-provider recovery, generated contracts, controlled browser/
-privacy checks and named verification are implemented. Human accessibility/
-reference-contributor and final target/CI gates remain; full implementation is
-not complete.
+**Stage status:** Implementation complete, T001-T064 evidenced. The final clean
+published source passes all ten local groups and all ten actual Ubuntu CI jobs.
+T056/T059 have explicit human completion confirmation. The final reconciliation
+below supersedes earlier blocked/checkpoint statuses without rewriting them.
+Convergence, final review and explicit feature acceptance remain separate stages;
+spec 001 is not accepted and PR #4 remains draft.
 **Attempt date:** 2026-10-20 (repository working date; ledger uses UTC).
 **Original entry revision:** `c26756d88fba805481bf51567389be501a7d7f9f`.
 **Branch / PR:** `feature/001-specify-repository-bootstrap`,
@@ -638,3 +639,220 @@ ten actual warm restarts and validated fixture/timing observations. Prettier
 accepts the changed test; the repository checker, all 100 Python tests and
 `git diff --check` pass. These focused results do not replace T061's complete
 gate.
+
+## Final implementation evidence and coverage - 2026-10-21
+
+### T061 - Complete final local gate
+
+On clean published **`b400bc7fb332ec15f9f9fa2edc4fd93507589d13`**,
+`python3 scripts/verify.py --suite all --disposable-postgres --warm-starts 10`
+**passed, exit 0**. Every one of the following ten reports has `scope: all`,
+`completeGate: true`, `outcome: passed` and every named step passing.
+All **170 named steps**, including required acquisition/build/test commands,
+ownership guards, actual runtime controls, capture and cleanup, were inspected;
+the successful wrapper and all ten outcomes jointly establish this gate.
+The earlier failed `82ec9a4` run remains recorded above, not relabeled green.
+
+| Group | Named steps | Seconds | Report beneath ignored `artifacts/verification/` |
+| --- | --- | --- | --- |
+| quality | 17 | 22.429 | `quality-none-f42c8ffd5fa84a08bf246fbf8ddffc48.json` |
+| unit | 8 | 4.517 | `unit-none-c23841694e444a91a4df5e3ae7246296.json` |
+| integration SQLite | 5 | 2.325 | `integration-sqlite-78f6cec9a85240df9d60ac84ba0979f9.json` |
+| integration PostgreSQL | 6 | 27.283 | `integration-postgres-4d0ac13c6f96421f8dc3f0b65c7aa528.json` |
+| recovery both | 32 | 126.989 | `recovery-both-4d61acf1ceff447683f8ef4a825ca7d6.json` |
+| contract both | 30 | 34.036 | `contract-both-50efd4836f764d5f82140f7d0f2ab3b9.json` |
+| browser | 16 | 47.642 | `browser-none-7a374d2cd6b9493aa41e83c008ea9cd7.json` |
+| privacy both | 30 | 21.173 | `privacy-both-615f063a827044afbce83741bf653f8c.json` |
+| startup ten cycles | 8 | 7.040 | `startup-none-bfa2cec6192d483e8a577f77b8a7bab8.json` |
+| failure propagation | 18 | 163.294 | `failure-propagation-none-e0df67e6080043689ec62778635fa63e.json` |
+
+Actual local environment: supported macOS 26.5 arm64 (Darwin 25.5.0),
+18 logical CPUs, **68,719,476,736 physical memory bytes**, Python 3.15.0,
+.NET SDK 10.0.402/runtime 10.0.13, Node 24.22.0/npm 11.19.1 and the previously
+recorded Docker/Compose/pinned Chromium baseline. Session-local tools were
+selected explicitly; no global tool or dependency pin changed.
+Locked restores left all tracked files unchanged, including the npm and three
+NuGet lockfiles; the complete gate ended with a clean worktree.
+
+Quality executed these exact child commands, all **passed**, rather than merely
+checking that scripts exist:
+
+| Child command | Result |
+| --- | --- |
+| `python3 scripts/check_repository.py` | Passed |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed, 100 tests |
+| `git diff --check` | Passed |
+| `dotnet restore Kofte.slnx --locked-mode` | Passed |
+| `dotnet format Kofte.slnx --verify-no-changes --no-restore` | Passed |
+| `dotnet build Kofte.slnx --no-restore -c Release -warnaserror` | Passed |
+| `npm ci` | Passed, no tracked drift |
+| `npm run format:check` | Passed |
+| `npm run lint --workspaces --if-present` | Passed |
+| `npm run typecheck --workspaces --if-present` | Passed |
+| `npm run contract:check` | Passed |
+| `npm run build --workspaces --if-present` | Passed |
+| `npm run dependencies:check` | Passed, reviewed 403 npm / 69 NuGet identities |
+
+The unit group executes the dedicated native unit project, web and shared
+contract tests and Python tests. Integration selects real SQLite/PostgreSQL
+traits with a nonzero minimum expected test count. Recovery executes both native
+recovery selections and actual browser/store/host journeys. Contract executes
+provider-intersected native generated OpenAPI/Production/Staging policy tests
+and both providers' actual HTTP/adapter tests. Browser executes status/recovery
+and all-state accessibility; privacy executes both providers' actual HTTP/UI/
+console/runtime scans plus supervisor capture. Their report steps retain exact
+runner arguments, with private runtime arguments deliberately redacted.
+
+Failure propagation passed its actual quality/PostgreSQL/browser baselines,
+then confirmed named nonzero test, formatter, build, unavailable-PostgreSQL and
+missing-Chromium commands in a separately owned checkout. Passing this group
+means failures propagated as expected, not that deliberately broken checks
+were reported as successful.
+
+### T062 - Actual final source CI and parity
+
+At head **`b400bc7`**, [repository checks 39644293494](https://github.com/Stonefly-Labs/Kofte/actions/runs/39644293494)
+and [product checks 39644293557](https://github.com/Stonefly-Labs/Kofte/actions/runs/39644293557)
+both **passed**. All ten product jobs completed successfully: quality, unit,
+integration-sqlite, integration-postgres, recovery, contract, browser, privacy,
+startup and failure-propagation. No job was pending, skipped or unavailable.
+
+All ten uploaded safe JSON artifacts were downloaded and every child outcome
+inspected. Each corresponding local/CI group has the **same ordered named-step
+inventory**, 170 total; CI runs the documented targeted suite commands while
+the final local invocation runs their complete `all` expansion. CI reports
+correctly say `scope: targeted`, `completeGate: false`; no individual job is
+misrepresented as an all-suite invocation.
+
+GitHub tested synthetic PR merge **`dfe6690af45761f3bcab58da7f189307b98048f5`**.
+The GitHub commit API verified its parents as base
+`5e72fcc61724db6b2f68c53987ccb64f3debad72` and implementation head
+`b400bc7fb332ec15f9f9fa2edc4fd93507589d13`. These are real PR-checkout results,
+not a claim that artifact revision equals the branch head.
+
+Actual runners: Ubuntu 24.04 x64, four logical CPUs, Python 3.12.3,
+SDK 10.0.402, Node 24.22.0/npm 11.19.1, and physical memory
+**16,759,304,192-16,766,414,848 bytes**. These runners and the local 64-GiB
+machine are not the 8-GiB reference machine. The human-confirmed T059 task,
+not a hardware equivalence claim, supplies that manual/reference gate.
+
+The final startup reports retain the following actual built-asset measurements,
+rounded here to six decimals; **every local and CI fixture match is true**.
+Each readiness value is below the unchanged 285-second work budget and each
+usable-page value below two seconds, with existing bounded owned cleanup.
+
+| Cycle | Local ready s | Local usable-page s | CI ready s | CI usable-page s |
+| --- | --- | --- | --- | --- |
+| 1 | 0.371592 | 0.066465 | 0.622941 | 0.118594 |
+| 2 | 0.364400 | 0.029071 | 0.608585 | 0.056828 |
+| 3 | 0.361647 | 0.024061 | 0.595158 | 0.069147 |
+| 4 | 0.361667 | 0.023386 | 0.598719 | 0.049863 |
+| 5 | 0.373873 | 0.033604 | 0.605606 | 0.050738 |
+| 6 | 0.377284 | 0.025981 | 0.605240 | 0.050183 |
+| 7 | 0.361133 | 0.026545 | 0.601538 | 0.051332 |
+| 8 | 0.395914 | 0.022904 | 0.602354 | 0.047863 |
+| 9 | 0.366257 | 0.028986 | 0.597537 | 0.054745 |
+| 10 | 0.365943 | 0.024609 | 0.601768 | 0.049811 |
+
+### T063 - Final scenario and requirement reconciliation
+
+The tables below reference the passing final groups/children above and actual
+test identifiers, not merely task checkboxes. T056/T059 use the verbatim human
+completion attestation already recorded; no additional reviewer observations,
+unfamiliar-contributor details or reference-machine samples are invented.
+
+| Acceptance scenario | Evidence and boundary |
+| --- | --- |
+| US1.1 | Actual supervisor/guide exercises recorded above, human-confirmed T059, `startup-warm-restarts` and `bootstrap.spec.ts` show the real ready, named, bootstrap-only host/web page. |
+| US1.2 | SQLite integration and privately initialized startup fixtures work with no optional modules, external database or cloud runtime; quality builds the module-free host/web. PostgreSQL is opt-in verification only. |
+| US1.3 | `ExplicitInitPersistsFixturesAcrossNewConnectionsAndProbes` and all ten local/CI startup cycles preserve the exact run-owned fixture; ordinary start never initializes/replaces a store. |
+| US1.4 | Supervisor tests `test_occupied_port_is_not_taken_over`, `test_preflight_checks_every_exact_tool_version` and `test_child_exit_and_deadline_fail_by_component`; actual wrong-SDK refusal identifies `dotnet`; recorded corrected-tool startup and repeated warm restart succeed. |
+| US2.1 | Final all/CI groups and every quickstart quality child pass with identifiable individual outcomes. |
+| US2.2 | `OwnedLimitedRoleRoundTripsOnFreshConnectionsAndProbes`, privilege/outage checks and actual owned PostgreSQL provisioning/cleanup use the pinned real service, never an in-memory substitute. |
+| US2.3 | `failure-propagation` proves all five actual controlled failures after real baselines; mandatory provider/browser absence is nonzero, not skipped. |
+| US2.4 | Actual locked restores, exact tool preflights, full dependency enforcement and clean tracked files; all ten CI jobs use the same pinned baseline. |
+| US3.1 | Both-provider recovery, `ActualHostReprobesSchemaPrivilegesWithoutSqliteFallback`, `WrongCredentialsAndAnActualOwnedServiceOutageNeverSelectSqlite`, and the actual selected-store-loss browser journey prove live 200, ready 503 and clearing stale healthy UI. |
+| US3.2 | Six `useBootstrapStatus` adversarial regressions plus actual hanging-attempt, host-stop/restart and retry browser journeys prove bounded transfer/body parsing, 30-second rescheduling, focus revalidation and late-result refusal. |
+| US3.3 | Native configuration/failure tests, `RestrictedUserRefusesUnwritableStoreWithoutChangingIt`, `StartupNeverCreatesMissingOrReplacesCorruptFiles`, containment/link/FIFO/permission cases and real supervisor capture refuse unsafe state without fallback/replacement. |
+| US3.4 | Both-provider privacy HTTP/browser/runtime scans, native diagnostic tests and supervisor capture seed credential-like values and inspect correlated sanitized failures; only safe JSON is persisted. |
+| US4.1 | `GeneratedDevelopmentDocumentMatchesTheCompleteBaseline`, both providers' `EveryDocumentationMethodIsAbsentOutsideDevelopment`, and full actual host/adapter OpenAPI/access/input/status/no-store contracts pass. |
+| US4.2 | All-state axe/keyboard/focus/reduced-motion/reflow tests at 320/768/1440, both 200%-text font fallbacks, focused announcement regressions and human-confirmed T056. Automated checks alone are not called a full manual WCAG review. |
+| US4.3 | `bootstrap.spec.ts`, actual page/status source and negative contract paths show honest empty scope with no fabricated identity, modules, privileged controls or MCP tools. |
+
+| Functional requirement | Final evidence |
+| --- | --- |
+| FR-001 | Quality native/workspace builds, actual startup/browser and only the shared bootstrap contract package; module-free host. |
+| FR-002 | Reconciled README/contributor/local guide/quickstart, actual supervisor exercises, tool/port failure tests and human-confirmed T059 guide task. |
+| FR-003 | Actual SQLite initialization/startup/persistence, nonzero supervisor prerequisite/build/child/deadline failures and exact stop/restart fixture preservation. |
+| FR-004 | Real bootstrap/empty/status/recovery journeys, six hook adversarial tests and focus/announcement regressions; unchanged 10-second attempt and 30-second refresh budgets. |
+| FR-005 | Fresh real-provider live/ready, actual privilege/store outage and HTTP/adapter 200/503 tests; sanitized correlation/no-store fields. |
+| FR-006 | Complete native-generated Development OpenAPI equality and runtime HTTP contracts; Production/Staging absence on both providers. |
+| FR-007 | Real-provider round-trip/reconnection and platform-only file/schema ownership; canonical-path, symlink/hardlink/FIFO, permission and no-fallback tests. |
+| FR-008 | `Program.cs`/health route registrations and both-provider negative HTTP/adapter contracts expose only non-sensitive diagnostics/Development docs; no identity/business/admin/fault/MCP surface. |
+| FR-009 | Strict profile/address/origin/data configuration, loopback/explicit unsafe-exposure guards and supervisor/native/adapter configuration regressions. |
+| FR-010 | Native diagnostic/telemetry tests and both-provider/supervisor privacy capture; correlated sanitized operational events with no mandatory collector or raw configuration/request logging. |
+| FR-011 | All-state browser accessibility and 200%-text/reflow, keyboard/focus/announcement tests plus human-confirmed T056; no full design-system/extension claim. |
+| FR-012 | All exact quality children, native/web/shared/Python units, provider integration, contracts, actual Playwright recovery/privacy/startup and documented selectors pass. |
+| FR-013 | Actual repository/product CI and 170-step local/CI parity; five real controlled failures propagate by name. |
+| FR-014 | Reviewed pins/lockfiles, 403 npm/69 NuGet dependency checks including immutable metadata/notices, locked no-drift restores and exact supported tool preflights. |
+| FR-015 | No application schema/EF context/migration ships. Provider fixture persistence, incompatible/corrupt-state refusal, SQLite verified backup/new-root/replacement recovery and matching-image owned PG restore pass; no downgrade or module-migration claim. |
+| FR-016 | Explicit CLI confirmation/lease/backup guards, owned new PostgreSQL target and ownership-refusal tests, active-host/concurrent-operation refusal and exact recovery fixtures; no stop/retry deletion. |
+| FR-017 | Updated README/docs/architecture/quickstart/task/report/driver, actual results and scope limits; feature acceptance, module isolation, production and MVP completion are not claimed. |
+
+| Success criterion | Evidence and remaining scope boundary |
+| --- | --- |
+| SC-001 | Human-confirmed T059 supplies the unfamiliar-contributor/reference guide task; actual supervisor and fresh final local/CI readiness are supporting automation, not invented reference observations or acquisition timing. |
+| SC-002 | Ten exact-fixture-preserving local and CI warm cycles, each ready/page bound passing; T059 reference completion is human-attested, without invented granular measurements. |
+| SC-003 | Final all/CI and every required child pass; actual test/formatter/build/PG/Chromium controlled failures produce the expected named failures. |
+| SC-004 | Both-provider outages/invalid-state/recovery, actual host restart/browser retries and hook transfer/body/late-result/focus/cadence cases enforce actionable failure and bounded refresh without reinstall/reset. |
+| SC-005 | Zero serious/critical axe findings across required states/widths, keyboard/focus/announcement/reflow regressions and human-confirmed T056; no agent-only manual pass. |
+| SC-006 | Both providers' persistence/recovery and complete transient privacy scans pass with zero seeded-secret disclosure; ownership/cleanup guards preserve unrelated data. |
+
+| Constitutional principle | Applicable evidence / explicitly unproved future obligations |
+| --- | --- |
+| I - Product and brand | Köfte UI/name, MIT foundation, module-free real local start; no required Hoard/cloud dependency. |
+| II - Modularity and trust | One native host, bootstrap-local features and narrow shared contract. No fake module manifest/lifecycle/SDK, plugin sandbox or remote frontend loader; actual module obligations remain 002/004/014/020. |
+| III - Vertical slices | Direct native handlers/DI, no MediatR/AutoMapper; dedicated normally included .NET test-project source and reviewed dependency inventory. |
+| IV - Storage | Real platform SQLite file/restricted canonical root and `kofte_system` limited-role PostgreSQL schema, leases/containment/ownership/recovery tests. Module registry, allocator collision/concurrency and schema-local EF migrations remain 003 and schema-bearing modules, not proved by platform fixtures. |
+| V - Transactions | Provider-local probes/recovery and no cross-module table access, joins, `ATTACH` or ACID claim. Versioned domain coordination/outbox/idempotency work is inapplicable without modules/side effects and remains mandatory later. |
+| VI - Integration safety | Exact minimal public diagnostic allowlist, strict validated inputs/configuration, correlated secret-safe failures, least-privilege owned PG and no fake identity. Actor/team/resource authorization/audit and external-integration controls remain 005/006/009 and later domain specs. |
+| VII - MCP | Runtime negative-path evidence and no endpoint/tools/authorization bypass. Authenticated shared-operation MCP is still required by 007/013; external federation/chat remain post-MVP. |
+| VIII - Durable work/realtime | No resources/jobs/events/providers/subscriptions ship; readiness polling is not a durable job or SignalR proof. Those contracts/recovery/permission obligations remain their later MVP specs. |
+| IX - Accessible frontend | Actual Next/React/TypeScript/Tailwind/shadcn/Radix/Lucide baseline, honest states, measured browser/a11y/manual evidence; full navigation and trusted extension registration remain 008/014. |
+| X - Portability | Actual supported macOS/Ubuntu, real providers, pinned builds/CI, local configuration/diagnostics/telemetry/recovery. Native Windows and production TLS/auth/Kubernetes packaging are not claimed; deployment obligations remain 022/024. |
+| XI - Evidence | All actual positive/negative/provider/contract/browser/recovery/privacy/controlled-failure results and human attestations above. No application schema requires bootstrap migration testing; module migration/reference-module/team/MCP/job/deployment release proof remains mandatory at its later feature/release gate. |
+| XII - Scope and traceability | All 15 scenarios, 17 FRs, six SCs and twelve principles mapped; human ADR/manual decisions recorded; original branch/draft PR retained; only implement completes, not the numbered feature or MVP. |
+
+Final scope inspection confirms production source registers only live/ready and
+Development OpenAPI, plus the fixed web readiness adapter. No production
+`CREATE TABLE`/fixture schema, fake actor, domain/admin/fault/MCP route, module
+SDK or unrelated feature was added. Fixture/provisioning/fault controls remain
+in test projects/test tooling; .NET tests are not in production slices or
+source-linked. Modules, UI/module SDKs and Helm remain tracked placeholders.
+The reviewed delivery file list contains no local store, credentials, backup,
+browser output, dependency cache or verification artifact; explicit ignore
+checks pass. The temporary errno helper and nine inspected diagnostic outputs
+were removed. Safe CI reports are available from the linked run, not replaced
+by raw logs/screenshots/traces.
+
+### T064 - Implement-only ledger and handoff
+
+All 64 tasks are evidenced and reconciled. Current README/docs, spec/contract
+status, task header/footer and this report distinguish a completed implementation
+from an unaccepted feature. Read-only checklist gates remain **16/16** and
+**36/36**; `.specify/extensions.yml` is absent at final inspection, so no
+post-implementation hook is configured or omitted.
+
+The driver's `complete` transition records this report, all checked tasks and
+the unchanged reviewed checklists for the **original** running implement stage,
+then selects **converge** without executing it. The final publication contains
+only documentation/task/ledger reconciliation after tested source `b400bc7`;
+required `python3 scripts/check_repository.py`,
+`python3 -m unittest discover -s scripts/tests -v` (100 tests) and
+`git diff --check` pass on that final intended diff. Its new CI results belong
+in the existing PR handoff, not a fictional
+self-referential source-revision claim.
+
+Keep [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) **draft**, with the
+same branch. No convergence, final review, acceptance, ready-for-merge request,
+merge, close, auto-merge or branch deletion is performed by this stage.
