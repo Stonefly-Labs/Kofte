@@ -1,7 +1,10 @@
 # Implementation Evidence: 001 - Repository Bootstrap
 
-**Stage status:** In progress; dependency review and foundations implemented,
-with initial local SQLite/host/web evidence. Full implementation is not complete.
+**Stage status:** Blocked on required human evidence after all ten local automated
+groups passed. Real-provider recovery, generated contracts, controlled browser/
+privacy checks and named verification are implemented. Human accessibility/
+reference-contributor and final target/CI gates remain; full implementation is
+not complete.
 **Attempt date:** 2026-10-20 (repository working date; ledger uses UTC).
 **Original entry revision:** `c26756d88fba805481bf51567389be501a7d7f9f`.
 **Branch / PR:** `feature/001-specify-repository-bootstrap`,
@@ -87,7 +90,7 @@ planned baseline; Docker Engine 29.8.2 and Compose v5.5.0 responded. No tool was
 installed or changed. Exact graph/peer resolution, license/provenance/notices,
 image/action pins and locked reproducibility were the next T002 work, before adoption.
 
-## Current implementation checkpoint - 2026-10-21
+## Published foundation checkpoint - 2026-10-21 (`2f4c9e0`)
 
 This continues the original running implement stage after `d54c368`, not a
 completed stage or feature. The [dependency review](../../docs/development/dependencies.md)
@@ -201,3 +204,192 @@ SPECIFY_FEATURE_DIRECTORY=specs/001-repository-bootstrap \
 Do not begin a second run, advance to converge, mark the PR ready or request a
 merge. Dependency adoption, later manual evidence and final explicit human
 feature acceptance remain separate gates.
+
+## Recovery and verification increment - 2026-10-21
+
+This continues the **same implement stage**, rather than treating T001 or the
+published T024 checkpoint as completion. Measurements below were made on the
+intended working tree after `2f4c9e0`; that base revision appears in the local
+reports and is not claimed to identify the unpublished source snapshot.
+Actual environment: macOS **26.5 (25F71), arm64**, 18 logical CPUs, 64 GiB RAM,
+Python 3.15.0, session-local .NET SDK 10.0.402/runtime 10.0.13,
+Node 24.22.0/npm 11.19.1, Docker 29.8.2/Compose 5.5.0 and pinned Chromium.
+This is supported macOS evidence, **not** the Ubuntu 4-core/8-GiB/SSD reference.
+
+### Implemented boundaries and actual regressions
+
+- Real PostgreSQL 17 fixtures use the immutable reviewed image, explicit
+  disposable opt-in, local Docker context, unique recorded resources and newly
+  created database/role OIDs and ownership comments. Missing proof refuses
+  cleanup. The restricted app role and `kofte_system` round-trip/reconnect exact
+  opaque fixtures; wrong credentials, revoked schema privileges and actual
+  service pause yield unready without a SQLite fallback, while liveness remains
+  available. Host restart/fixture cleanup resume only the owned service.
+- SQLite backup uses its provider backup API, private verified backup/metadata
+  pairs and stopped-host leases. New-root restore and separately confirmed
+  replacement with a fresh destination backup preserve exact fixtures.
+  Unconfirmed reset/replacement, stale backup, corrupt metadata/archive, active
+  lease, zero/truncated file, hardlinks/FIFO, traversal/symlinks and restricted
+  non-root file/directory permissions fail without changing outside data.
+  No application schema version, empty migration or automatic repair is invented.
+- Matching-image PG dump/restore uses an exclusive advisory operation lease and
+  connection admission guard. A running host/concurrent operation, nonempty
+  target, incompatible major metadata or corrupt archive is refused; restore
+  succeeds only in a newly owned empty schema. This is test-only infrastructure,
+  not a production database command or mutation endpoint.
+- Native Development OpenAPI is generated from endpoint/type metadata and fully
+  compared against the baseline, normalizing only the verified owned listener
+  and omitted/empty root security. Production/Staging documentation is absent
+  for GET/POST/HEAD on both actual providers. Real HTTP/adapter tests enforce
+  exact schemas, anonymous applicability, no-store, 200/503/empty 400/404/405,
+  actual GET bodies and no credential reflection/admin/test/MCP routes.
+- A failing fake-clock regression exposed a polling cadence bug: a manual
+  attempt overlapping the old fixed interval could defer the next start to
+  39 seconds. Refresh now schedules 30 seconds from each actual attempt start.
+  Absolute 10-second body deadlines, cancellation, late results, stale/refocus
+  behavior and nonduplicated live announcements have focused regressions.
+- Owned runtime controls and capture are test-only. Both-provider browser
+  outages/restarts recover without reset; hung/malformed requests cannot retain
+  stale healthy display. Privacy scans cover caller/configuration canaries,
+  HTTP/UI/browser console and host/Next/supervisor output, with raw buffers
+  transient and capture/control/scanner failures propagated. All-state axe,
+  keyboard/focus, reduced-motion and 200% text zoom pass at 320/768/1440 widths;
+  this does not constitute a human WCAG review.
+- Dependency enforcement found a real candidate-versus-actual graph gap:
+  15 Microsoft.Extensions transitive identities resolved at 10.0.0 rather than
+  reviewed 10.0.13. Explicit central transitive pins and regenerated locks now
+  use the already reviewed versions. Two existing British-spelled `LICENCE`
+  notices were reconciled against pinned archives. The checker passes
+  **403 npm / 69 NuGet identities**, including provenance/edges/notices and
+  image/action pins; this is not a newly claimed signature or vulnerability audit.
+
+All .NET source added here belongs to its dedicated unit/integration project;
+no production vertical slice contains or links test source. The shipped host
+still has no fixture table, domain module, fake identity, fault/admin route,
+module SDK or speculative EF model.
+
+### Named targeted evidence
+
+Every command below returned zero with all named child outcomes passed.
+Reports are ignored local artifacts; their identifiers are evidence references,
+not Markdown links to committed files. Targeted reports correctly retain
+`completeGate: false`.
+
+| Exact command | Observed result / report beneath `artifacts/verification/` |
+| --- | --- |
+| `python3 scripts/verify.py --suite quality` | Passed every quickstart child in 18.840s; `quality-none-cacce89ce5e04a6c84820105c483712d.json` |
+| `python3 scripts/verify.py --suite unit` | Passed native/web/shared-contract/Python units; `unit-none-c8ddad79a0564efc841d78cac8c705da.json` |
+| `python3 scripts/verify.py --suite integration --provider both --disposable-postgres` | Both real-provider groups passed; `integration-sqlite-ae696463a7654a85a0edaa982cfd8b95.json`, `integration-postgres-89fd54c912a342a88d1ad87bf621eba3.json` |
+| `python3 scripts/verify.py --suite recovery --provider both --disposable-postgres` | Native and actual browser/store/host recovery, capture and cleanup all passed in 119.600s; `recovery-both-58b8cbc91fb945c8aae5009514386d44.json` |
+| `python3 scripts/verify.py --suite contract --provider both --disposable-postgres` | Actual host/web HTTP/schema/input/503 parity passed in 21.676s; `contract-both-f2f40dae5e0543499367492bd34ce3f8.json`. Later policy selector correction exercises non-Development tests per provider rather than allowing PG cases into SQLite-only checks |
+| `python3 scripts/verify.py --suite browser` | Actual status/recovery plus three-width all-state axe/focus/zoom passed in 46.994s; `browser-none-e16a1f91af3f4f1ea7d0a051f4f49a45.json` |
+| `python3 scripts/verify.py --suite privacy --provider both --disposable-postgres` | Both-provider HTTP/browser/log scanning and real supervisor failure capture passed in 19.033s; `privacy-both-7b30131349724990a16e9311af2364f7.json` |
+| `python3 scripts/verify.py --suite startup --warm-starts 10` | Ten actual private-fixture warm cycles passed in 7.761s; `startup-none-31d3072b84c7439b9e3a43a7e1677c64.json`. This earlier run recorded samples but preceded explicit per-sample 2s enforcement/CI report retention; final rerun is required below |
+| `python3 scripts/verify.py --suite contract --provider sqlite` | Passed without disposable opt-in after provider/class selector intersection was corrected; no PostgreSQL required |
+| `python3 scripts/check_repository.py`; `python3 -m unittest discover -s scripts/tests -v`; `git diff --check` | Passed directly after the targeted increment; 87 Python tests at that point |
+
+Locked .NET restore and `npm ci` ran through quality; before/after SHA-1
+comparisons of all four dependency lockfiles were identical:
+`8caa24c59ac38ce7aecbe353d5dd7bf1945e17b7` (npm),
+`dd0326782cb06592fd4f3d3e0ab254346b55b7f5` (host),
+`82c36a9723a214eafebd395f10c6eb044cdca8d4` (unit),
+`014ce868fc3ce8556d591d4bf811c6554b96c7e7` (integration).
+These are drift comparisons, not cryptographic provenance/signature claims.
+
+The T032 harness previously demonstrated all five actual controlled failures in
+98.8s (`failure-propagation-none-20e4f5f0126d4e1cb9df9a80f0a816a8.json`).
+A later attempt correctly failed its initially unformatted baseline instead
+of laundering that as successful failure propagation. Final formatted-source
+failure/all runs and actual implementation-revision GitHub results must be
+recorded separately; earlier green evidence is not silently substituted.
+
+### Acceptance coverage and remaining gates
+
+| Scope | Actual coverage / limit |
+| --- | --- |
+| US1.1-4; FR-001-004/007/009/016/017 | Real native host/web supervisor, validated configuration, persistence/restart and port/tool ownership failures; original guide exercise plus repeatable warm fixture cycles. Reference timing/unfamiliar-contributor review still required |
+| US2.1-4; FR-012-014 | Named fail-closed runners, locked restores, full dependency review enforcement and isolated controlled failures; workflow invokes those same commands. Targeted local results are not final local/CI acceptance |
+| US3.1-4; FR-003-005/007/009/010/015/016 | Both actual providers, live-vs-ready outage, guarded backup/restore/reset, cancellation/deadlines, browser retry and complete transient privacy capture; no provider fallback or recreation |
+| US4.1-3; FR-004-006/008/010/011 | Generated full-contract equality, exact public access/input policy, actual 503 adapter parity, responsive all-state axe/keyboard/focus/announcement regressions. T056 human review remains open |
+| SC-001/002 | Reproducible private-fixture startup/navigation samples on actual macOS; no Ubuntu reference or unfamiliar-contributor pass inferred |
+| SC-003/004/006 | Actual named failure propagation, provider/browser recovery and privacy/data-containment evidence; final unchanged-source all/CI gate still applies |
+| SC-005 | Automated accessibility evidence only; no human acceptance or complete WCAG claim |
+| Constitution I-XII | Minimal module-free scope/direct handlers; reviewed exact dependencies; provider-local ownership/leases and no cross-module transaction claim; no fake authorization/MCP bypass; accessible honest shell; safe observability/recovery; truthful evidence and one original draft feature PR |
+
+T056 requires a real human's running-page keyboard/focus/announcements,
+contrast/zoom/reflow/readability and applicable WCAG 2.2 AA review. T059 requires
+the stated Ubuntu reference plus an actual unfamiliar contributor following the
+guide. These cannot be supplied by agent inspection, axe, macOS timing or an
+ordinary differently sized CI runner. T058 additionally needs actual Ubuntu
+target results. Their dependent T060-T064 and the implement ledger transition
+remain incomplete until the mandatory evidence exists. No converge, final
+review, feature acceptance or merge is authorized by this checkpoint.
+
+### Stable-source local automated all invocation
+
+`python3 scripts/verify.py --suite all --disposable-postgres --warm-starts 10`
+**passed, exit 0**, after the provider-specific native OpenAPI selector,
+per-sample startup thresholds and safe CI sample retention corrections.
+All ten required groups ran their actual child commands; none was skipped or
+reported as an unavailable-provider pass. The following per-group reports have
+`scope: all`, `completeGate: true` and `outcome: passed`; the CLI success plus
+**all ten outcomes**, not one isolated flag/report, establish this automated run.
+It does not satisfy the separately required human/reference gates or T061's
+still-unmet human prerequisites.
+
+| Group | Seconds | Report beneath `artifacts/verification/` |
+| --- | --- | --- |
+| quality | 17.914 | `quality-none-9882f8d797a44f9b8260b62a54b1b7bb.json` |
+| unit | 3.680 | `unit-none-5676c844d5b149f6a8083bd94ea112e5.json` |
+| integration SQLite | 1.822 | `integration-sqlite-4245c79941a942b6b0795474fa6304a7.json` |
+| integration PostgreSQL | 25.802 | `integration-postgres-1ab901fc9a2045b587708be8ec33af6b.json` |
+| recovery both | 120.925 | `recovery-both-d4307ee2554a490188c6a64839db1b93.json` |
+| contract both | 31.356 | `contract-both-c77bcebae6034580a77b4fa9a6c4d029.json` |
+| browser | 47.013 | `browser-none-9438c62974154bf1befca8562f24c177.json` |
+| privacy both | 20.037 | `privacy-both-fba0dada069d44959df3e2d58389bb27.json` |
+| startup ten cycles | 6.810 | `startup-none-c550694e7af9422389243452a9f3d896.json` |
+| failure propagation | 145.731 | `failure-propagation-none-1bb38ba4f0b544ba8e4dfbc11baf518d.json` |
+
+Quality includes every exact quickstart child, including locked .NET/npm
+restores, format/analyzers/build, all mandatory workspace lint/type/build,
+generation drift and full dependency enforcement. Native/web/shared-contract
+units, both providers' native integration and Production/Staging policies,
+real outage/host restart, privacy scanning and zero serious/critical axe results
+all passed. Failure propagation first passed its real baselines, then observed
+the expected named nonzero test/formatter/build/missing-PG/missing-Chromium
+commands in its separate checkout. This supersedes the earlier failed-baseline
+attempt without erasing it.
+
+Startup's uploaded report now includes a validated `startup-observations` step
+with all ten exact safe samples; no fixture payload/path/credential is retained.
+Rounded below to six decimal places for readability:
+
+| Cycle | Ready seconds | Usable-page seconds | Exact fixture match |
+| --- | --- | --- | --- |
+| 1 | 0.360152 | 0.055045 | true |
+| 2 | 0.356393 | 0.026019 | true |
+| 3 | 0.353572 | 0.023400 | true |
+| 4 | 0.350248 | 0.023373 | true |
+| 5 | 0.353557 | 0.022698 | true |
+| 6 | 0.350491 | 0.022575 | true |
+| 7 | 0.350081 | 0.023269 | true |
+| 8 | 0.347935 | 0.023443 | true |
+| 9 | 0.368297 | 0.024999 | true |
+| 10 | 0.364911 | 0.023741 | true |
+
+These are actual built-asset macOS samples, **not** the Ubuntu reference,
+unfamiliar-contributor or fresh acquisition/build timing gate. The independent
+repository commands were rerun directly after documentation updates:
+`python3 scripts/check_repository.py` passed;
+`python3 -m unittest discover -s scripts/tests -v` passed **93 tests**;
+`git diff --check` passed. Explicit ignore checks cover `.env`, local database,
+backups, verification artifacts and browser results.
+
+T001-T055 and T057 are now checked. T056, T058-T064 stay unchecked.
+Actual implementation-revision GitHub CI has not yet run at this local checkpoint;
+it must be inspected after publication, not inferred from the workflow file.
+The human-input request for actual T056/T059 observations returned unavailable;
+no review, reference/contributor pass or acceptance was fabricated. The driver
+therefore records the same original implement run as blocked, preserving its
+start time and draft PR. Independent publication/CI work continues; a future
+resume requires the missing evidence, not another begin or replacement branch.

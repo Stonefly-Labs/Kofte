@@ -15,17 +15,28 @@ public sealed class StoreLease : IDisposable
         UnixStorePaths.ValidateRoot(root, allowMissing: false);
         var path = Path.Combine(root, ".platform.lock");
         UnixStorePaths.ValidateFile(path, allowMissing: true);
-        var stream = new FileStream(path, new FileStreamOptions
+        FileStream stream;
+        try
         {
-            Mode = System.IO.FileMode.OpenOrCreate,
-            Access = FileAccess.ReadWrite,
-            Share = FileShare.ReadWrite,
-            UnixCreateMode = UnixStorePaths.FileMode
-        });
+            stream = new FileStream(path, new FileStreamOptions
+            {
+                Mode = System.IO.FileMode.OpenOrCreate,
+                Access = FileAccess.ReadWrite,
+                Share = FileShare.ReadWrite,
+                UnixCreateMode = UnixStorePaths.FileMode
+            });
+        }
+        // .NET's Unix sharing lock can refuse the open before our flock.
+        catch (IOException error) when (error.HResult is 11 or 35)
+        {
+            throw new BootstrapException(BootstrapError.StoreBusy);
+        }
         if (Flock(stream.SafeFileHandle.DangerousGetHandle().ToInt32(), 2 | 4) == 0)
             return new StoreLease(stream);
+        var failure = Marshal.GetLastPInvokeError();
         stream.Dispose();
-        throw new BootstrapException(BootstrapError.StoreBusy);
+        throw new BootstrapException(failure is 11 or 35
+            ? BootstrapError.StoreBusy : BootstrapError.StorageUnavailable);
     }
 
     public void Dispose() => stream.Dispose();

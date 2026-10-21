@@ -3,6 +3,7 @@
         <OutputType>Exe</OutputType>
         <IsTestProject>true</IsTestProject>
         <IsPackable>false</IsPackable>
+        <StartupObject>Kofte.Host.IntegrationTests.FixtureProgram</StartupObject>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk" />

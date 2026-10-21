@@ -128,6 +128,14 @@ export interface operations {
         };
       };
       400: components["responses"]["InvalidHealthRequest"];
+      /** @description Unsupported method; empty response body */
+      405: {
+        headers: {
+          "Cache-Control": components["headers"]["NoStore"];
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
     };
   };
   bootstrapReadiness: {
@@ -150,6 +158,14 @@ export interface operations {
         };
       };
       400: components["responses"]["InvalidHealthRequest"];
+      /** @description Unsupported method; empty response body */
+      405: {
+        headers: {
+          "Cache-Control": components["headers"]["NoStore"];
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
       /** @description Startup incomplete or platform store unavailable; no provider fallback */
       503: {
         headers: {
@@ -191,9 +207,18 @@ export interface operations {
           };
         };
       };
+      400: components["responses"]["InvalidHealthRequest"];
       /** @description Documentation route absent outside Development; empty response body */
       404: {
         headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Unsupported method; empty response body */
+      405: {
+        headers: {
+          "Cache-Control": components["headers"]["NoStore"];
           [name: string]: unknown;
         };
         content?: never;

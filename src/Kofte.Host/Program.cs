@@ -2,6 +2,7 @@ using System.Net;
 using Kofte.Host.Bootstrap;
 using Kofte.Host.Features.Bootstrap;
 using Microsoft.Data.Sqlite;
+using Npgsql;
 
 return await BootstrapProgram.RunAsync(args);
 
@@ -19,11 +20,14 @@ public static class BootstrapProgram
                 await StoreCommand.RunAsync(config, args);
                 return 0;
             }
-            if (config.Profile != "local-sqlite")
-                throw new BootstrapException(BootstrapError.ConfigurationInvalid);
-            var store = new SqlitePlatformStore(config.DataRoot);
-            using var lease = StoreLease.Acquire(store.Root);
+            IPlatformStore store = config.Profile == "local-sqlite"
+                ? new SqlitePlatformStore(config.DataRoot)
+                : new PostgresPlatformStore(config.PostgresConnection ??
+                    throw new BootstrapException(BootstrapError.ConfigurationInvalid));
+            using var lease = store is SqlitePlatformStore sqlite ? StoreLease.Acquire(sqlite.Root) : null;
             using var startupBudget = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+            await using var postgresLease = store is PostgresPlatformStore postgres
+                ? await postgres.AcquireHostLeaseAsync(startupBudget.Token) : null;
             await store.ProbeAsync(startupBudget.Token);
             var builder = WebApplication.CreateSlimBuilder();
             builder.Configuration.Sources.Clear();
@@ -39,9 +43,12 @@ public static class BootstrapProgram
             builder.Services.AddSingleton(config);
             builder.Services.AddSingleton<IPlatformStore>(store);
             builder.Services.AddSingleton<HealthHandler>();
+            if (builder.Environment.IsDevelopment()) builder.Services.AddBootstrapOpenApi();
             BootstrapTelemetry.Add(builder.Services, config);
             await using var app = builder.Build();
             app.MapBootstrapHealth();
+            if (app.Environment.IsDevelopment())
+                app.MapOpenApi("/openapi/v1.json").WithName("bootstrapOpenApi").AllowAnonymous();
             if (config.UnsafeExposure)
                 Console.Error.WriteLine("""{"level":"warning","eventCode":"unsafe_local_exposure","component":"host"}""");
             await app.RunAsync();
@@ -53,7 +60,7 @@ public static class BootstrapProgram
             return 1;
         }
         catch (Exception error) when (error is IOException or UnauthorizedAccessException or
-            InvalidOperationException or SqliteException or OperationCanceledException)
+            InvalidOperationException or SqliteException or NpgsqlException or OperationCanceledException)
         {
             BootstrapDiagnostics.Failure(BootstrapError.StorageUnavailable);
             return 1;

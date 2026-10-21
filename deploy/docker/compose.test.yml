@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: postgres:17@sha256:a63c1ea3f6a3a5a1621f97d2aba3b30faecfab4224c1b0000cc85ced57bb1939
+    environment:
+      POSTGRES_USER: kofte_admin
+      POSTGRES_PASSWORD: ${KOFTE_PG_PASSWORD:?owned harness password required}
+      POSTGRES_DB: postgres
+    ports:
+      - target: 5432
+        host_ip: 127.0.0.1
+    labels:
+      io.kofte.bootstrap.run: ${KOFTE_PG_RUN:?owned harness run required}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kofte_admin -d postgres"]
+      interval: 1s
+      timeout: 3s
+      retries: 60
+volumes:
+  postgres:
+    labels:
+      io.kofte.bootstrap.run: ${KOFTE_PG_RUN:?owned harness run required}
+networks:
+  default:
+    labels:
+      io.kofte.bootstrap.run: ${KOFTE_PG_RUN:?owned harness run required}

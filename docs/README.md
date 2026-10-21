@@ -27,12 +27,14 @@ plan, reviewer-owned requirements-quality review, tasks and read-only analysis.
 Those artifacts establish design coverage, not runtime proof or acceptance.
 [ADR 0002](adr/0002-bootstrap-development-baseline.md) records the human-approved
 technical baseline. Implementation now includes reviewed locked dependencies,
-host/web foundations, actual SQLite/HTTP checks, native local startup/restart and
-initial browser/axe evidence. [ADR 0003](adr/0003-dotnet-test-source-ownership.md)
+host/web foundations, actual SQLite/PostgreSQL persistence and failure checks,
+guarded backup/restore, generated Development OpenAPI, local startup/restart and
+browser/axe evidence. [ADR 0003](adr/0003-dotnet-test-source-ownership.md)
 records the human correction: .NET test source physically belongs to its test
 project, never a production slice or source link. The
 [implementation report](../specs/001-repository-bootstrap/implementation.md)
-distinguishes working behavior from the remaining PostgreSQL/recovery/full
-verification/CI/manual gates. The stage remains running on the same branch and
+distinguishes working behavior from the remaining full
+verification/CI/manual gates. All ten local automated groups pass; the stage is
+blocked on unavailable human evidence on the same branch and
 draft PR, without an intermediate merge. Spec 001 and final human acceptance
 remain incomplete; modules, SDKs, workers and Helm remain reserved.

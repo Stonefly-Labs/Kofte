@@ -18,7 +18,8 @@
     "format:check": "prettier --check \"{apps/web,packages/bootstrap-contract,tests/contract,tests/e2e}/**/*.{ts,tsx,json,css,mjs}\" \"*.json\" \"*.mjs\" \"scripts/*.mjs\"",
     "format": "prettier --write \"{apps/web,packages/bootstrap-contract,tests/contract,tests/e2e}/**/*.{ts,tsx,json,css,mjs}\" \"*.json\" \"*.mjs\" \"scripts/*.mjs\"",
     "contract:check": "node scripts/check-contract.mjs",
-    "dependencies:check": "python3 scripts/check_dependencies.py"
+    "dependencies:check": "python3 scripts/check_dependencies.py",
+    "verify": "python3 scripts/verify.py"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

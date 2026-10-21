@@ -217,6 +217,14 @@ test("built runtime preserves a private fixture through warm restarts", async ({
           pageSeconds: (performance.now() - navigation) / 1000,
           fixtureMatches: false,
         });
+        expect(
+          readySeconds,
+          "owned runtime is ready within the work budget",
+        ).toBeLessThan(285);
+        expect(
+          observations[observations.length - 1].pageSeconds,
+          "the built ready page is usable within two seconds",
+        ).toBeLessThan(2);
       } finally {
         await stop(children);
         stopped = true;

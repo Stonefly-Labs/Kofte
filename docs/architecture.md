@@ -78,7 +78,12 @@ and [plan](../specs/001-repository-bootstrap/plan.md) narrow these proposals for
 the foundation: native local host/web processes, npm workspaces, SQLite and
 disposable PostgreSQL verification, with no application tables or empty EF model.
 Module-owned EF contexts/migrations remain mandatory when modules arrive.
-This is planning only, not installed tooling or an implemented runtime.
+The bootstrap's native host/web, SQLite store, disposable PostgreSQL fixtures,
+guarded recovery and generated Development contract are now implemented;
+see the [local guide](development/local-development.md) and
+[actual evidence](../specs/001-repository-bootstrap/implementation.md).
+The broader stack/module/deployment proposals below remain future work, not
+installed features or proof of module isolation, production readiness or acceptance.
 
 ## 4. Suggested solution/repository layout
 

@@ -38,32 +38,32 @@ internal static class UnixStorePaths
             if (allowMissing) return false;
             throw new BootstrapException(BootstrapError.StorageMissing);
         }
-        if ((status.Value.Mode & TypeMask) != RegularType)
+        if ((status.Value.Mode & TypeMask) != RegularType || status.Value.Links != 1)
             throw new BootstrapException(BootstrapError.StorageInvalid);
         RequirePrivate(status.Value, false);
         return true;
     }
 
-    private static void RequirePrivate((uint Mode, uint Owner) status, bool directory)
+    private static void RequirePrivate((uint Mode, uint Owner, ulong Links) status, bool directory)
     {
         var required = (uint)(directory ? DirectoryMode : FileMode);
         if (status.Owner != GetEffectiveUserId() || (status.Mode & 0xfff) != required)
             throw new BootstrapException(BootstrapError.StorageInvalid);
     }
 
-    private static (uint Mode, uint Owner)? Inspect(string path)
+    private static (uint Mode, uint Owner, ulong Links)? Inspect(string path)
     {
         int result;
-        (uint Mode, uint Owner) status;
+        (uint Mode, uint Owner, ulong Links) status;
         if (OperatingSystem.IsMacOS() && RuntimeInformation.ProcessArchitecture == Architecture.Arm64)
         {
             result = MacLstat(path, out var value);
-            status = (value.Mode, value.User);
+            status = (value.Mode, value.User, value.Links);
         }
         else if (OperatingSystem.IsLinux() && RuntimeInformation.ProcessArchitecture == Architecture.X64)
         {
             result = LinuxLstat(path, out var value);
-            status = (value.Mode, value.User);
+            status = (value.Mode, value.User, value.Links);
         }
         else throw new BootstrapException(BootstrapError.ConfigurationInvalid);
         if (result == 0) return status;

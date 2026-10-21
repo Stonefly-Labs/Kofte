@@ -35,7 +35,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 | 🔐 Explicit boundaries | Team-scoped authorization, audited actions and module-owned storage |
 
 > [!IMPORTANT]
-> **Bootstrap implementation is in progress, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page and attached local supervisor now exist. Spec **001** remains open: PostgreSQL, recovery, full contract/privacy/verification/CI and human evidence are not complete. Nothing here claims feature acceptance, production readiness or MVP completion.
+> **Bootstrap implementation is in progress, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All ten local automated verification groups pass on macOS; spec **001** remains open for supported-target/CI and human accessibility/reference/contributor evidence. Nothing here claims feature acceptance, production readiness or MVP completion.
 
 ## 🧭 The shape of things to come
 
@@ -85,8 +85,8 @@ src/           .NET host, local storage/configuration and health slice
 modules/       Reserved for independently packaged reference modules
 packages/      Bootstrap contract; UI/module SDK placeholders remain reserved
 tests/         Dedicated .NET test projects, HTTP contract and browser tests
-deploy/        Reserved Docker and Helm assets
-scripts/       Repository checks, local supervisor and their tests
+deploy/        Pinned disposable PostgreSQL Compose; Helm remains reserved
+scripts/       Repository/dependency checks, supervisor, verifier and their tests
 specs/         Numbered Spec Kit artifacts (not docs/specs/)
 docs/          Product context, decisions, contributor guides and visual assets
 ```

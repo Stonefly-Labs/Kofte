@@ -2,7 +2,7 @@ using Microsoft.Data.Sqlite;
 
 namespace Kofte.Host.Bootstrap;
 
-public sealed class SqlitePlatformStore(string root) : IPlatformStore
+public sealed partial class SqlitePlatformStore(string root) : IPlatformStore
 {
     public string Root { get; } = root;
     public string DatabasePath => Path.Combine(Root, "platform", "platform.db");
@@ -28,17 +28,29 @@ public sealed class SqlitePlatformStore(string root) : IPlatformStore
             Share = FileShare.None,
             UnixCreateMode = UnixStorePaths.FileMode
         })) { }
-        await using var connection = Open();
+        await using var connection = OpenCore(allowEmpty: true);
         using var command = connection.CreateCommand();
         command.CommandText = "PRAGMA journal_mode=DELETE; PRAGMA user_version=0;";
         await command.ExecuteNonQueryAsync();
     }
 
-    public SqliteConnection Open()
+    private static void ValidateSqliteHeader(string path)
+    {
+        using var file = File.OpenRead(path);
+        Span<byte> header = stackalloc byte[16];
+        if (file.Length < 100 || file.Read(header) != header.Length ||
+            !header.SequenceEqual("SQLite format 3\0"u8))
+            throw new BootstrapException(BootstrapError.StorageInvalid);
+    }
+
+    public SqliteConnection Open() => OpenCore(allowEmpty: false);
+
+    private SqliteConnection OpenCore(bool allowEmpty)
     {
         UnixStorePaths.ValidateRoot(Root, allowMissing: false);
         UnixStorePaths.ValidateRoot(Path.GetDirectoryName(DatabasePath)!, allowMissing: false);
         UnixStorePaths.ValidateFile(DatabasePath);
+        if (!allowEmpty) ValidateSqliteHeader(DatabasePath);
         foreach (var suffix in new[] { "-journal", "-wal", "-shm" })
             UnixStorePaths.ValidateFile(DatabasePath + suffix, allowMissing: true);
         var connection = new SqliteConnection(new SqliteConnectionStringBuilder

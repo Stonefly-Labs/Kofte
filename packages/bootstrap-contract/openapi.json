@@ -3,7 +3,7 @@
   "info": {
     "title": "Köfte Bootstrap API",
     "version": "1.0.0",
-    "description": "Planned local-only, non-sensitive bootstrap contract. No identity, domain operation or module/MCP interface."
+    "description": "Local-only, non-sensitive bootstrap contract. No identity, domain operation or module/MCP interface."
   },
   "servers": [{ "url": "http://127.0.0.1:5080" }],
   "security": [],
@@ -19,7 +19,11 @@
             "headers": { "Cache-Control": { "$ref": "#/components/headers/NoStore" } },
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LiveStatus" } } }
           },
-          "400": { "$ref": "#/components/responses/InvalidHealthRequest" }
+          "400": { "$ref": "#/components/responses/InvalidHealthRequest" },
+          "405": {
+            "description": "Unsupported method; empty response body",
+            "headers": { "Cache-Control": { "$ref": "#/components/headers/NoStore" } }
+          }
         }
       }
     },
@@ -35,6 +39,10 @@
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ReadyStatus" } } }
           },
           "400": { "$ref": "#/components/responses/InvalidHealthRequest" },
+          "405": {
+            "description": "Unsupported method; empty response body",
+            "headers": { "Cache-Control": { "$ref": "#/components/headers/NoStore" } }
+          },
           "503": {
             "description": "Startup incomplete or platform store unavailable; no provider fallback",
             "headers": { "Cache-Control": { "$ref": "#/components/headers/NoStore" } },
@@ -73,7 +81,12 @@
               }
             }
           },
-          "404": { "description": "Documentation route absent outside Development; empty response body" }
+          "400": { "$ref": "#/components/responses/InvalidHealthRequest" },
+          "404": { "description": "Documentation route absent outside Development; empty response body" },
+          "405": {
+            "description": "Unsupported method; empty response body",
+            "headers": { "Cache-Control": { "$ref": "#/components/headers/NoStore" } }
+          }
         }
       }
     }

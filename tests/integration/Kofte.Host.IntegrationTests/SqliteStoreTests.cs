@@ -16,6 +16,7 @@ public sealed class TempRoot : IDisposable
     }
 }
 
+[Trait("Provider", "sqlite")]
 public sealed class SqliteStoreTests
 {
     [Fact]

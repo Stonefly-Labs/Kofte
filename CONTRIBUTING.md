@@ -1,8 +1,9 @@
 # Contributing to Köfte
 
 Welcome! **Spec 001's bootstrap implementation is in progress** through the
-numbered Spec Kit workflow. The working local SQLite/host/web increment does not
-complete spec 001, introduce feature modules or prove production readiness.
+numbered Spec Kit workflow. The local host/web, real-provider verification,
+guarded recovery and generated contract do not complete spec 001, introduce
+feature modules or prove production readiness.
 See the [current local guide](docs/development/local-development.md).
 
 ## Prerequisites
@@ -42,9 +43,10 @@ CI fetches full history and checks the actual PR-base-to-head diff (or the push
 range), rather than treating a shallow merge checkout as an entirely new tree.
 
 Also run the smallest relevant .NET/web tests, formatting, lint and type/build
-checks in the [local guide](docs/development/local-development.md). The complete
-named verification runner is still being implemented; focused results do not
-replace the eventual full gate. Do not replace failed checks with a success claim.
+checks in the [local guide](docs/development/local-development.md). Use its
+fixture-owning named verification suites for runtime checks; focused results do
+not replace the complete all-suite, CI and human gates. Do not replace failed
+checks with a success claim.
 
 ### .NET test source ownership
 

@@ -79,9 +79,17 @@ locks, host/web/configuration/telemetry foundations, private SQLite persistence,
 actual HTTP checks and initial local/browser evidence. The human-directed
 [.NET source ownership correction](../adr/0003-dotnet-test-source-ownership.md)
 keeps tests physically in their .NET test projects; constitution v2.0.1 and the
-affected plan/task paths agree. The full PostgreSQL, recovery, contract/privacy,
-verification/CI and human evidence remain outstanding. Continue this same
-implement stage on
+affected plan/task paths agree. The later increment implements real PostgreSQL,
+guarded recovery, generated Development OpenAPI and fail-closed named
+verification. Both-provider controlled outage/privacy, full HTTP/adapter
+contracts and all-state browser/axe checks have actual local evidence.
+All ten local automated groups now pass, including controlled failures and
+ten validated private-fixture starts. T001-T055 and T057 are evidenced.
+T056's human WCAG review, target/CI evidence and T059's Ubuntu reference/
+unfamiliar-contributor evidence remain open; dependent final tasks are not
+automatically complete. The human was unavailable to supply the required
+observations, so the driver now records this same implement run as **blocked**.
+After actual evidence resolves the gates, resume this same implement stage on
 `feature/001-specify-repository-bootstrap` and the same
 [draft PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4),
 **without an intermediate merge**. Converge has not begun.
@@ -93,8 +101,9 @@ feature; product principles and explicit human acceptance remain unchanged.
 Spec 001 is broader than repository setup: it requires a working API/UI
 skeleton and test/local profiles. Specification, clarification, planning,
 checklist review, task generation and analysis add no product implementation or human
-feature acceptance. All quickstart product commands
-are future implementation targets, not available commands or passing evidence.
+feature acceptance. Quickstart commands were planning targets at those earlier
+stages; the current local guide now identifies implemented commands and links
+their actual evidence. Their existence alone is not passing evidence.
 The checked requirements
 checklist records the specification author's review only; `quality.md` is a
 separate human-owned review gate. Its generation did not approve any item.

@@ -13,17 +13,25 @@ export function useBootstrapStatus() {
   const [checking, setChecking] = useState(false);
   const attempt = useRef(0);
   const active = useRef<AbortController | null>(null);
-  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const deadlineTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
+  const refreshTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
 
   const cancel = useCallback(() => {
     ++attempt.current;
     active.current?.abort();
     active.current = null;
-    clearTimeout(timer.current);
+    clearTimeout(deadlineTimer.current);
+    clearTimeout(refreshTimer.current);
   }, []);
 
-  const retry = useCallback(() => {
+  const retry = useCallback(function check() {
     if (active.current || document.hidden) return;
+    clearTimeout(refreshTimer.current);
+    refreshTimer.current = setTimeout(check, 30_000);
     const id = ++attempt.current;
     const controller = new AbortController();
     active.current = controller;
@@ -36,7 +44,7 @@ export function useBootstrapStatus() {
       setState({ kind: "unavailable" });
       setChecking(false);
     }, 10_000);
-    timer.current = deadline;
+    deadlineTimer.current = deadline;
     void (async () => {
       try {
         const response = await fetch("/backend/health/ready", {
@@ -79,7 +87,6 @@ export function useBootstrapStatus() {
 
   useEffect(() => {
     retry();
-    const refresh = setInterval(retry, 30_000);
     const visibility = () => {
       if (document.hidden) {
         cancel();
@@ -100,7 +107,6 @@ export function useBootstrapStatus() {
     window.addEventListener("blur", blur);
     return () => {
       cancel();
-      clearInterval(refresh);
       document.removeEventListener("visibilitychange", visibility);
       window.removeEventListener("focus", focus);
       window.removeEventListener("blur", blur);

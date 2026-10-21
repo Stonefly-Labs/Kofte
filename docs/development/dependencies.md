@@ -43,6 +43,17 @@ They include xUnit, Microsoft.NET.Test.Sdk, real SQLite/Npgsql, OpenTelemetry,
 Playwright/axe, Testing Library, JSON-schema validation and formatting.
 PostgreSQL 17 and GitHub Actions use the immutable references in the inventory.
 
+The actual-project drift check found that the unit project's transitive
+Microsoft.Extensions minimums initially resolved 15 additional **10.0.0**
+identities, rather than the already reviewed **10.0.13** identities. SDK/runtime
+patch selection does not pin NuGet transitives. Central transitive pinning now
+explicitly selects those 15 reviewed 10.0.13 packages; the regenerated locks and
+locked restore must match the 69-identity reviewed union. This corrects the
+earlier candidate-versus-actual graph gap without adopting unreviewed 10.0.0
+archives. The drift checker also exposed omitted British-spelled `LICENCE`
+hashes for decimal.js and std-env; their already retained MIT notices were
+checked against the pinned archives and are now recorded.
+
 ## License and notice decisions
 
 This is a source checkout/local-development adoption, not approval to discard

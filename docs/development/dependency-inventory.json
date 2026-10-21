@@ -2107,7 +2107,9 @@
       "license": "MIT",
       "source": "https://registry.npmjs.org/decimal.js/-/decimal.js-10.6.0.tgz",
       "integrity": "sha512-YpgQiITW3JXGntzdUmyUR1V812Hn8T1YVXhCu+wO3OpS4eU9l4YdD3qjyiKdV6mvV29zapkMeD390UVEf2lkUg==",
-      "notices": {}
+      "notices": {
+        "LICENCE.md": "3108b546bcff5d346923a82f48b2d252ca722f9088076db6d145f6b67757ad6c"
+      }
     },
     "deep-is@0.1.4": {
       "name": "deep-is",
@@ -3382,7 +3384,9 @@
       "license": "MIT",
       "source": "https://registry.npmjs.org/std-env/-/std-env-4.3.0.tgz",
       "integrity": "sha512-OtU/EgQ1kIm5KwqQpBC6ZEMXrZRui11w8zgfTWp8cdO9B8OaPsbA8bTHO2P+HNo1VlUTGMVBwPhydu6poeXiag==",
-      "notices": {}
+      "notices": {
+        "LICENCE": "a6f36438e46fb911859f3b9c4cad045ba64e1af3d8f4512c60258fa2d7552d28"
+      }
     },
     "strip-indent@3.0.0": {
       "name": "strip-indent",

@@ -13,9 +13,9 @@
     "spec": "001",
     "step": "implement",
     "directory": "specs/001-repository-bootstrap",
-    "status": "running",
+    "status": "blocked",
     "branch": "feature/001-specify-repository-bootstrap",
-    "reason": "",
+    "reason": "All ten local automated groups passed. Human unavailable for T056 running-page WCAG/accessibility review and T059 Ubuntu 4-core/8-GiB/SSD timing plus unfamiliar-contributor evidence. T058 Linux CI pending publication; dependent final T060-T064 remain unproved. Preserve same draft PR; do not advance or infer acceptance.",
     "started_at": "2026-10-21T03:03:27+00:00"
   },
   "history": [

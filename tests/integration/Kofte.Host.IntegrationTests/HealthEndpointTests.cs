@@ -5,6 +5,7 @@ using Xunit;
 
 namespace Kofte.Host.IntegrationTests;
 
+[Trait("Provider", "sqlite")]
 public sealed class HealthEndpointTests
 {
     [Fact]

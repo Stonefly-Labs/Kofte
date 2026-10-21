@@ -1,8 +1,8 @@
 # Quickstart Validation Guide: 001
 
-**Status**: Approved full validation target; the local SQLite/host/web increment
-now runs, but the complete named verification/provider/recovery/CI gate remains
-under implementation. Use the [current local guide](../../docs/development/local-development.md)
+**Status**: Named verification commands now own real SQLite/PostgreSQL runtimes,
+recovery, contract, browser and privacy checks. Full local/CI and required human
+evidence remain separate gates. Use the [current local guide](../../docs/development/local-development.md)
 for available commands and [implementation evidence](implementation.md) for actual
 results. No commands were run as product verification during planning.
 
@@ -25,7 +25,7 @@ npm --version
 dotnet restore Kofte.slnx --locked-mode
 npm ci
 npm exec --workspace tests/e2e -- playwright install chromium
-dotnet run --project src/Kofte.Host --no-restore -- --store init
+dotnet run --project src/Kofte.Host --no-restore -c Release -- --store init
 python3 scripts/dev.py
 ```
 
@@ -53,6 +53,8 @@ OpenAPI is present only in Development. Ctrl-C stops owned processes; repeating
 
 Stop the manual dev session first. The runner provisions isolated roots, free
 ports and uniquely owned test databases/projects; no suite uses developer data.
+Acquire the immutable PostgreSQL image explicitly as shown in the local guide;
+fixtures use `--pull never`. Do not supply an existing database as a test target.
 For all required product evidence:
 
 ```bash
@@ -104,6 +106,9 @@ frontend `npm run test:unit --workspace apps/web`, and focused supervisor/runner
 Python tests. Integration uses `tests/integration/Kofte.Host.IntegrationTests`;
 contract and browser use their named npm workspaces. The implementation records
 their exact compatible test-runner arguments and results in reports/CI.
+The local guide's [suite mapping](../../docs/development/local-development.md#named-verification-suites)
+records the actual selectors, script inventory, owned-runtime controls and
+safe report behavior.
 
 ## Acceptance exercises
 
@@ -132,19 +137,28 @@ For a bad provider setting, correct that setting; no SQLite fallback is allowed.
 Locked/inaccessible/corrupt stores remain untouched until their cause is resolved
 or a verified backup is explicitly restored.
 
-For SQLite backup with the host stopped, the planned CLI is:
+Store commands read process environment, not `.env`; explicitly select the
+intended canonical `KOFTE_DATA_ROOT`, and never shell-source `.env`.
+For SQLite backup with the host stopped:
 
 ```bash
-dotnet run --project src/Kofte.Host --no-build -- --store backup --output artifacts/backups/platform.db
+dotnet run --project src/Kofte.Host --no-build -c Release -- --store backup --output "$(pwd -P)/backups/platform-before-change.db"
 ```
 
-Restore uses `--store restore --input artifacts/backups/platform.db` and requires
-an empty destination, or explicit destructive replacement confirmation after a
-backup. Reset is **separate and destructive**:
+Keep its verified `.metadata.json` beside it. Restore uses
+`--store restore --input ABSOLUTE_BACKUP_PATH` into an empty root, preferably a
+fresh private root retaining the old data. Replacement additionally requires
+`--previous-backup ABSOLUTE_FRESH_DESTINATION_BACKUP_PATH`
+and `--confirm-replace-platform-data`; a stale backup cannot satisfy that guard.
+The [local recovery guide](../../docs/development/local-development.md#stopped-host-sqlite-recovery)
+gives complete Release commands and interrupted-pair/corruption handling.
+Reset is **separate and destructive**:
 `--store reset --confirm-delete-platform-data`; ordinary start/stop/retry never
 executes it. Test these guards using temporary roots, never the developer root.
 PostgreSQL verification backup/restore is harness-owned and uses fresh databases;
 this is not a production database administration/upgrade guide.
+No application tables, schema versions or empty migrations ship. Future
+schema-bearing specs must supply their own upgrade/forward-recovery evidence.
 
 Default services bind loopback and expose no business data. Broader bindings
 require explicit opt-in and are unsupported for production. No authentication,
