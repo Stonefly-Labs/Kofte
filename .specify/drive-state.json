@@ -13,9 +13,9 @@
     "spec": "001",
     "step": "implement",
     "directory": "specs/001-repository-bootstrap",
-    "status": "blocked",
+    "status": "running",
     "branch": "feature/001-specify-repository-bootstrap",
-    "reason": "T058 supported targets proved: all ten Ubuntu product jobs passed at 6cab683 in run 39634960839; repository run 39634960843 passed. macOS local all plus focused corrected-source checks passed. Remaining blockers: unavailable actual human T056 accessibility review and T059 Ubuntu 4-core/8-GiB/SSD reference plus unfamiliar-contributor observations; dependent final T060-T064 remain unproved. Preserve original implement run and draft PR; do not advance or infer acceptance.",
+    "reason": "",
     "started_at": "2026-10-21T03:03:27+00:00"
   },
   "history": [

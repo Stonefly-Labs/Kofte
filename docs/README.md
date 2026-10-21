@@ -35,7 +35,8 @@ project, never a production slice or source link. The
 [implementation report](../specs/001-repository-bootstrap/implementation.md)
 distinguishes working behavior from the remaining full
 verification/CI/manual gates. All ten local automated groups and all ten
-Ubuntu CI jobs pass; supported-target T058 is evidenced. The stage is
-blocked on unavailable human accessibility/reference/contributor evidence on the same branch and
-draft PR, without an intermediate merge. Spec 001 and final human acceptance
+Ubuntu CI jobs pass; supported-target T058 is evidenced. The human has confirmed
+T056 and T059 complete and checked their task markers. The same implement stage
+resumes with T060-T064 still open on the original branch and draft PR, without
+an intermediate merge. Spec 001 and final human acceptance
 remain incomplete; modules, SDKs, workers and Helm remain reserved.
