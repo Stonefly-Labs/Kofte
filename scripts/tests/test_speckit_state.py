@@ -84,6 +84,10 @@ class DriverTests(unittest.TestCase):
         self.assertIsNone(ledger.state["active"])
 
     def test_constitution_template_cannot_complete(self):
+        self.write(
+            self.root / ".specify/memory/constitution.md",
+            (ROOT / ".specify/templates/constitution-template.md").read_text(),
+        )
         ledger = self.ledger()
         ledger.begin("chore/constitution")
         with self.assertRaisesRegex(ValueError, "still a template"):
