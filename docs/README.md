@@ -8,7 +8,7 @@
 4. [Master spec inventory](master-spec-inventory.md): exact MVP boundary and ordered prompts.
 5. [Constitution](../.specify/memory/constitution.md): adopted product principles and v2.0.0's human-directed workflow amendment; the [constitution prompt](constitution-prompt.md) remains its exact generation input.
 
-These are the canonical product inputs. The constitution governs delivery; its [one-feature/one-branch amendment](adr/0001-feature-delivery-lifecycle.md) records the explicit human correction and awaits the completed feature's merge. A conflict with canonical inputs must be surfaced for a human decision and documented amendment, not silently resolved by an assistant.
+These are the canonical product inputs. The constitution governs delivery; its [one-feature/one-branch amendment](adr/0001-feature-delivery-lifecycle.md) records the explicit human correction, now human-merged with accepted spec 001. A conflict with canonical inputs must be surfaced for a human decision and documented amendment, not silently resolved by an assistant.
 
 The [technology-stack exploration](kofte-technology-stack-architecture.md) is historical/proposed background. In particular, its external MCP/Hoard MVP claims, cross-module transaction suggestions and alternative directory tree do **not** override the canonical architecture and inventory.
 
@@ -45,6 +45,15 @@ requirements/acceptance scenarios and a fresh 170-step complete local gate
 reconciled with actual assessed-head CI. Spec 001 now has
 [explicit human acceptance](../specs/001-repository-bootstrap/acceptance.md),
 recorded separately from review and prior task attestations on its original
-branch/PR. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) awaits human
-merge; spec 002 waits for that merge and updated main. Modules, SDKs, workers
+branch/PR. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) is human-merged,
+with its accepted ledger and evidence on main. Modules, SDKs, workers
 and Helm remain reserved. Bootstrap acceptance is not MVP or production readiness.
+
+**002 / specify is complete** on `feature/002-platform-contracts`: the
+[draft specification](../specs/002-platform-contracts/spec.md) and
+[author checklist](../specs/002-platform-contracts/checklists/requirements.md)
+cover minimal platform contracts, immutable reverse-DNS identity, versioned
+manifests, compatibility and safe diagnostics. All 16 author criteria are
+satisfied; this is not the later human-owned quality review. No product code
+or module runtime is added. Clarify is next on the same branch/draft PR,
+without an intermediate merge or inferred acceptance.

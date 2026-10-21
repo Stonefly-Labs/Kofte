@@ -1,13 +1,15 @@
 # Contributing to Köfte
 
-Welcome! **Spec 001's bootstrap is explicitly human-accepted** and awaits
-human merge of [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4).
+Welcome! **Spec 001's bootstrap is explicitly human-accepted** and
+[PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) is human-merged.
 The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves
 the decision and limits; the [review](specs/001-repository-bootstrap/review.md)
 records source/test coverage and the complete local gate.
 The local host/web, real-provider verification, guarded recovery and generated
 contract do not introduce feature modules or prove production readiness.
-Spec 002 waits for the accepted feature's merge and updated main.
+Spec 002 has a [draft contracts/identity specification](specs/002-platform-contracts/spec.md)
+and its built-in author checklist; clarify is next on its single feature
+branch/draft PR. No spec 002 product code or module runtime is implemented.
 See the [current local guide](docs/development/local-development.md).
 
 ## Prerequisites

@@ -139,11 +139,28 @@ measurements are invented. Production readiness, future feature obligations
 and MVP completion are explicitly excluded.
 All stages remained on `feature/001-specify-repository-bootstrap` and the same
 [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4),
-**without an intermediate merge**. The accepted feature may now be marked
-ready and handed to the human for merge. Spec 002 is the next inventory entry,
-but must not begin until PR #4 is human-merged and the accepted ledger/evidence
-are on updated main. Acceptance does not create a spec 002 branch, directory
-or active stage.
+**without an intermediate merge**. PR #4 was subsequently human-merged;
+its accepted ledger and all five acceptance evidence hashes were verified on
+updated `origin/main` before beginning the next numbered feature. Acceptance
+itself did not create a spec 002 branch, directory or active stage.
+
+**002 / specify is now complete** on the fresh
+`feature/002-platform-contracts` branch from updated `origin/main`.
+The driver extracted the exact 002 fenced inventory prompt and the installed
+`speckit-specify` skill used the resolved project spec override to produce
+[`spec.md`](../../specs/002-platform-contracts/spec.md) and its
+[`checklists/requirements.md`](../../specs/002-platform-contracts/checklists/requirements.md).
+Four independently testable stories, 14 acceptance scenarios, 15 functional
+requirements and six measurable outcomes define minimal public contracts,
+canonical immutable identity, versioned manifests, host compatibility,
+capabilities/dependencies, non-authoritative permission/storage metadata and
+bounded safe validation. All twelve constitutional principles have explicit
+applicability or later-runtime justification. All 16 built-in author criteria
+are satisfied; no material question or before/after specification hook remains.
+Serialization, concrete contract versions/range rules, limits and packaging are
+reserved for planning. No product implementation, plan, reviewer-owned quality
+checklist, runtime proof or human acceptance is claimed. **Clarify is next** on
+the same branch and draft PR, with no intermediate merge.
 
 The human-directed [workflow correction](../adr/0001-feature-delivery-lifecycle.md)
 removes per-step merge gates. Its constitution v2.0.0 amendment travels with this
