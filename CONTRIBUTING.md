@@ -20,9 +20,12 @@ resolves the design decision; later unfamiliar-author/reference-timing evidence
 still needs human participation, alongside mandatory implementation evidence.
 The [48-task list](specs/002-platform-contracts/tasks.md) now maps all four stories,
 15 requirements, six outcomes and 14 scenarios to unchecked path-specific work,
-explicit dependencies and mandatory evidence. Analyze is next on the same feature
-branch/draft PR. No spec 002 product code, module runtime or feature acceptance
-is claimed.
+explicit dependencies and mandatory evidence. The read-only
+[analysis](specs/002-platform-contracts/analysis.md) passes with concrete coverage
+of all 21 requirements/outcomes and 14 scenarios, no unmapped task and no
+actionable or constitutional finding. Its inputs and task markers are unchanged.
+Implement is next on the same feature branch/draft PR. No spec 002 product code,
+module runtime or feature acceptance is claimed.
 See the [current local guide](docs/development/local-development.md).
 
 ## Prerequisites

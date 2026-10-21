@@ -106,8 +106,12 @@ resolves that design gate; adoption, runtime, unfamiliar-author and reference-ti
 evidence is still future work. The [48 unchecked tasks](../specs/002-platform-contracts/tasks.md)
 now order identity and compatibility components before the complete public
 validation path, then safe correction and cross-cutting evidence. All requirements,
-outcomes and scenarios are mapped; analyze is next, with no module loader,
-storage registry or spec 002 product code added yet.
+outcomes and scenarios are mapped. The read-only
+[analysis](../specs/002-platform-contracts/analysis.md) passes with concrete coverage
+of all 21 requirements/outcomes and 14 scenarios, no unmapped task and no
+actionable or constitutional finding. Design inputs and task markers are unchanged;
+implement is next, with no module loader, storage registry or spec 002 product
+code added yet.
 The broader stack/module/deployment proposals below remain future work, not
 installed features or proof of module isolation, production readiness or acceptance.
 
