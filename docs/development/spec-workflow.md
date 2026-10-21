@@ -18,7 +18,14 @@ The next stage, **001 / specify**, produced
 [`spec.md`](../../specs/001-repository-bootstrap/spec.md) and its
 [`checklists/requirements.md`](../../specs/001-repository-bootstrap/checklists/requirements.md)
 using the exact fenced inventory prompt. Its ledger transition is a completed
-checkpoint on the unfinished feature's branch. **Clarify** is next on
+checkpoint on the unfinished feature's branch. **001 / clarify** is also complete:
+all ten ambiguity categories were clear at requirements level, with zero questions
+asked or answered. The specification needed no changes, and its author checklist
+was revalidated at **16/16 to 16/16**, with no newly passing items, regressions or
+unchecked criteria. The ledger completion note records the category-to-requirement
+evidence. No clarification hooks were configured. Exact toolchain versions,
+orchestration, reference environment and route/schema details remain planning
+decisions, not unanswered product questions. **Plan** is next on
 `feature/001-specify-repository-bootstrap` and the same
 [draft PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4), **without an intermediate merge**.
 
@@ -28,7 +35,8 @@ feature; product principles and explicit human acceptance remain unchanged.
 
 Spec 001 is broader than repository setup: it requires a future working API/UI
 skeleton and test/local profiles. This specification stage creates no product
-code, plan or tasks and does not accept the feature. The checked requirements
+code, plan or tasks and does not accept the feature. Clarification likewise adds
+no product implementation or human approval. The checked requirements
 checklist records the specification author's review only; the later `quality.md`
 is a separate human-owned review gate.
 

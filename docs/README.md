@@ -19,4 +19,4 @@ The [technology-stack exploration](kofte-technology-stack-architecture.md) is hi
 - [Spec workflow](development/spec-workflow.md): state, stage gates, recovery and acceptance.
 - [ADRs](adr/README.md): record consequential decisions.
 
-Feature specs live in root **`specs/`** to match the installed Spec Kit scripts, rather than a second `docs/specs/` tree. The first [draft specification, 001](../specs/001-repository-bootstrap/spec.md), defines the future working foundation; clarify continues on the same unfinished feature branch/PR without merging. Reserved product directories are placeholders, not implemented components.
+Feature specs live in root **`specs/`** to match the installed Spec Kit scripts, rather than a second `docs/specs/` tree. The first [draft specification, 001](../specs/001-repository-bootstrap/spec.md), defines the future working foundation. Clarification found no material requirements ambiguity; planning is next on the same unfinished feature branch/PR without merging. Reserved product directories are placeholders, not implemented components.
