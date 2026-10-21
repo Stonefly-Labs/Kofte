@@ -5,6 +5,13 @@
 **Date:** 2026-10-20  
 **Project:** Köfte (use `kofte` in code, CLI commands, repository names, URLs, and other ASCII-constrained contexts)
 
+> [!NOTE]
+> **Exploratory background, not canonical scope.** Read [the documentation index](README.md)
+> for precedence. The charter, `architecture.md` and master spec inventory govern:
+> external MCP federation and Hoard are post-MVP, cross-module ACID is not a contract,
+> and the provisional layout follows `architecture.md` with Spec Kit artifacts in root `specs/`.
+> Conflicting proposals below require an explicit reviewed decision, not silent adoption.
+
 ## 1. Product and architecture overview
 
 Köfte is an open-source, self-hostable, composable Internal Developer Platform (IDP) designed for individual developers, small teams, and larger organizations. It offers a unified developer experience for service and software catalogs, declarative resources, self-service templates, infrastructure integrations, lifecycle operations, and Model Context Protocol (MCP) tooling.

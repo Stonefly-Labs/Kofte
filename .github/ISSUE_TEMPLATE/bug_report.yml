@@ -1,0 +1,33 @@
+name: Bug report
+description: Report a reproducible problem with Köfte or its repository tooling.
+title: "bug: "
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for helping! Köfte is currently in repository setup. Do not include secrets or private data."
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the actual result and the expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Include minimal commands, inputs and sanitized output.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Commit, environment and tool versions
+      placeholder: "Commit SHA, OS, Copilot/Python/Node versions as relevant"
+    validations:
+      required: true
+  - type: input
+    id: spec
+    attributes:
+      label: Related spec or issue
+      placeholder: "Spec NNN / issue link, if known"
