@@ -159,8 +159,39 @@ applicability or later-runtime justification. All 16 built-in author criteria
 are satisfied; no material question or before/after specification hook remains.
 Serialization, concrete contract versions/range rules, limits and packaging are
 reserved for planning. No product implementation, plan, reviewer-owned quality
-checklist, runtime proof or human acceptance is claimed. **Clarify is next** on
-the same branch and draft PR, with no intermediate merge.
+checklist, runtime proof or human acceptance is claimed.
+
+**002 / clarify is now complete** on that same branch and
+[draft PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5).
+The installed `speckit-clarify` skill resolved the recorded explicit feature
+directory and assessed the specification against the constitution and canonical
+sources. **No critical ambiguities detected worth formal clarification.**
+Zero questions were asked or answered; no human decision or clarification
+session was invented. No specification section was changed. Revalidation of the
+built-in author checklist remains **16/16 to 16/16**, with no newly passing
+items, regressions or unchecked criteria; its content is unchanged. This does
+not evaluate or mark the later reviewer-owned quality checklist.
+
+| Ambiguity category | Status | Requirements-level evidence in spec 002 |
+| --- | --- | --- |
+| Functional scope and behavior | Clear | Scope, actors and exclusions; US1-4; FR-001/014/015 distinguish declaration validation from activation. |
+| Domain and data model | Clear | Key Entities, FR-003-009 and Data Ownership define canonical identity, immutable update comparison, version domains and transient metadata; no registry lifecycle is claimed. |
+| Interaction and UX flow | Clear | US1-4 and Experience specify accept/reject, safe correction/retry and valid empty lists; no new web journey or loading/focus state applies. |
+| Non-functional quality attributes | Clear | FR-002/010-012 and SC-001-006 define bounded execution, deterministic offline behavior, privacy, side-effect safety and measurable author/performance evidence. |
+| Integration and external dependencies | Clear | Accepted/merged 001 is the prerequisite; Interfaces and FR-005/006/013-015 distinguish schema/semantic checks, explicit compatibility context, consumer proof and later runtimes. |
+| Edge cases and failure handling | Clear | Edge Cases, US1.2-3/US2.2-3/US3.1-4/US4.1-3 and FR-002/008/010-012 cover malformed/duplicate/over-budget input, compatibility boundaries, safe diagnostics and uncontaminated retry. |
+| Constraints and tradeoffs | Clear | Locked versus undecided and principles I-XII preserve minimal contracts, trust, storage/permission boundaries, portability and the numbered release scope. |
+| Terminology and consistency | Clear | FR-003-009, Data Ownership and Key Entities separate module ID/display name, schema/module/host/capability versions and declared versus installed capabilities/dependencies. |
+| Completion signals | Clear | Four stories, 14 Given/When/Then scenarios, FR-001-015, SC-001-006 and Required Validation provide independently verifiable acceptance and future evidence obligations. |
+| Miscellaneous and placeholders | Clear | No unresolved clarification marker or material unquantified requirement; remaining choices are explicitly assigned to planning. |
+
+Serialization/field names, precise range/prerelease rules, initial supported
+schema/host/capability versions, numeric budgets, reference conditions and
+package/invocation design remain planning work, not unanswered product-policy
+questions. No before/after clarification hooks are configured
+(`.specify/extensions.yml` is absent). No plan, tasks, product code, package
+installation, runtime proof or feature acceptance was produced. **Plan is next**
+on the same branch/draft PR, without an intermediate merge.
 
 The human-directed [workflow correction](../adr/0001-feature-delivery-lifecycle.md)
 removes per-step merge gates. Its constitution v2.0.0 amendment travels with this

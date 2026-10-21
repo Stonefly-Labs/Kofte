@@ -49,11 +49,12 @@ branch/PR. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) is human-merge
 with its accepted ledger and evidence on main. Modules, SDKs, workers
 and Helm remain reserved. Bootstrap acceptance is not MVP or production readiness.
 
-**002 / specify is complete** on `feature/002-platform-contracts`: the
+**002 / specify and clarify are complete** on `feature/002-platform-contracts`: the
 [draft specification](../specs/002-platform-contracts/spec.md) and
 [author checklist](../specs/002-platform-contracts/checklists/requirements.md)
 cover minimal platform contracts, immutable reverse-DNS identity, versioned
 manifests, compatibility and safe diagnostics. All 16 author criteria are
-satisfied; this is not the later human-owned quality review. No product code
-or module runtime is added. Clarify is next on the same branch/draft PR,
+satisfied; clarification found all ten ambiguity categories clear, with zero
+questions and no spec/checklist changes. This is not the later human-owned
+quality review. No product code or module runtime is added. Plan is next on the same branch/draft PR,
 without an intermediate merge or inferred acceptance.

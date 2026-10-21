@@ -8,8 +8,9 @@ records source/test coverage and the complete local gate.
 The local host/web, real-provider verification, guarded recovery and generated
 contract do not introduce feature modules or prove production readiness.
 Spec 002 has a [draft contracts/identity specification](specs/002-platform-contracts/spec.md)
-and its built-in author checklist; clarify is next on its single feature
-branch/draft PR. No spec 002 product code or module runtime is implemented.
+and its built-in author checklist. Clarify is complete with no material ambiguity,
+zero questions and the checklist unchanged at 16/16; plan is next on its single
+feature branch/draft PR. No spec 002 product code or module runtime is implemented.
 See the [current local guide](docs/development/local-development.md).
 
 ## Prerequisites

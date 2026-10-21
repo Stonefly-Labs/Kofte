@@ -94,7 +94,8 @@ local gate passes all 170 named steps with assessed-head CI parity.
 now completes spec 001's agreed bootstrap scope, retaining the documented
 limitations. Its original PR is now human-merged with accepted evidence on main.
 Spec 002 has a [draft requirements specification](../specs/002-platform-contracts/spec.md)
-for minimal platform contracts and module identity; clarify is next, with no
+for minimal platform contracts and module identity; clarification is complete
+with no material ambiguity or spec changes, and plan is next, with no
 contract implementation, module loader or storage registry added yet.
 The broader stack/module/deployment proposals below remain future work, not
 installed features or proof of module isolation, production readiness or acceptance.
