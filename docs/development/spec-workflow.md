@@ -12,15 +12,159 @@ In Copilot, reload project skills with `/skills reload`, then ask:
 Use /drive-speckit to perform the next stage.
 ```
 
-The first execution has generated `.specify/memory/constitution.md` v1.0.0 from
-the exact fenced prompt in `docs/constitution-prompt.md`. The ledger records that
-constitution stage only, with no numbered features started. The constitution and
-transition are **proposed until a human merges the stage PR**.
+The constitution stage generated `.specify/memory/constitution.md` v1.0.0 from
+the exact fenced prompt in `docs/constitution-prompt.md` and was human-merged.
+The next stage, **001 / specify**, produced
+[`spec.md`](../../specs/001-repository-bootstrap/spec.md) and its
+[`checklists/requirements.md`](../../specs/001-repository-bootstrap/checklists/requirements.md)
+using the exact fenced inventory prompt. Its ledger transition is a completed
+checkpoint on the unfinished feature's branch. **001 / clarify** is also complete:
+all ten ambiguity categories were clear at requirements level, with zero questions
+asked or answered. The specification needed no changes, and its author checklist
+was revalidated at **16/16 to 16/16**, with no newly passing items, regressions or
+unchecked criteria. The ledger completion note records the category-to-requirement
+evidence. No clarification hooks were configured. At clarification, exact toolchain
+versions, orchestration, reference environment and route/schema details were
+reserved for planning, not unanswered product questions. **001 / plan is now complete**:
+[`plan.md`](../../specs/001-repository-bootstrap/plan.md),
+[`research.md`](../../specs/001-repository-bootstrap/research.md),
+[`data-model.md`](../../specs/001-repository-bootstrap/data-model.md),
+[`contracts/`](../../specs/001-repository-bootstrap/contracts/) and
+[`quickstart.md`](../../specs/001-repository-bootstrap/quickstart.md)
+define supported baselines, native local host/web startup, platform-only storage,
+minimal safe diagnostics, accessible status states and the required validation.
+The pre-research and post-design constitution checks pass at design level;
+no implementation behavior is claimed. No planning hooks were configured.
+[Proposed ADR 0002](../adr/0002-bootstrap-development-baseline.md) records the
+consequential choices. **001 / checklist is now complete**:
+[`checklists/quality.md`](../../specs/001-repository-bootstrap/checklists/quality.md)
+was generated with 36 unchecked requirements-quality criteria covering
+permission boundaries, storage, MCP applicability, UX and operability, with
+traceability to the spec and supporting design. The reviewer then explicitly
+requested agent-assisted evaluation. All 36 criteria were assessed and marked
+satisfied with per-item evidence; no blocking requirements-quality gap was found.
+The checklist surfaces proposed ADR 0002 for human review, exact dependency/license
+adoption gates and actual product/manual evidence as remaining attention items,
+not as completed work. This standard, risk-focused requirements review is not
+implementation verification, ADR approval, feature acceptance or the MVP release
+gate. No checklist hooks were configured; no tasks or product artifacts were
+created during checklist. **001 / tasks is now complete**:
+[`tasks.md`](../../specs/001-repository-bootstrap/tasks.md) contains 64 unstarted,
+path-specific tasks: six setup, six foundational, 12 for US1, 12 for US2, 13 for
+US3, eight for US4 and seven cross-cutting tasks. Each states its prerequisites,
+requirement and constitutional traceability. The list preserves all 17 functional
+requirements, six measurable outcomes, real-provider/recovery/privacy/contract/
+browser/failure-propagation checks, safe parallel groups and human manual gates.
+US1 is the first internal increment, not feature or MVP completion; the full
+green local/CI gate follows all four stories. Task generation used the resolved
+project override and explicit recorded feature directory; no before/after tasks
+hooks were configured. No task was executed or checked, and no product file or
+analysis report was created. **001 / analyze is now complete**:
+[`analysis.md`](../../specs/001-repository-bootstrap/analysis.md) records a passing
+read-only consistency, quality and constitutional review of the specification,
+plan, tasks and supporting design. All 23 requirements/outcomes and 15 acceptance
+scenarios have concrete task coverage; all 64 tasks are mapped, sequential and
+unchecked, with no invalid numbered prerequisite/cycle or actionable finding.
+The report preserves the reviewed checklists, proposed ADR/dependency-adoption
+gates and actual manual/product evidence obligations. No analysis hooks were
+configured. The analyzed inputs and implementation markers remain unchanged;
+the report is design/task evidence, not runtime proof or human acceptance.
+**001 / implement is now complete**, after resolving T001's human approval gate. Its
+[`implementation.md`](../../specs/001-repository-bootstrap/implementation.md)
+records passing entry/checklist gates, the initial unavailable reviewer and the
+subsequent explicit decision: "bro I approve adr 002". ADR 0002 is Accepted,
+T001 is complete and the driver resumed the same active stage. The later
+implementation checkpoint records the complete dependency review and adopted
+locks, host/web/configuration/telemetry foundations, private SQLite persistence,
+actual HTTP checks and initial local/browser evidence. The human-directed
+[.NET source ownership correction](../adr/0003-dotnet-test-source-ownership.md)
+keeps tests physically in their .NET test projects; constitution v2.0.1 and the
+affected plan/task paths agree. The later increment implements real PostgreSQL,
+guarded recovery, generated Development OpenAPI and fail-closed named
+verification. Both-provider controlled outage/privacy, full HTTP/adapter
+contracts and all-state browser/axe checks have actual local evidence.
+All ten local automated groups now pass, including controlled failures and
+ten validated private-fixture starts. T001-T055 and T057 are evidenced.
+Actual Ubuntu CI subsequently exposed dependency-evidence and 200%-text reflow
+failures. Both were corrected without weakening their checks; all ten jobs
+passed at `6cab683`, and supported-target T058 is now evidenced.
+The human subsequently confirmed T056 and T059 complete and checked both task
+markers. The confirmation is recorded verbatim in the implementation report;
+no additional reviewer observations or reference measurements are invented.
+The original implement run completed all 64 tasks, including final documentation,
+the fresh complete local gate, actual CI inspection and explicit coverage of
+all 15 scenarios, 17 functional requirements, six success criteria and twelve
+constitutional principles. The final source has 170 passing named steps locally
+and in CI. A macOS zombie-group probe race discovered by the final run was
+reproduced and corrected without weakening cleanup or performance bounds.
+That implement invocation selected **converge**, without executing it.
+A commit checkpoint was not a reason to stop the active implement stage.
+**001 / converge is now complete**:
+[`convergence.md`](../../specs/001-repository-bootstrap/convergence.md)
+records zero actionable missing/partial/contradicting/unrequested gaps after
+assessing all 17 functional requirements, six success criteria, 15 acceptance
+scenarios, twelve plan decisions, all 64 tasks and twelve constitutional
+principles against current source, tests and actual evidence. Fresh focused
+unit, real SQLite/PostgreSQL integration, both-provider HTTP/adapter contract
+and browser checks passed all 65 named steps; dependency reconciliation passed
+for 403 npm and 69 NuGet identities. These are targeted checks, not a newly
+executed all-suite gate or human reference exercise. Actual assessed-head
+repository CI and all ten product jobs also passed. `tasks.md` remains
+byte-for-byte unchanged, with no empty convergence phase or product edits.
+No convergence hooks are configured. The driver selects **review**;
+final review is not executed by convergence, and feature acceptance is not
+inferred from its passing result. **001 / review is now complete**:
+[`review.md`](../../specs/001-repository-bootstrap/review.md) records the
+independent read-only `spec-review` assessment of actual source/tests against
+all 17 functional requirements, six success criteria, 15 acceptance scenarios
+and twelve constitutional principles. No acceptance defect, constitutional
+conflict or scope expansion was identified; no remediation task was appended.
+The caller closed the reviewer's execution-evidence requests with a fresh
+complete local gate: all ten groups and all 170 named steps pass, including
+ten validated persistent-fixture warm starts and five exact deliberate failure
+checks. Actual assessed-head CI and its ten uploaded reports also pass with
+identical ordered suite coverage; synthetic merge parents were verified.
+The report preserves human T056/T059 attestations and reference-machine/manual
+accessibility limitations without inventing observations. Product source,
+tests, configuration, locks, spec, plan and tasks remain unchanged by review.
+The review driver selected **accept**, not accepted; no human feature decision
+or acceptance artifact was created by review. **001 / accept is now complete**:
+after the assistant explained the exact numbered-feature scope and limits and
+linked the passing review, the human replied **"yeah bro, I accept"**.
+[`acceptance.md`](../../specs/001-repository-bootstrap/acceptance.md) preserves
+that exact affirmative decision and its context. The helper records it through
+`--approval`, completes only accept and marks feature 001 accepted. Required
+review/task/checklist evidence remains unchanged; no new product or reference
+measurements are invented. Production readiness, future feature obligations
+and MVP completion are explicitly excluded.
+All stages remained on `feature/001-specify-repository-bootstrap` and the same
+[PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4),
+**without an intermediate merge**. The accepted feature may now be marked
+ready and handed to the human for merge. Spec 002 is the next inventory entry,
+but must not begin until PR #4 is human-merged and the accepted ledger/evidence
+are on updated main. Acceptance does not create a spec 002 branch, directory
+or active stage.
 
-After that merge, the next execution starts spec **001 / specify**, using its exact
-fenced inventory prompt. This spec is broader than repository setup: it includes
-a working API/UI skeleton and test/local profiles. Constitution generation does
-not implement or pre-accept it.
+The human-directed [workflow correction](../adr/0001-feature-delivery-lifecycle.md)
+removes per-step merge gates. Its constitution v2.0.0 amendment travels with this
+feature; product principles and explicit human acceptance remain unchanged.
+
+Spec 001 is broader than repository setup: it requires a working API/UI
+skeleton and test/local profiles. Specification, clarification, planning,
+checklist review, task generation and analysis add no product implementation or human
+feature acceptance. Quickstart commands were planning targets at those earlier
+stages; the current local guide now identifies implemented commands and links
+their actual evidence. Their existence alone is not passing evidence.
+The checked requirements
+checklist records the specification author's review only; `quality.md` is a
+separate human-owned review gate. Its generation did not approve any item.
+The reviewer's subsequent explicit request authorized that checklist invocation's
+agent-assisted evaluation and evidence-backed marking. Without such a request,
+generation would leave the stage blocked for reviewer completion. This completed
+requirements review permitted task generation; the subsequent separate read-only
+analysis passed. Implementation must honor the remaining ADR, adoption and actual
+evidence gates; neither analysis nor eventual task completion is automatic final
+acceptance.
 
 Project-specific templates in `.specify/templates/overrides/` carry the constitution
 into specification, planning and tasks through the installed resolver. They require
@@ -54,17 +198,31 @@ fixes or longer implementation can remain active across invocations; it does not
 advance until its evidence and gates pass. Spec 024 is the MVP release gate;
 025–038 require explicit authorization to proceed with post-MVP work.
 
-## Git is the shared checkpoint
+## One feature, one branch, one PR
 
-Each stage uses a new typed branch from updated main and a PR containing both its
-artifacts and ledger transition. That transition is **proposed until human merge**.
-The driver checks the previous stage's recorded branch PR and origin/main before
-starting the next one, even if a different local branch already contains the ledger.
+Start a numbered feature on one fresh typed branch from updated main. Keep that
+branch and a single draft PR through specify, clarify, plan, checklist, tasks,
+analyze, implement, converge, review and explicit acceptance. Each invocation
+still executes only one stage, publishes artifacts and ledger together, and
+pushes every commit immediately.
 
-An open stage PR blocks the next stage. A closed-unmerged PR does not count as
-progress. Resolve rejected work explicitly; do not run subsequent stages from it.
-The helper is a state validator, **not** a GitHub permissions or merge enforcement
-system; the skill owns Git/PR checks and actual skill execution.
+Completed stages are durable branch checkpoints, **not merge gates**. On the next
+invocation, inspect the same branch/PR and begin the next recorded stage there.
+Use `resume` only for a running/blocked stage, not one already complete. An open
+draft PR is expected and does not block the next stage. Preserve existing branch
+names even if they contain an earlier stage name.
+
+Do not mark the feature PR ready or request merge until passing final review and
+explicit human acceptance. Only the next numbered spec waits for this completed
+feature PR to be human-merged with its accepted state on current `origin/main`.
+The standalone constitution task likewise must be merged before feature 001.
+A prematurely merged or closed-unmerged unfinished feature requires human
+reconciliation, not a replacement stage PR.
+
+The helper enforces recorded feature-branch continuity, but is **not** a GitHub
+permissions or merge enforcement system; the skill owns Git/PR checks and actual
+skill execution. Historical notes/hashes are not rewritten to hide the earlier
+per-stage policy; ADR 0001 records the explicit correction.
 
 Feature directories are immutable `specs/NNN-short-name/` paths. Set
 `SPECIFY_FEATURE_DIRECTORY` explicitly on each downstream Spec Kit command.
@@ -121,4 +279,6 @@ For acceptance, the driver presents the passing review and asks whether the huma
 accepts **this numbered feature**. It records the exact affirmative decision with
 `complete --approval "Human decision"` and links the evidence in `acceptance.md`.
 Silence, autopilot, "continue", task checkboxes or a previous stage merge are not
-acceptance. Only the human-merged acceptance PR lets the next spec begin.
+acceptance. Record that decision on the same feature branch, mark its existing PR
+ready, and request human merge. Only that completed feature PR's human merge lets
+the next numbered spec begin.

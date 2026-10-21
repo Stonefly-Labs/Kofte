@@ -144,14 +144,27 @@ class Ledger:
             if existing is None:
                 if directory is None:
                     raise ValueError("First specify stage requires --directory specs/NNN-short-name.")
+                if any(entry["branch"] == branch for entry in self.state["history"]):
+                    raise ValueError("Start a new feature on a fresh branch, not a completed task branch.")
                 self.feature_path(number, directory)
                 matches = list((self.root / "specs").glob(f"{number}-*"))
                 if matches:
                     raise ValueError("Untracked spec artifacts exist; reconcile instead of overwriting.")
                 existing = {"directory": directory, "next_step": "specify"}
                 self.state["features"][number] = existing
-            elif directory is not None and directory != existing["directory"]:
-                raise ValueError("Feature directory is immutable; reconcile before changing it.")
+            else:
+                if directory is not None and directory != existing["directory"]:
+                    raise ValueError("Feature directory is immutable; reconcile before changing it.")
+                branches = {
+                    entry["branch"] for entry in self.state["history"]
+                    if entry["spec"] == number
+                }
+                if len(branches) != 1:
+                    raise ValueError("Feature branch history needs human reconciliation.")
+                if branch not in branches:
+                    raise ValueError(
+                        f"Continue feature {number} on its original branch: {next(iter(branches))}."
+                    )
             current["directory"] = existing["directory"]
         current.update(status="running", branch=branch, reason="", started_at=timestamp())
         self.state["active"] = current

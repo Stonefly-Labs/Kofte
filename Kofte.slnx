@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="src/Kofte.Host/Kofte.Host.csproj" />
+  <Project Path="tests/unit/Kofte.Host.Tests/Kofte.Host.Tests.csproj" />
+  <Project Path="tests/integration/Kofte.Host.IntegrationTests/Kofte.Host.IntegrationTests.csproj" />
+</Solution>

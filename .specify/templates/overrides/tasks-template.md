@@ -15,6 +15,8 @@ dependencies and acceptance/requirement traceability.
 - Use `- [ ] T001 [P] [US1] Description with exact path and requirement/principle IDs`.
 - `[P]` means genuinely independent work on different files, not implied stage concurrency.
 - Use the approved plan's actual module-local paths, not generic backend/frontend trees.
+- Put .NET test-source tasks inside dedicated .NET test projects under `tests/`;
+  never store test source in production projects or link it from production slices.
 - List prerequisites explicitly; do not infer dependencies from list order alone.
 - Replace the sample tasks below with feature-specific work; omit inapplicable work
   with an explanation rather than silently skipping a required gate.
@@ -70,5 +72,7 @@ ADRs decide open technology choices, not silently override requirements.]
 
 [Require exact commands/results and acceptance mapping in implementation.md.
 One stage per invocation; converge/review/accept remain later stages. Commit stage
-artifacts and ledger together, push every commit, and hand off the PR for human merge.
+artifacts and ledger together and push every commit on the same feature branch/draft PR.
+Do not request merge between stages. Hand off for human merge only after passing
+final review and explicit feature acceptance.
 Checked tasks, successful tests or a merged PR never constitute final spec acceptance.]

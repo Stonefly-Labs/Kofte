@@ -35,7 +35,7 @@ N/A. A complexity note cannot waive a MUST; unresolved conflicts block progressi
 | VIII: Versioned resources and separate status; durable events/jobs, retries, idempotency, cancellation/recovery; optional providers; SignalR/poll fallback | [Evidence] | [Result] | [Result] |
 | IX: Accessible consistent UI/states; versioned trusted build/deployment-time frontend extensions, no remote hot-load safety claims | [Evidence] | [Result] | [Result] |
 | X, XI: Portable profiles, config/secrets, telemetry, backup/restore/upgrade; required real-provider, contract, Playwright, negative/recovery and smoke evidence | [Evidence] | [Result] | [Result] |
-| Governance: Canonical traceability, recommendations versus locked rules, ADRs, license review, human stage/acceptance gates | [Evidence] | [Result] | [Result] |
+| Governance: Canonical traceability, recommendations versus locked rules, ADRs, license review, human review/acceptance gates; one branch/PR per feature with no intermediate merge | [Evidence] | [Result] | [Result] |
 
 ## Project Structure
 
@@ -55,7 +55,10 @@ specs/[NNN-short-name]/
 ### Source Code (repository root)
 
 [Concrete feature paths within apps/web, src, modules, packages and tests as
-applicable. Keep slices module-local; do not create speculative assemblies.]
+applicable. Keep production slices module-local; .NET test source MUST live in
+dedicated .NET test projects under tests/, never in production projects or linked
+from production slices. Mirror module/feature ownership inside test projects.
+Do not create speculative assemblies.]
 
 **Structure Decision**: [Rationale and actual boundaries]
 

@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-34d399?style=flat-square"></a>
-  <img alt="Status: repository setup" src="https://img.shields.io/badge/status-repository_setup-fbbf24?style=flat-square">
+  <img alt="Status: bootstrap accepted" src="https://img.shields.io/badge/status-bootstrap_accepted-34d399?style=flat-square">
   <a href="docs/master-spec-inventory.md"><img alt="Built with Spec Kit" src="https://img.shields.io/badge/workflow-Spec_Kit-a78bfa?style=flat-square"></a>
 </p>
 
@@ -35,7 +35,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 | 🔐 Explicit boundaries | Team-scoped authorization, audited actions and module-owned storage |
 
 > [!IMPORTANT]
-> **This repository is in setup, not a runnable product.** It contains project context, repository conventions and development-assistant tooling. There is no API, web application, database implementation or local product startup command yet. Even spec **001** remains open: it includes the future working application skeleton. Nothing here claims MVP completion.
+> **Spec 001's bootstrap is human-accepted, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. The feature still awaits human merge. Nothing here claims production readiness or MVP completion.
 
 ## 🧭 The shape of things to come
 
@@ -56,10 +56,17 @@ This is the **planned architecture**, not a diagram of implemented services. Pos
 ## 🚀 Start here
 
 1. Read the [product charter](docs/product-charter.md), [vision](docs/product-vision.md) and [architecture](docs/architecture.md).
-2. Follow the [contributor workflow](CONTRIBUTING.md) and [assistant/MCP setup](docs/development/assistant-tooling.md).
-3. When ready to begin product work, invoke **`drive-speckit`**. Each invocation performs one stage, records its result, opens a PR and waits for a human merge before the next stage.
+2. Follow the [contributor workflow](CONTRIBUTING.md), [local bootstrap guide](docs/development/local-development.md) and [assistant/MCP setup](docs/development/assistant-tooling.md).
+3. When ready to begin product work, invoke **`drive-speckit`**. Each invocation performs one stage and publishes its result on the **same branch and draft PR for that numbered feature**. No merges between steps; request human merge only after final review and explicit feature acceptance.
 
-The first driver stage has generated the [v1.0.0 constitution](.specify/memory/constitution.md) from the exact [constitution prompt](docs/constitution-prompt.md), with project-specific specification, plan and task template gates. Its adoption and recorded progress are **proposed until human merge**. No numbered spec has started; after that merge, the next invocation selects **001 / specify** from the [spec inventory](docs/master-spec-inventory.md). **Installing a skill does not execute it.**
+Before local startup, select the exact .NET/Node/npm versions in the
+[local guide](docs/development/local-development.md) in the current shell.
+Preflight identifies a missing or mismatched tool; it does not install tools
+or use a different version merely because one is installed elsewhere.
+
+The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendment](.specify/memory/constitution.md) records the human-directed [one-feature/one-branch correction](docs/adr/0001-feature-delivery-lifecycle.md). Spec **001 / specify** has a [draft specification](specs/001-repository-bootstrap/spec.md) and its [author quality checklist](specs/001-repository-bootstrap/checklists/requirements.md), generated from the exact [inventory prompt](docs/master-spec-inventory.md). **Clarify, plan, checklist, tasks and analyze are complete:** no material requirements ambiguity remained; the [implementation plan](specs/001-repository-bootstrap/plan.md), research, data model, HTTP/UI contracts and future validation guide define the bounded foundation. At the reviewer's explicit request, agent-assisted evaluation of the [requirements-quality checklist](specs/001-repository-bootstrap/checklists/quality.md) satisfied all 36 criteria with evidence and found no blocking requirements gap. The [64-task implementation list](specs/001-repository-bootstrap/tasks.md) maps all four stories, 17 functional requirements and six measurable outcomes to path-specific work, explicit dependencies and mandatory validation. The read-only [analysis](specs/001-repository-bootstrap/analysis.md) passed with 23/23 requirements/outcomes and 15/15 acceptance scenarios covered, no unmapped tasks and no actionable or constitutional findings. This is design/task coverage, not runtime proof.
+
+**Spec 001 is explicitly human-accepted.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) is the human merge handoff; spec 002 waits for that merge and updated main. No later stage is executed by acceptance. **Installing a skill does not execute it.**
 
 ```mermaid
 flowchart LR
@@ -78,18 +85,26 @@ See [Spec Kit workflow and recovery](docs/development/spec-workflow.md) for stag
 .github/       Contributor templates, Copilot instructions, skills, agents and CI
 .specify/      Existing Spec Kit templates/scripts and tracked driver progress
 .vscode/       Shared editor MCP configuration
-apps/web/      Reserved for the Next.js console
-src/           Reserved for the .NET host and module-local vertical slices
+apps/web/      Minimal Next.js bootstrap page and fixed readiness adapter
+src/           .NET host, local storage/configuration and health slice
 modules/       Reserved for independently packaged reference modules
-packages/      Reserved for shared UI and frontend module contracts
-tests/         Reserved product test categories
-deploy/        Reserved Docker and Helm assets
-scripts/       Repository-only checks and their tests
-specs/         Future numbered Spec Kit artifacts (not docs/specs/)
+packages/      Bootstrap contract; UI/module SDK placeholders remain reserved
+tests/         Dedicated .NET test projects, HTTP contract and browser tests
+deploy/        Pinned disposable PostgreSQL Compose; Helm remains reserved
+scripts/       Repository/dependency checks, supervisor, verifier and their tests
+specs/         Numbered Spec Kit artifacts (not docs/specs/)
 docs/          Product context, decisions, contributor guides and visual assets
 ```
 
-Reserved directories contain only `.gitkeep` markers. Project/assembly/package boundaries will be decided during spec 001, not frozen by empty scaffolding.
+Only the approved bootstrap boundaries are being implemented: one host, one web
+app and their narrow shared contract. Modules, module/UI SDKs, workers and Helm
+remain reserved. No application tables, fake identity, feature/admin/MCP routes
+or module isolation are introduced by this foundation.
+
+.NET test source belongs inside its dedicated test project under `tests/`,
+never in production projects or linked from production vertical slices. Test
+projects may mirror feature ownership; see the human-approved
+[source ownership decision](docs/adr/0003-dotnet-test-source-ownership.md).
 
 ## 📚 Project bookshelf
 
@@ -98,9 +113,10 @@ Reserved directories contain only `.gitkeep` markers. Project/assembly/package b
 | [Product charter](docs/product-charter.md) | Mandate, boundaries and required outcomes |
 | [Product vision](docs/product-vision.md) | People, experience and long-term direction |
 | [Technical architecture](docs/architecture.md) | Canonical architecture requirements and proposals |
-| [Constitution](.specify/memory/constitution.md) | Twelve enforceable principles and delivery gates; adoption requires human merge |
+| [Constitution](.specify/memory/constitution.md) | Product principles and delivery gates; v2.0.1 clarifies .NET test-source ownership |
 | [Master spec inventory](docs/master-spec-inventory.md) | Ordered prompts; **001–024 MVP**, **025–038 post-MVP** |
 | [Contributing](CONTRIBUTING.md) | Fresh branches, checks, commits, pushes and PR handoffs |
+| [Local development](docs/development/local-development.md) | Current bootstrap startup, prerequisites, checks and remaining limits |
 | [Assistant tooling](docs/development/assistant-tooling.md) | Microsoft Learn, Context7, Next.js, shadcn/ui and Playwright |
 | [Spec workflow](docs/development/spec-workflow.md) | One-stage driver, checkpoints and human acceptance |
 | [Architecture decisions](docs/adr/README.md) | Recording consequential choices without silently changing invariants |

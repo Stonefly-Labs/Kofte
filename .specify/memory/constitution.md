@@ -25,8 +25,11 @@ hostile-code isolation, hot-unload or arbitrary remote frontend execution.
 
 ### III. Module-Local Vertical Slices
 
-Handlers, endpoints, validation, authorization and tests MUST stay close to their
-feature within module boundaries. Shared platform packages MUST contain only
+Handlers, endpoints, validation and authorization MUST stay close to their
+feature within module boundaries. .NET test source MUST live in dedicated .NET
+test projects, never in production projects or linked from production slices;
+test-project folders SHOULD mirror the tested module/feature ownership.
+Shared platform packages MUST contain only
 demonstrably common contracts or cross-cutting concerns. Slices MUST be independently
 testable and use native .NET DI/direct handlers, not MediatR or AutoMapper.
 Ceremonial layers and speculative abstractions MUST NOT be introduced.
@@ -195,7 +198,7 @@ inapplicable concern; unchecked assertions are not evidence.
 | Specification | Inventory ID/scope/dependencies; actor journeys and Given/When/Then acceptance; core/module ownership; interface, permission, storage, failure, recovery and operational requirements; explicit tests; unresolved material questions answered. |
 | Plan | Constitution check before research and after design; requirement-to-design mapping; versioned contracts; provider/migration and trust boundaries; licensing/ADRs; validation and rollback strategy. A complexity note cannot waive a MUST. |
 | Checklist and tasks | Human-reviewed requirements-quality checklist; dependency-ordered, path-specific tasks tracing to requirements/stories and applicable principles; focused positive/negative, both-provider and interface-parity validation tasks. Mandatory tests are not optional template examples. |
-| Implementation PR | Fresh typed branch from updated main or verified active-stage resume; focused diff and updated README/related docs; exact commands/results; acceptance and constitutional evidence; no secrets/local artifacts; ledger and stage artifacts together; human review/merge only. |
+| Implementation PR | Fresh typed branch from updated main for a new feature; all its stages continue on that same branch/draft PR. Focused diff and updated README/related docs; exact commands/results; acceptance and constitutional evidence; no secrets/local artifacts; ledger and stage artifacts together; human review/merge only after feature completion. |
 | Migration | Proven registry/ownership isolation and schema-local history or per-file mapping; installation lock/dependency order; both-provider clean-install and upgrade tests; collision/failure diagnostics; backup/restore and rollback or forward-recovery evidence. |
 | Release | Specs 001-024 explicitly accepted; passing reference-module, contract, authorization, real-provider integration, Playwright, restart/recovery and deployment smoke evidence; license/security review and documented install/upgrade/backup/restore. |
 
@@ -205,23 +208,31 @@ plus the smallest applicable product test/lint/format/type/build commands once
 that tooling exists. Documentation-only stages do not fabricate product checks.
 
 Delivery MUST follow one recorded Spec Kit stage per invocation, with its
-artifacts and ledger published together. Every commit MUST be pushed immediately;
-assistants MUST NOT merge, close, enable auto-merge or delete PR branches.
-The next stage MUST wait for human merge. Final feature acceptance MUST quote an
-explicit human decision; merge, silence, autopilot and checked tasks are not acceptance.
+artifacts and ledger published together on **one branch and one PR per numbered
+feature**, from specify through acceptance. Intermediate stages MUST NOT require
+a merge or a new branch/PR. Every commit MUST be pushed immediately; the feature
+PR MUST remain draft until passing final review and explicit human acceptance.
+Only then may the assistant mark it ready and request human merge. The next
+numbered feature MUST wait for that merge and start from updated main.
+Assistants MUST NOT merge, close, enable auto-merge or delete PR branches.
+Final feature acceptance MUST quote an explicit human decision; merge, silence,
+autopilot and checked tasks are not acceptance. The standalone constitution task
+retains its own human merge before the first numbered feature.
 
 ## Governance
 
-Once human-merged, this constitution governs delivery. Until then, v1.0.0 and its
-ledger transition are proposed, not independently adopted by the assistant.
-The ratification date below is the initial repository working date, not invented
-prior history; human merge is the adoption gate.
+The human-merged v1.0.0 established this constitution. Amendments become the shared
+baseline on human merge. The ratification date below remains the initial
+repository working date, not invented prior history.
 
 Amendments MUST be proposed in a focused PR identifying the reason, affected
 principles, canonical sources, ADR, compatibility/migration impact and validation.
 Reviewers MUST check affected specs, plans, tasks, project template overrides,
 instructions and release gates. Human approval and merge are required before
-dependent work proceeds; assistants MUST NOT waive rules or self-accept changes.
+dependent work proceeds. For a workflow-only correction, an explicit human
+direction may govern the active feature branch while its recorded amendment
+awaits merge; this MUST NOT waive product/security principles or feature
+acceptance. Assistants MUST NOT waive rules or self-accept changes.
 
 Constitution versions MUST use semantic versioning: MAJOR for removal,
 incompatible redefinition or weakening of a principle/guarantee; MINOR for
@@ -241,5 +252,15 @@ Change history:
 
 - **1.0.0 - 2026-10-20:** Initial constitution from the exact canonical prompt;
   replaces an unadopted scaffold with twelve principles and objective delivery gates.
+- **2.0.0 - 2026-10-20:** Human-directed workflow correction: keep one branch/PR
+  through all stages of a numbered feature, removing intermediate merge gates.
+  Preserve one stage per invocation, human quality/acceptance decisions and
+  merge before the next feature. Major version reflects removal of a mandatory
+  delivery gate; product principles are unchanged. See
+  [ADR 0001](../../docs/adr/0001-feature-delivery-lifecycle.md).
+- **2.0.1 - 2026-10-21:** Explicit human clarification of .NET test source
+  ownership: source lives with its test project, not in production slices.
+  Logical module-local coverage and mandatory tests are unchanged. See
+  [ADR 0003](../../docs/adr/0003-dotnet-test-source-ownership.md).
 
-**Version**: 1.0.0 | **Ratified**: 2026-10-20 | **Last Amended**: 2026-10-20
+**Version**: 2.0.1 | **Ratified**: 2026-10-20 | **Last Amended**: 2026-10-21

@@ -1,0 +1,15 @@
+{
+  "name": "@kofte/contract-tests",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --strict --noEmit --skipLibCheck --types node --target ES2022 --moduleResolution bundler --module esnext *.test.ts",
+    "test": "vitest run --no-file-parallelism"
+  },
+  "dependencies": {
+    "@kofte/bootstrap-contract": "0.0.0",
+    "ajv": "8.20.0"
+  }
+}

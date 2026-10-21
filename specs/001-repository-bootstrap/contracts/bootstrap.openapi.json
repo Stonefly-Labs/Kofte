@@ -1,0 +1,153 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "Köfte Bootstrap API",
+    "version": "1.0.0",
+    "description": "Local-only, non-sensitive bootstrap contract. No identity, domain operation or module/MCP interface."
+  },
+  "servers": [
+    { "url": "http://127.0.0.1:5080" }
+  ],
+  "security": [],
+  "paths": {
+    "/health/live": {
+      "get": {
+        "operationId": "bootstrapLiveness",
+        "summary": "Observe process liveness without checking storage",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Process can serve the liveness request",
+            "headers": { "Cache-Control": { "$ref": "#/components/headers/NoStore" } },
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/LiveStatus" } }
+            }
+          },
+          "400": { "$ref": "#/components/responses/InvalidHealthRequest" },
+          "405": {
+            "description": "Unsupported method; empty response body",
+            "headers": { "Cache-Control": { "$ref": "#/components/headers/NoStore" } }
+          }
+        }
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "operationId": "bootstrapReadiness",
+        "summary": "Observe current selected-provider readiness without caching",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Configured platform store is usable",
+            "headers": { "Cache-Control": { "$ref": "#/components/headers/NoStore" } },
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ReadyStatus" } }
+            }
+          },
+          "400": { "$ref": "#/components/responses/InvalidHealthRequest" },
+          "405": {
+            "description": "Unsupported method; empty response body",
+            "headers": { "Cache-Control": { "$ref": "#/components/headers/NoStore" } }
+          },
+          "503": {
+            "description": "Startup incomplete or platform store unavailable; no provider fallback",
+            "headers": { "Cache-Control": { "$ref": "#/components/headers/NoStore" } },
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/UnavailableStatus" } }
+            }
+          }
+        }
+      }
+    },
+    "/openapi/v1.json": {
+      "get": {
+        "operationId": "bootstrapOpenApi",
+        "summary": "Fetch this versioned contract in Development only",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "OpenAPI description, available only in Development",
+            "headers": { "Cache-Control": { "$ref": "#/components/headers/NoStore" } },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["openapi", "info", "paths"],
+                  "properties": {
+                    "openapi": { "type": "string", "const": "3.1.1" },
+                    "info": {
+                      "type": "object",
+                      "required": ["title", "version"],
+                      "properties": {
+                        "title": { "type": "string", "const": "Köfte Bootstrap API" },
+                        "version": { "type": "string", "const": "1.0.0" }
+                      }
+                    },
+                    "paths": { "type": "object" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/InvalidHealthRequest" },
+          "404": { "description": "Documentation route absent outside Development; empty response body" },
+          "405": {
+            "description": "Unsupported method; empty response body",
+            "headers": { "Cache-Control": { "$ref": "#/components/headers/NoStore" } }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "InvalidHealthRequest": {
+        "description": "Unsupported query or request body; empty sanitized response",
+        "headers": { "Cache-Control": { "$ref": "#/components/headers/NoStore" } }
+      }
+    },
+    "headers": {
+      "NoStore": {
+        "required": true,
+        "description": "Do not cache diagnostic responses",
+        "schema": { "type": "string", "const": "no-store" }
+      }
+    },
+    "schemas": {
+      "CorrelationId": { "type": "string", "pattern": "^[0-9a-f]{32}$" },
+      "LiveStatus": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["version", "state", "component", "correlationId"],
+        "properties": {
+          "version": { "type": "string", "const": "1" },
+          "state": { "type": "string", "const": "live" },
+          "component": { "type": "string", "const": "host" },
+          "correlationId": { "$ref": "#/components/schemas/CorrelationId" }
+        }
+      },
+      "ReadyStatus": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["version", "state", "component", "correlationId"],
+        "properties": {
+          "version": { "type": "string", "const": "1" },
+          "state": { "type": "string", "const": "ready" },
+          "component": { "type": "string", "const": "storage" },
+          "correlationId": { "$ref": "#/components/schemas/CorrelationId" }
+        }
+      },
+      "UnavailableStatus": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["version", "state", "component", "correlationId"],
+        "properties": {
+          "version": { "type": "string", "const": "1" },
+          "state": { "type": "string", "const": "unavailable" },
+          "component": { "type": "string", "enum": ["host", "storage"] },
+          "correlationId": { "$ref": "#/components/schemas/CorrelationId" }
+        }
+      }
+    }
+  }
+}

@@ -73,6 +73,29 @@ The following is a **proposed stack** for implementation, not a claim that every
 
 **Dependency rule:** Do not introduce MediatR or commercially encumbered mediator/framework dependencies by default. Ordinary DI, direct handlers and small in-house dispatch contracts are sufficient. All dependency licenses should be reviewed in CI.
 
+Spec 001's [human-approved bootstrap design](adr/0002-bootstrap-development-baseline.md)
+and [plan](../specs/001-repository-bootstrap/plan.md) narrow these proposals for
+the foundation: native local host/web processes, npm workspaces, SQLite and
+disposable PostgreSQL verification, with no application tables or empty EF model.
+Module-owned EF contexts/migrations remain mandatory when modules arrive.
+The bootstrap's native host/web, SQLite store, disposable PostgreSQL fixtures,
+guarded recovery and generated Development contract are now implemented;
+see the [local guide](development/local-development.md) and
+[actual evidence](../specs/001-repository-bootstrap/implementation.md).
+Both supported targets have automated evidence; the human has confirmed the
+manual/reference tasks. All 64 implementation tasks and the final local/CI
+verification are evidenced.
+[Convergence](../specs/001-repository-bootstrap/convergence.md) found no
+actionable spec/plan/task/constitutional gaps and left the task list unchanged.
+[Final review](../specs/001-repository-bootstrap/review.md) also passes:
+independent code/test assessment found no acceptance defect, and a fresh complete
+local gate passes all 170 named steps with assessed-head CI parity.
+[Explicit human acceptance](../specs/001-repository-bootstrap/acceptance.md)
+now completes spec 001's agreed bootstrap scope, retaining the documented
+limitations. Its original PR awaits human merge before spec 002 may begin.
+The broader stack/module/deployment proposals below remain future work, not
+installed features or proof of module isolation, production readiness or acceptance.
+
 ## 4. Suggested solution/repository layout
 
 ```text
@@ -200,8 +223,16 @@ Modules/Catalog/Features/Services/Create/
   Validator.cs
   Handler.cs
   Response.cs
-  Tests/
+
+tests/unit/Kofte.Modules.Catalog.Tests/Features/Services/Create/
+  CreateTests.cs
 ```
+
+All .NET test source MUST reside in its dedicated .NET test project, not in the
+production project or linked from a production vertical slice. Mirrored module/
+feature folders retain logical slice ownership without shipping test source
+beside application code. See [ADR 0003](adr/0003-dotnet-test-source-ownership.md).
+Frontend colocated tests are unaffected by this .NET-specific rule.
 
 Endpoints SHOULD call feature handlers directly via DI rather than require a mediator library. Domain entities, EF mappings and slice-private helpers stay module-local. Shared platform code is justified only for identity/authorization, module/runtime contracts, data isolation registry, event/job abstractions, telemetry, API error conventions and other truly cross-cutting behavior.
 

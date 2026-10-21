@@ -1,0 +1,13 @@
+.git/
+node_modules/
+**/node_modules/
+**/bin/
+**/obj/
+**/.next/
+.env
+.env.*
+data/
+artifacts/
+coverage/
+test-results/
+playwright-report/

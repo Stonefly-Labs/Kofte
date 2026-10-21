@@ -3,7 +3,12 @@
   "constitution": {
     "status": "complete"
   },
-  "features": {},
+  "features": {
+    "001": {
+      "directory": "specs/001-repository-bootstrap",
+      "next_step": "accepted"
+    }
+  },
   "active": null,
   "history": [
     {
@@ -19,6 +24,174 @@
       "evidence_sha256": {
         ".specify/memory/constitution.md": "c754d53f458247473f13c3943fbe31f3d8007b2a26070c050f8dfec578a50d89"
       }
+    },
+    {
+      "spec": "001",
+      "step": "specify",
+      "directory": "specs/001-repository-bootstrap",
+      "status": "complete",
+      "branch": "feature/001-specify-repository-bootstrap",
+      "reason": "",
+      "started_at": "2026-10-21T01:38:44+00:00",
+      "completed_at": "2026-10-21T01:43:36+00:00",
+      "outcome": "pass",
+      "note": "Executed speckit-specify with the exact inventory 001 fenced prompt and resolved project template. Reviewed four independently testable user journeys, 17 functional requirements, six measurable outcomes, provider/failure/privacy/accessibility evidence and all twelve constitutional principles. All 16 built-in author checklist criteria satisfied; no material unresolved question or specification hook. Later human-owned quality review remains untouched. No plan, tasks, product scaffolding or acceptance; specify progress is proposed until human merge, then clarify is next.",
+      "evidence_sha256": {
+        "specs/001-repository-bootstrap/spec.md": "52ae8e583240fc8900e3e5a1c24169bf0b6edcd7eafc92983b4b8eca3a4c8077",
+        "specs/001-repository-bootstrap/checklists/requirements.md": "3ce67035a40235d120982a2ee029cb1fe25b29534be3f43808c74ea5a4910d32"
+      }
+    },
+    {
+      "spec": "001",
+      "step": "clarify",
+      "directory": "specs/001-repository-bootstrap",
+      "status": "complete",
+      "branch": "feature/001-specify-repository-bootstrap",
+      "reason": "",
+      "started_at": "2026-10-21T01:52:21+00:00",
+      "completed_at": "2026-10-21T01:52:57+00:00",
+      "outcome": "pass",
+      "note": "Executed speckit-clarify against the recorded explicit feature directory. No critical ambiguities detected worth formal clarification; 0 questions asked or answered, no invented human decisions, and spec.md remains unchanged. All ten taxonomy categories are Clear at requirements level: scope/behavior (Scope, US1-4, FR-001-003/017); domain/data (Key Entities, FR-007/015/016); interaction/UX (US4, FR-004/011); nonfunctional quality (FR-004/005/008-011, SC-001-006; local-only scale, no business data); integration/dependencies (FR-006/007/014 and interface exclusions); edge cases/failures (Edge Cases, US3, FR-009/015/016); constraints/tradeoffs (Locked versus undecided, constitutional mapping); terminology (named entities, consistent Köfte/kofte); completion signals (Required Validation mapping, SC-001-006); miscellaneous/placeholders (no unresolved material markers). Revalidated the built-in author checklist: 16/16 to 16/16; no newly passing items, regressions or unchecked criteria, so checklist content remains unchanged. Exact versions, package/orchestration choices, supported reference environment and route/schema details remain explicitly assigned to plan, not unresolved product intent. No before/after clarification hooks configured. Human-owned quality review, implementation and explicit acceptance remain future gates. Plan is next on the same feature branch/draft PR; no intermediate merge.",
+      "evidence_sha256": {
+        "specs/001-repository-bootstrap/spec.md": "063b2f254f94c2f40396744e663b9e9e8cda15ab3a9f94c2438a1108a4cc8f73"
+      }
+    },
+    {
+      "spec": "001",
+      "step": "plan",
+      "directory": "specs/001-repository-bootstrap",
+      "status": "complete",
+      "branch": "feature/001-specify-repository-bootstrap",
+      "reason": "",
+      "started_at": "2026-10-21T02:01:18+00:00",
+      "completed_at": "2026-10-21T02:12:50+00:00",
+      "outcome": "pass",
+      "note": "Executed speckit-plan using the recorded explicit feature directory and resolved project plan override. Produced plan.md, source-backed research.md, platform-only data-model.md, versioned OpenAPI and development/UI contracts, and a clearly future-only quickstart.md; proposed ADR 0002 records toolchain, native process supervision, minimal shared contract and no-application-table decisions. Pre-research and post-design checks cover all twelve constitutional principles with explicit later-spec applicability; requirement/US/SC mapping covers real providers, path and target safety, bounded readiness/UI freshness, privacy, recovery, accessibility, locked dependencies and fail-closed verification. Microsoft Learn/Context7 MCP were unavailable; official docs/release metadata/registries were used, not fabricated MCP output. No plan hooks, unresolved material design conflict, product scaffolding, package installation, tasks, quality-checklist marking or human acceptance. Secondary package/image pins and full transitive license/provenance approval remain mandatory at implementation before adoption, not claimed complete. Same feature branch and draft PR; checklist is next and requires human review.",
+      "evidence_sha256": {
+        "specs/001-repository-bootstrap/plan.md": "c6280b19783078bd70a0963950617e883e051f429c2c586a6099b4e10f590c62",
+        "specs/001-repository-bootstrap/research.md": "1609629ec5b0f5daa4e214db88099b5743ea10cfe463345424ba580468082321",
+        "specs/001-repository-bootstrap/quickstart.md": "8cc0b6c8ad0da6258c97d93269dcc136c270d09cc38bedc2e373086d68ea1b7a"
+      }
+    },
+    {
+      "spec": "001",
+      "step": "checklist",
+      "directory": "specs/001-repository-bootstrap",
+      "status": "complete",
+      "branch": "feature/001-specify-repository-bootstrap",
+      "reason": "",
+      "started_at": "2026-10-21T02:15:56+00:00",
+      "completed_at": "2026-10-21T02:22:09+00:00",
+      "outcome": "pass",
+      "note": "Executed speckit-checklist using the resolved checklist template and recorded explicit feature directory. Generated 36 requirements-quality criteria unchecked across permissions, storage, MCP applicability, UX and operability. The reviewer then explicitly requested: 'run thrugh it for me and surface anything that needs me attention'. That request authorized agent-assisted evaluation and marking: assessed every criterion against spec/plan/data model/HTTP and UI contracts/research/quickstart/constitution and recorded per-item evidence; 36/36 satisfied with no unresolved requirements-quality or constitutional finding. Attention items retain human review of proposed ADR 0002 (native supervision, no app tables, Ubuntu/macOS not native Windows), exact dependency/image pins and transitive license/provenance approval before adoption (including axe MPL-2.0), and later real-provider/browser/timing/privacy/manual evidence. No before/after checklist hooks configured. Reviewer authorization is not ADR approval or numbered-feature acceptance. No tasks, product changes or runtime checks; tasks is next on the same branch/draft PR without an intermediate merge.",
+      "evidence_sha256": {
+        "specs/001-repository-bootstrap/checklists/quality.md": "a1445b8d6c41766c3fec12db9903335268b33d87e77f67da6d5ef5a9df182f78",
+        "specs/001-repository-bootstrap/checklists/requirements.md": "3ce67035a40235d120982a2ee029cb1fe25b29534be3f43808c74ea5a4910d32"
+      }
+    },
+    {
+      "spec": "001",
+      "step": "tasks",
+      "directory": "specs/001-repository-bootstrap",
+      "status": "complete",
+      "branch": "feature/001-specify-repository-bootstrap",
+      "reason": "",
+      "started_at": "2026-10-21T02:26:02+00:00",
+      "completed_at": "2026-10-21T02:35:07+00:00",
+      "outcome": "pass",
+      "note": "Executed speckit-tasks with the recorded explicit feature directory and resolved project task override. Produced 64 sequential unchecked path-specific tasks: 6 setup, 6 foundational, US1 12, US2 12, US3 13, US4 8, and 7 cross-cutting. Inspected the spec, plan, research, data model, OpenAPI and development/UI contracts, reviewed checklists and constitution; task descriptions carry direct earlier-task prerequisites, story/requirement/principle traceability and verbatim model constraints, with per-story independent tests, 18 parallel markers, dependency graph and incremental US1-first strategy. Coverage includes all 17 FRs and six SCs, both actual providers, owned process/data cleanup, init/restart/backup/restore, bounded fresh status, private diagnostics, runtime contract parity, browser/manual accessibility, timing and fail-closed local/CI evidence. Structured inspection confirmed task counts/format, unchecked markers, no forward/cyclic prerequisites and resolved artifact links. Before/after tasks hooks are absent. ADR 0002 human disposition, exact dependency/license/provenance adoption and actual manual/product evidence remain later implementation gates, not invented approvals. README/docs progress updated; no product code, dependencies, executed implementation tasks, analysis report or feature acceptance. Analyze is next on the same branch/draft PR without an intermediate merge.",
+      "evidence_sha256": {
+        "specs/001-repository-bootstrap/tasks.md": "19c83e6a2f2e884e113b49d4e2f7b75736ad0efc5fbcc2f2b8427765e71191f5"
+      }
+    },
+    {
+      "spec": "001",
+      "step": "analyze",
+      "directory": "specs/001-repository-bootstrap",
+      "status": "complete",
+      "branch": "feature/001-specify-repository-bootstrap",
+      "reason": "",
+      "started_at": "2026-10-21T02:38:10+00:00",
+      "completed_at": "2026-10-21T02:42:00+00:00",
+      "outcome": "pass",
+      "note": "Executed speckit-analyze against the recorded explicit directory and prerequisite command; reviewed spec, plan, 64 tasks, research, data model, HTTP/UI contracts, quickstart, both reviewed checklists, canonical sources, proposed ADR 0002 and constitution v2.0.0. Persisted analysis.md with Result pass: 23/23 FR/SC requirements/outcomes and 15/15 acceptance scenarios have concrete task coverage; no unmapped tasks, invalid numbered prerequisites/cycles, unresolved material ambiguities, harmful duplications, actionable findings or constitutional conflicts. All 64 implementation tasks remain unchecked; 18 parallel markers remain conditional. No before/after analysis hooks configured. Analyzed inputs, task/checklist markers and ADRs remain unchanged; driver writes only report, ledger and progress docs. ADR human disposition, real pinned dependency/license/provenance adoption, actual product/manual evidence and final acceptance remain explicit future gates, not inferred approvals. No product code/packages/checks or later stage executed. Implement is next on the same branch/draft PR without an intermediate merge.",
+      "evidence_sha256": {
+        "specs/001-repository-bootstrap/analysis.md": "d34956952cfd35866d0176b14d9f7a8f4855d18392a3d6e249f742ba8ca372c9",
+        "specs/001-repository-bootstrap/checklists/quality.md": "a1445b8d6c41766c3fec12db9903335268b33d87e77f67da6d5ef5a9df182f78",
+        "specs/001-repository-bootstrap/checklists/requirements.md": "3ce67035a40235d120982a2ee029cb1fe25b29534be3f43808c74ea5a4910d32"
+      }
+    },
+    {
+      "spec": "001",
+      "step": "implement",
+      "directory": "specs/001-repository-bootstrap",
+      "status": "complete",
+      "branch": "feature/001-specify-repository-bootstrap",
+      "reason": "",
+      "started_at": "2026-10-21T03:03:27+00:00",
+      "completed_at": "2026-10-21T17:42:54+00:00",
+      "outcome": "pass",
+      "note": "All T001-T064 evidenced. Clean published source b400bc7fb332ec15f9f9fa2edc4fd93507589d13 passed the full local all/disposable-PostgreSQL/10-warm-start gate and 170 named steps; actual product run 39644293557 and repository run 39644293494 passed, with merge parents verified and child parity inspected. T056/T059 are explicitly human-confirmed without invented observations. Final documentation and all 15 US scenarios, 17 FRs, six SCs and twelve principles are reconciled; repository checker, 100 Python tests and whitespace checks pass. Complete implement only; converge is next, not executed. No feature acceptance or merge authorization.",
+      "evidence_sha256": {
+        "specs/001-repository-bootstrap/tasks.md": "da856b91d37eb20e2cc5659d010830b4864f01a18a02d2e978c986d260d47f83",
+        "specs/001-repository-bootstrap/implementation.md": "86cbc0aad2536d701afb72295124b348dde1ee8523c93fa07bb1e15477001355",
+        "specs/001-repository-bootstrap/checklists/quality.md": "a1445b8d6c41766c3fec12db9903335268b33d87e77f67da6d5ef5a9df182f78",
+        "specs/001-repository-bootstrap/checklists/requirements.md": "3ce67035a40235d120982a2ee029cb1fe25b29534be3f43808c74ea5a4910d32"
+      }
+    },
+    {
+      "spec": "001",
+      "step": "converge",
+      "directory": "specs/001-repository-bootstrap",
+      "status": "complete",
+      "branch": "feature/001-specify-repository-bootstrap",
+      "reason": "",
+      "started_at": "2026-10-21T17:52:04+00:00",
+      "completed_at": "2026-10-21T17:58:51+00:00",
+      "outcome": "pass",
+      "note": "Executed speckit-converge against current source and all spec/plan/tasks intent under constitution v2.0.1. Assessed 17 FRs, six SCs, 15 acceptance scenarios, twelve plan decisions, all 64 tasks and twelve principles; zero actionable missing/partial/contradicts/unrequested gaps. All 65 fresh targeted unit/real-provider/contract/browser steps and 403 npm/69 NuGet dependency reconciliation passed; actual assessed-head repository and ten product CI jobs succeeded. Preserved human T056/T059 attestations and reference limitations without inventing observations. tasks.md is byte-for-byte unchanged; spec/plan/product code unchanged; no hooks. Converge passes only; review is next on the same branch/draft PR, not feature acceptance.",
+      "evidence_sha256": {
+        "specs/001-repository-bootstrap/tasks.md": "da856b91d37eb20e2cc5659d010830b4864f01a18a02d2e978c986d260d47f83",
+        "specs/001-repository-bootstrap/convergence.md": "2db9b076fea717f8b72cbc843f8d0c29019ffd582eeb43e7308307cdb606c74d"
+      }
+    },
+    {
+      "spec": "001",
+      "step": "review",
+      "directory": "specs/001-repository-bootstrap",
+      "status": "complete",
+      "branch": "feature/001-specify-repository-bootstrap",
+      "reason": "",
+      "started_at": "2026-10-21T18:07:08+00:00",
+      "completed_at": "2026-10-21T18:17:33+00:00",
+      "outcome": "pass",
+      "note": "Independent read-only spec-review assessed actual source/tests for all 17 FRs, six SCs, 15 scenarios and twelve constitutional principles; no high-confidence acceptance defect, constitutional conflict or scope expansion. Caller closed execution evidence requests: fresh all/disposable-PG/10-warm-start local gate passes all ten groups and 170 steps at 4f708c9, with ten exact-fixture samples and all five expected nonzero failures. Actual assessed-head repository/product CI, synthetic merge parents and ten uploaded reports verified; ordered local/CI 170-step parity passes. tasks.md and product/spec/plan/locks unchanged; T056/T059 human attestations and manual/reference limitations preserved without invented observations. review.md records pass and no remediation. Complete review only; accept is next, not executed or authorized; same draft PR, no merge request.",
+      "evidence_sha256": {
+        "specs/001-repository-bootstrap/tasks.md": "da856b91d37eb20e2cc5659d010830b4864f01a18a02d2e978c986d260d47f83",
+        "specs/001-repository-bootstrap/review.md": "c8135f7b6264242fa297ee5066bb9e5884aad64c501cb8e6293ecbbf86a5bff1",
+        "specs/001-repository-bootstrap/checklists/quality.md": "a1445b8d6c41766c3fec12db9903335268b33d87e77f67da6d5ef5a9df182f78",
+        "specs/001-repository-bootstrap/checklists/requirements.md": "3ce67035a40235d120982a2ee029cb1fe25b29534be3f43808c74ea5a4910d32"
+      }
+    },
+    {
+      "spec": "001",
+      "step": "accept",
+      "directory": "specs/001-repository-bootstrap",
+      "status": "complete",
+      "branch": "feature/001-specify-repository-bootstrap",
+      "reason": "",
+      "started_at": "2026-10-21T18:39:05+00:00",
+      "completed_at": "2026-10-21T18:39:59+00:00",
+      "outcome": "pass",
+      "note": "Explicit human acceptance of spec 001 follows the assistant's scoped explanation, passing final-review link and production/MVP/future-feature exclusions. acceptance.md records the exact affirmative decision and context. Review checkpoint 74b12e2 has eleven successful CI checks; required review/task/checklist hashes are unchanged. Product/spec/plan/tasks/locks remain unchanged; manual/reference limitations preserved, no new observations claimed. Accept only: feature 001 is accepted; original PR may be ready for human merge. No merge, auto-merge, branch deletion or spec 002 execution; 002 waits for PR #4 human merge with accepted evidence on updated origin/main.",
+      "evidence_sha256": {
+        "specs/001-repository-bootstrap/tasks.md": "da856b91d37eb20e2cc5659d010830b4864f01a18a02d2e978c986d260d47f83",
+        "specs/001-repository-bootstrap/review.md": "c8135f7b6264242fa297ee5066bb9e5884aad64c501cb8e6293ecbbf86a5bff1",
+        "specs/001-repository-bootstrap/acceptance.md": "6d2157334b847e0a070cd88407f2eb0cc3d238fda0bdfb2af3f99fd829b23a03",
+        "specs/001-repository-bootstrap/checklists/quality.md": "a1445b8d6c41766c3fec12db9903335268b33d87e77f67da6d5ef5a9df182f78",
+        "specs/001-repository-bootstrap/checklists/requirements.md": "3ce67035a40235d120982a2ee029cb1fe25b29534be3f43808c74ea5a4910d32"
+      },
+      "human_approval": "yeah bro, I accept"
     }
   ]
 }

@@ -1,19 +1,32 @@
 # Contributing to Köfte
 
-Welcome! This is currently **repository setup only**. Product implementation starts through the numbered Spec Kit workflow; this bootstrap does not complete spec 001.
+Welcome! **Spec 001's bootstrap is explicitly human-accepted** and awaits
+human merge of [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4).
+The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves
+the decision and limits; the [review](specs/001-repository-bootstrap/review.md)
+records source/test coverage and the complete local gate.
+The local host/web, real-provider verification, guarded recovery and generated
+contract do not introduce feature modules or prove production readiness.
+Spec 002 waits for the accepted feature's merge and updated main.
+See the [current local guide](docs/development/local-development.md).
 
 ## Prerequisites
 
 - Git and [GitHub CLI](https://cli.github.com/), authenticated for this repository.
 - Python **3.11+** for repository checks and the Spec Kit state helper (standard library only).
-- A supported Node.js **22 LTS or newer supported LTS** with `npx` for local MCP servers.
+- For the runnable bootstrap: .NET SDK **10.0.402**, Node.js **24.22.0** and npm
+  **11.19.1**, selected in the shell used to start or verify the stack.
 - GitHub Copilot CLI or VS Code with Copilot for the optional assistant workflow.
 
-.NET, container tooling, package-manager choices and runnable application commands belong to spec 001. Do not install a product toolchain just to edit this repository.
+See the [local guide](docs/development/local-development.md) for exact setup,
+locked restores and commands. Docker Engine/Compose and the pinned PostgreSQL
+image are needed for PostgreSQL verification, not ordinary SQLite startup.
+Documentation-only edits do not require installing the product toolchain;
+the optional MCP tooling has its own requirements in the assistant guide.
 
 ## Branch → change → commit → push → PR
 
-All work starts on a **fresh branch from current `origin/main`**. Never work directly on `main`, base a new task on an unmerged feature branch, or reuse a merged/closed PR branch.
+Each new task or numbered feature starts on a **fresh branch from current `origin/main`**. Never work directly on `main`, base unrelated work on an unmerged feature branch, or reuse a merged/closed PR branch. All Spec Kit stages for an unfinished feature continue on that feature's original branch and one draft PR.
 
 ```bash
 git status --short
@@ -23,7 +36,7 @@ git pull --ff-only origin main
 git switch -c chore/short-description
 ```
 
-Start only with a clean worktree; preserve unrelated changes and ask before moving them. Use `feature/`, `bugfix/`, `chore/`, `docs/`, `refactor/` or `test/` according to intent. For Spec Kit stages, use e.g. `feature/001-specify-repository-bootstrap` or `chore/constitution`.
+Start only with a clean worktree; preserve unrelated changes and ask before moving them. Use `feature/`, `bugfix/`, `chore/`, `docs/`, `refactor/` or `test/` according to intent. For a numbered spec, use e.g. `feature/001-repository-bootstrap`; the standalone constitution task uses `chore/constitution`. Existing unfinished feature branches keep their names even if they include a stage.
 
 An explicitly user-provided current task branch can be used after checking its base and PR state. Resume an open task only on its original branch, not a different fresh task branch.
 
@@ -38,7 +51,19 @@ git diff --check
 CI fetches full history and checks the actual PR-base-to-head diff (or the push
 range), rather than treating a shallow merge checkout as an entirely new tree.
 
-Once product tools exist, also run the smallest relevant tests, formatting, lint and type/build checks required by that feature. Do not replace failed checks with a success claim.
+Also run the smallest relevant .NET/web tests, formatting, lint and type/build
+checks in the [local guide](docs/development/local-development.md). Use its
+fixture-owning named verification suites for runtime checks; focused results do
+not replace the complete all-suite, CI and human gates. Do not replace failed
+checks with a success claim.
+
+### .NET test source ownership
+
+Store .NET test source inside the .NET test project that compiles it, under
+`tests/unit/` or `tests/integration/`. Production projects and their vertical
+slices must not contain test classes. Test projects may mirror the tested
+module/feature structure, but must not link test source from `src/` or a
+production module. See [ADR 0003](docs/adr/0003-dotnet-test-source-ownership.md).
 
 Use an intent-based commit such as `chore: bootstrap repository workflow`. Assistant-authored commits include:
 
@@ -55,15 +80,15 @@ gh pr create --base main --title "chore: bootstrap repository workflow" --body-f
 
 Use the [PR template](.github/pull_request_template.md). Check for an existing open PR for the branch before creating one; update it for follow-up commits. Put temporary PR bodies outside the repository.
 
-**Never merge, enable auto-merge, or close a PR as an assistant.** Do not delete its branch. A human owns disposition, acceptance and merge. Handoff with a clickable link: `Please merge [#N](PR_URL)`. If blocked or incomplete, open a draft PR and clearly describe the blocker instead of requesting merge.
+**Never merge, enable auto-merge, or close a PR as an assistant.** Do not delete its branch. A human owns disposition, acceptance and merge. Request a merge with a clickable link, `Please merge [#N](PR_URL)`, only when the task or entire feature is complete. An unfinished Spec Kit feature stays in one draft PR; report its next stage or blocker instead of requesting merge.
 
 ## Spec-driven changes
 
-Read the [canonical docs](docs/README.md), then use [drive-speckit](.github/skills/drive-speckit/SKILL.md). It advances **one stage per invocation**, with a PR/merge boundary after each stage. Do not run the complete Spec Kit workflow as an unattended batch.
+Read the [canonical docs](docs/README.md), then use [drive-speckit](.github/skills/drive-speckit/SKILL.md). It advances **one stage per invocation on the same feature branch and PR**, without merging between steps. Do not run the complete Spec Kit workflow as an unattended batch.
 
 Feature artifacts live at **`specs/NNN-short-name/`**, independent of branch naming. The tracked driver ledger is `.specify/drive-state.json`; `.specify/feature.json` remains an ignored local pointer.
 
-Acceptance requires an explicit human decision after a passing review; neither all checked tasks nor an assistant review alone makes a feature accepted.
+Acceptance requires an explicit human decision after a passing review; neither all checked tasks nor an assistant review alone makes a feature accepted. Only then is the feature PR ready for human merge. The next numbered spec starts from updated main after that merge.
 
 ## Scope and decisions
 

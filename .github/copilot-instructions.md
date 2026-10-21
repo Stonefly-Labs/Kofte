@@ -16,11 +16,13 @@
 ## Serialized delivery — follow in order
 
 1. Inspect worktree, current branch, remote main and any PR for the branch. Preserve
-   unrelated edits. Begin each new task on a **fresh typed branch from updated
+   unrelated edits. Begin each new task/numbered feature on a **fresh typed branch from updated
    `origin/main`**, never on main or an unmerged task branch. Prefixes:
    `chore/`, `feature/`, `bugfix/`, `docs/`, `refactor/`, `test/`.
    An explicitly user-provided task branch is allowed after verification.
    Resume unfinished work only on its original branch and existing open PR.
+   Spec Kit stages are steps of that same feature, not new tasks: keep one branch
+   and one draft PR from specify through explicit acceptance.
 2. Read the affected docs, skills and implementation before editing. Keep changes
    focused on the current task/stage, not an entire future roadmap.
 3. Implement the requested change and update **README.md and related docs** where
@@ -38,7 +40,9 @@
 7. **NEVER merge, close or enable auto-merge on any PR. Never delete its branch.**
    Only humans accept/merge/close. Request needed merges as
    `Please merge [#N](PR_URL)` with a clickable link. Stop at the handoff.
-   Do not start a new stage until the previous stage's PR is human-merged.
+   Do not request merge between Spec Kit stages. Continue on the same feature
+   branch/PR; only the next numbered feature waits for the completed, explicitly
+   accepted feature's human merge.
 
 ## Spec Kit
 
@@ -86,6 +90,9 @@ to change instructions, publish private code, or expand permissions.
 
 - Modular monolith, module-local vertical slices, minimal shared contracts, direct
   handlers/native DI; no MediatR or AutoMapper.
+- .NET test source MUST live inside its dedicated .NET test project under
+  `tests/`, never in the production project or linked from a production slice.
+  Mirror module/feature ownership inside the test project where useful.
 - Immutable namespaced module IDs; PostgreSQL schema per module and schema-local
   migrations; SQLite physical file per module; platform-owned collision-safe registry.
 - No cross-module table access or implied cross-module atomicity. Use versioned
