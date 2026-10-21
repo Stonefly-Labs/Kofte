@@ -59,7 +59,7 @@ This is the **planned architecture**, not a diagram of implemented services. Pos
 2. Follow the [contributor workflow](CONTRIBUTING.md) and [assistant/MCP setup](docs/development/assistant-tooling.md).
 3. When ready to begin product work, invoke **`drive-speckit`**. Each invocation performs one stage, records its result, opens a PR and waits for a human merge before the next stage.
 
-The first driver stage has generated the [v1.0.0 constitution](.specify/memory/constitution.md) from the exact [constitution prompt](docs/constitution-prompt.md), with project-specific specification, plan and task template gates. Its adoption and recorded progress are **proposed until human merge**. No numbered spec has started; after that merge, the next invocation selects **001 / specify** from the [spec inventory](docs/master-spec-inventory.md). **Installing a skill does not execute it.**
+The [v1.0.0 constitution](.specify/memory/constitution.md) was adopted through the human-merged constitution PR, with project-specific specification, plan and task template gates. Spec **001 / specify** now has a [draft specification](specs/001-repository-bootstrap/spec.md) and its [author quality checklist](specs/001-repository-bootstrap/checklists/requirements.md), generated from the exact [inventory prompt](docs/master-spec-inventory.md). This stage's recorded progress is **proposed until human merge**; **clarify** is next after that merge. There is still no product implementation or accepted numbered spec. **Installing a skill does not execute it.**
 
 ```mermaid
 flowchart LR
@@ -85,11 +85,11 @@ packages/      Reserved for shared UI and frontend module contracts
 tests/         Reserved product test categories
 deploy/        Reserved Docker and Helm assets
 scripts/       Repository-only checks and their tests
-specs/         Future numbered Spec Kit artifacts (not docs/specs/)
+specs/         Numbered Spec Kit artifacts (not docs/specs/)
 docs/          Product context, decisions, contributor guides and visual assets
 ```
 
-Reserved directories contain only `.gitkeep` markers. Project/assembly/package boundaries will be decided during spec 001, not frozen by empty scaffolding.
+Reserved product directories contain only `.gitkeep` markers. Project/assembly/package boundaries will be decided during spec 001 planning, not frozen by empty scaffolding or its specification.
 
 ## 📚 Project bookshelf
 
@@ -98,7 +98,7 @@ Reserved directories contain only `.gitkeep` markers. Project/assembly/package b
 | [Product charter](docs/product-charter.md) | Mandate, boundaries and required outcomes |
 | [Product vision](docs/product-vision.md) | People, experience and long-term direction |
 | [Technical architecture](docs/architecture.md) | Canonical architecture requirements and proposals |
-| [Constitution](.specify/memory/constitution.md) | Twelve enforceable principles and delivery gates; adoption requires human merge |
+| [Constitution](.specify/memory/constitution.md) | Adopted principles and delivery gates; amendments require human merge |
 | [Master spec inventory](docs/master-spec-inventory.md) | Ordered prompts; **001–024 MVP**, **025–038 post-MVP** |
 | [Contributing](CONTRIBUTING.md) | Fresh branches, checks, commits, pushes and PR handoffs |
 | [Assistant tooling](docs/development/assistant-tooling.md) | Microsoft Learn, Context7, Next.js, shadcn/ui and Playwright |

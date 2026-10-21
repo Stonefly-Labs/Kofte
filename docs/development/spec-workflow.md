@@ -12,15 +12,19 @@ In Copilot, reload project skills with `/skills reload`, then ask:
 Use /drive-speckit to perform the next stage.
 ```
 
-The first execution has generated `.specify/memory/constitution.md` v1.0.0 from
-the exact fenced prompt in `docs/constitution-prompt.md`. The ledger records that
-constitution stage only, with no numbered features started. The constitution and
-transition are **proposed until a human merges the stage PR**.
+The constitution stage generated `.specify/memory/constitution.md` v1.0.0 from
+the exact fenced prompt in `docs/constitution-prompt.md` and was human-merged.
+The next stage, **001 / specify**, produced
+[`spec.md`](../../specs/001-repository-bootstrap/spec.md) and its
+[`checklists/requirements.md`](../../specs/001-repository-bootstrap/checklists/requirements.md)
+using the exact fenced inventory prompt. Its ledger transition is **proposed
+until a human merges the specify PR**; the next invocation then performs **clarify**.
 
-After that merge, the next execution starts spec **001 / specify**, using its exact
-fenced inventory prompt. This spec is broader than repository setup: it includes
-a working API/UI skeleton and test/local profiles. Constitution generation does
-not implement or pre-accept it.
+Spec 001 is broader than repository setup: it requires a future working API/UI
+skeleton and test/local profiles. This specification stage creates no product
+code, plan or tasks and does not accept the feature. The checked requirements
+checklist records the specification author's review only; the later `quality.md`
+is a separate human-owned review gate.
 
 Project-specific templates in `.specify/templates/overrides/` carry the constitution
 into specification, planning and tasks through the installed resolver. They require

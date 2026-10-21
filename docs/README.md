@@ -6,9 +6,9 @@
 2. [Product vision](product-vision.md): audience and experience.
 3. [Technical architecture](architecture.md): architecture invariants and recommendations.
 4. [Master spec inventory](master-spec-inventory.md): exact MVP boundary and ordered prompts.
-5. [Constitution](../.specify/memory/constitution.md): generated v1.0.0 principles and review gates, proposed until human merge; the [constitution prompt](constitution-prompt.md) remains its exact generation input.
+5. [Constitution](../.specify/memory/constitution.md): adopted v1.0.0 principles and review gates; the [constitution prompt](constitution-prompt.md) remains its exact generation input.
 
-These are the canonical product inputs. Once generated and adopted, `.specify/memory/constitution.md` governs delivery; a conflict with canonical inputs must be surfaced for a human decision and documented amendment, not silently resolved by an assistant.
+These are the canonical product inputs. The human-merged `.specify/memory/constitution.md` governs delivery; a conflict with canonical inputs must be surfaced for a human decision and documented amendment, not silently resolved by an assistant.
 
 The [technology-stack exploration](kofte-technology-stack-architecture.md) is historical/proposed background. In particular, its external MCP/Hoard MVP claims, cross-module transaction suggestions and alternative directory tree do **not** override the canonical architecture and inventory.
 
@@ -19,4 +19,4 @@ The [technology-stack exploration](kofte-technology-stack-architecture.md) is hi
 - [Spec workflow](development/spec-workflow.md): state, stage gates, recovery and acceptance.
 - [ADRs](adr/README.md): record consequential decisions.
 
-Feature specs live in root **`specs/`** to match the installed Spec Kit scripts, rather than a second `docs/specs/` tree. Reserved product directories are placeholders, not implemented components.
+Feature specs live in root **`specs/`** to match the installed Spec Kit scripts, rather than a second `docs/specs/` tree. The first [draft specification, 001](../specs/001-repository-bootstrap/spec.md), defines the future working foundation; its specify-stage progress is proposed until human merge. Reserved product directories are placeholders, not implemented components.
