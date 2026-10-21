@@ -35,8 +35,10 @@ project, never a production slice or source link. The
 [implementation report](../specs/001-repository-bootstrap/implementation.md)
 records the final complete local gate, all ten passing Ubuntu CI jobs and
 170 matching named local/CI steps. All 64 implement tasks are evidenced,
-including supported targets and human-confirmed T056/T059. Implement is complete;
-converge is next and has not run. Spec 001 remains unaccepted on its original
-branch and draft PR, without an intermediate merge. Final review and explicit
-human acceptance remain separate gates; modules, SDKs, workers and Helm remain
-reserved.
+including supported targets and human-confirmed T056/T059. Implement and
+[converge](../specs/001-repository-bootstrap/convergence.md) are complete.
+Convergence assessed all 38 requirements/acceptance scenarios, twelve plan
+decisions, 64 tasks and twelve principles, with no actionable gap or appended
+task. Spec 001 remains unaccepted on its original branch and draft PR, without
+an intermediate merge. Final review is next; explicit human acceptance remains
+a separate gate. Modules, SDKs, workers and Helm remain reserved.

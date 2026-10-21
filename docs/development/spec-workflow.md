@@ -97,13 +97,28 @@ all 15 scenarios, 17 functional requirements, six success criteria and twelve
 constitutional principles. The final source has 170 passing named steps locally
 and in CI. A macOS zombie-group probe race discovered by the final run was
 reproduced and corrected without weakening cleanup or performance bounds.
-The driver now selects **converge**, which this invocation does not execute.
+That implement invocation selected **converge**, without executing it.
 A commit checkpoint was not a reason to stop the active implement stage.
+**001 / converge is now complete**:
+[`convergence.md`](../../specs/001-repository-bootstrap/convergence.md)
+records zero actionable missing/partial/contradicting/unrequested gaps after
+assessing all 17 functional requirements, six success criteria, 15 acceptance
+scenarios, twelve plan decisions, all 64 tasks and twelve constitutional
+principles against current source, tests and actual evidence. Fresh focused
+unit, real SQLite/PostgreSQL integration, both-provider HTTP/adapter contract
+and browser checks passed all 65 named steps; dependency reconciliation passed
+for 403 npm and 69 NuGet identities. These are targeted checks, not a newly
+executed all-suite gate or human reference exercise. Actual assessed-head
+repository CI and all ten product jobs also passed. `tasks.md` remains
+byte-for-byte unchanged, with no empty convergence phase or product edits.
+No convergence hooks are configured. The driver selects **review**;
+final review is not executed by convergence, and feature acceptance is not
+inferred from its passing result.
 Continue future stages on
 `feature/001-specify-repository-bootstrap` and the same
 [draft PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4),
-**without an intermediate merge**. Converge, final review and explicit human
-feature acceptance have not begun; PR #4 stays draft.
+**without an intermediate merge**. Final review and explicit human feature
+acceptance have not begun; PR #4 stays draft.
 
 The human-directed [workflow correction](../adr/0001-feature-delivery-lifecycle.md)
 removes per-step merge gates. Its constitution v2.0.0 amendment travels with this

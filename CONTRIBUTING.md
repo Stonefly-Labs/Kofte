@@ -1,9 +1,10 @@
 # Contributing to Köfte
 
-Welcome! **Spec 001's bootstrap implementation is in progress** through the
+Welcome! **Spec 001's bootstrap implementation and convergence are complete**;
+final review and explicit human acceptance remain separate gates in the
 numbered Spec Kit workflow. The local host/web, real-provider verification,
-guarded recovery and generated contract do not complete spec 001, introduce
-feature modules or prove production readiness.
+guarded recovery and generated contract do not alone complete spec 001,
+introduce feature modules or prove production readiness.
 See the [current local guide](docs/development/local-development.md).
 
 ## Prerequisites
