@@ -28,14 +28,20 @@ async function freePort(port = 0): Promise<number> {
   return address.port;
 }
 
-function signalGroup(child: ChildProcess, signal: NodeJS.Signals | 0): boolean {
+function signalGroup(
+  child: Pick<ChildProcess, "pid">,
+  signal: NodeJS.Signals | 0,
+): boolean {
   if (!child.pid) return false;
   try {
     process.kill(-child.pid, signal);
     return true;
   } catch (error) {
-    if (error instanceof Error && "code" in error && error.code === "ESRCH")
-      return false;
+    if (error instanceof Error && "code" in error) {
+      if (error.code === "ESRCH") return false;
+      // Darwin can deny a probe while an owned zombie awaits reaping.
+      if (signal === 0 && error.code === "EPERM") return true;
+    }
     throw new Error("startup_owned_group_signal_failed", { cause: error });
   }
 }
@@ -101,6 +107,25 @@ async function waitReady(
   }
   throw new Error("startup_readiness_timeout");
 }
+
+test("owned group cleanup waits for denied probes but refuses denied signals", () => {
+  const original = process.kill;
+  process.kill = () => {
+    throw Object.assign(new Error("denied"), { code: "EPERM" });
+  };
+  try {
+    const child = { pid: process.pid };
+    expect(signalGroup(child, 0)).toBe(true);
+    expect(() => signalGroup(child, "SIGTERM")).toThrow(
+      "startup_owned_group_signal_failed",
+    );
+    expect(() => signalGroup(child, "SIGKILL")).toThrow(
+      "startup_owned_group_signal_failed",
+    );
+  } finally {
+    process.kill = original;
+  }
+});
 
 test("built runtime preserves a private fixture through warm restarts", async ({
   page,

@@ -604,3 +604,37 @@ after execution, not inferred from these focused checks.
 The owned manual-review supervisor was stopped before final verification;
 its persistent developer SQLite store was retained. Verification owns its own
 private roots/ports and does not use or reset that store.
+
+#### Final-gate startup cleanup correction
+
+The first final all-suite at published `82ec9a4` returned **1**: quality,
+unit, SQLite/PostgreSQL integration, both-provider recovery/contract/privacy,
+browser and failure-propagation passed, but `startup-warm-restarts` failed.
+Its safe report is
+`artifacts/verification/startup-none-f85a30584b7c461ba25dfae7dd1927a8.json`;
+this invocation is **not** a passing complete gate. All ten actual Ubuntu
+product jobs passed in [run 39641560571](https://github.com/Stonefly-Labs/Kofte/actions/runs/39641560571),
+as did [repository checks 39641560596](https://github.com/Stonefly-Labs/Kofte/actions/runs/39641560596);
+those results do not override the local failure.
+
+Bounded focused reproduction isolated macOS's process-group shutdown race:
+`kill(-pgid, 0)` returned `EPERM` while the known owned child had not yet
+delivered its exit event. A targeted process-state snapshot showed exactly
+one same-user group member, already a zombie and no live members. Diagnostics
+retained only fixed errno/boolean/count fields, not process IDs, arguments,
+paths, runtime logs or fixture values.
+
+The new focused startup regression fails before the fix. A denied **probe**
+now means the group is still present, so cleanup continues within its existing
+deadline until the group genuinely disappears. Denied `SIGTERM`/`SIGKILL`
+still throw; neither permission failures nor uncertain cleanup are treated
+as successful termination. No startup/page threshold, ten-cycle requirement,
+fixture assertion, forced-cleanup bound or production behavior is weakened.
+The final all-suite must pass afresh after this correction.
+
+The corrected `python3 scripts/verify.py --suite startup --warm-starts 10`
+passes all eight named steps, including the new fail-closed cleanup regression,
+ten actual warm restarts and validated fixture/timing observations. Prettier
+accepts the changed test; the repository checker, all 100 Python tests and
+`git diff --check` pass. These focused results do not replace T061's complete
+gate.
