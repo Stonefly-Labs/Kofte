@@ -59,7 +59,17 @@ US1 is the first internal increment, not feature or MVP completion; the full
 green local/CI gate follows all four stories. Task generation used the resolved
 project override and explicit recorded feature directory; no before/after tasks
 hooks were configured. No task was executed or checked, and no product file or
-analysis report was created. **Analyze** is next on
+analysis report was created. **001 / analyze is now complete**:
+[`analysis.md`](../../specs/001-repository-bootstrap/analysis.md) records a passing
+read-only consistency, quality and constitutional review of the specification,
+plan, tasks and supporting design. All 23 requirements/outcomes and 15 acceptance
+scenarios have concrete task coverage; all 64 tasks are mapped, sequential and
+unchecked, with no invalid numbered prerequisite/cycle or actionable finding.
+The report preserves the reviewed checklists, proposed ADR/dependency-adoption
+gates and actual manual/product evidence obligations. No analysis hooks were
+configured. The analyzed inputs and implementation markers remain unchanged;
+the report is design/task evidence, not runtime proof or human acceptance.
+**Implement** is next, beginning with the actual human ADR-disposition gate, on
 `feature/001-specify-repository-bootstrap` and the same
 [draft PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4), **without an intermediate merge**.
 
@@ -69,7 +79,7 @@ feature; product principles and explicit human acceptance remain unchanged.
 
 Spec 001 is broader than repository setup: it requires a future working API/UI
 skeleton and test/local profiles. Specification, clarification, planning,
-checklist review and task generation add no product implementation or human
+checklist review, task generation and analysis add no product implementation or human
 feature acceptance. All quickstart product commands
 are future implementation targets, not available commands or passing evidence.
 The checked requirements
@@ -78,8 +88,9 @@ separate human-owned review gate. Its generation did not approve any item.
 The reviewer's subsequent explicit request authorized that checklist invocation's
 agent-assisted evaluation and evidence-backed marking. Without such a request,
 generation would leave the stage blocked for reviewer completion. This completed
-requirements review permitted task generation; the generated task list now needs
-the separate read-only analysis stage before implementation, not automatic final
+requirements review permitted task generation; the subsequent separate read-only
+analysis passed. Implementation must honor the remaining ADR, adoption and actual
+evidence gates; neither analysis nor eventual task completion is automatic final
 acceptance.
 
 Project-specific templates in `.specify/templates/overrides/` carry the constitution
