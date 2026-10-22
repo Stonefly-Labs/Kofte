@@ -134,11 +134,19 @@ CI passes all eleven contexts and 177 product steps. No architecture or product
 change is made by review.
 [Explicit human acceptance](../specs/002-platform-contracts/acceptance.md)
 now separately records feature 002's approval with its existing scope and
-limitations. The original PR awaits human merge before any later start of
-003; no architecture change, new local all-suite or human-usability claim
-is made by acceptance.
+limitations. The original PR is now human-merged with accepted evidence on main;
+no architecture change, new local all-suite or human-usability claim is made
+by acceptance.
 The host only gains a library project reference; its startup,
 routes, stores and web console remain module-free.
+Spec 003's [draft specification](../specs/003-storage-registry/spec.md) now
+defines the next storage slice: immutable registry ownership, concurrent
+collision-safe allocation, isolated module tables/history and crash/recovery
+semantics. Its author checklist passes 16/16; clarify is next, not implementation.
+Allocator/hash choices, migration/lock mechanisms and provisioning privilege
+separation remain planning/ADR decisions. In particular, schema provisioning
+must explicitly reconcile the bootstrap credential's lack of database CREATE
+privilege without silently weakening the existing fixture/runtime safety.
 The broader stack/module/deployment proposals below remain future work, not
 installed features or proof of module isolation, production readiness or acceptance.
 

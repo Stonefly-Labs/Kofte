@@ -11,6 +11,10 @@
     "002": {
       "directory": "specs/002-platform-contracts",
       "next_step": "accepted"
+    },
+    "003": {
+      "directory": "specs/003-storage-registry",
+      "next_step": "clarify"
     }
   },
   "active": null,
@@ -398,6 +402,22 @@
         "specs/002-platform-contracts/checklists/requirements.md": "415f42bcdffc301c930b0bfb6af2dc9a4796f8a604a8540810d910763087a71b"
       },
       "human_approval": "spec is fully human approved"
+    },
+    {
+      "spec": "003",
+      "step": "specify",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-22T01:59:17+00:00",
+      "completed_at": "2026-10-22T02:03:38+00:00",
+      "outcome": "pass",
+      "note": "Executed speckit-specify with the exact inventory003 fenced prompt and resolved project spec override on fresh feature/003-storage-registry from updated origin/main66f0e4a. Verified prerequisite002 explicit human acceptance, merged PR5 and all five acceptance evidence hashes on main. spec.md and built-in author checklist define five independently testable stories,18 Given/When/Then scenarios,16 functional requirements,six measurable outcomes and all twelve principles: immutable allocation, durable UNIQUE/concurrency protection, protected PostgreSQL schemas/history and SQLite files/paths, owner-bound module integration, bounded interruption/retry, registry/bootstrap migration, consistent recovery and private diagnostics. All16 author criteria satisfied; no material unresolved requirements question or before/after hooks. Allocator/hash,contract/status,budget,privilege/lock,migration and recovery mechanisms remain plan/ADR decisions, including explicit reconciliation of bootstrap PostgreSQL CREATE restrictions. No product code, plan, reviewer-owned quality checklist, later stage or human acceptance. Clarify is next on this branch and one draft PR; no intermediate merge.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/spec.md": "39db5abdb6d52662dc30f3b82918d4c1d5e945401e46666a3ca9a7a3ee0defef",
+        "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
+      }
     }
   ]
 }

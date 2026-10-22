@@ -32,9 +32,13 @@ principles. Fresh quality/unit/both-provider contract checks pass 62 targeted
 steps; actual assessed-head CI passes all eleven contexts and 177 product
 steps. No new local all-suite run or bootstrap behavior change is asserted.
 [Explicit human acceptance](../../specs/002-platform-contracts/acceptance.md)
-is now recorded separately from review. The same PR #5 awaits human merge;
-acceptance adds no bootstrap behavior or new product measurement. A later
-invocation may begin 003 only after that merge.
+is now recorded separately from review. The same
+[PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5) is human-merged;
+acceptance adds no bootstrap behavior or new product measurement.
+Spec 003 now has [draft storage requirements](../../specs/003-storage-registry/spec.md)
+and a completed author checklist; clarify is next on its own feature branch/
+draft PR. No registry/module storage, new command or changed startup/recovery
+behavior is implemented by this specification stage.
 Spec 002 timing now uses an available supported workstation/CI runner with
 actual metadata, not a fixed Ubuntu/CPU/RAM profile, per the human's ADR amendment.
 The subsequent author-guide amendment removes the manual timed exercise and

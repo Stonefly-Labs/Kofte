@@ -131,6 +131,19 @@ human acceptance.
 [acceptance record](../specs/002-platform-contracts/acceptance.md) quotes
 **"spec is fully human approved"** in response to the passing review and
 numbered-feature handoff. Scope and limitations remain unchanged; no new
-product or measurement is claimed. The same PR #5 is ready for human merge.
-That merge, with accepted ledger/evidence on main, is required before a later
-invocation may begin 003. Acceptance does not start it.
+product or measurement is claimed. The same
+[PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5) is now human-merged.
+Its accepted ledger and all five acceptance evidence hashes were verified on
+updated main before starting 003. Acceptance itself did not start it.
+
+**003 / specify is complete** on `feature/003-storage-registry`.
+The [draft requirements](../specs/003-storage-registry/spec.md) use the exact
+inventory prompt and resolved project template. Five stories, 18 scenarios,
+16 functional requirements and six outcomes cover immutable storage allocation,
+real uniqueness/concurrency protection, per-schema/per-file ownership and
+migration history, interruption/recovery, least privilege and safe diagnostics.
+The [author checklist](../specs/003-storage-registry/checklists/requirements.md)
+satisfies all 16 criteria. Allocator, contracts, budgets, provisioning credentials
+and migration/recovery mechanisms remain planning/ADR decisions. Clarify is
+next on the same branch/draft PR; no implementation, reviewer-owned quality
+review or feature acceptance is claimed.

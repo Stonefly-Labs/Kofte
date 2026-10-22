@@ -32,12 +32,17 @@ Fresh quality/unit/both-provider contracts pass 62 targeted steps; assessed-head
 CI passes all eleven contexts and 177 product steps.
 [Explicit human acceptance](specs/002-platform-contracts/acceptance.md) now
 records **"spec is fully human approved"** for feature 002 and its documented
-limits. Human merge of the same PR #5 is next; only then may a later invocation
-start 003. No new local all-suite run, human usability study or permission to
-chain stages is inferred.
-The author/quality checklists remain 16/16 and 36/36, and
-[analysis](specs/002-platform-contracts/analysis.md) passes. Continue on the same
-feature branch and PR #5 for human merge; module runtimes remain future work.
+limits. The same [PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5) is now
+human-merged with accepted evidence on main. No new local all-suite run, human
+usability study or permission to chain stages is inferred.
+The author/quality checklists remain 16/16 and 36/36, and the passing
+[analysis](specs/002-platform-contracts/analysis.md) preserves the feature's
+design-stage evidence; module runtimes remain future work.
+Spec **003 / specify** now defines the
+[storage registry and isolation requirements](specs/003-storage-registry/spec.md)
+and [16/16 author checklist](specs/003-storage-registry/checklists/requirements.md).
+Clarify is next on `feature/003-storage-registry` and its one draft PR.
+No module storage, plan or later-stage approval is introduced by specification.
 See the [current local guide](docs/development/local-development.md).
 
 ## Prerequisites

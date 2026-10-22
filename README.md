@@ -35,7 +35,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 | 🔐 Explicit boundaries | Team-scoped authorization, audited actions and module-owned storage |
 
 > [!IMPORTANT]
-> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are now [explicitly human-accepted](specs/002-platform-contracts/acceptance.md), awaiting human merge. Nothing here claims production readiness or MVP completion.
+> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003 now has storage-isolation requirements, not an implemented registry. Nothing here claims production readiness or MVP completion.
 
 ## 🧭 The shape of things to come
 
@@ -68,14 +68,26 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**Spec 002 is explicitly human-accepted; human merge is next.**
+**Spec 003 / specify is complete; clarify is next.** The
+[draft specification](specs/003-storage-registry/spec.md) and
+[author checklist](specs/003-storage-registry/checklists/requirements.md)
+define durable module storage ownership, concurrent collision-safe registration,
+isolated schemas/files and migration history, interrupted provisioning,
+recovery and safe diagnostics. Five stories, 18 scenarios, 16 functional
+requirements and six measurable outcomes cover both providers; all 16 author
+criteria are satisfied. Work continues on `feature/003-storage-registry` and
+one draft PR. No plan, storage implementation, reviewer-owned quality review
+or human acceptance is claimed.
+
+**Spec 002 is explicitly human-accepted and merged.**
 The [acceptance record](specs/002-platform-contracts/acceptance.md) preserves
 the exact decision, **"spec is fully human approved"**, in response to the
 passing final review and explicit numbered-feature acceptance handoff.
 Acceptance retains the approved scope and review limits; it adds no product
 capability or new measurement. The same [PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5)
-is ready for human merge. Spec 003 waits for that merge and a later invocation;
-acceptance does not begin it.
+was human-merged. Before starting 003, all five acceptance evidence hashes and
+the accepted ledger were verified on updated `origin/main`; acceptance itself
+did not begin the next feature.
 
 The completed review checkpoint follows.
 The [final review](specs/002-platform-contracts/review.md) independently traces
@@ -120,9 +132,9 @@ record above now completes the feature's human decision.
 The [task list, now including T049](specs/002-platform-contracts/tasks.md), passing
 [analysis](specs/002-platform-contracts/analysis.md), 16/16 author checklist and
 36/36 reviewer-authorized quality checklist preserve traceability, not acceptance.
-Keep `feature/002-platform-contracts` and
-[PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5) for human merge;
-there was no intermediate merge or inferred acceptance.
+All 002 stages stayed on `feature/002-platform-contracts` and
+[PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5) through human acceptance
+and merge; there was no intermediate merge or inferred acceptance.
 **Installing a skill does not execute it.**
 
 ```mermaid

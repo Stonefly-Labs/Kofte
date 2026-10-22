@@ -6,17 +6,34 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 002 / explicitly human-accepted on the original branch
+**Current checkpoint:** 003 / specify is complete on the fresh
+`feature/003-storage-registry` branch from updated `origin/main`.
+The exact inventory prompt and resolved project spec template produced
+[spec.md](../../specs/003-storage-registry/spec.md) and
+[checklists/requirements.md](../../specs/003-storage-registry/checklists/requirements.md).
+Five independently testable stories, 18 acceptance scenarios, 16 functional
+requirements and six outcomes cover durable ownership, real uniqueness/
+concurrency protection, isolated schemas/files and migration history,
+interrupted provisioning/recovery and safe diagnostics. All 16 built-in author
+criteria are satisfied, with no material unresolved question or specification
+hook. Allocator/hash rules, contract/status shapes, budgets, migration/locking,
+provisioning credentials and recovery verification remain planning/ADR choices.
+No product code, plan, reviewer-owned quality checklist or human acceptance
+is created. Clarify is next on this same feature branch and one draft PR;
+do not merge between stages.
+
+**Completed prerequisite:** 002 / explicitly human-accepted on the original branch
 and PR #5. After the passing review and numbered-feature acceptance handoff, the
 human stated **"spec is fully human approved"**. The
 [acceptance record](../../specs/002-platform-contracts/acceptance.md) preserves
 the exact decision, reviewed scope and limits. The driver records it through
 `complete --approval`; no approval is inferred from tasks, ADRs or CI.
 Acceptance leaves product/tests/tasks/design/checklists/review evidence unchanged.
-The same feature PR is ready for **human merge**; no assistant merge, close,
-auto-merge or branch deletion is permitted. Spec 003 requires that merge and
-accepted evidence on updated main before a later invocation may start it.
-Acceptance does not create a 003 branch, directory or active stage.
+The same [PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5) was subsequently
+human-merged. Its accepted ledger and all five acceptance evidence hashes were
+verified on updated main before beginning 003. No assistant merge, close,
+auto-merge or branch deletion occurred. Acceptance itself did not create the
+003 branch, directory or active stage.
 
 The completed review checkpoint follows. The independent
 [review](../../specs/002-platform-contracts/review.md) traces all 15 functional
