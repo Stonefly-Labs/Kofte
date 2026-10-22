@@ -14,9 +14,12 @@ is now recorded for spec 001's bootstrap scope and limits. Its original
 [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) is human-merged.
 Spec 002's [author guide](../../specs/002-platform-contracts/quickstart.md)
 now runs the pure manifest validator and test-owned console, offline after
-restore. Its implementation stage remains blocked on unfamiliar-author evidence.
+restore. Its implementation stage is complete, not feature acceptance.
 Spec 002 timing now uses an available supported workstation/CI runner with
 actual metadata, not a fixed Ubuntu/CPU/RAM profile, per the human's ADR amendment.
+The subsequent author-guide amendment removes the manual timed exercise and
+requires real automated guide/error/corrected-retry checks instead; no human
+usability or elapsed-time claim is inferred.
 It adds no host route, module loading or store change to this bootstrap.
 This is not a feature-acceptance or production guide.
 See the [implementation evidence](../../specs/001-repository-bootstrap/implementation.md).

@@ -66,8 +66,9 @@ The [quality checklist](../specs/002-platform-contracts/checklists/quality.md) w
 generated unchecked, then evaluated at the reviewer's explicit request: all 36
 requirements-quality criteria are satisfied with evidence and no blocking gap.
 [ADR 0004](adr/0004-module-manifest-contract.md) is now human-approved for
-implementation, resolving the design-approval attention item. Later adoption,
-runtime, unfamiliar-author and reference-timing evidence remains required.
+implementation, resolving the design-approval attention item. At that design
+checkpoint, adoption/runtime and human/reference evidence remained future work;
+the subsequent explicit amendments and actual implementation evidence are below.
 The [48-task list](../specs/002-platform-contracts/tasks.md) has
 explicit dependencies, 17 parallel markers and full requirement/scenario
 traceability, including consumer/schema/privacy/bootstrap and human/reference
@@ -75,13 +76,15 @@ gates. The read-only [analysis](../specs/002-platform-contracts/analysis.md)
 passes with all 21 requirements/outcomes and 14 scenarios covered, no unmapped
 task and no actionable or constitutional finding.
 
-**002 / implement is now in progress, blocked on unfamiliar-author evidence.**
+**002 / implement is complete; converge is next, not executed here.**
 The pure library and test-owned consumers implement the approved design; the
 [author guide](../specs/002-platform-contracts/quickstart.md) is executable.
 [Implementation evidence](../specs/002-platform-contracts/implementation.md)
 records focused tests, unchanged dependency identities, deterministic cultures,
 bounded safe failures, observers and retry. The human-directed ADR amendment
 removes fixed Ubuntu/CPU/RAM; actual available-workstation timing satisfies T044.
-T045's actual unfamiliar-human exercise remains unavailable; final evidence
-reconciliation/stage completion must wait. No module runtime or feature acceptance
-is claimed. Resume implement on the same draft PR, not converge or a new branch.
+The subsequent human-directed author-guide amendment removes the manual timed
+exercise; seven actual automated guide/example/error/corrected-retry checks
+satisfy amended T045. All 48 tasks are evidenced, with no human-study claim.
+No module runtime or feature acceptance is claimed. The next invocation keeps
+this feature branch/draft PR; there is no intermediate merge.

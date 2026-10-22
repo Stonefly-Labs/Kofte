@@ -6,15 +6,17 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 002 / implement has safe product/test evidence on the
-original branch/draft PR #5, but is blocked, not complete. See
+**Current checkpoint:** 002 / implement is complete on the
+original branch/draft PR #5. See
 [implementation.md](../../specs/002-platform-contracts/implementation.md).
 The human-directed ADR 0004 amendment removed T044's fixed Ubuntu/CPU/RAM
 benchmark profile; available supported workstation timing now satisfies it.
-T045 still requires an actual unfamiliar-human timed guide exercise. Final gate/coverage reconciliation and
-stage completion remain pending that prerequisite. Resume the recorded
-implement stage; do not begin converge, self-attest human evidence or replace
-this feature branch/PR. Earlier stage descriptions below are historical.
+The subsequent explicit author-guide amendment removes T045's manual timed
+exercise; actual automated guide/example/error/corrected-retry checks supply
+amended SC-001. All 48 tasks are evidenced without claiming a human study.
+**Converge is next**, on the same branch/PR, but is not executed by this
+implementation invocation. Do not infer feature acceptance or request an
+intermediate merge. Earlier stage descriptions below are historical.
 
 In Copilot, reload project skills with `/skills reload`, then ask:
 

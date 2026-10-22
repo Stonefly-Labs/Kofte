@@ -1,6 +1,6 @@
 # Implementation Evidence: 002
 
-**Stage:** implement, blocked on T045; not feature acceptance.
+**Stage:** implement complete; not feature acceptance.
 **Branch:** `feature/002-platform-contracts`
 **PR:** [draft #5](https://github.com/Stonefly-Labs/Kofte/pull/5)
 
@@ -35,9 +35,12 @@ The human explicitly removed that profile during this implementation; Accepted
 [ADR 0004](../../docs/adr/0004-module-manifest-contract.md#human-directed-benchmark-amendment)
 records the exact direction. Actual supported-workstation timing now satisfies
 T044 without relabeling the machine or relaxing individual bounded checks.
-T045 requires an unfamiliar human's timed author exercise; autopilot and
-implementer self-review do not satisfy it. Final implementation remains gated on that proof
-and the subsequent complete local/current-head CI and coverage reconciliation.
+T045 originally required an unfamiliar human's timed author exercise and blocked
+the first checkpoint. After that requirement was explained, the human explicitly
+removed it; the subsequent
+[author-guide amendment](../../docs/adr/0004-module-manifest-contract.md#human-directed-author-guide-amendment)
+replaces SC-001/T045 with actual automated guide/correction/retry proof.
+No human study, human elapsed time or feature acceptance is claimed.
 
 ## Commands and checkpoints
 
@@ -60,8 +63,8 @@ Evidence is appended after execution, never inferred from planned commands.
 
 ## Implemented work and focused results
 
-T001-T044 are implemented and validated as available work; T045-T048 remain
-unchecked. All commands used pinned SDK 10.0.402/runtime 10.0.13, Node 24.22.0
+T001-T048 are implemented and evidenced under the explicit amendments.
+All commands used pinned SDK 10.0.402/runtime 10.0.13, Node 24.22.0
 and npm 11.19.1 selected in PATH. Assessed source is the working-tree increment
 from the entry revision; its publication commit contains this report and ledger.
 There is no claim that the entry revision already contained this source.
@@ -171,7 +174,9 @@ commands were executed against the exact minimal fixture.
 Observed exits/codes: **0 accepted; 2 host_incompatible; 2 identity_changed;
 2 module_id_invalid; 0 accepted**, respectively; no stderr/default value or
 manifest/descriptor echo. This implementer automation proves guide executability,
-**not** T045's unfamiliar-human experience/timing.
+**not** any unfamiliar-human experience/timing. The first checkpoint correctly
+left the former T045 incomplete; the later explicit amendment changes its
+requirement rather than inventing a human observation.
 
 ### Available-machine timing under the human-directed amendment
 
@@ -208,17 +213,17 @@ The retained 100 initialized individual checks and one-second bound are unchange
 Earlier analysis and reviewer-owned checklist text is historical evidence of
 the prior design; neither report nor checklist markers were silently rewritten.
 
-## Remaining gates and acceptance mapping
+## Implementation coverage and remaining feature stages
 
 | Outcome / obligation | Current evidence and limit |
 | --- | --- |
 | FR-001-008, FR-010-013; SC-002/003 | Pure public/schema/identity/version/declaration/context/diagnostic tests and repeated real cultures cover the introduced behavior; source/public checkpoints above map US1.1-4, US2.1-3 and US3.1-4 individually. |
 | FR-009/012; SC-005 | Metadata-only validation, safe outputs, bounded malformed/over-budget inputs, observers/source review and retry cover US4.1-3; no arbitrary-plugin sandbox or later isolation claim. |
-| FR-014; SC-001 | Executable guide and correction outputs proven; **T045 blocked** on unfamiliar human's actual guide exercise/attestation and elapsed time within ten minutes. |
+| FR-014; SC-001 | Amended T045 evidenced by actual automated guide/example/error/corrected-retry execution, seven cases passed below. No host edit, external service, human exercise or elapsed-time attestation. |
 | FR-002/012; SC-004 | **T044 evidenced** under the explicit human-directed amendment: actual supported-workstation metadata and all 100 individual initialized timings/limits above; no fixed machine or cross-machine equivalence claim. |
-| FR-015; SC-006 | New project-reference-only host dependency; locked adoption and actual both-provider contract checks pass. Full local/current-head CI regression evidence is recorded separately below, not substituted for human/timing proof. |
-| T046/T047 | Final gate/reconciliation tasks remain unchecked because mandatory T045 is incomplete, even if available automated checks pass. No final constitutional/feature completion is claimed. |
-| T048 | Safe checkpoint publication only; no `complete`, converge/review/accept, ready status or merge request. Resume the **same** implement stage/branch/draft PR after gates are supplied. |
+| FR-015; SC-006 | New project-reference-only host dependency; locked adoption and actual both-provider contract checks pass. Complete local and exact assessed-source CI evidence is recorded below, with the docs-only amendment boundary explicit. |
+| T046/T047 | Complete gate/coverage reconciliation retains the observed 177-step local and eleven-check CI results on unchanged production/test/tooling/dependency inputs, plus fresh repository/guide checks. All 15 FRs, six amended SCs, 14 story scenarios and twelve principles are mapped; no human study or feature acceptance is claimed. |
+| T048 | Complete only implement through the driver and publish on the same feature branch/draft PR. Converge is next, not executed; no review/accept, ready status or merge request. |
 
 Principles I-III/XII: brand, minimal shared contracts, native calls, test ownership,
 versioned scope and one feature branch/PR are preserved. IV/V: no physical
@@ -258,11 +263,57 @@ Required `python3 scripts/check_repository.py`,
 The local generated reports remain ignored; no child log, runtime data,
 credential, local configuration or build output is published.
 
-Current-head GitHub checks can only be inspected after pushing this checkpoint.
-Their actual assessed SHA, status and durable run links belong in this draft
-PR's **Evidence** section after observation; prior analyze-head green checks
-are not current implementation evidence. This local gate and any passing CI
-still do not supply T045 or satisfy T046-T048's human prerequisites. The driver
-is durably **blocked at implement**; resume the same branch/PR after actual
-unfamiliar-author attestation, then finish final reconciliation before completing
-this stage. Converge, review, acceptance and merge are not executed here.
+Post-push inspection confirmed **all eleven checks passed** at implementation
+revision `fea8862392c17953a34e4f4c17e02ffe71d9ec3d`.
+`gh pr checks 5 --watch --interval 20` exited 0; both
+[product checks](https://github.com/Stonefly-Labs/Kofte/actions/runs/39689008407)
+and [repository checks](https://github.com/Stonefly-Labs/Kofte/actions/runs/39689008396)
+completed successfully for that exact SHA, independently confirmed by
+`gh run view RUN_ID --json headSha,status,conclusion,url` for both IDs.
+No prior analyze-head checks are substituted.
+
+## Author-guide amendment and implementation completion
+
+The human rejected the manual timed exercise after it was explained. Accepted
+ADR 0004 records the exact direction and the replacement SC-001/T045.
+The original missing human exercise remains **not performed**, not retrospectively
+passed. The amended criterion is actual automated guide execution.
+
+`dotnet build tests/contract/Kofte.Manifest.Consumer --no-restore -c Release -warnaserror`
+passed with zero warnings/errors. An automated bounded subprocess harness then
+executed the documented CLI prefix
+`dotnet run --project tests/contract/Kofte.Manifest.Consumer --no-build -c Release --`
+with the following arguments and stdin. It asserted actual exits, exact accepted
+status or ordered diagnostic identity, and empty stderr; all **seven passed**.
+
+| Arguments after `--` | Stdin | Actual result |
+| --- | --- | --- |
+| `--host-contract 1.0.0` | exact minimal example | 0; accepted |
+| `--host-contract 2.0.0` | exact minimal example | 2; manifest `/hostContract`, `host_incompatible` |
+| `--host-contract 1.0.0` | same example, corrected host context | 0; accepted |
+| `--host-contract 1.0.0` | guide's invalid-ID JSON mutation | 2; manifest `/id`, `module_id_invalid` |
+| `--host-contract 1.0.0` | exact minimal example, corrected ID | 0; accepted |
+| `--host-contract 1.0.0 --previous-id org.example.other` | exact minimal example | 2; manifest `/id`, `identity_changed` |
+| `--host-contract 1.0.0 --previous-id org.example.notes` | same example, corrected prior ID | 0; accepted |
+
+This amendment changes only documentation and driver progress, not parser,
+schema, examples, runtime, tests, verifier, workflow or dependency inputs.
+`git diff --exit-code fea8862392c17953a34e4f4c17e02ffe71d9ec3d -- apps src tests scripts .github/workflows .github/skills .specify/scripts Directory.Build.props Directory.Packages.props global.json package.json package-lock.json Kofte.slnx`
+passed with no differences. The production/public-contract tree objects above
+still match that assessed commit. Therefore the complete product gate is retained
+as evidence of these exact unchanged inputs, not falsely reported as a new local
+all-suite invocation. The required repository checks are rerun for the amendment,
+and publication-head CI is inspected after push, with actual SHA/run outcomes
+recorded in this draft PR's **Evidence** section.
+
+For this docs/state amendment, `python3 scripts/check_repository.py` passed,
+`python3 -m unittest discover -s scripts/tests -v` passed **103 tests**, and
+`git diff --check` passed. The exact-source equivalence command and independent
+successful CI-run metadata inspection also passed; no package/tool install or
+new product behavior was needed.
+
+The reconciled coverage tables above supply T047; host startup/routes/stores,
+dedicated test ownership, pure-library dependencies and future-spec boundaries
+are unchanged. Historical analysis/reviewer checklists and prior ledger entries
+remain intact. The driver completes **implement only**, selecting **converge**.
+Converge, final review, explicit feature acceptance and merge are not executed.

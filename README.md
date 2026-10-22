@@ -35,7 +35,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 | 🔐 Explicit boundaries | Team-scoped authorization, audited actions and module-owned storage |
 
 > [!IMPORTANT]
-> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002 now implements offline manifest validation, but its implementation stage remains blocked on unfamiliar-author evidence. Nothing here claims production readiness or MVP completion.
+> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation implementation is complete, not feature-accepted. Nothing here claims production readiness or MVP completion.
 
 ## 🧭 The shape of things to come
 
@@ -68,7 +68,7 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**Spec 002 / implement is in progress, blocked on unfamiliar-author evidence.**
+**Spec 002 / implement is complete; converge is next, not executed here.**
 The [approved design](docs/adr/0004-module-manifest-contract.md) now has a pure
 `Kofte.Platform` library with strict bounded JSON, immutable identity, SemVer
 compatibility, safe ordered diagnostics and non-authoritative declarations.
@@ -76,16 +76,18 @@ The [executable author guide](specs/002-platform-contracts/quickstart.md) uses a
 test-owned console; host-facing and structural consumers verify the same contract
 without loading modules or adding routes/storage. [Implementation evidence](specs/002-platform-contracts/implementation.md)
 records focused tests, observed privacy/retry behavior, dependency review and
-remaining gates. The human removed the fixed Ubuntu/CPU/RAM benchmark profile;
+complete implementation evidence. The human removed the fixed Ubuntu/CPU/RAM benchmark profile;
 T044 is evidenced on the available supported workstation with actual metadata
-and 100 individually timed checks. T045 needs an unfamiliar human's timed guide exercise. Final gate/reconciliation and
-stage completion remain unchecked pending those prerequisites.
+and 100 individually timed checks. The human also removed T045's manual timed
+exercise; actual automated guide/error/corrected-retry checks now satisfy it.
+No human study or elapsed-time attestation is claimed. All 48 implementation
+tasks are evidenced; separate convergence, review and explicit feature acceptance remain.
 The [48-task list](specs/002-platform-contracts/tasks.md), passing
 [analysis](specs/002-platform-contracts/analysis.md), 16/16 author checklist and
 36/36 reviewer-authorized quality checklist preserve traceability, not acceptance.
-Continue the same implement stage on `feature/002-platform-contracts` and
-[draft PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5); do not advance to
-converge or merge. **Installing a skill does not execute it.**
+Keep `feature/002-platform-contracts` and
+[draft PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5) for the next stage;
+no intermediate merge or inferred acceptance. **Installing a skill does not execute it.**
 
 ```mermaid
 flowchart LR

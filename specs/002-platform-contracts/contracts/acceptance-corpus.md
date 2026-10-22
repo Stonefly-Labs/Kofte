@@ -116,4 +116,8 @@ persistence regressions protect the unchanged provider paths.
 Measure every one of 100 initialized representative checks (including oversized/
 deep failures) against the one-second bound. Record actual environment/revision,
 safe per-case durations and counts; do not persist seeded raw inputs/output.
-An unfamiliar human's timed guide exercise remains distinct from these tests.
+SC-001 now requires automated execution of the guide's example, identity and
+compatibility failures and accepted corrected retries, per the human-directed
+[ADR amendment](../../../docs/adr/0004-module-manifest-contract.md#human-directed-author-guide-amendment).
+No unfamiliar-human exercise or guide completion-time claim is required or
+inferred. Final feature acceptance remains a separate human decision.

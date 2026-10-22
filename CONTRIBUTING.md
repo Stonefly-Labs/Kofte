@@ -14,8 +14,10 @@ module loading or database is needed after restore. The
 [implementation report](specs/002-platform-contracts/implementation.md) records
 actual evidence. The human-directed benchmark amendment allows measured available
 workstations/CI runners, without fixed Ubuntu/CPU/RAM. T044 has actual local
-evidence; T045's unfamiliar-author exercise remains blocked. Final gate/reconciliation and stage completion
-remain pending their prerequisites. Do not infer acceptance or advance stages.
+evidence. The subsequent human-directed author-guide amendment replaces T045's
+manual timed exercise with actual automated guide/correction/retry proof.
+Implementation is complete; converge is next on the same draft PR. No human
+usability study, feature acceptance or permission to chain stages is inferred.
 The author/quality checklists remain 16/16 and 36/36, and
 [analysis](specs/002-platform-contracts/analysis.md) passes. Continue on the same
 feature branch and draft PR #5; module runtimes remain future work.

@@ -377,10 +377,12 @@ version identifier is not a network location to fetch during validation.
 
 ### Measurable Outcomes
 
-- **SC-001**: An author unfamiliar with host internals can follow only the guide,
-  validate a documented module description and correct one identity and one
-  compatibility error within 10 minutes after the validation environment is
-  ready, without editing the host or contacting an external service.
+- **SC-001**: Automated execution of the documented author guide validates the
+  example, observes the documented identity and compatibility failures, and
+  accepts corrected retries through the public author consumer after explicit
+  environment setup, with the documented safe output and exit codes, without
+  editing the host or contacting an external service. No unfamiliar-human
+  exercise, ten-minute target or elapsed-time attestation is required.
 - **SC-002**: All supported valid examples are accepted and all documented invalid
   identity, schema, capability, dependency and compatibility fixtures are rejected
   with their expected categories; there are zero false acceptances in the boundary
@@ -409,7 +411,14 @@ version identifier is not a network location to fetch during validation.
 requires the fixed Ubuntu x64 2-vCPU/8-GiB machine. Accepted
 [ADR 0004](../../docs/adr/0004-module-manifest-contract.md#human-directed-benchmark-amendment)
 records the explicit direction and available-machine evidence policy. The
-100-call/per-call bound and SC-001's actual unfamiliar-human exercise remain.
+100-call/per-call bound remains unchanged.
+
+**Subsequent human-directed author-guide amendment:** The human declined the
+manual exercise after its requirements were explained. Accepted
+[ADR 0004](../../docs/adr/0004-module-manifest-contract.md#human-directed-author-guide-amendment)
+replaces the former SC-001 with automated guide/correction/retry evidence.
+Do not claim an unfamiliar-human study or human completion time occurred;
+separate final feature review and explicit human acceptance remain mandatory.
 
 These are **future implementation acceptance obligations**, not checks executed
 or behavior delivered by this specify stage. Evidence must name the revision,
@@ -422,7 +431,7 @@ author requirements checklist does not count as implementation or human acceptan
 | Manifest/schema contracts | Independently expected positive/negative corpus; structural versus contextual rejection; unknown schema/fields/kinds, duplicate keys, missing/wrong types and unsupported contract versions; US1.1-4/US3.1-4, FR-001/002/005-010/013/014, SC-002/006. |
 | Public consumer compatibility | Independent consumer of the documented surface and a second consumer through the host-facing contract; no duplicated validator rules or host-internal references. Exercise supported combinations and explicit unsupported-version failure; US1.1/US1.4/US3.1-2, FR-001/005/006/013/014, SC-001/003/006. |
 | Security/privacy and isolation | Seeded secrets/control characters; bounded input/depth/collections/diagnostics; external references, hooks, caller-selected physical storage and malformed inputs; no fetching/loading/storage mutation. Corrected retry and independent invocations; US4.1-3, FR-009-012, SC-004/005. |
-| Author experience/performance | Follow the guide without host edits, correct identity/compatibility errors, record timing/reference conditions, 100-check bounded response exercise and explicit over-budget failure; US1-4, FR-010-014, SC-001/004. |
+| Author guide/performance | Execute guide commands and corrected identity/compatibility retries without host edits; record actual machine/per-call timing for the separate 100-check bounded-response exercise and explicit over-budget failure. No human-study or guide completion-time claim; US1-4, FR-010-014, SC-001/004. |
 | Existing foundation and CI | Smallest relevant 001 startup, health/contract and existing persistence regressions on its actual supported providers when implementation changes shared/runtime behavior; affected build/format/type/lint checks and new focused suites in local/CI verification. No mocked provider may be called real-provider evidence; FR-015, SC-006. |
 | Repository/stage handoff | Each changed stage runs `python3 scripts/check_repository.py`, `python3 -m unittest discover -s scripts/tests -v` and `git diff --check`; ledger and artifacts stay together on one feature branch/draft PR. No later stage or acceptance is inferred. |
 

@@ -10,6 +10,12 @@ SC-004 now accepts an available supported workstation/CI runner with actual
 metadata and unchanged 100 individual one-second checks. No new dependency or
 runtime design follows from this hardware-policy change.
 
+**Subsequent author-guide amendment:** The human declined the timed manual
+exercise. SC-001 now requires actual automated guide/correction/retry execution,
+not unfamiliar-author attestation; see
+[ADR 0004](../../docs/adr/0004-module-manifest-contract.md#human-directed-author-guide-amendment).
+This does not provide human-usability evidence or accept the feature.
+
 Read the accepted bootstrap source, solution/project settings, verification
 wrapper, local guide, canonical product sources and constitution v2.0.1 before
 choosing the following designs. The pre-research constitutional gate found no
@@ -154,6 +160,7 @@ environment are chosen in the accompanying design. No material research question
 or clarification marker remains. ADR 0004 remains Proposed pending human review.
 Implementation must review its project locks/inventory, prove the corpus and
 timing/security expectations, wire CI and preserve bootstrap regressions.
-SC-001 needs unfamiliar-author evidence; automation or a planner reading its own
-guide cannot substitute. Later quality review and explicit acceptance remain
-human-owned gates.
+Under the subsequent explicit author-guide amendment, SC-001 needs actual
+automated guide/example/correction/retry evidence, not a human exercise or
+elapsed-time attestation. Later review and explicit human feature acceptance
+remain separate gates.

@@ -11,11 +11,12 @@ is Accepted: **"adr 0004 is approved"**. Earlier design/checklist statements
 that it is Proposed are historical, not an outstanding approval gate.
 Passing read-only analysis is still required before implementation.
 **Constitution**: Adopted v2.0.1; applicable principles I-XII are mapped below.
-**Status**: Implement in progress. T001-T044 have source/focused evidence in
+**Status**: Implement complete. All 48 tasks have evidence in
 [implementation.md](implementation.md). The human-directed ADR 0004 amendment
 removes T044's fixed Ubuntu/CPU/RAM profile; actual available-machine measurements
-satisfy T044. T045 still needs an actual unfamiliar-human exercise. T046-T048 remain unchecked
-pending their prerequisites; the active driver stage is blocked, not complete.
+satisfy T044. The subsequent author-guide amendment replaces T045's manual timed
+exercise with actual automated guide/correction/retry proof. No human exercise
+is claimed. Converge is next on the same draft PR; it is not executed here.
 No feature acceptance is claimed. Historical stage-generation notes below
 describe the original task-list checkpoint, not current task status.
 
@@ -49,7 +50,7 @@ reference. Do not add MediatR, AutoMapper or a new runtime package.
 
 ## Phase 1: Setup and Shared Prerequisites
 
-- [x] T001 Verify the passing `specs/002-platform-contracts/analysis.md`, both reviewed checklists, Accepted `docs/adr/0004-module-manifest-contract.md` and recorded feature branch before implementation; start `specs/002-platform-contracts/implementation.md` with actual gate evidence, scope and outstanding human/timing obligations. Block on an unresolved analysis/design finding rather than treating this task list as approval. Prerequisites: none. (FR-014/015; C:III/XI/XII)
+- [x] T001 Verify the passing `specs/002-platform-contracts/analysis.md`, both reviewed checklists, Accepted `docs/adr/0004-module-manifest-contract.md` and recorded feature branch before implementation; start `specs/002-platform-contracts/implementation.md` with actual gate evidence, scope and outstanding guide/timing obligations. Block on an unresolved analysis/design finding rather than treating this task list as approval. Prerequisites: none. (FR-014/015; C:III/XI/XII)
 - [x] T002 Create `src/Kofte.Platform/Kofte.Platform.csproj`, `tests/unit/Kofte.Platform.Tests/Kofte.Platform.Tests.csproj`, `tests/contract/Kofte.Platform.ContractTests/Kofte.Platform.ContractTests.csproj` and `tests/contract/Kofte.Manifest.Consumer/Kofte.Manifest.Consumer.csproj`, and add them to `Kofte.slnx`. Reuse existing `net10.0`, nullable/warnings-as-errors/deterministic settings and centrally pinned test tooling; author console references only the public library, contract tests reference host/library, and host references library through `src/Kofte.Host/Kofte.Host.csproj` without changing startup. No internals access, linked test source, production test package or new module runtime. Prerequisites: T001. (FR-001/013/015; C:II/III/X/XI)
 - [x] T003 Generate/review each new project's `packages.lock.json` after project-manifest changes; reconcile the exact direct/transitive graph, provenance, licenses, retained notices and adoption decision in `docs/development/dependencies.md` and `docs/development/dependency-inventory.json` using the existing dependency tooling. Reuse runtime `System.Text.Json`, xUnit and Ajv 8.20.0; unknown or unacceptable obligations block adoption even without a new runtime package. Prove `dotnet restore Kofte.slnx --locked-mode` and the dependency check preserve reviewed locks/evidence; do not change pins merely to use a locally installed version. Prerequisites: T002. (FR-015; C:III/VI/X/XI)
 - [x] T004 [P] Establish independently expected corpus data/recipes in `tests/contract/Kofte.Platform.ContractTests/Modules/Manifest/ManifestCorpus.cs` from `contracts/acceptance-corpus.md`, its C01-C34 variants, the full range table and limit recipes. Reuse the spec's exact schema/examples/raw duplicate fixture with explicit test-data copying or byte-parity checks; do not copy production source or derive expectations from the validator. Preserve original malformed/duplicate/encoding bytes; keep generated canaries transient and clean up only owned fixture paths. Prerequisites: T003. (FR-002/010-013; SC-002/003/005/006; C:III/VI/XI)
@@ -60,7 +61,7 @@ reference. Do not add MediatR, AutoMapper or a new runtime package.
 - [x] T006 Implement `ManifestDiagnostic.cs` and `ManifestValidationResult.cs` under `src/Kofte.Platform/Modules/Manifest/`, carrying the model constraints verbatim: "Exactly one of `Accepted(Description)` or `Rejected(Diagnostics)`", "Never partial descriptor plus errors. Rejected has 1-32 immutable diagnostics; accepted has no rejection diagnostics" and "Stable safe machine identity `(origin,path,code)`; known paths/bounded indices, no raw untrusted values or exception details." Implement the contract's complete fixed category/corrective-message table, known-path construction, ordering and first-31-plus-`diagnostics_truncated` behavior, without caller-supplied message text or operational output. Prerequisites: T005. (FR-002/010-012; C:III/VI/XI)
 - [x] T007 [P] Define `ModuleDescription.cs`, declaration value types and `ManifestValidationContext.cs` under `src/Kofte.Platform/Modules/Manifest/` with internal accepted-description construction and get-only fields; preserve "Complete accepted interpretation only; constructor internal; immutable object graph with private collection copies. All required JSON fields present. No installation/team/status authority." Context preserves "Required `HostContractVersion` string; optional `PreviousModuleId` string" and "Supplied explicitly; invalid/missing context is a rejection, no environment/product defaults. Prior identity compared ordinally after validation." Never expose a mutable accepted graph or success factory that bypasses the validator. Grammar/field validation is completed by the story tasks before public acceptance exists. Prerequisites: T003. (FR-001/004/009-011; C:II/III/VI)
 - [x] T008 [P] Add a public-consumer test harness in `tests/contract/Kofte.Platform.ContractTests/Modules/Manifest/ConsumerHarness.cs` with bounded subprocess stdin/stdout/stderr, explicit context/culture, owned timeout/cleanup and fixed safe failure reporting. Support both library-only author process and host-facing public calls without duplicating rules, exposing host internals, persisting raw output or launching the host for pure checks. Prerequisites: T004. (FR-001/011-013; SC-003/005; C:III/VI/X/XI)
-- [x] T009 Document the implementation gate/command and evidence matrix in `specs/002-platform-contracts/implementation.md`: new project selectors, public versus structural corpus, story checkpoints, manual SC-001, actual measured SC-004 and preserved bootstrap/CI requirements. Record the actual project/lock boundary review; do not label future commands or unimplemented test harnesses passed. Prerequisites: T006, T007, T008. (FR-013-015; SC-001-006; C:X/XI/XII)
+- [x] T009 Document the implementation gate/command and evidence matrix in `specs/002-platform-contracts/implementation.md`: new project selectors, public versus structural corpus, story checkpoints, automated guide SC-001 under the human-directed amendment, actual measured SC-004 and preserved bootstrap/CI requirements. Record the actual project/lock boundary review; do not label future commands or unimplemented test harnesses passed. Prerequisites: T006, T007, T008. (FR-013-015; SC-001-006; C:X/XI/XII)
 
 **Checkpoint**: Reviewed project/dependency boundaries, safe result contract and
 test harness foundations exist. This checkpoint is not a working manifest
@@ -143,7 +144,7 @@ installation or database. Schema checks assert only shared structural decisions.
 **Checkpoint**: The first useful author-facing increment is public and complete
 for US1-3, including valid full metadata and incompatible/invalid inputs.
 It remains unaccepted and incomplete as a feature: US4's exact-limit, safe-output,
-no-side-effect and retry observations plus human/timing and full bootstrap/CI
+no-side-effect and retry observations plus guide/timing and full bootstrap/CI
 gates are still mandatory.
 
 ## Phase 6: User Story 4 - Correct Rejected Input Without Unsafe Side Effects (Priority: P2)
@@ -169,9 +170,9 @@ and source dependency review rather than a schema-only no-effects claim.
 - [x] T040 [US4] Execute the complete focused platform unit/contract/schema tests, offline consumer calls and observed privacy/side-effect/retry/performance fixtures; map all US4.1-3 and SC-004/005 evidence in `specs/002-platform-contracts/implementation.md`. Retain actual available-machine timing/environment evidence for T044; record observer/source-review method and zero observed effects without claiming arbitrary hostile-code isolation. Prerequisites: T039. (FR-002/009-014; SC-002-005; C:II/VI/X/XI/XII)
 
 **Checkpoint**: Every introduced failure category has bounded public behavior
-and a clean correction path. SC-001 and measured SC-004 remain explicitly open
-until their real evidence exists; automated source/corpus checks do not approve
-the numbered feature.
+and a clean correction path. SC-001 requires real automated guide execution and
+SC-004 requires actual measured timing; checked source files alone do not supply
+either, and neither approves the numbered feature.
 
 ## Final Phase: Cross-Cutting Evidence and Documentation
 
@@ -179,10 +180,10 @@ the numbered feature.
 - [x] T042 Wire new commands and required files/projects into `scripts/verify.py` unit/contract/quality paths and the existing `.github/workflows/product-checks.yml` jobs as needed; build the author process before use, run platform tests with minimum expected counts, include the schema file in the existing contract runner and retain the real SQLite/PostgreSQL host/adapter checks. Execute T041 and actual named suites; missing projects/scripts, zero tests, unavailable prerequisites and child failures must not be optional `--if-present` success or dropped from the report. No separate CI-only implementation. Prerequisites: T041. (FR-001/013/015; SC-002/003/005/006; C:III/X/XI)
 - [x] T043 [P] Turn `specs/002-platform-contracts/quickstart.md` into an accurate executable author guide, and update `README.md`, `CONTRIBUTING.md`, `docs/README.md`, `docs/architecture.md`, `docs/development/local-development.md` and affected dependency/contract docs to match actual behavior. Execute the documented minimal/compatibility/prior-ID/identity-error/corrected-retry commands and exit/output expectations; explain schema versus complete validation, supported version combinations, strict range grammar, breaking-change review/source rollback, non-authoritative permission/storage metadata and trusted/not-installed/not-sandboxed boundaries. Do not rewrite earlier historical ledger evidence. Prerequisites: T042. (FR-001/003-009/013-015; SC-001/006; C:I-X/XII)
 - [x] T044 [P] Record actual SC-004 timing in `specs/002-platform-contracts/implementation.md` on an available supported developer workstation or CI runner with pinned SDK/runtime: initialize first, then measure every one of 100 representative checks including oversized/deep failure below one second. Retain safe per-case durations and actual source revision/SDK/runtime/OS/architecture/CPU/memory. Following the explicit human-directed ADR 0004 amendment, no exact Ubuntu/CPU/RAM profile, dedicated hardware, VM sizing or matching cross-machine benchmark is required. Prerequisites: T042. (FR-002/012; SC-004; C:X/XI/XII)
-- [ ] T045 Obtain an unfamiliar author's actual guide exercise and record explicit attestation/timing in `specs/002-platform-contracts/implementation.md`: after environment readiness, guide/linked contract only, validate the example and correct one identity plus one compatibility error within ten minutes, with no host edits or external service contact. Never mark this complete from the implementer's self-review, automation, silence or autopilot; no human participation leaves this task blocked. This exercise is not feature acceptance. Prerequisites: T043. (FR-014; SC-001; C:XI/XII)
-- [ ] T046 Execute the final documented gate, including `python3 scripts/check_repository.py`, `python3 -m unittest discover -s scripts/tests -v`, `git diff --check`, `python3 scripts/verify.py --suite all --disposable-postgres --warm-starts 10`, and inspect actual assessed-head Ubuntu CI/check reports. Record commands/results/revision/counts in `specs/002-platform-contracts/implementation.md`; include locked restore, .NET format/build, existing web lint/type/build/browser, new unit/schema/public contracts, actual SQLite/PostgreSQL health/persistence/recovery, privacy/startup/failure propagation and all new mandatory named steps. Unavailable infrastructure or failed/skipped/empty checks block, not pass; protect only owned fixtures/processes. Prerequisites: T044, T045. (FR-001-015; SC-002-006; C:III/VI/IX-XII)
-- [ ] T047 Reconcile `specs/002-platform-contracts/implementation.md` against source/tests and all 15 FRs, six SCs, 14 acceptance scenarios and twelve principles using the coverage tables below; distinguish actual automated/provider/CI results, human author evidence and available-machine timing, including limitations. Verify the public library has no host/ASP.NET/EF/IO dependency, the author consumer has no host/internal dependency, module-free startup/routes/stores are preserved and no later-spec runtime slipped in. Do not check a task whose required proof is absent. Prerequisites: T046. (FR-001-015; SC-001-006; C:I-XII)
-- [ ] T048 Complete only the active implement stage through the driver with `SPECIFY_FEATURE_DIRECTORY=specs/002-platform-contracts`, include `tasks.md`, `implementation.md`, docs and `.specify/drive-state.json` in the same reviewed commit, push immediately and update the existing draft PR #5 using its template/exact evidence. State converge is next but do not execute it, final review or acceptance; do not mark ready/request merge/merge/close/auto-merge/delete the branch. If a required gate is unavailable, block the active stage and publish safe partial evidence without falsely completing this task. Prerequisites: T047. (FR-014/015; C:XI/XII)
+- [x] T045 Execute the documented author-guide example, identity and compatibility failures and corrected retries through the actual public author consumer, and record commands, safe outputs and exit results in `specs/002-platform-contracts/implementation.md`. Under the explicit human-directed ADR 0004 author-guide amendment, automation supplies SC-001; no unfamiliar-human exercise, ten-minute target or elapsed-time attestation is required or claimed. Keep host edits/external service contact absent and retain public-consumer/retry tests. This proof is not feature acceptance. Prerequisites: T043. (FR-014; SC-001; C:XI/XII)
+- [x] T046 Execute the final documented gate, including `python3 scripts/check_repository.py`, `python3 -m unittest discover -s scripts/tests -v`, `git diff --check`, `python3 scripts/verify.py --suite all --disposable-postgres --warm-starts 10`, and inspect actual assessed-head Ubuntu CI/check reports. Record commands/results/revision/counts in `specs/002-platform-contracts/implementation.md`; include locked restore, .NET format/build, existing web lint/type/build/browser, new unit/schema/public contracts, actual SQLite/PostgreSQL health/persistence/recovery, privacy/startup/failure propagation and all new mandatory named steps. For a docs/state-only amendment, retain prior complete product-gate evidence only after proving its production/test/tooling/dependency inputs unchanged; rerun repository checks and inspect publication-head CI. Unavailable infrastructure or failed/skipped/empty checks block, not pass; protect only owned fixtures/processes. Prerequisites: T044, T045. (FR-001-015; SC-002-006; C:III/VI/IX-XII)
+- [x] T047 Reconcile `specs/002-platform-contracts/implementation.md` against source/tests and all 15 FRs, six SCs, 14 acceptance scenarios and twelve principles using the coverage tables below; distinguish actual automated guide/provider/CI results and available-machine timing, including limitations and the explicit absence of human-usability/time claims. Verify the public library has no host/ASP.NET/EF/IO dependency, the author consumer has no host/internal dependency, module-free startup/routes/stores are preserved and no later-spec runtime slipped in. Do not check a task whose required proof is absent. Prerequisites: T046. (FR-001-015; SC-001-006; C:I-XII)
+- [x] T048 Complete only the active implement stage through the driver with `SPECIFY_FEATURE_DIRECTORY=specs/002-platform-contracts`, include `tasks.md`, `implementation.md`, docs and `.specify/drive-state.json` in the same reviewed commit, push immediately and update the existing draft PR #5 using its template/exact evidence. State converge is next but do not execute it, final review or acceptance; do not mark ready/request merge/merge/close/auto-merge/delete the branch. If a required gate is unavailable, block the active stage and publish safe partial evidence without falsely completing this task. Prerequisites: T047. (FR-014/015; C:XI/XII)
 
 ## Dependencies and Execution Order
 
@@ -233,7 +234,7 @@ Serialize evidence-report writes even when test execution is independent.
    Run its public/structural/identity/declaration checkpoint, not just happy-path M.
 3. Complete US4's negative, side-effect, retry and timing evidence; preserve
    all existing host/web/provider behavior and fail-closed verification.
-4. Obtain actual human/timing proof and the full current-source local/CI gate,
+4. Obtain actual automated guide/timing proof and the full assessed-source local/CI gate,
    then hand off only implementation. Converge/review/accept remain later stages.
 
 US1 is an internal first deliverable after its P1 dependencies, never permission
@@ -258,12 +259,12 @@ to omit US2-4 or call this the MVP. MVP remains exactly inventory 001-024.
 | FR-011 deterministic independent retry | T008/T011/T014/T026/T030-T032/T036/T040 | US1.4, US2.1, US4.3; repeated cultures/consumers and retained results |
 | FR-012 bounded no-effects/privacy | T006/T008/T024/T027-T029/T033-T040 | US4.1-3; captures/observers/source review, not schema inference |
 | FR-013 schema/public corpus parity | T004/T008/T025/T026/T030-T032/T041-T043 | US1.1/4, US3.1-4; original-byte and schema-valid semantic cases |
-| FR-014 author/compatibility/rollback docs | T009/T029/T032/T040/T043/T045/T047/T048 | Guide/expected failures, trust distinction and human timing |
+| FR-014 author/compatibility/rollback docs | T009/T029/T032/T040/T043/T045/T047/T048 | Executed guide/expected failures/corrected retries and trust distinction, no human-study claim |
 | FR-015 unchanged bootstrap/adoption | T001-T003/T035/T041-T048 | Real providers, health/startup/UX, current-head CI and no new authority |
 
 | Success criterion | Required tasks/evidence |
 | --- | --- |
-| SC-001 | T043/T045; unfamiliar author, both corrections, actual attestation and ten-minute timing |
+| SC-001 | T043/T045; actual automated guide/example/error/corrected-retry execution, safe output/exit codes, no host edits/external services; no human exercise or elapsed-time attestation |
 | SC-002 | T004/T010-T032/T033/T040/T042/T046; independently expected corpus with zero false acceptance |
 | SC-003 | T008/T026/T030-T032/T042/T046; 100 corpus runs per consumer per real locale |
 | SC-004 | T033/T037/T039/T040/T044/T046; each initialized call below one second on an available supported machine with actual measured environment metadata, no fixed hardware profile |
@@ -308,7 +309,7 @@ OpenTofu or other cloud/IaC dependency is introduced.
 ## Completion and Human Handoff
 
 Every completed implementation task needs its actual source/test/command evidence
-in `implementation.md`. Unavailable human, timing, tool, provider or CI proof
+in `implementation.md`. Unavailable required guide, timing, tool, provider or CI proof
 is a specific blocker, never an assumed pass. Reviewed quality checkboxes,
 Accepted ADR 0004 and this generated list do not prove runtime behavior.
 

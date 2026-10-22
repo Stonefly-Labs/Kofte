@@ -102,3 +102,27 @@ requirement at their checkpoint; they are preserved, not silently re-marked.
 The existing macOS measurements can satisfy the amended environment requirement;
 they are not relabeled Ubuntu measurements. This does not waive unfamiliar-human
 SC-001, change spec 001's historical evidence, accept spec 002, or authorize merge.
+
+## Human-directed author-guide amendment
+
+After the manual T045 exercise was explained, the human explicitly directed:
+**"brah, that's dumn, I don't want to do that"**.
+
+Remove the unfamiliar-author exercise, ten-minute completion target and human
+elapsed-time attestation as implementation requirements for **spec 002**.
+Replace SC-001/T045 with automated execution of the documented public author
+consumer: validate the example, observe the documented identity/compatibility
+failures, correct them and verify accepted retry, without host edits or external
+services. Existing public-consumer/retry tests remain mandatory.
+
+This changes the requirement; it does **not** assert that a human exercise
+occurred or that automation proves unfamiliar-user usability or completion time.
+The earlier benchmark amendment retained the former SC-001 at its checkpoint;
+this later explicit direction supersedes that condition only. The available-
+machine timing policy, all other product checks, separate convergence/review,
+explicit human feature acceptance and human-only merge remain unchanged.
+
+Update the spec, plan, research, tasks, corpus/guide and implementation/progress
+docs together. Preserve earlier analysis, reviewer-owned checklist markings and
+ledger entries as historical evidence, not as current claims of a human study.
+No constitution principle, package, runtime API, schema or migration changes.

@@ -1,8 +1,8 @@
 # Quickstart and Validation: 002
 
 **Status:** Executable author guide for the implemented, unaccepted contract.
-Focused evidence is in [implementation.md](implementation.md). Implementation
-remains blocked on the unfamiliar-author exercise; the feature is not accepted. The
+Focused evidence is in [implementation.md](implementation.md). The human removed
+the manual usability gate; implementation is complete, not feature acceptance. The
 [local guide](../../docs/development/local-development.md) covers the unchanged host.
 
 ## Prerequisites
@@ -122,7 +122,7 @@ failure-propagation checks. Record exact commands, exit results, assessed revisi
 and safe reports in `implementation.md`; unavailable infrastructure
 is an explicit blocker, not a pass.
 
-## Available-machine timing and human evidence
+## Available-machine timing and automated guide evidence
 
 Use any available supported developer workstation or CI runner for SC-004.
 There is **no fixed OS/CPU/RAM benchmark profile or dedicated-machine requirement**,
@@ -134,12 +134,16 @@ representative checks must finish below one second, including byte/depth-limit
 rejections. Retain safe numeric per-case durations, counts, locale and environment
 only; a p95/aggregate pass does not prove the individual-call bound.
 
-For SC-001 an unfamiliar author follows only this guide and the linked contract,
-validates M and corrects one identity and one compatibility error within ten
-minutes after environment readiness. Record explicit reviewer attestation and
-timing, not a planner's self-review or invented human observation. This human
-exercise is not feature acceptance; the later passing review still requires an
-explicit numbered-feature decision.
+For SC-001, execute the documented example and identity/compatibility failure
+commands above, check the stated safe diagnostics/exit codes, then verify that
+corrected input/context is accepted without host edits or external services.
+Automated execution and the public-consumer/retry tests supply this evidence.
+The human explicitly removed the unfamiliar-author exercise, ten-minute target
+and elapsed-time attestation in the
+[author-guide amendment](../../docs/adr/0004-module-manifest-contract.md#human-directed-author-guide-amendment).
+Do not claim that automation proves human usability or completion time.
+Convergence, final review and explicit numbered-feature acceptance remain
+separate later steps; this amendment does not accept the feature.
 
 ## Failure and rollback boundaries
 

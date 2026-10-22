@@ -102,8 +102,8 @@ records the human-approved design choices.
 Its [quality review](../specs/002-platform-contracts/checklists/quality.md)
 now satisfies all 36 requirements-quality criteria after explicit reviewer
 authorization, with no blocking gap. The subsequent explicit ADR 0004 approval
-resolves that design gate; adoption, runtime, unfamiliar-author and reference-timing
-evidence is tracked separately. The [48 tasks](../specs/002-platform-contracts/tasks.md)
+resolves that design gate; subsequent evidence and explicit requirement
+amendments are tracked below. The [48 tasks](../specs/002-platform-contracts/tasks.md)
 now order identity and compatibility components before the complete public
 validation path, then safe correction and cross-cutting evidence. All requirements,
 outcomes and scenarios are mapped. The read-only
@@ -115,9 +115,10 @@ adds the pure platform library and test-owned author/host-facing consumers,
 not a module loader or storage registry. Its
 [author guide](../specs/002-platform-contracts/quickstart.md) is executable.
 The human-directed ADR amendment accepts actual available-workstation/CI timing,
-not a fixed Ubuntu/CPU/RAM profile. Implement remains blocked on unfamiliar-author evidence,
-with final stage completion pending; focused automated proof does not accept
-the feature. The host only gains a library project reference; its startup,
+not a fixed Ubuntu/CPU/RAM profile. The subsequent author-guide amendment replaces
+the manual timed exercise with automated guide/correction/retry proof.
+Implementation is complete; convergence, review and explicit acceptance remain
+separate stages. No human-usability/time claim is made. The host only gains a library project reference; its startup,
 routes, stores and web console remain module-free.
 The broader stack/module/deployment proposals below remain future work, not
 installed features or proof of module isolation, production readiness or acceptance.
