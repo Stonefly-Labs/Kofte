@@ -1,6 +1,8 @@
 using Kofte.Infrastructure.Storage;
+using Kofte.Infrastructure.Storage.Postgres;
 using Kofte.Platform.Modules.Storage;
 using Kofte.Storage.IntegrationTests.Registry;
+using Kofte.TestSupport;
 using Npgsql;
 
 namespace Kofte.Storage.IntegrationTests.Recovery;
@@ -8,6 +10,38 @@ namespace Kofte.Storage.IntegrationTests.Recovery;
 [Trait("Provider", "postgres"), Trait("Suite", "recovery")]
 public sealed class PostgresLeaseLossTests
 {
+    [Fact]
+    public async Task VerifiedLeaseProbeDistinguishesContentionAndRejectsForeignOwnershipWithoutTakingTheLock()
+    {
+        var token = TestContext.Current.CancellationToken;
+        await using var resource = await PostgresResources.CreateFromEnvironmentAsync(token);
+        var identity = new PostgresIdentity(resource.ConnectionString);
+        await using var first = new NpgsqlConnection(resource.ConnectionString);
+        await using var second = new NpgsqlConnection(resource.ConnectionString);
+        await using var third = new NpgsqlConnection(resource.ConnectionString);
+        await first.OpenAsync(token);
+        await second.OpenAsync(token);
+        await third.OpenAsync(token);
+
+        async Task<bool> Probe(NpgsqlConnection connection)
+        {
+            using var budget = new OperationBudget(OperationBudget.Acquire, token);
+            return await identity.TryAcquireLeaseAsync(connection, budget);
+        }
+
+        Assert.True(await Probe(first));
+        Assert.False(await Probe(second));
+        await first.CloseAsync();
+        await resource.SetDatabaseOwnershipAsync(false, token);
+        try
+        {
+            var failure = await Assert.ThrowsAsync<StorageException>(() => Probe(second));
+            Assert.Equal(StorageCode.OwnerMismatch, failure.Code);
+        }
+        finally { await resource.SetDatabaseOwnershipAsync(true, token); }
+        Assert.True(await Probe(third));
+    }
+
     [Fact]
     public async Task TerminatedAdvisorySessionCancelsItsScopeAndCannotSilentlyReacquire()
     {

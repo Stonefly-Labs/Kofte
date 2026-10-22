@@ -31,10 +31,8 @@ internal sealed class PostgresIdentity
         ConnectionString = builder.ConnectionString;
     }
 
-    internal async Task VerifyAsync(NpgsqlConnection connection, OperationBudget budget)
-    {
-        await using var command = new NpgsqlCommand("""
-            SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_database d WHERE d.datname=current_database()
+    private const string OwnershipPredicate = """
+            EXISTS (SELECT 1 FROM pg_catalog.pg_database d WHERE d.datname=current_database()
               AND pg_catalog.shobj_description(d.oid, 'pg_database')=$1)
             AND EXISTS (SELECT 1 FROM pg_catalog.pg_roles r WHERE r.rolname=current_user
               AND NOT (r.rolsuper OR r.rolcreatedb OR r.rolcreaterole OR r.rolreplication OR r.rolbypassrls)
@@ -47,9 +45,26 @@ internal sealed class PostgresIdentity
             AND pg_catalog.has_schema_privilege(current_user, 'kofte_system', 'USAGE')
             AND pg_catalog.has_schema_privilege(current_user, 'kofte_system', 'CREATE')
             AND pg_catalog.current_setting('transaction_read_only')='off'
-            """, connection) { CommandTimeout = budget.CommandSeconds() };
-        command.Parameters.AddWithValue(Ownership);
-        if (await command.ExecuteScalarAsync(budget.Token) is not true)
+            """;
+
+    internal async Task VerifyAsync(NpgsqlConnection connection, OperationBudget budget)
+    {
+        if (await QueryAsync(connection, budget, acquire: false) is not true)
             throw new StorageException(Platform.Modules.Storage.StorageCode.OwnerMismatch);
+    }
+
+    internal async Task<bool> TryAcquireLeaseAsync(NpgsqlConnection connection, OperationBudget budget) =>
+        await QueryAsync(connection, budget, acquire: true) ??
+            throw new StorageException(Platform.Modules.Storage.StorageCode.OwnerMismatch);
+
+    private async Task<bool?> QueryAsync(NpgsqlConnection connection, OperationBudget budget, bool acquire)
+    {
+        var sql = acquire
+            ? $"SELECT CASE WHEN {OwnershipPredicate} THEN pg_catalog.pg_try_advisory_lock($2) ELSE NULL END"
+            : $"SELECT {OwnershipPredicate}";
+        await using var command = new NpgsqlCommand(sql, connection) { CommandTimeout = budget.CommandSeconds() };
+        command.Parameters.AddWithValue(Ownership);
+        if (acquire) command.Parameters.AddWithValue(LeaseKey);
+        return await command.ExecuteScalarAsync(budget.Token) is bool result ? result : null;
     }
 }

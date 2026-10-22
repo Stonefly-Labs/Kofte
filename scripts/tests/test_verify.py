@@ -180,7 +180,7 @@ class VerifyTests(unittest.TestCase):
         owner, method = name.rsplit(".", 1)
         xml = (f'<assemblies><test type="{owner}" method="{method}" result="Fail" '
                'name="credential-canary"><failure><message>StorageException : DeadlineExceeded '
-               '/private/credential-canary</message></failure></test>'
+               '/private/credential-canary operation=acquire</message></failure></test>'
                '<test type="credential-canary" method="unknown" result="Fail"/></assemblies>')
         script = (
             "import sys; from pathlib import Path; "
@@ -195,6 +195,7 @@ class VerifyTests(unittest.TestCase):
         step = runner.report.data["steps"][-1]
         self.assertEqual([name], step["failedStorageTests"])
         self.assertEqual(["DeadlineExceeded"], step["storageFailureCodes"])
+        self.assertEqual(["acquire"], step["storageFailureOperations"])
         self.assertEqual(["--results-directory", "<private-argument>"], step["command"][-2:])
         self.assertFalse(list((self.root / "artifacts/verification/.private").rglob("storage.xml")))
         self.assertNotIn("credential", runner.report.path.read_text())

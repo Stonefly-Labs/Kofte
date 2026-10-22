@@ -195,13 +195,14 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
                     raise error("failure_child_report_unsafe")
                 selected["dependencyFailureCode"] = code
             if any(key in step for key in (
-                "failedStorageTests", "storageFailureCodes", "storageDiagnosticCode",
+                "failedStorageTests", "storageFailureCodes", "storageFailureOperations", "storageDiagnosticCode",
             )):
                 diagnostic = api.command_diagnostics(step["command"])
                 if diagnostic is None or diagnostic.kind != "storage":
                     raise error("failure_child_report_unsafe")
                 for key, allowed in (
                     ("failedStorageTests", diagnostic.tests), ("storageFailureCodes", diagnostic.codes),
+                    ("storageFailureOperations", diagnostic.storage_operations),
                 ):
                     if key not in step:
                         continue

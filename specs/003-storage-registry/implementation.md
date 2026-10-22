@@ -171,7 +171,7 @@ below must be populated only from actual reruns.
 | Exact command / selection | Result |
 | --- | --- |
 | `python3 scripts/check_repository.py` | Passed |
-| `python3 -m unittest discover -s scripts/tests -v` | Passed, 109 tests at diagnostic revision `933cefa` |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed, 111 tests after the verified-lease correction |
 | `python3 scripts/check_dependencies.py` | Passed, 403 npm / 78 NuGet identities |
 | `git diff --check` | Passed |
 | `dotnet format Kofte.slnx --no-restore --verbosity quiet` | Passed |
@@ -187,6 +187,8 @@ below must be populated only from actual reruns.
 | `python3 scripts/verify.py --suite quality` | Passed, 19 named steps, including locked restores/format/build/lint/types/dependencies |
 | `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*SqliteStorageGuideTests' --minimum-expected-tests 1` | Passed, 1/1 all-corpus guide, zero skipped |
 | `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*PostgresStorageGuideTests' --minimum-expected-tests 1` | Passed, 1/1 all-corpus guide, zero skipped |
+| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --filter-class '*RegistrationConcurrencyTests' --filter-method '*TwentyRoundsOfTenSeparateProcesses*' --minimum-expected-tests 4` | Passed, all four actual process-race cases after the atomic verified-probe correction |
+| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --filter-class '*PostgresLeaseLossTests' --filter-class '*CorrectedRetryTests' --minimum-expected-tests 6` | Passed, 6/6, zero skipped, including the new ownership/contention probe regression |
 | `python3 scripts/verify.py --suite all --disposable-postgres` | Passed, all ten suite reports / 200 steps, `completeGate: true` |
 | Assessed-head CI at `b787a48` | 9/11 contexts passed; storage PostgreSQL integration failed, also failing the failure-propagation baseline. T076 remains open. |
 
@@ -223,6 +225,28 @@ three-case deliberately unavailable-provider run proved failure preservation,
 exact source identity extraction and private report cleanup; it is not a
 passing product test. The isolated failure-propagation wrapper revalidates
 the same allowlists before carrying those fields into its safe parent report.
+
+Structured evidence at `e30fd60` identifies the Linux failure precisely:
+`PostgresRegistrationConcurrencyTests.TwentyRoundsOfTenSeparateProcessesKeepActualOwnershipUnique`,
+with `storage_deadline_exceeded`. The harness previously announced readiness
+before a cold process had initialized its provider. It now admits each worker
+after one nonmutating lease acquire/release, then releases all ten workers at
+the shared barrier to race fresh independent lease sessions. Registration
+rounds, caller counts, uniqueness/inventory assertions, production budgets
+and Busy-only retry rules are unchanged; this is not a cold-start performance
+claim. Fixed acquire/register/setup failure phase evidence is also retained.
+The first warm-up-only local run still failed during acquisition; it is not
+counted as a fix. Inspection found that acquisition performed the ownership
+query and first advisory-lock probe as separate commands inside the same
+two-second budget, introducing another whole-second timeout floor after the
+first query. Those now share one statement: a verified ownership predicate
+conditionally executes the first probe; invalid ownership returns no lock.
+Later contended probes retain the existing Busy behavior. A real-provider
+regression verifies acquisition, contention and invalid-owner refusal while
+another connection proves the invalid owner did not retain the lock.
+No budget or retry classification is relaxed. The corrected four-case process
+matrix and six ownership/session/correction cases pass locally. A fresh complete
+gate and assessed-head CI must still pass before T076 can be completed.
 
 ## Requirement, scenario, task and principle mapping
 

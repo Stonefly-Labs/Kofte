@@ -56,12 +56,12 @@ public abstract class RegistrationConcurrencyTests
                     var start = Start(fixture, ["--registration-worker", same ? "same" : "distinct",
                         round.ToString(CultureInfo.InvariantCulture), index.ToString(CultureInfo.InvariantCulture)]);
                     var child = OwnedProcesses.Start(start, captureOutput: false);
-                    children.Add((child, new StreamReader(child.StandardOutput)));
-                }
-                foreach (var (_, reader) in children)
-                {
+                    var reader = new StreamReader(child.StandardOutput);
+                    children.Add((child, reader));
                     var line = await reader.ReadLineAsync(deadline.Token);
                     using var waiting = JsonDocument.Parse(line ?? throw new InvalidOperationException("storage_worker_missing"));
+                    Assert.True(waiting.RootElement.GetProperty("eventCode").GetString() != "storage_worker_failed",
+                        Failure(waiting.RootElement));
                     Assert.Equal("storage_worker_waiting", waiting.RootElement.GetProperty("eventCode").GetString());
                 }
                 foreach (var (child, _) in children)
@@ -74,10 +74,7 @@ public abstract class RegistrationConcurrencyTests
                     var line = await pair.Reader.ReadLineAsync(deadline.Token);
                     var output = await pair.Child.WaitAsync(deadline.Token);
                     using var document = JsonDocument.Parse(line ?? throw new InvalidOperationException("storage_worker_missing"));
-                    Assert.True(output.ExitCode == 0,
-                        document.RootElement.TryGetProperty("code", out var code) &&
-                        StorageDiagnostics.IsFailureCode(code.GetString())
-                            ? code.GetString() : "storage_worker_failed");
+                    Assert.True(output.ExitCode == 0, Failure(document.RootElement));
                     Assert.Equal("storage_worker_ready", document.RootElement.GetProperty("eventCode").GetString());
                     return (Key: document.RootElement.GetProperty("key").GetString(),
                         Allocation: document.RootElement.GetProperty("allocation").GetGuid());
@@ -95,6 +92,15 @@ public abstract class RegistrationConcurrencyTests
                 }
             }
         }
+    }
+
+    private static string Failure(JsonElement result)
+    {
+        var code = result.TryGetProperty("code", out var value) &&
+            StorageDiagnostics.IsFailureCode(value.GetString()) ? value.GetString() : "storage_worker_failed";
+        var operation = result.TryGetProperty("operation", out var phase) &&
+            phase.GetString() is "acquire" or "register" ? phase.GetString() : "setup";
+        return $"{code}; operation={operation}";
     }
 
     private static async Task AssertRoundAsync(RegistryFixture fixture, bool same, int round)

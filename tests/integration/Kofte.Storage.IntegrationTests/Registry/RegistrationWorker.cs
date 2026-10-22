@@ -24,6 +24,7 @@ public static class RegistrationWorker
 
     private static async Task<int> RunAsync(string[] args)
     {
+        StorageOperation? operation = null;
         try
         {
             using var budget = new CancellationTokenSource(TimeSpan.FromSeconds(45));
@@ -48,11 +49,15 @@ public static class RegistrationWorker
                 int.TryParse(roundText, out var round) && round is >= 0 and < 20 &&
                 int.TryParse(indexText, out var index) && index is >= 0 and < 10)
             {
+                // Complete cold provider initialization before the shared registration race starts.
+                operation = StorageOperation.Acquire;
+                await using (await new StorageMaintenance(installation).AcquireAsync(budget.Token)) { }
                 Console.WriteLine("""{"eventCode":"storage_worker_waiting"}""");
                 if (await Console.In.ReadLineAsync(budget.Token) != "start")
                     throw new InvalidOperationException("storage_worker_barrier_required");
                 var module = RegistryFixture.Module(Owner(args[1] == "same", round, index));
-                result = await RegisterWithRetryAsync(installation, module, budget.Token);
+                result = await RegisterWithRetryAsync(installation, module, budget.Token,
+                    value => operation = value);
             }
             else throw new InvalidOperationException("storage_worker_scenario_invalid");
             Console.WriteLine(JsonSerializer.Serialize(new
@@ -71,6 +76,12 @@ public static class RegistrationWorker
             var failure = JsonSerializer.Serialize(new
             {
                 eventCode = "storage_worker_failed",
+                operation = operation switch
+                {
+                    StorageOperation.Acquire => "acquire",
+                    StorageOperation.Register => "register",
+                    _ => "setup"
+                },
                 code = StorageDiagnostics.Diagnostic(error switch
                 {
                     StorageException storage => storage.Code,
@@ -89,7 +100,8 @@ public static class RegistrationWorker
         same ? $"org.example.same-r{round}" : $"org.example.r{round}-m{index}";
 
     internal static async Task<StorageResult.Ready> RegisterWithRetryAsync(StorageInstallation installation,
-        Platform.Modules.Manifest.ModuleDescription module, CancellationToken token)
+        Platform.Modules.Manifest.ModuleDescription module, CancellationToken token,
+        Action<StorageOperation>? observe = null)
     {
         var maintenance = new StorageMaintenance(installation);
         var registry = new StorageRegistry(installation);
@@ -99,7 +111,9 @@ public static class RegistrationWorker
             token.ThrowIfCancellationRequested();
             try
             {
+                observe?.Invoke(StorageOperation.Acquire);
                 await using var scope = await maintenance.AcquireAsync(token);
+                observe?.Invoke(StorageOperation.Register);
                 var result = await registry.RegisterAsync(module, scope, token);
                 if (result is StorageResult.Ready ready) return ready;
                 if (result.Outcome != StorageOutcome.Busy)

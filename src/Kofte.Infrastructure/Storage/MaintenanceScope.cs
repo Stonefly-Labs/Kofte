@@ -39,7 +39,6 @@ internal sealed class MaintenanceScope : IStorageMaintenanceScope
                 { Timeout = budget.CommandSeconds(), CommandTimeout = budget.CommandSeconds() };
                 session = new NpgsqlConnection(builder.ConnectionString);
                 await session.OpenAsync(budget.Token);
-                await identity.VerifyAsync(session, budget);
             }
             while (true)
             {
@@ -49,11 +48,18 @@ internal sealed class MaintenanceScope : IStorageMaintenanceScope
                     throw new StorageException(StorageCode.Busy);
                 if (session is not null)
                 {
-                    await using var command = new NpgsqlCommand(
-                        "SELECT pg_catalog.pg_try_advisory_lock($1)", session)
-                    { CommandTimeout = budget.CommandSeconds() };
-                    command.Parameters.AddWithValue(PostgresIdentity.LeaseKey);
-                    if (await command.ExecuteScalarAsync(budget.Token) is true)
+                    bool acquired;
+                    if (!contended)
+                        acquired = await installation.Postgres!.TryAcquireLeaseAsync(session, budget);
+                    else
+                    {
+                        await using var command = new NpgsqlCommand(
+                            "SELECT pg_catalog.pg_try_advisory_lock($1)", session)
+                        { CommandTimeout = budget.CommandSeconds() };
+                        command.Parameters.AddWithValue(PostgresIdentity.LeaseKey);
+                        acquired = await command.ExecuteScalarAsync(budget.Token) is true;
+                    }
+                    if (acquired)
                     {
                         var scope = new MaintenanceScope(installation, null, session, token);
                         session = null;

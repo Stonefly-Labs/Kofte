@@ -35,6 +35,7 @@ class Failures:
 
 class CommandDiagnostics:
     storage_report_codes = frozenset(("unavailable", "invalid", "too_large", "no_known_failure"))
+    storage_operations = frozenset(("acquire", "register", "setup"))
     locations = re.compile(
         rb"(?<![A-Za-z0-9_.-])("
         rb"accessibility\.spec\.ts|bootstrap\.spec\.ts|recovery\.spec\.ts|"
@@ -51,6 +52,7 @@ class CommandDiagnostics:
         self.failures = Failures()
         self.sources, self.dependency_codes = set(), set()
         self.failed_tests, self.storage_codes = set(), set()
+        self.failed_operations = set()
         self.storage_report_code = None
         self.lock = threading.Lock()
         self.closed = False
@@ -128,6 +130,12 @@ class CommandDiagnostics:
                 text = message.text or ""
                 if text.strip() in self.codes:
                     self.storage_codes.add(text.strip())
+                self.storage_codes.update(
+                    code for code in re.findall(r"\bstorage_[a-z_]{1,60}\b", text) if code in self.codes
+                )
+                self.failed_operations.update(
+                    re.findall(r"\boperation=(acquire|register|setup)\b", text)
+                )
                 self.inspect(text.encode())
         if not self.failed_tests:
             self.storage_report_code = "no_known_failure"
@@ -142,6 +150,7 @@ class CommandDiagnostics:
                 return {
                     **({"failedStorageTests": sorted(self.failed_tests)} if self.failed_tests else {}),
                     **({"storageFailureCodes": sorted(self.storage_codes)} if self.storage_codes else {}),
+                    **({"storageFailureOperations": sorted(self.failed_operations)} if self.failed_operations else {}),
                     **({"storageDiagnosticCode": self.storage_report_code} if self.storage_report_code else {}),
                 }
             return {}
@@ -153,6 +162,7 @@ class CommandDiagnostics:
             self.dependency_codes.clear()
             self.failed_tests.clear()
             self.storage_codes.clear()
+            self.failed_operations.clear()
             self.storage_report_code = None
 
 
