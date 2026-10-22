@@ -81,6 +81,8 @@ Actual both-provider registration/constraint checks and the complete
 focused observations, not complete crash, recovery, EF or privacy acceptance.
 The final broad storage runs failed PostgreSQL process-race/fixture-cleanup
 cases; investigation remains an explicit blocker.
+Baseline provider selection and warm-restart fixtures now honor the new
+registry/module ownership boundary without weakening its checks.
 See the [implementation report](specs/003-storage-registry/implementation.md)
 for exact evidence and incomplete obligations, and the
 [validation guide](specs/003-storage-registry/quickstart.md) for supported checks

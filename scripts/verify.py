@@ -839,14 +839,21 @@ def execute_suite(runner, suite, provider, arguments):
         )
     elif suite in ("recovery", "contract", "privacy"):
         if suite == "contract":
+            public_environment = provider_environment(
+                runner, arguments, "postgres" if provider in ("postgres", "both") else "sqlite",
+            )
+            public_selector = [] if provider == "both" else [
+                "--filter-not-trait", f"Provider={'postgres' if provider == 'sqlite' else 'sqlite'}",
+            ]
             runner.command("manifest-author-build", [
                 "dotnet", "build", "tests/contract/Kofte.Manifest.Consumer",
                 "--no-restore", "-c", "Release", "-warnaserror",
             ])
             runner.command("platform-public-contracts", [
                 "dotnet", "test", "--project", "tests/contract/Kofte.Platform.ContractTests",
-                "--no-restore", "-c", "Release", "--minimum-expected-tests", "1",
-            ])
+                "--no-restore", "-c", "Release", *public_selector,
+                "--minimum-expected-tests", "1",
+            ], environment=public_environment)
             runner.command("module-manifest-schema", [
                 "npm", "run", "test", "--workspace", "tests/contract", "--", "module-manifest.test.ts",
             ])
@@ -901,6 +908,10 @@ def execute_suite(runner, suite, provider, arguments):
             ], environment=session.environment, health_check=session.check)
     elif suite == "startup":
         runner.build_runtime()
+        runner.command("startup-storage-fixture-build", [
+            "dotnet", "build", "tests/contract/Kofte.Storage.Consumer",
+            "--no-restore", "-c", "Release", "-warnaserror",
+        ])
         output_root = owned_directory(runner.root, "tests/e2e/test-results")
         directory = output_root / f"verify-startup-{uuid.uuid4().hex}"
         directory.mkdir(mode=0o700)

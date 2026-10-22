@@ -222,6 +222,19 @@ class VerifyTests(unittest.TestCase):
             verify.execute_suite(runner, "integration", "postgres", arguments)
         command.assert_not_called()
 
+    def test_postgres_public_contract_requires_opt_in_before_any_child(self):
+        for name in verify.REQUIRED_SUITE_FILES["contract"]:
+            path = self.root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("isolated selector fixture")
+        runner = verify.Runner(self.root, self.report("contract"), {})
+        with patch.object(runner, "versions"), patch.object(runner, "command") as command, \
+                self.assertRaisesRegex(verify.VerificationError, "disposable_postgres_opt_in_required"):
+            verify.execute_suite(runner, "contract", "both", Mock(
+                disposable_postgres=False, postgres_connection=None,
+            ))
+        command.assert_not_called()
+
     def test_missing_platform_target_fails_unit_quality_and_contract_before_tools(self):
         for name in verify.PLATFORM_REQUIRED_FILES:
             path = self.root / name
@@ -420,6 +433,7 @@ class VerifyTests(unittest.TestCase):
                 public = next(call for call in command.call_args_list
                               if call.args[0] == "platform-public-contracts")
                 self.assertEqual(["--minimum-expected-tests", "1"], public.args[1][-2:])
+                self.assertEqual("true", public.kwargs["environment"]["KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE"])
                 author = next(i for i, call in enumerate(command.call_args_list)
                               if call.args[0] == "manifest-author-build")
                 contracts = next(i for i, call in enumerate(command.call_args_list)
@@ -465,6 +479,10 @@ class VerifyTests(unittest.TestCase):
         self.assertIn("Provider=sqlite", native[0].args[1])
         self.assertNotIn("Provider=postgres", native[0].args[1])
         self.assertNotIn("KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE", native[0].kwargs["environment"])
+        public = next(call for call in command.call_args_list if call.args[0] == "platform-public-contracts")
+        self.assertIn("--filter-not-trait", public.args[1])
+        self.assertIn("Provider=postgres", public.args[1])
+        self.assertNotIn("KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE", public.kwargs["environment"])
 
     def test_normal_browser_does_not_run_privacy_without_its_seeded_capture_session(self):
         directory = self.root / "tests/e2e"
@@ -595,8 +613,14 @@ class VerifyTests(unittest.TestCase):
         stale.write_text("credential-canary /private/old-results")
         runner = verify.Runner(self.root, self.report("startup"), {})
         outputs = []
+        commands = []
 
         def child(name, command, **kwargs):
+            commands.append(name)
+            if name == "startup-storage-fixture-build":
+                self.assertIn("tests/contract/Kofte.Storage.Consumer", command)
+                runner.operation(name, lambda _: None, command)
+                return
             def produce(_):
                 directory = Path(command[command.index("--output") + 1])
                 outputs.append(directory)
@@ -620,6 +644,7 @@ class VerifyTests(unittest.TestCase):
         self.assertNotIn(str(self.root), runner.report.path.read_text())
         self.assertTrue((outputs[0] / "actual-startup-test/startup-observations.json").is_file())
         self.assertEqual("credential-canary /private/old-results", stale.read_text())
+        self.assertLess(commands.index("startup-storage-fixture-build"), commands.index("startup-warm-restarts"))
 
     def test_startup_requires_exact_sample_count_sequence_fields_and_fixture_matches(self):
         directory = self.root / "observations"
@@ -697,6 +722,8 @@ class VerifyTests(unittest.TestCase):
                 runner = verify.Runner(self.root, self.report("startup"), {})
 
                 def child(_name, command, **_kwargs):
+                    if _name != "startup-warm-restarts":
+                        return
                     if payload is not None:
                         directory = Path(command[command.index("--output") + 1])
                         (directory / "startup-observations.json").write_text(json.dumps(payload))
@@ -717,6 +744,9 @@ class VerifyTests(unittest.TestCase):
         runner = verify.Runner(self.root, self.report("startup"), {})
 
         def child(name, command, **_kwargs):
+            if name == "startup-storage-fixture-build":
+                runner.operation(name, lambda _: None, command)
+                return
             def fail(_):
                 directory = Path(command[command.index("--output") + 1])
                 (directory / "startup-observations.json").write_text(json.dumps(self.startup_samples()))

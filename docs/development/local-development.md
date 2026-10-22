@@ -318,6 +318,7 @@ npm run contract:check
 npm run test:unit --workspace packages/bootstrap-contract
 npm run test:unit --workspace apps/web
 npm run build --workspace apps/web
+dotnet build tests/contract/Kofte.Storage.Consumer --no-restore -c Release -warnaserror
 npm run test --workspace tests/e2e -- startup.spec.ts
 ```
 
@@ -328,7 +329,10 @@ generation is explicit:
 `npm run generate --workspace packages/bootstrap-contract`.
 
 The startup test owns two private built-asset host/web cycles, unpredictable
-test-only fixture values, free ports and process groups. It verifies exact
+test-only fixture values, free ports and process groups. Before timing starts,
+the public storage consumer provisions assigned Alpha/Beta stores and real
+migrations; the restart sentinel lives in Alpha's `Records`, not an unknown
+table in the table-free-v0 platform database. It verifies exact
 fixture persistence and released ports after each stop. Individual readiness/
 navigation durations and boolean fixture comparisons are retained in ignored
 `tests/e2e/test-results/` JSON, without fixture values or local paths.
@@ -365,6 +369,12 @@ runs every ordered child command in the spec's
 including repository/Python/whitespace, locked restores, .NET format/build,
 Prettier/ESLint/TypeScript, generated contract, workspace builds and dependency
 inventory. The remaining exact test selectors are:
+
+Contract verification first runs the public C# contract project with the
+selected provider environment. PostgreSQL requires explicit disposable opt-in
+before any child; single-provider runs exclude the other provider's trait
+without excluding provider-neutral manifest/harness tests. Startup verification
+also builds `Kofte.Storage.Consumer` before its timed browser exercise.
 
 | Suite | Underlying runner |
 | --- | --- |

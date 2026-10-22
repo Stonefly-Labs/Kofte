@@ -222,6 +222,52 @@ skips. Targeted allocator/budget tests passed 13 cases; the held/disposed/foreig
 maintenance-scope test passed one case. These earlier observations are not a
 substitute for current-source final gates.
 
+### Publication-head regressions and follow-up
+
+`gh pr checks 6 --watch --interval 30` failed at initial checkpoint
+`e5ef54521b7630f27c5a33afc96992a2a04c8154`: **nine contexts passed; contract
+and startup failed** in
+[product run 39727804217](https://github.com/Stonefly-Labs/Kofte/actions/runs/39727804217).
+The [repository run](https://github.com/Stonefly-Labs/Kofte/actions/runs/39727804188)
+passed. These failed contexts were investigated, not treated as a completed gate.
+
+The public contract command had no selected-provider environment, so newly
+included PostgreSQL cases correctly refused absent disposable opt-in. It now
+uses the existing provider helper, guards PostgreSQL before spawning children,
+and excludes the other provider's trait for single-provider runs while retaining
+provider-neutral manifest/harness tests. A new Python regression and extended
+selector assertions cover those distinctions.
+
+The old warm-restart fixture put an arbitrary table in the otherwise
+table-free-v0 platform database, which the new strict startup check correctly
+refuses. Instead of weakening startup or special-casing an unknown table,
+the test now provisions real Alpha/Beta assigned stores/migrations through
+the independent public consumer before timed cycles. Its unpredictable sentinel
+lives in Alpha's existing `Records.Payload`. All ten restarts check its exact
+run/key/payload and released ports. The verifier explicitly builds that
+test-owned consumer; documentation and ordering assertions match.
+
+| Exact command | Observed result |
+| --- | --- |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed; 104 tests after the CI-wiring regression |
+| `npm run format:check` | Passed |
+| `npm run lint --workspace tests/e2e` | Passed |
+| `npm run typecheck --workspace tests/e2e` | Passed |
+| `python3 scripts/verify.py --suite contract --provider both --disposable-postgres` | Failed locally after its public-contract/schema/native-SQLite/host-build steps passed: `runtime-web-build` reported `verification_input_invalid` despite child exit 0. The wrapper failure is unresolved and is not relabeled as passing |
+| `npm run build --workspace apps/web` | Passed independently |
+| `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-not-trait Provider=postgres --minimum-expected-tests 1` | Passed; 41 cases, zero skipped, with no PostgreSQL opt-in or target in the environment |
+| `BOOTSTRAP_WARM_STARTS=10 npm run test --workspace tests/e2e -- startup.spec.ts` | Passed; both tests and all ten actual warm cycles |
+
+The existing strict `startup_observations` reader validated the fresh absolute
+output directory: **10 cycles, all fixture comparisons true**, maximum readiness
+0.362503 s and maximum page duration 0.069949 s on this workstation. These are
+targeted observations, not a new full-stage or universal benchmark claim.
+The aborted local command chain did not execute its later named SQLite/startup
+wrappers; the direct commands above are reported as direct, not named-gate passes.
+Subsequent publication-head CI is recorded in the PR only after it actually runs.
+The broad storage failures, complete 003 verifier wiring and remaining
+implementation obligations still block this stage.
+
 ### What the observations actually prove
 
 - The registration/format checks exercise both real providers, explicit
