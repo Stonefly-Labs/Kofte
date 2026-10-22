@@ -145,7 +145,7 @@ public abstract class StoragePrivacyTests
         {
             using var record = JsonDocument.Parse(line);
             var value = record.RootElement;
-            Assert.Equal(7, value.EnumerateObject().Count());
+            Assert.Equal(9, value.EnumerateObject().Count());
             Assert.Equal("storage", value.GetProperty("component").GetString());
             Assert.Matches(@"\A[0-9a-f]{32}\z", value.GetProperty("correlationId").GetString()!);
             Assert.True(logCorrelations.Add(value.GetProperty("correlationId").GetString()!));

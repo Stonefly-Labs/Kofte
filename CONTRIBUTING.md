@@ -91,8 +91,14 @@ boundaries. Existing CLI summaries do not replace direct-API operation evidence.
 Exactly T082 is appended unchecked for bounded private telemetry/CLI projection
 and real both-provider capture regressions; all 81 historical task bytes/markers,
 product/test code and previous reports remain unchanged. No storage-isolation
-failure or new design decision is demonstrated. **Implement T082 is next** on
-this same draft PR; no implementation, acceptance or merge is inferred.
+failure or new design decision is demonstrated. That review selected implement.
+The [T082 increment](specs/003-storage-registry/implementation.md#final-review-remediation-t082)
+now supplies assignment-independent correlated upgrade records, failed-acquisition
+records, fixed guidance/durability and safe supervised CLI projection. Both real
+providers capture successful/idempotent upgrades, rejected scopes, unsupported/
+corrupt formats and sanitized commit-boundary failures. All 82 tasks are evidenced;
+**follow-up converge is next** on the same draft PR. No review result is rewritten,
+feature accepted or merge requested by implementation.
 The following paragraphs preserve the historical design-stage checkpoint.
 
 Spec **003 / specify and clarify** establish the

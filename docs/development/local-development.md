@@ -96,8 +96,13 @@ success/generic failure summaries are present but do not supply complete direct
 API evidence. R1/T081 and public F1/F2 are closed. Exactly T082 is appended
 unchecked for safe direct-API/CLI projection and real both-provider captures;
 all 81 historical task bytes/markers, code, supported commands and previous
-reports remain unchanged. **Implement T082 is next** on this same draft PR,
-not feature acceptance or a new design/merge prerequisite.
+reports remain unchanged at that review checkpoint.
+The [T082 increment](../../specs/003-storage-registry/implementation.md#final-review-remediation-t082)
+now emits correlated upgrade/failed-acquisition records and safely projects
+worker outcomes in the CLI. Both-provider capture/host regressions cover commits,
+unchanged retries, rejected scopes, unsupported/corrupt formats and sanitized
+commit-boundary failures. All 82 tasks are evidenced; **follow-up converge is next**
+on this same draft PR, not acceptance or a new design/merge prerequisite.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).
@@ -108,6 +113,13 @@ Run synchronous maintenance through the admitted owned-worker supervisor.
 Registry upgrade has a 30-second total, module maintenance 120 seconds,
 including cleanup; acquire/resolve limits are two/three seconds. Losing a
 PostgreSQL lock session cancels the scope rather than reacquiring it.
+`--registry upgrade` retains its `registry_upgraded` success summary and emits
+a separate safe `operation: upgrade` record with provider, stable code/outcome,
+generated correlation, fixed guidance and durability. The supervisor drains raw
+worker stdout/stderr and projects only allowlisted exit identities. Its durability
+is conservatively `uncertain` once a child may write, even for success; direct
+API records distinguish actual `committed` upgrades and `unchanged` v1 retries.
+No failure summary proves rollback, and no upgrade result contains a module assignment.
 Only ready carries an assignment; retry busy boundedly, correct rejected
 configuration, and inspect incomplete/reconciliation evidence without deleting
 files, locks or history. Complete-set restores require a fresh owned target.

@@ -63,6 +63,14 @@ health behavior works. Stop the supervisor before further maintenance. A running
 host causes bounded busy, not forced shutdown. An untouched valid v0 store must
 still support the zero-module bootstrap without automatic migration.
 
+The CLI retains the `registry_upgraded` success summary and emits a separate
+safe upgrade record containing provider, stable code/outcome, generated
+correlation, fixed guidance and conservative durability. Raw worker output is
+discarded. Direct `UpgradeAsync` keeps its `Task`/safe-exception contract and
+null module identity; its records distinguish committed v0 upgrade from
+unchanged v1 retry and preserve possible-commit uncertainty on failure.
+See [diagnostic semantics](contracts/storage-v1.md#outcomes-and-diagnostics).
+
 PostgreSQL initialization uses the fixture-owned database/runtime role plus a
 distinct offline provisioner supplied privately to the maintenance child.
 Never paste credentials into source, CLI arguments, logs or the PR. The normal

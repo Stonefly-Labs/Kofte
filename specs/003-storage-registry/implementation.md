@@ -1,6 +1,6 @@
 # Implementation: 003 - Storage Registry and Module Isolation
 
-**Stage:** Implement remediation T081 complete; all 81 tasks evidenced.
+**Stage:** Implement remediation T082 complete; all 82 tasks evidenced.
 The earlier implementation checkpoints and their local/CI evidence are preserved below.
 **Branch / PR:** `feature/003-storage-registry` /
 [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
@@ -12,6 +12,151 @@ The latter changes only CI mirror setup and documentation, not product, test or
 verification-script source. The final publication adds stage documentation,
 task completion and the driver transition; its checks are recorded in the PR
 without a self-referential bookkeeping commit.
+
+## Final review remediation T082
+
+**Date:** 2026-10-22 (UTC). **Stage:** Implement only, on the original branch
+and draft PR. The [follow-up review](review.md) recorded R2 and appended T082.
+Its historical changes result and all previous convergence/review evidence are
+preserved. Follow-up converge, review and explicit human acceptance are separate
+stages; this implementation does not perform them.
+
+The tested worktree is based on `2fc663806102d4d9a52fe6ac5bd8097ce961fd45`.
+Published-head CI is checked separately in the PR, without a self-referential
+bookkeeping commit or a claim that the base revision contains these changes.
+
+### Implementation and acceptance mapping
+
+- `StorageDiagnostics` shares the existing allowlisted exception classification,
+  outcome mapping, structured record, span and bounded metric emitter between
+  module results and assignment-independent maintenance. `UpgradeAsync` retains
+  `Task` and safe exceptions; no synthetic `StorageResult` or module assignment
+  is constructed. Maintenance records have null module identity.
+- Registry upgrade records distinguish real committed v0 initialization,
+  unchanged verified v1 retry, pre-write refusal and uncertain commit. The
+  existing before/after-commit checkpoints now update `MutationEvidence` around
+  the actual provider commit. A later failure cannot erase committed evidence.
+- Failed acquisition emits safe `acquire` evidence, including actual contention.
+  Successful acquisition/disposal is not independently logged, and scope lifetime
+  still follows the original caller token. No new acquisition matrix is claimed.
+- Logs and spans include fixed guidance and durability alongside operation,
+  provider, outcome/code and generated correlation. Metrics retain exactly
+  operation/provider/outcome labels, with no module, path or correlation labels.
+  Public module-result shapes remain unchanged; structured log records gain
+  the two bounded guidance/durability fields.
+- The independent public consumer's strict diagnostic parser now requires all
+  nine fields and allowlists guidance/durability values. It still rejects unknown
+  fields, malformed identities, missing outcomes and unbounded output; the
+  consumer's separate scenario-result schema is unchanged.
+- The supervisor emits an operator-visible parent upgrade record while retaining
+  raw stdout/stderr draining. Worker failures carry only allowlisted code
+  identities through internal exit codes; legacy 40/41/42 categories remain.
+  Unknown nonzero exits are unavailable, never success. The parent conservatively
+  records uncertain durability once the child may write; it does not infer
+  rollback or exact commit evidence from the exit identity.
+- The CLI keeps its existing `registry_upgraded` summary. Command syntax,
+  `IStorageMaintenance`, owned-child admission/reaping, two/three/30/120-second
+  limits, normal serving, provider permissions, dependencies and approved design
+  are unchanged. No raw child/provider output is forwarded.
+
+These changes close T082's FR-010/014, US4.3, US5.1 and principles VI/X/XI
+obligations without introducing the future durable audit product.
+
+### Actual regression assertions
+
+The new inherited `StorageMaintenanceDiagnosticsTests` supplies **nine cases
+per real provider / eighteen total**, under the existing telemetry-isolation
+collection and provider/privacy traits:
+
+| Case | Required observations |
+| --- | --- |
+| `UpgradeCommitAndIdempotentRetryEmitCorrelatedPrivateRecords` | Actual v0 commit and unchanged v1 retry; equal registry rows, SQLite bytes and empty module inventory; distinct generated correlations. |
+| `InvalidScopesEmitRejectedRecordsWithoutChangingTheInstallation` (3) | Non-infrastructure, foreign installation-instance and disposed scopes reject with `storage_request_invalid`, fixed guidance, null module and unchanged persisted state. |
+| `UnsupportedVersionAndCorruptHistoryEmitRefusalsAndPreserveAllRows` (2) | Deliberately corrupted test-owned version/history remains unchanged; exact unsupported/corrupt code, outcome and runbook guidance. Only fixture injection bypasses immutable metadata protection. |
+| `UnexpectedCommitBoundaryFailuresAreSanitizedWithoutClaimingRollback` (2) | Seeded private path/credential/payload/control-character exception at the real before/after-commit checkpoints becomes safe unavailable; actual zero/three registry tables agree with uncertain/committed records. |
+| `ContendedAcquisitionEmitsSafeFailureWithoutASecondLease` | Held actual installation lease produces bounded busy with safe acquire evidence, not a second lease. |
+
+Every case captures actual console records, spans and counters, checks exact
+operation/provider/code/outcome/guidance/durability, generated 32-hex correlation,
+null module identity, bounded output and metric label keys, and rejects actual
+fixture paths/connections/passwords and seeded exception material. Direct
+maintenance stdout remains empty. Both-provider host compatibility tests assert
+the parent-side success/refusal record, original summary, preserved state and
+zero private output. Existing worker cancellation/reaping/pipe-drain tests remain.
+The new source is mandatory in `scripts/verify.py`; the existing inventory
+regression now proves that removing it fails before product execution.
+
+### Executed checks and limits
+
+Environment: Darwin 25.5.0 arm64, 18 logical CPUs, 64 GiB, Python 3.15.0;
+selected .NET SDK 10.0.402, Node 24.22.0/npm 11.19.1. Existing pinned real
+SQLite and explicitly owned disposable PostgreSQL 17 fixtures are reused.
+No dependency installation or adoption was needed for the focused checks.
+
+```bash
+export DOTNET_ROOT="$PWD/artifacts/toolchain/dotnet-10.0.402"
+export PATH="$DOTNET_ROOT:$(dirname "$(fnm exec --using=24.22.0 node -p 'process.execPath')"):$PATH"
+unset KOFTE_POSTGRES_CONNECTION KOFTE_POSTGRES_PROVISIONING_CONNECTION
+```
+
+| Exact command | Observed result |
+| --- | --- |
+| `dotnet build Kofte.slnx --no-restore -c Release --nologo -v quiet -warnaserror` | Passed, zero warnings/errors. |
+| `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --filter-class '*StorageMaintenanceDiagnosticsTests' --filter-class '*StoragePrivacyTests' --minimum-expected-tests 20` | Passed 20/20, zero skipped, 72.369 seconds: eighteen new provider cases plus the existing two seven-outcome captures. |
+| `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-build --no-restore -c Release --filter-class '*StorageCompatibilityTests' --minimum-expected-tests 11` | Passed 11/11, zero skipped, 22.106 seconds; both providers' actual command success/refusal projection and existing cleanup/startup behavior. |
+| `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --filter-class '*RegistryFormatTests' --filter-class '*RegistryUpgradeTests' --minimum-expected-tests 11` | Passed 11/11, zero skipped, 18.262 seconds; existing real format/idempotence/refusal and killed-upgrade/lost-acknowledgement regressions. |
+| `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*StorageGuideTests' --minimum-expected-tests 2` | After the strict-parser correction, passed 2/2, zero skipped, 64.973 seconds; both public `all` examples execute all nine required scenarios. |
+| `python3 scripts/verify.py --suite privacy --provider both --disposable-postgres` | Passed 36 steps, 143.884 seconds, including all new capture cases. |
+| `python3 scripts/verify.py --suite contract --provider both --disposable-postgres` | Initial strict-schema failure recorded below; corrected full rerun passed 37 steps, 251.774 seconds. |
+| `python3 scripts/verify.py --suite recovery --provider both --disposable-postgres` | Passed 38 steps, 420.082 seconds, including real crash/deadline/recovery and public guide paths. |
+| `python3 scripts/verify.py --suite quality` | Passed 19 steps, 44.462 seconds; full format/build, web quality, locked dependency and repository checks. |
+| `python3 scripts/verify.py --suite unit` | Passed 11 steps, 10.360 seconds. |
+| `python3 scripts/check_repository.py` | Passed. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed all 111 tests. |
+| `git diff --check` | Passed. |
+
+Before implementation, the new direct selector discovered eighteen cases:
+sixteen exposed absent records or unsanitized checkpoint errors, while two
+unsupported-version setup cases were correctly blocked by immutable metadata
+triggers. The initial selector mistakenly requested twenty cases and also
+reported that minimum-count violation; this is not a successful baseline.
+Fixture-only injection was corrected to deliberately bypass those protections,
+not weaken production constraints. An initial post-change twenty-case run then
+passed eighteen and failed those two setup cases; the corrected run above
+passes all twenty. The baseline host selector ran three cases, all failing for
+the missing parent-side operation record.
+
+An intermediate host class selector also included PostgreSQL without its
+required disposable opt-in: eight SQLite cases passed and the PostgreSQL fixture
+correctly refused. The correctly opted-in final eleven-case selector passes.
+No assertion, deadline, provider guard or gate was weakened.
+
+The first named contract run failed at `platform-public-contracts`: the
+independent consumer correctly refused the new nine-field records under its old
+seven-field allowlist. The focused both-provider `StorageGuideTests` reproduced
+2/2 failures before the parser correction; both pass afterward. The correction
+extends the exact field/value allowlist, not the public result schema or privacy
+boundary. The failed contract report is retained as historical execution evidence.
+
+All **141 targeted named steps** pass across the five current reports:
+`privacy-both-b68020e880ed4d4295e8eaefaca9e921.json`,
+`contract-both-bf1cdd63fb9d4e9c972e20fe6cc12758.json`,
+`recovery-both-330cee89a60144deb65d6d441429be86.json`,
+`quality-none-48792e4b68b74fcda0d598bab86ff752.json` and
+`unit-none-677e2d96cc2243bfbe74e6941ac182b4.json`, under ignored
+`artifacts/verification/`. Each reports the actual base revision and environment,
+with `scope: targeted` and `completeGate: false`. The initial failed contract
+report is `contract-both-f4eaa244b07545fda856488bd5f41639.json`; it is not counted
+as passing evidence. No raw private provider output is retained.
+
+The implementation task list now has all 82 markers complete. Author/quality
+checklists remain unchanged at 16/16 and 36/36; no before/after implementation
+hooks are configured. No approved specification, plan, constitution, dependency,
+historical convergence or review is rewritten. **Follow-up converge is next**
+on the original draft PR. These focused checks are not a new local
+all-suite gate, human usability study, feature acceptance or production-readiness
+claim. Existing narrow DDL, trusted in-process code, ambiguous preserved evidence,
+stopped whole-set recovery and older-backup/operator responsibilities remain.
 
 ## Final review remediation T081
 

@@ -32,7 +32,7 @@ internal sealed class RegistryMigrationRunner(StorageInstallation installation)
 
     internal string Digest => Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(Script)));
 
-    internal async Task UpgradeAsync(MaintenanceScope scope, OperationBudget budget)
+    internal async Task UpgradeAsync(MaintenanceScope scope, OperationBudget budget, MutationEvidence mutation)
     {
         await scope.VerifyAsync(installation, budget);
         await using var connection = await installation.OpenPlatformAsync(budget);
@@ -49,8 +49,10 @@ internal sealed class RegistryMigrationRunner(StorageInstallation installation)
             await InitializeAsync(connection, budget, transaction);
             await scope.VerifyAsync(installation, budget);
             budget.Check();
+            mutation.PossibleCommit();
             StorageDiagnostics.Checkpoint("registry_before_commit", installation.Provider);
             transaction.Commit();
+            mutation.Committed();
             StorageDiagnostics.Checkpoint("registry_committed", installation.Provider);
         }
         else
@@ -58,8 +60,10 @@ internal sealed class RegistryMigrationRunner(StorageInstallation installation)
             await using var transaction = await connection.BeginTransactionAsync(budget.Token);
             await InitializeAsync(connection, budget, transaction);
             await scope.VerifyAsync(installation, budget);
+            mutation.PossibleCommit();
             StorageDiagnostics.Checkpoint("registry_before_commit", installation.Provider);
             await transaction.CommitAsync(budget.Token);
+            mutation.Committed();
             StorageDiagnostics.Checkpoint("registry_committed", installation.Provider);
         }
         await ReadInstallationAsync(connection, budget);

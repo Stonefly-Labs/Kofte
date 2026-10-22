@@ -204,8 +204,16 @@ complete operation evidence. R1/T081 and prior public F1/F2 are closed.
 Exactly T082 is appended for bounded private telemetry/CLI projection and real
 both-provider captures, without changing approved architecture, APIs, dependencies,
 code or historical task markers. No storage-isolation failure or new design
-decision is demonstrated. **Implement T082 is next** on the same draft PR;
-review does not implement the fix, accept the feature or request merge.
+decision is demonstrated. That review selected implement.
+The [T082 increment](../specs/003-storage-registry/implementation.md#final-review-remediation-t082)
+now reuses assignment-independent diagnostic emission for explicit upgrades and
+failed acquisition. Records include fixed guidance and truthful durability,
+without changing `IStorageMaintenance` or manufacturing a module result.
+The supervisor maps allowlisted worker exit identities into safe operation
+records; raw output remains drained. Both-provider capture/CLI regressions cover
+commits, idempotence, boundary refusals and sanitized uncertain failures.
+All 82 tasks are evidenced; **follow-up converge is next** on the same draft PR.
+No approved architecture, dependency, historical review or acceptance changes.
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.

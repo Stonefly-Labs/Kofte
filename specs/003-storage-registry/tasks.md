@@ -7,13 +7,14 @@ and reviewer-authorized requirements-quality checklist.
 quality criteria. Passing analyze and explicit human approval of Proposed
 ADR 0005 are required **before implementation**, not inferred from this list.
 **Constitution**: Adopted v2.0.1, principles I-XII.
-**Status**: All 81 tasks are evidenced. T081 adds the final review's missing
-changed-allocator retry and no-storage-to-relational refusal regressions on both
-real providers, with preserved assignments/data/revisions/inventory and actual
-mutation red/green evidence. Fresh quality/unit/integration gates pass 46 targeted
-steps after an unchanged PostgreSQL deadline-failure rerun; exact results and
-limitations are in `implementation.md`. The original complete local/CI gates and
-T079-T080 public-example remediation remain historical evidence.
+**Status**: All 82 tasks are evidenced. T082 adds correlated private upgrade
+and failed-acquisition records, fixed guidance/truthful durability and safe CLI
+projection without changing maintenance return types or forwarding raw child
+output. Eighteen inherited real-provider capture cases, both-provider command
+checks and the affected named gates pass; exact commands, initial failures,
+corrections and limits are in `implementation.md`. The original complete
+local/CI gates, T079-T080 public examples and T081 regressions remain historical
+evidence.
 Implement is complete; follow-up converge is next, not performed here.
 This is not feature acceptance.
 
@@ -342,11 +343,11 @@ gate is neither performed nor waived by this internal slice.
 
 ## Completion and Human Handoff
 
-This task list contains **81 tasks**, all evidenced:
+This task list contains **82 tasks**, all evidenced:
 six setup, eight foundational,
 13 US1, eight US2, twelve US3, sixteen US4, seven US5 and eight final evidence
-tasks, plus two convergence remediation tasks and one final-review regression
-remediation task. All 18 acceptance scenarios, 16 functional requirements, six outcomes and
+tasks, plus two convergence remediation tasks, one final-review regression task
+and one maintenance-diagnostics remediation task. All 18 acceptance scenarios, 16 functional requirements, six outcomes and
 twelve principles have explicit task/evidence coverage. Parallel markers do
 not change dependencies or authorize concurrent Spec Kit stages.
 
@@ -384,7 +385,7 @@ the historical review result remains changes pending separate converge/review.
 
 Final review R2 identifies missing correlated records for explicit registry upgrade
 mutations and rejected boundaries, not a demonstrated storage-isolation failure.
-Preserve all historical tasks and evidence; T082 is implementation work for the
-next invocation on the same branch and draft PR.
+Historical tasks and evidence are preserved. T082 is now implemented and
+evidenced in `implementation.md`; follow-up converge is next on the same draft PR.
 
-- [ ] T082 [US5] Close final-review R2 with bounded correlated registry-upgrade telemetry in `src/Kofte.Infrastructure/Storage/StorageMaintenance.cs` and `StorageDiagnostics.cs`, reusing existing operation/provider/outcome/code/guidance vocabulary without changing `IStorageMaintenance` return types or manufacturing a module assignment/result. Emit safe operator-visible records for the real v0-to-v1 commit and rejected scope/installation/version/consistency boundaries; retain safe exception semantics, null module identity, existing deadlines and truthful treatment of possible commits. Preserve an equivalent safe operator-visible projection through `src/Kofte.Host/Features/StorageMaintenance/RegistryCommand.cs` and `MaintenanceSupervisor.cs` where worker output is drained; never forward raw child/provider output. Add inherited real SQLite/PostgreSQL capture regressions in `tests/integration/Kofte.Storage.IntegrationTests/Providers/StoragePrivacyTests.cs` or a dedicated file inside that test project for actual upgrade success, non-owned/foreign/disposed scope rejection and unsupported/corrupt registry refusal. Assert operation/provider/stable code/outcome, generated correlation, existing safe guidance where applicable, no seeded credential/path/payload/exception disclosure and preserved state on pre-write refusals; retain idempotent Task completion. Extend `tests/integration/Kofte.Host.IntegrationTests/StorageCompatibilityTests.cs` for safe command success/failure projection as needed. Independent successful acquisition/disposal logging and a full acquisition matrix are not required by this remediation. Execute both-provider focused captures and affected privacy/contract/host checks with fail-closed counts; record exact revision, selectors and safe results in `specs/003-storage-registry/implementation.md`. Depends: T025, T064, T065, T066, T067, T071. Trace: FR-010/014, US4.3, US5.1; principles VI, X, XI; final-review R2 (MEDIUM).
+- [X] T082 [US5] Close final-review R2 with bounded correlated registry-upgrade telemetry in `src/Kofte.Infrastructure/Storage/StorageMaintenance.cs` and `StorageDiagnostics.cs`, reusing existing operation/provider/outcome/code/guidance vocabulary without changing `IStorageMaintenance` return types or manufacturing a module assignment/result. Emit safe operator-visible records for the real v0-to-v1 commit and rejected scope/installation/version/consistency boundaries; retain safe exception semantics, null module identity, existing deadlines and truthful treatment of possible commits. Preserve an equivalent safe operator-visible projection through `src/Kofte.Host/Features/StorageMaintenance/RegistryCommand.cs` and `MaintenanceSupervisor.cs` where worker output is drained; never forward raw child/provider output. Add inherited real SQLite/PostgreSQL capture regressions in `tests/integration/Kofte.Storage.IntegrationTests/Providers/StoragePrivacyTests.cs` or a dedicated file inside that test project for actual upgrade success, non-owned/foreign/disposed scope rejection and unsupported/corrupt registry refusal. Assert operation/provider/stable code/outcome, generated correlation, existing safe guidance where applicable, no seeded credential/path/payload/exception disclosure and preserved state on pre-write refusals; retain idempotent Task completion. Extend `tests/integration/Kofte.Host.IntegrationTests/StorageCompatibilityTests.cs` for safe command success/failure projection as needed. Independent successful acquisition/disposal logging and a full acquisition matrix are not required by this remediation. Execute both-provider focused captures and affected privacy/contract/host checks with fail-closed counts; record exact revision, selectors and safe results in `specs/003-storage-registry/implementation.md`. Depends: T025, T064, T065, T066, T067, T071. Trace: FR-010/014, US4.3, US5.1; principles VI, X, XI; final-review R2 (MEDIUM).

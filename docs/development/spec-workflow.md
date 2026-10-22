@@ -6,7 +6,21 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 003 / review records **changes after T081** on the original
+**Current checkpoint:** 003 / implement completes **T082** on the original
+`feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
+The [implementation evidence](../../specs/003-storage-registry/implementation.md#final-review-remediation-t082)
+records assignment-independent correlated upgrade diagnostics, failed-acquisition
+records and safe supervised CLI projection. Real SQLite/PostgreSQL captures
+cover commits, idempotent retry, rejected scopes, unsupported/corrupt formats,
+sanitized failures around commit and contended acquisition. Direct records
+distinguish unchanged/uncertain/committed durability; the supervisor conservatively
+retains uncertainty once the child may write and never forwards raw child output.
+All 82 tasks are evidenced. Reviewer-owned checklists and historical review/
+convergence remain unchanged. **Follow-up converge is next**, in a separate
+invocation on the same draft PR, then review and explicit human acceptance.
+No feature acceptance, intermediate merge request or 004 work is performed here.
+
+**Follow-up review checkpoint (historical):** 003 / review records **changes after T081** on the original
 `feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 The [follow-up review](../../specs/003-storage-registry/review.md) assesses all
 40 requirements/outcomes/scenarios, fourteen plan decisions, 81 existing tasks

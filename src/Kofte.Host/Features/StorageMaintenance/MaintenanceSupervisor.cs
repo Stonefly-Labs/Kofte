@@ -11,8 +11,17 @@ public static class MaintenanceSupervisor
     public static async Task RunUpgradeAsync(StorageMaintenanceConfiguration config,
         CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        var started = Stopwatch.GetTimestamp();
+        try
+        {
+            await StorageDiagnostics.RunMaintenanceAsync(config.Runtime.Profile == "local-sqlite" ? "sqlite" : "postgresql",
+                cancellationToken, (budget, mutation) => RunUpgradeWorkerAsync(config, budget, mutation));
+        }
+        catch (StorageException error) { throw Failure(error.Code); }
+    }
+
+    private static async Task RunUpgradeWorkerAsync(StorageMaintenanceConfiguration config,
+        OperationBudget budget, MutationEvidence mutation)
+    {
         var start = new ProcessStartInfo(Environment.ProcessPath ??
             throw new BootstrapException(BootstrapError.ConfigurationInvalid))
         {
@@ -35,11 +44,12 @@ public static class MaintenanceSupervisor
         config.ConfigureChild(start);
         var admission = Convert.ToHexStringLower(RandomNumberGenerator.GetBytes(32));
         start.Environment[MaintenanceWorker.AdmissionKey] = admission;
-        var remaining = TimeSpan.FromSeconds(30) - Stopwatch.GetElapsedTime(started);
+        var remaining = budget.Remaining;
         if (remaining <= TimeSpan.FromSeconds(2))
-            throw new BootstrapException(BootstrapError.StorageUnavailable);
-        await RunOwnedAsync(start, admission, remaining, TimeSpan.FromSeconds(2),
-            cancellationToken);
+            throw new StorageException(StorageCode.DeadlineExceeded);
+        mutation.PossibleCommit();
+        await StorageMaintenanceProcess.RunOwnedAsync(start, admission, remaining, TimeSpan.FromSeconds(2),
+            budget.Token);
     }
 
     internal static async Task RunOwnedAsync(ProcessStartInfo start, string admission,
@@ -55,12 +65,16 @@ public static class MaintenanceSupervisor
         }
         catch (StorageException error)
         {
-            throw new BootstrapException(error.Code switch
-            {
-                StorageCode.Busy => BootstrapError.StoreBusy,
-                StorageCode.RequestInvalid => BootstrapError.StorageInvalid,
-                _ => BootstrapError.StorageUnavailable
-            });
+            throw Failure(error.Code);
         }
     }
+
+    private static BootstrapException Failure(StorageCode code) => new(code switch
+    {
+        StorageCode.Busy => BootstrapError.StoreBusy,
+        StorageCode.RequestInvalid or StorageCode.VersionUnsupported or StorageCode.Corrupt or
+            StorageCode.OwnerMismatch or StorageCode.PathRejected or StorageCode.ReconciliationRequired =>
+            BootstrapError.StorageInvalid,
+        _ => BootstrapError.StorageUnavailable
+    });
 }

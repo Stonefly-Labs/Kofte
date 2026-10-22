@@ -68,7 +68,7 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**Spec 003 / follow-up review records changes; implement T082 is next** on its
+**Spec 003 / implement completes T082; follow-up converge is next** on its
 original feature branch. The initial implementation checkpoint followed completed
 specify through analyze and explicit human approval of
 [ADR 0005](docs/adr/0005-module-storage-ownership.md).
@@ -154,8 +154,15 @@ all 81 historical task bytes/markers, code, design and earlier reports remain
 unchanged. No storage-isolation failure or new design decision is demonstrated.
 Fresh relevant gates pass 157 targeted steps; actual assessed-head CI passes
 eleven contexts and 200 product steps, not the absent upgrade-record assertions.
-**Implement T082 is next** on the same draft PR; this review does not implement
-the fix, accept the feature or request merge.
+That review selected implement without accepting the feature or requesting merge.
+The [T082 increment](specs/003-storage-registry/implementation.md#final-review-remediation-t082)
+now emits correlated upgrade and failed-acquisition records with fixed guidance
+and truthful durability, without manufacturing a module result. The CLI projects
+allowlisted worker outcomes while continuing to discard raw child output.
+Both-provider captures cover commit, idempotent retry, rejected scopes,
+unsupported/corrupt registries and sanitized commit-boundary failures.
+All 82 tasks are evidenced. **Follow-up converge is next** on the same draft PR;
+historical review/convergence remain unchanged, and feature acceptance is separate.
 
 **Spec 002 is explicitly human-accepted and merged.**
 The [acceptance record](specs/002-platform-contracts/acceptance.md) preserves

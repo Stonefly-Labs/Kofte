@@ -12,7 +12,7 @@ public static class MaintenanceWorker
     public static async Task<int> ExecuteAsync(string[] args)
     {
         try { await RunAsync(args); return 0; }
-        catch (StorageException error) { return error.Code == StorageCode.Busy ? BusyExit : InvalidExit; }
+        catch (StorageException error) { return StorageMaintenanceProcess.FailureExitCode(error.Code); }
         catch (StorePathException error) { return error.Code == StorePathError.StoreBusy ? BusyExit : InvalidExit; }
         catch (BootstrapException) { throw; }
         catch { return UnavailableExit; }

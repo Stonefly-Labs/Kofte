@@ -50,16 +50,85 @@ internal static class StorageDiagnostics
 
     internal static StorageResult Failure(StorageCode code, StorageOperation operation, string provider,
         ModuleId? owner, string correlation, StorageDurability durability) =>
-        new StorageResult.Failure(code switch
+        new StorageResult.Failure(Outcome(code), operation, provider, owner, correlation, durability, Diagnostic(code));
+
+    private static StorageOutcome Outcome(StorageCode code) => code switch
+    {
+        StorageCode.Ready => StorageOutcome.Ready,
+        StorageCode.NoStorage => StorageOutcome.NoStorage,
+        StorageCode.Busy => StorageOutcome.Busy,
+        StorageCode.Incomplete => StorageOutcome.Incomplete,
+        StorageCode.ReconciliationRequired or StorageCode.Missing or StorageCode.Corrupt or
+            StorageCode.OwnerMismatch => StorageOutcome.ReconciliationRequired,
+        StorageCode.Conflict or StorageCode.TargetReserved or StorageCode.PathRejected or
+            StorageCode.RequestInvalid => StorageOutcome.Rejected,
+        _ => StorageOutcome.Failed
+    };
+
+    private static StorageCode FailureCode(Exception error, bool callerCancelled) => error switch
+    {
+        StorageException storage => storage.Code,
+        StorePathException path => path.Code switch
         {
-            StorageCode.Busy => StorageOutcome.Busy,
-            StorageCode.Incomplete => StorageOutcome.Incomplete,
-            StorageCode.ReconciliationRequired or StorageCode.Missing or StorageCode.Corrupt or
-                StorageCode.OwnerMismatch => StorageOutcome.ReconciliationRequired,
-            StorageCode.Conflict or StorageCode.TargetReserved or StorageCode.PathRejected or
-                StorageCode.RequestInvalid => StorageOutcome.Rejected,
-            _ => StorageOutcome.Failed
-        }, operation, provider, owner, correlation, durability, Diagnostic(code));
+            StorePathError.StorageMissing => StorageCode.Missing,
+            StorePathError.StoreBusy => StorageCode.Busy,
+            _ => StorageCode.PathRejected
+        },
+        OperationCanceledException => callerCancelled ? StorageCode.Cancelled : StorageCode.DeadlineExceeded,
+        PostgresException postgres => postgres.SqlState switch
+        {
+            PostgresErrorCodes.InsufficientPrivilege => StorageCode.PrivilegeDenied,
+            PostgresErrorCodes.UniqueViolation => StorageCode.Conflict,
+            PostgresErrorCodes.LockNotAvailable => StorageCode.Busy,
+            _ => StorageCode.Unavailable
+        },
+        SqliteException sqlite => sqlite.SqliteErrorCode switch
+        {
+            5 or 6 => StorageCode.Busy,
+            19 => StorageCode.Conflict,
+            11 or 26 => StorageCode.Corrupt,
+            _ => StorageCode.Unavailable
+        },
+        NpgsqlException { InnerException: TimeoutException } => StorageCode.DeadlineExceeded,
+        _ => StorageCode.Unavailable
+    };
+
+    internal static StorageCode MaintenanceFailure(StorageOperation operation, string provider,
+        Exception error, CancellationToken cancellation)
+    {
+        var code = FailureCode(error, cancellation.IsCancellationRequested);
+        using var trace = Traces.StartActivity("storage." + operation.ToString().ToLowerInvariant());
+        Record(operation, provider, null, trace?.TraceId.ToHexString() ?? ActivityTraceId.CreateRandom().ToHexString(),
+            Outcome(code), Diagnostic(code), StorageDurability.Unchanged, trace);
+        return code;
+    }
+
+    internal static async Task RunMaintenanceAsync(string provider, CancellationToken cancellation,
+        Func<OperationBudget, MutationEvidence, Task> action)
+    {
+        using var trace = Traces.StartActivity("storage.upgrade");
+        var correlation = trace?.TraceId.ToHexString() ?? ActivityTraceId.CreateRandom().ToHexString();
+        using var budget = new OperationBudget(OperationBudget.Register, cancellation);
+        var mutation = new MutationEvidence();
+        var code = StorageCode.Ready;
+        try
+        {
+            budget.Check();
+            await action(budget, mutation);
+        }
+        catch (Exception error)
+        {
+            code = FailureCode(error, budget.CallerCancelled);
+            if (error is StorageException) throw;
+            if (error is OperationCanceledException) throw new OperationCanceledException(budget.Token);
+            throw new StorageException(code);
+        }
+        finally
+        {
+            Record(StorageOperation.Upgrade, provider, null, correlation, Outcome(code), Diagnostic(code),
+                mutation.Durability, trace);
+        }
+    }
 
     internal static async Task<StorageResult> RunAsync(StorageOperation operation, string provider,
         ModuleId? owner, TimeSpan duration, CancellationToken cancellation,
@@ -75,72 +144,41 @@ internal static class StorageDiagnostics
             budget.Check();
             result = await action(budget, mutation, correlation);
         }
-        catch (StorageException error)
+        catch (Exception error)
         {
-            result = Failure(error.Code, operation, provider, owner, correlation, mutation.Durability);
-        }
-        catch (StorePathException error)
-        {
-            result = Failure(error.Code == StorePathError.StorageMissing ? StorageCode.Missing :
-                error.Code == StorePathError.StoreBusy ? StorageCode.Busy : StorageCode.PathRejected,
-                operation, provider, owner, correlation, mutation.Durability);
-        }
-        catch (OperationCanceledException)
-        {
-            result = Failure(budget.CallerCancelled ? StorageCode.Cancelled : StorageCode.DeadlineExceeded,
-                operation, provider, owner, correlation, mutation.Durability);
-        }
-        catch (PostgresException error)
-        {
-            var code = error.SqlState switch
-            {
-                PostgresErrorCodes.InsufficientPrivilege => StorageCode.PrivilegeDenied,
-                PostgresErrorCodes.UniqueViolation => StorageCode.Conflict,
-                PostgresErrorCodes.LockNotAvailable => StorageCode.Busy,
-                _ => StorageCode.Unavailable
-            };
-            result = Failure(code, operation, provider, owner, correlation, mutation.Durability);
-        }
-        catch (SqliteException error)
-        {
-            var code = error.SqliteErrorCode switch
-            {
-                5 or 6 => StorageCode.Busy,
-                19 => StorageCode.Conflict,
-                11 or 26 => StorageCode.Corrupt,
-                _ => StorageCode.Unavailable
-            };
-            result = Failure(code, operation, provider, owner, correlation, mutation.Durability);
-        }
-        catch (NpgsqlException error) when (error.InnerException is TimeoutException)
-        {
-            result = Failure(StorageCode.DeadlineExceeded, operation, provider, owner, correlation,
+            result = Failure(FailureCode(error, budget.CallerCancelled), operation, provider, owner, correlation,
                 mutation.Durability);
         }
-        catch (Exception)
-        {
-            result = Failure(StorageCode.Unavailable, operation, provider, owner, correlation, mutation.Durability);
-        }
+        Record(operation, provider, owner, correlation, result.Outcome, result.Diagnostics[0], result.Durability, trace);
+        return result;
+    }
+
+    private static void Record(StorageOperation operation, string provider, ModuleId? owner, string correlation,
+        StorageOutcome result, StorageDiagnostic diagnostic, StorageDurability durability, Activity? trace)
+    {
         var operationName = operation.ToString().ToLowerInvariant();
-        var outcome = result.Outcome.ToString().ToLowerInvariant();
+        var outcome = result.ToString().ToLowerInvariant();
         Operations.Add(1, new("operation", operationName), new("provider", provider), new("outcome", outcome));
         trace?.SetTag("storage.operation", operationName);
         trace?.SetTag("storage.provider", provider);
         trace?.SetTag("storage.outcome", outcome);
         trace?.SetTag("storage.module_id", owner?.Value);
-        trace?.SetTag("storage.code", result.Diagnostics[0].Code);
-        if (result is StorageResult.Failure) trace?.SetStatus(ActivityStatusCode.Error);
+        trace?.SetTag("storage.code", diagnostic.Code);
+        trace?.SetTag("storage.guidance", diagnostic.Guidance);
+        trace?.SetTag("storage.durability", durability.ToString().ToLowerInvariant());
+        if (result is not (StorageOutcome.Ready or StorageOutcome.NoStorage)) trace?.SetStatus(ActivityStatusCode.Error);
         Console.Error.WriteLine(JsonSerializer.Serialize(new
         {
-            eventCode = result.Diagnostics[0].Code,
+            eventCode = diagnostic.Code,
             component = "storage",
             operation = operationName,
             provider,
             outcome,
             moduleId = owner?.Value,
-            correlationId = correlation
+            correlationId = correlation,
+            guidance = diagnostic.Guidance,
+            durability = durability.ToString().ToLowerInvariant()
         }));
-        return result;
     }
 }
 

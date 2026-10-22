@@ -158,6 +158,21 @@ record through existing host telemetry conventions. This is observable current
 evidence, not the future centralized durable audit product. Public consumer
 stdout/stderr, worker output, span/log records and metrics all obey redaction.
 
+Explicit upgrade records use `operation: upgrade`, null module identity and the
+existing `storage_ready`/`ready` success vocabulary without constructing a
+module result or assignment. Logs and spans also carry fixed guidance and
+`unchanged`, `uncertain` or `committed` durability. A direct v0 commit is committed;
+a verified v1 retry is unchanged. Errors after a possible commit never claim
+rollback. Failed acquisition emits an `acquire` record; successful acquisition
+and disposal need no independent records.
+
+The supervised CLI retains its `registry_upgraded` success summary and emits a
+safe parent-side upgrade record. Only allowlisted worker exit identities cross
+that boundary; raw stdout/stderr remains drained, never forwarded. The parent
+conservatively records uncertain durability once the child may write, because
+its exit identity does not carry commit evidence. Its generated correlation
+identifies the parent record, not a forwarded child record or durable audit entry.
+
 ## Deadlines, retries and cancellation
 
 | Operation | Total budget | Nested limits |

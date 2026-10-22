@@ -11,6 +11,23 @@ public static class StorageMaintenanceProcess
     public const string AdmissionKey = "KOFTE_MAINTENANCE_WORKER_TOKEN";
     private const int BusyExit = 40, InvalidExit = 41;
 
+    internal static int FailureExitCode(StorageCode code) => code switch
+    {
+        StorageCode.Busy => BusyExit,
+        StorageCode.RequestInvalid => InvalidExit,
+        StorageCode.Unavailable or StorageCode.Ready or StorageCode.NoStorage => 42,
+        _ => 64 + (int)code
+    };
+
+    private static StorageCode FailureCode(int exitCode)
+    {
+        if (exitCode == BusyExit) return StorageCode.Busy;
+        if (exitCode == InvalidExit) return StorageCode.RequestInvalid;
+        var code = (StorageCode)(exitCode - 64);
+        return Enum.IsDefined(code) && code is not (StorageCode.Ready or StorageCode.NoStorage)
+            ? code : StorageCode.Unavailable;
+    }
+
     public static Task RunAsync(ProcessStartInfo start, CancellationToken cancellationToken = default,
         Func<StreamReader, CancellationToken, Task>? observeOutput = null)
     {
@@ -78,12 +95,7 @@ public static class StorageMaintenanceProcess
                 observing.Remove(completed);
             }
             if (process.ExitCode != 0)
-                throw new StorageException(process.ExitCode switch
-                {
-                    BusyExit => StorageCode.Busy,
-                    InvalidExit => StorageCode.RequestInvalid,
-                    _ => StorageCode.Unavailable
-                });
+                throw new StorageException(FailureCode(process.ExitCode));
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         { throw new StorageException(StorageCode.DeadlineExceeded); }

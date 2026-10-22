@@ -242,14 +242,18 @@ public static class Program
             using var record = JsonDocument.Parse(line);
             var value = record.RootElement;
             var names = value.EnumerateObject().Select(p => p.Name).ToArray();
-            if (names.Length != 7 || names.Distinct(StringComparer.Ordinal).Count() != 7 ||
-                names.Except(["eventCode", "component", "operation", "provider", "outcome", "moduleId", "correlationId"]).Any() ||
+            if (names.Length != 9 || names.Distinct(StringComparer.Ordinal).Count() != 9 ||
+                names.Except(["eventCode", "component", "operation", "provider", "outcome", "moduleId", "correlationId",
+                    "guidance", "durability"]).Any() ||
                 value.GetProperty("component").GetString() != "storage" ||
                 value.GetProperty("provider").GetString() != provider ||
                 !Regex.IsMatch(value.GetProperty("correlationId").GetString() ?? "", @"\A[0-9a-f]{32}\z") ||
                 value.GetProperty("operation").GetString() is not ("resolve" or "register" or "migrate" or "upgrade" or "recover" or "acquire") ||
                 value.GetProperty("outcome").GetString() is not ("ready" or "nostorage" or "busy" or
                     "rejected" or "incomplete" or "reconciliationrequired" or "failed") ||
+                value.GetProperty("guidance").GetString() is not ("retry_same_request" or "correct_configuration" or
+                    "inspect_preserved_target" or "restore_complete_set" or "upgrade_supported_binary") ||
+                value.GetProperty("durability").GetString() is not ("unchanged" or "committed" or "uncertain") ||
                 value.GetProperty("eventCode").GetString() is not ("storage_ready" or "storage_no_storage" or
                     "storage_busy" or "storage_conflict" or "storage_target_reserved" or "storage_path_rejected" or
                     "storage_owner_mismatch" or "storage_missing" or "storage_corrupt" or "storage_incomplete" or

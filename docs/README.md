@@ -201,8 +201,14 @@ complete evidence. R1/T081 and prior public F1/F2 are closed. Exactly T082 is
 appended unchecked for private bounded telemetry/CLI projection and real
 both-provider captures, preserving all 81 historical task bytes/markers, code,
 approved intent and earlier reports. No storage-isolation failure or new design
-decision is demonstrated. **Implement T082 is next** on this same draft PR;
-review does not implement the fix, accept the feature or request merge.
+decision is demonstrated. That review selected implement without accepting the feature.
+The [T082 implementation](../specs/003-storage-registry/implementation.md#final-review-remediation-t082)
+now emits private correlated upgrade/failed-acquisition records, fixed guidance
+and truthful durability; the CLI projects allowlisted worker outcomes without
+forwarding raw output. Both-provider capture and host cases cover success,
+idempotence and refused/uncertain upgrades. All 82 tasks are evidenced.
+**Follow-up converge is next** on the same draft PR; historical review and
+convergence remain unchanged, with human feature acceptance still separate.
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 

@@ -29,9 +29,7 @@ public sealed class StorageCompatibilityTests
             TestContext.Current.CancellationToken);
         Assert.Equal(0, upgraded.ExitCode);
         Assert.Contains("registry_upgraded", upgraded.Output);
-        using (var diagnostic = JsonDocument.Parse(upgraded.Output))
-            Assert.Matches(@"\A[0-9a-f]{32}\z",
-                diagnostic.RootElement.GetProperty("correlationId").GetString()!);
+        AssertUpgradeRecord(upgraded.Output, root.Path, "storage_ready", "ready", "retry_same_request");
         var installation = StorageInstallation.Sqlite(root.Path);
         await StorageReconciliation.ValidateStartupAsync(installation, TestContext.Current.CancellationToken);
         before = await File.ReadAllBytesAsync(bootstrap.DatabasePath, TestContext.Current.CancellationToken);
@@ -75,6 +73,54 @@ public sealed class StorageCompatibilityTests
         Assert.Equal(1, result.ExitCode);
         Assert.Contains("storage_invalid", result.Output);
         Assert.Equal(before, await File.ReadAllBytesAsync(store.DatabasePath, TestContext.Current.CancellationToken));
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task RefusedUpgradeProjectsSafeCauseWithoutForwardingWorkerOutput(bool unsupported)
+    {
+        using var root = new TempRoot();
+        var store = new SqlitePlatformStore(root.Path);
+        await store.InitializeAsync();
+        using (var connection = store.Open())
+        using (var command = connection.CreateCommand())
+        {
+            command.CommandText = unsupported ? "PRAGMA user_version=9" :
+                "CREATE TABLE private_payload (value TEXT); INSERT INTO private_payload VALUES ('maintenance-credential-canary')";
+            command.ExecuteNonQuery();
+        }
+        var token = TestContext.Current.CancellationToken;
+        var before = await File.ReadAllBytesAsync(store.DatabasePath, token);
+        var result = await StartupFixture.RunExitAsync(root.Path, ["--registry", "upgrade"], token);
+        Assert.Equal(1, result.ExitCode);
+        AssertUpgradeRecord(result.Output, root.Path,
+            unsupported ? "storage_version_unsupported" : "storage_corrupt",
+            unsupported ? "failed" : "reconciliationrequired",
+            unsupported ? "upgrade_supported_binary" : "restore_complete_set");
+        Assert.DoesNotContain("registry_upgraded", result.Output);
+        Assert.Equal(before, await File.ReadAllBytesAsync(store.DatabasePath, token));
+    }
+
+    internal static void AssertUpgradeRecord(string output, string root, string code, string outcome, string guidance,
+        string provider = "sqlite")
+    {
+        var records = output.Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .Select(line => JsonSerializer.Deserialize<JsonElement>(line)).ToArray();
+        var record = Assert.Single(records, item =>
+            item.TryGetProperty("operation", out var operation) && operation.GetString() == "upgrade");
+        Assert.Equal("storage", record.GetProperty("component").GetString());
+        Assert.Equal(provider, record.GetProperty("provider").GetString());
+        Assert.Equal(code, record.GetProperty("eventCode").GetString());
+        Assert.Equal(outcome, record.GetProperty("outcome").GetString());
+        Assert.Equal(guidance, record.GetProperty("guidance").GetString());
+        Assert.Equal("uncertain", record.GetProperty("durability").GetString());
+        Assert.Equal(JsonValueKind.Null, record.GetProperty("moduleId").ValueKind);
+        Assert.Matches(@"\A[0-9a-f]{32}\z", record.GetProperty("correlationId").GetString()!);
+        Assert.DoesNotContain(root, output);
+        Assert.DoesNotContain("maintenance-credential", output);
+        Assert.DoesNotContain("Exception", output);
+        Assert.DoesNotContain("CREATE TABLE", output);
     }
 
     [Fact]
