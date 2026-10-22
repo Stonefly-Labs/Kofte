@@ -177,15 +177,26 @@ class VerifyTests(unittest.TestCase):
         ])
         name = ("Kofte.Storage.IntegrationTests.Registry.PostgresRegistrationConcurrencyTests."
                 "TwentyRoundsOfTenSeparateProcessesKeepActualOwnershipUnique")
-        output = (f'failed {name}(same: "credential-canary") (1s)\n'
-                  'StorageException : DeadlineExceeded\n/private/credential-canary')
+        owner, method = name.rsplit(".", 1)
+        xml = (f'<assemblies><test type="{owner}" method="{method}" result="Fail" '
+               'name="credential-canary"><failure><message>StorageException : DeadlineExceeded '
+               '/private/credential-canary</message></failure></test>'
+               '<test type="credential-canary" method="unknown" result="Fail"/></assemblies>')
+        script = (
+            "import sys; from pathlib import Path; "
+            "directory=Path(sys.argv[sys.argv.index('--results-directory')+1]); "
+            f"(directory/'storage.xml').write_text({xml!r}); "
+            "print('/private/credential-canary'); sys.exit(2)"
+        )
         with self.assertRaisesRegex(verify.VerificationError, "command_failed"):
             runner.command("storage-integration-postgres", [
-                "python3", "-c", f"import sys; print({output!r}); sys.exit(2)",
+                "python3", "-c", script,
             ], diagnostics=diagnostic)
         step = runner.report.data["steps"][-1]
         self.assertEqual([name], step["failedStorageTests"])
         self.assertEqual(["DeadlineExceeded"], step["storageFailureCodes"])
+        self.assertEqual(["--results-directory", "<private-argument>"], step["command"][-2:])
+        self.assertFalse(list((self.root / "artifacts/verification/.private").rglob("storage.xml")))
         self.assertNotIn("credential", runner.report.path.read_text())
         self.assertEqual(set(), diagnostic.failed_tests)
         self.assertEqual(set(), diagnostic.storage_codes)

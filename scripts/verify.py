@@ -410,11 +410,10 @@ class Runner:
 
     def command(self, name, command, *, environment=None, timeout=900, health_check=None, capture=None,
                 diagnostics=None):
-        def execute(step):
-            diagnostic = diagnostics or command_diagnostics(command)
+        def run(step, diagnostic, actual_command, storage_report=None):
             processes = OwnedProcesses(self.root, environment or self.environment, capture=capture or diagnostic)
             try:
-                child = processes.start(command, stdin=subprocess.DEVNULL)
+                child = processes.start(actual_command, stdin=subprocess.DEVNULL)
                 try:
                     if health_check is None:
                         step["exitCode"] = child.wait(timeout=timeout)
@@ -441,10 +440,29 @@ class Runner:
                 finally:
                     if diagnostic:
                         if step["exitCode"] not in (None, 0):
+                            if storage_report is not None:
+                                diagnostic.read_storage_report(storage_report)
                             step.update(diagnostic.safe_fields())
                         diagnostic.clear()
             if diagnostic:
                 diagnostic.failures.check()
+
+        def execute(step):
+            diagnostic = diagnostics or command_diagnostics(command)
+            if diagnostic and diagnostic.kind == "storage":
+                with private_root(self.root) as directory:
+                    step["command"] = safe_command([
+                        *command, "--report-xunit-xml",
+                        "--report-xunit-xml-filename", "storage.xml",
+                        "--results-directory", "<private-results>",
+                    ])
+                    run(step, diagnostic, [
+                        *command, "--report-xunit-xml",
+                        "--report-xunit-xml-filename", "storage.xml",
+                        "--results-directory", str(directory),
+                    ], directory / "storage.xml")
+            else:
+                run(step, diagnostic, command)
         self.operation(name, execute, command)
 
     def versions(self):

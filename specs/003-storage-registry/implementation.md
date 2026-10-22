@@ -1,6 +1,6 @@
 # Implementation: 003 - Storage Registry and Module Isolation
 
-**Stage:** Implement running; T001-T075 evidenced, complete local gate and CI in progress.
+**Stage:** Implement running; T001-T075 evidenced, complete local gate passed, CI diagnosis in progress.
 **Branch / PR:** `feature/003-storage-registry` /
 [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 **Started:** 2026-10-22 (UTC).
@@ -171,7 +171,7 @@ below must be populated only from actual reruns.
 | Exact command / selection | Result |
 | --- | --- |
 | `python3 scripts/check_repository.py` | Passed |
-| `python3 -m unittest discover -s scripts/tests -v` | Passed, 107 tests |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed, 109 tests at diagnostic revision `933cefa` |
 | `python3 scripts/check_dependencies.py` | Passed, 403 npm / 78 NuGet identities |
 | `git diff --check` | Passed |
 | `dotnet format Kofte.slnx --no-restore --verbosity quiet` | Passed |
@@ -187,13 +187,19 @@ below must be populated only from actual reruns.
 | `python3 scripts/verify.py --suite quality` | Passed, 19 named steps, including locked restores/format/build/lint/types/dependencies |
 | `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*SqliteStorageGuideTests' --minimum-expected-tests 1` | Passed, 1/1 all-corpus guide, zero skipped |
 | `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*PostgresStorageGuideTests' --minimum-expected-tests 1` | Passed, 1/1 all-corpus guide, zero skipped |
-| `python3 scripts/verify.py --suite all --disposable-postgres` | Running |
+| `python3 scripts/verify.py --suite all --disposable-postgres` | Passed, all ten suite reports / 200 steps, `completeGate: true` |
 | Assessed-head CI at `b787a48` | 9/11 contexts passed; storage PostgreSQL integration failed, also failing the failure-propagation baseline. T076 remains open. |
 
 Existing named suites retain manifest, native host health/OpenAPI/HTTP,
 web/browser/axe, startup, valid-v0 recovery, privacy and failure-propagation
 steps alongside required storage inventory/provider/scenario checks.
-No missing provider or zero-test run is skipped into success.
+No missing provider or zero-test run is skipped into success. The complete local
+gate ran from 14:00:35 to 14:28:08 UTC on 2026-10-22: quality 19, unit 11,
+SQLite integration 7, PostgreSQL integration 9, recovery 38, contract 37,
+browser 16, privacy 36, startup 9 and failure-propagation 18 steps. Its first
+three reports record parent `320d565`; later reports record `b787a48`.
+The product source was unchanged across that publication. Only the separately
+tested Python failure-diagnostic extension was subsequently edited.
 
 The first assessed implementation CI run is
 [39792182400](https://github.com/Stonefly-Labs/Kofte/actions/runs/39792182400),
@@ -206,6 +212,17 @@ retains only repository-source-allowlisted test symbols and fixed storage codes,
 never theory arguments, raw exceptions, paths or payloads. Focused Python
 regressions and the full 109-test Python suite pass. This improves evidence,
 not the underlying failure or the task's passing status; CI diagnosis continues.
+Console-only extraction at diagnostic head `933cefa` did not retain a native
+failure identity. Native storage commands now also generate the installed
+xUnit XML report inside a fresh private root, extract only source-allowlisted
+failed type/method pairs and fixed codes, then remove the raw report. The
+reporting flags are recorded with the private results path redacted.
+Missing, invalid, oversized or unrecognized diagnostic reports expose fixed
+diagnostic codes without replacing the original failing command. A real
+three-case deliberately unavailable-provider run proved failure preservation,
+exact source identity extraction and private report cleanup; it is not a
+passing product test. The isolated failure-propagation wrapper revalidates
+the same allowlists before carrying those fields into its safe parent report.
 
 ## Requirement, scenario, task and principle mapping
 

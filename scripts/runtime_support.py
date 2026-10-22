@@ -7,6 +7,7 @@ import re
 import stat
 import threading
 import time
+import xml.etree.ElementTree as ET
 
 
 class RuntimeFailure(Exception):
@@ -33,6 +34,7 @@ class Failures:
 
 
 class CommandDiagnostics:
+    storage_report_codes = frozenset(("unavailable", "invalid", "too_large", "no_known_failure"))
     locations = re.compile(
         rb"(?<![A-Za-z0-9_.-])("
         rb"accessibility\.spec\.ts|bootstrap\.spec\.ts|recovery\.spec\.ts|"
@@ -49,6 +51,7 @@ class CommandDiagnostics:
         self.failures = Failures()
         self.sources, self.dependency_codes = set(), set()
         self.failed_tests, self.storage_codes = set(), set()
+        self.storage_report_code = None
         self.lock = threading.Lock()
         self.closed = False
 
@@ -101,6 +104,34 @@ class CommandDiagnostics:
             except Exception:
                 self.failures.fail("command_diagnostic_capture_failed")
 
+    def read_storage_report(self, path):
+        try:
+            with path.open("rb") as stream:
+                content = stream.read(16 * 1024 * 1024 + 1)
+            if len(content) > 16 * 1024 * 1024:
+                self.storage_report_code = "too_large"
+                return
+            report = ET.fromstring(content)
+        except OSError:
+            self.storage_report_code = "unavailable"
+            return
+        except ET.ParseError:
+            self.storage_report_code = "invalid"
+            return
+        for test in report.iter("test"):
+            name = test.get("type", "") + "." + test.get("method", "")
+            if test.get("result") != "Fail" or name not in self.tests:
+                continue
+            if len(self.failed_tests) < 32:
+                self.failed_tests.add(name)
+            for message in test.findall("failure/message"):
+                text = message.text or ""
+                if text.strip() in self.codes:
+                    self.storage_codes.add(text.strip())
+                self.inspect(text.encode())
+        if not self.failed_tests:
+            self.storage_report_code = "no_known_failure"
+
     def safe_fields(self):
         with self.lock:
             if self.kind == "browser" and self.sources:
@@ -111,6 +142,7 @@ class CommandDiagnostics:
                 return {
                     **({"failedStorageTests": sorted(self.failed_tests)} if self.failed_tests else {}),
                     **({"storageFailureCodes": sorted(self.storage_codes)} if self.storage_codes else {}),
+                    **({"storageDiagnosticCode": self.storage_report_code} if self.storage_report_code else {}),
                 }
             return {}
 
@@ -121,6 +153,7 @@ class CommandDiagnostics:
             self.dependency_codes.clear()
             self.failed_tests.clear()
             self.storage_codes.clear()
+            self.storage_report_code = None
 
 
 class OutputCapture:
