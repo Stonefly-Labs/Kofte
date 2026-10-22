@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 003 / specify, clarify, plan and checklist are complete on
+**Current checkpoint:** 003 / specify, clarify, plan, checklist and tasks are complete on
 `feature/003-storage-registry`, originally created from updated `origin/main`,
 and the same [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 The exact inventory prompt and resolved project spec template produced
@@ -67,9 +67,29 @@ not approve it. Dependency graph/license/provenance/native-asset/lock review
 and actual both-provider concurrency, migration, interruption, deadline,
 privacy and executable-recovery proof remain implementation gates.
 Spec, plan, research, data model, contracts, future guide and the 16/16 author
-checklist are unchanged by this stage. **Tasks is next** on the same feature
-branch/draft PR; no task list, product code or feature acceptance is created.
-Do not merge between stages.
+checklist were unchanged by checklist evaluation.
+
+The [tasks stage](../../specs/003-storage-registry/tasks.md) now provides
+**78 unstarted, path-specific tasks**: six setup, eight foundational, 13 US1,
+eight US2, twelve US3, sixteen US4, seven US5 and eight final evidence tasks.
+Each has explicit prerequisites and requirement/principle mapping; all five
+stories, 16 functional requirements, six outcomes and 18 scenarios have
+implementation and validation coverage. Twenty-four parallel markers apply
+only after dependencies and on distinct files/owned fixtures.
+The list preserves real UNIQUE/CHECK and independent-process race evidence,
+immutable retry/no-storage/restarts, assigned EF model/history/migration and
+negative-boundary checks, every durable interruption/deadline, stopped
+complete-set restore, legacy refusal, captured privacy and executable public
+examples. Existing module-free host/manifest/HTTP/web/browser/full local/CI
+checks remain mandatory. US1 is the first internal increment, not accepted
+003 or MVP completion.
+Task generation used the explicit recorded directory and resolved project
+override. No before/after tasks hooks are configured; every checkbox is
+unchecked, and requirements/design/checklists remain unchanged. No product
+code, dependency adoption, runtime proof, analysis report, ADR approval or
+feature acceptance was created. **Analyze is next** on this same branch/draft
+PR. Passing analysis and explicit human ADR 0005 approval are required before
+implementation. Do not merge between stages.
 
 **Completed prerequisite:** 002 / explicitly human-accepted on the original branch
 and PR #5. After the passing review and numbered-feature acceptance handoff, the

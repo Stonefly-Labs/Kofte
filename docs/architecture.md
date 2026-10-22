@@ -159,8 +159,13 @@ now passes all 36 requirements-quality criteria under explicit reviewer
 authorization, with per-item evidence and no blocking gap or constitutional
 conflict. This does not approve ADR 0005 or prove the design: human ADR approval,
 dependency adoption and actual both-provider proof remain future gates.
-Tasks is next on the same feature branch/draft PR; no architecture change is
-made by checklist evaluation.
+The [78-task list](../specs/003-storage-registry/tasks.md) now orders all five
+stories with explicit prerequisites and required both-provider evidence:
+durable allocation, process races/constraints, assigned models/history/
+migrations, interruption/recovery and safe diagnostics. All tasks are unchecked.
+Analyze is next on the same feature branch/draft PR; passing analysis and
+explicit ADR 0005 approval gate implementation. Task generation adopts no
+dependency, changes no architecture decision and proves no runtime behavior.
 The broader stack/module/deployment proposals below remain future work, not
 installed features or proof of module isolation, production readiness or acceptance.
 

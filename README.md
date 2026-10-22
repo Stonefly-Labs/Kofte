@@ -68,7 +68,7 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**Spec 003 / specify, clarify, plan and checklist are complete; tasks is next.** The
+**Spec 003 / specify, clarify, plan, checklist and tasks are complete; analyze is next.** The
 [draft specification](specs/003-storage-registry/spec.md) and
 [author checklist](specs/003-storage-registry/checklists/requirements.md)
 define durable module storage ownership, concurrent collision-safe registration,
@@ -95,8 +95,14 @@ generated unchecked, then assessed at the reviewer's explicit request:
 **36/36 criteria satisfied** with per-item evidence and no blocking
 requirements-quality gap. ADR 0005's design choices still need human approval
 before implementation; dependency adoption and actual both-provider proof
-remain later gates. No storage implementation, task list, runtime proof or
-human feature acceptance is claimed.
+remain later gates. The [78-task implementation list](specs/003-storage-registry/tasks.md)
+now maps all five stories, 16 requirements, six outcomes and 18 scenarios to
+path-specific work, explicit dependencies and required evidence. It preserves
+real constraints/process races, assigned EF boundaries, crash/deadline/privacy
+proof, executable full-set recovery and existing bootstrap compatibility.
+All tasks are unchecked; US1 is the first internal increment, not feature or
+MVP completion. No implementation, dependency adoption, runtime proof, ADR
+approval or human feature acceptance is claimed.
 
 **Spec 002 is explicitly human-accepted and merged.**
 The [acceptance record](specs/002-platform-contracts/acceptance.md) preserves

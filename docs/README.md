@@ -181,4 +181,16 @@ with per-item evidence; no blocking gap or constitutional conflict remains.
 Storage/permission boundaries, migrations/recovery, budgets/privacy, real-provider
 acceptance and explicit MCP/UI applicability are covered. Proposed ADR 0005
 still needs human approval before implementation; dependency adoption and
-actual runtime proof remain later gates. Tasks is next, not executed here.
+actual runtime proof remain later gates.
+
+**003 / tasks is complete** on the same branch/draft PR.
+The [78-task list](../specs/003-storage-registry/tasks.md) contains six setup,
+eight foundational, 13 US1, eight US2, twelve US3, sixteen US4, seven US5 and
+eight cross-cutting evidence tasks, all unchecked. Explicit dependencies and
+24 parallel markers preserve all 16 requirements, six outcomes and 18 scenarios,
+including real uniqueness/process races, assigned EF models/history/migrations,
+crash/deadline/privacy observations and executable complete-set recovery.
+US1 is the smallest useful internal increment, not full feature/MVP completion.
+Analyze is next; passing analysis and explicit ADR 0005 approval gate
+implementation. No product code, package adoption, runtime proof, later-stage
+report or human feature acceptance is created by tasks generation.

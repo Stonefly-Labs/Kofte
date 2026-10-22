@@ -45,10 +45,14 @@ explicit bootstrap upgrade, assigned EF migrations and stopped full-set recovery
 it is not human-approved. The
 [quality checklist](../../specs/003-storage-registry/checklists/quality.md) now
 satisfies all 36 requirements-quality criteria after explicit reviewer
-authorization, with no blocking gap. Tasks is next on the same draft PR.
+authorization, with no blocking gap. The
+[78-task list](../../specs/003-storage-registry/tasks.md) now defines the
+unstarted work and actual evidence obligations for all five stories.
+Analyze is next on the same draft PR; passing analysis and explicit ADR 0005
+approval are required before implementation.
 ADR approval, dependency adoption and actual provider proof remain later gates.
 No registry/module storage, new command or changed startup/recovery behavior
-is implemented by this checklist stage.
+is implemented by this tasks stage.
 Spec 002 timing now uses an available supported workstation/CI runner with
 actual metadata, not a fixed Ubuntu/CPU/RAM profile, per the human's ADR amendment.
 The subsequent author-guide amendment removes the manual timed exercise and

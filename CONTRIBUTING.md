@@ -54,10 +54,17 @@ satisfies 36/36 requirements-quality criteria after explicit reviewer
 authorization, with per-item evidence and no blocking gap. ADR 0005 still needs
 human approval before implementation; dependency adoption and actual provider
 proof are not completed by checklist review.
-Tasks is next on `feature/003-storage-registry` and
+The [78-task implementation list](specs/003-storage-registry/tasks.md) now
+maps all five stories, 16 requirements, six outcomes and 18 scenarios to
+explicit dependencies and path-specific implementation/validation. Real
+provider constraints/process races, assigned EF boundaries, interruption,
+deadlines/privacy, executable recovery and bootstrap regressions remain
+mandatory evidence. All tasks are unstarted; US1 is an internal increment,
+not full feature acceptance. Analyze is next on `feature/003-storage-registry` and
 [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
-No module storage, implementation task list or feature acceptance is introduced
-by this checklist checkpoint.
+Passing analysis and explicit human ADR 0005 approval are prerequisites to
+implementation. No module storage, dependency adoption, runtime evidence or
+feature acceptance is introduced by this tasks checkpoint.
 See the [current local guide](docs/development/local-development.md).
 
 ## Prerequisites
