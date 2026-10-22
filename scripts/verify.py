@@ -224,6 +224,26 @@ def command_diagnostics(command):
         ["npm", "run", "dependencies:check"], ["python3", "scripts/check_dependencies.py"],
     ):
         return runtime_support.CommandDiagnostics("dependency", check_dependencies.FAILURE_CODES)
+    if list(command[:4]) == ["dotnet", "test", "--project", STORAGE_INTEGRATION]:
+        tests = set()
+        for path in (ROOT / STORAGE_INTEGRATION).rglob("*.cs"):
+            if {"bin", "obj"}.intersection(path.relative_to(ROOT).parts):
+                continue
+            source = path.read_text()
+            namespace = re.search(r"^namespace (Kofte\.Storage\.IntegrationTests(?:\.[A-Za-z0-9_]+)*);",
+                                  source, re.MULTILINE)
+            if namespace:
+                classes = re.findall(r"public (?:(?:abstract|sealed|partial|static) )*class ([A-Za-z0-9_]+)", source)
+                methods = re.findall(r"public (?:async )?(?:Task(?:<[^<>]+>)?|void) ([A-Za-z0-9_]+)\(", source)
+                tests.update(f"{namespace[1]}.{owner}.{method}" for owner in classes for method in methods)
+        codes = (
+            "Busy", "Conflict", "TargetReserved", "PathRejected", "OwnerMismatch", "Missing", "Corrupt",
+            "Incomplete", "ReconciliationRequired", "VersionUnsupported", "PrivilegeDenied",
+            "Unavailable", "DeadlineExceeded", "Cancelled", "RequestInvalid",
+        )
+        return runtime_support.CommandDiagnostics("storage", (
+            *codes, *("storage_" + re.sub(r"(?<!^)(?=[A-Z])", "_", code).lower() for code in codes),
+        ), tests)
     return None
 
 

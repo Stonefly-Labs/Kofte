@@ -4,8 +4,9 @@
 **Branch / PR:** `feature/003-storage-registry` /
 [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 **Started:** 2026-10-22 (UTC).
-**Baseline revision:** `320d565d14698e1aac98ac25865bd414dfe7305a`;
-the resumed changes are not yet committed.
+**Implementation revision:** `b787a48dd8d218b85b217318cfdacdb0fb1e0ad9`.
+Earlier commands began on the matching resumed worktree before that commit;
+their recorded parent HEAD is `320d565d14698e1aac98ac25865bd414dfe7305a`.
 
 ## Entry gates and approval
 
@@ -187,12 +188,24 @@ below must be populated only from actual reruns.
 | `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*SqliteStorageGuideTests' --minimum-expected-tests 1` | Passed, 1/1 all-corpus guide, zero skipped |
 | `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*PostgresStorageGuideTests' --minimum-expected-tests 1` | Passed, 1/1 all-corpus guide, zero skipped |
 | `python3 scripts/verify.py --suite all --disposable-postgres` | Running |
-| Assessed-head CI | Pending publication; prior-head green contexts are not evidence for these changes |
+| Assessed-head CI at `b787a48` | 9/11 contexts passed; storage PostgreSQL integration failed, also failing the failure-propagation baseline. T076 remains open. |
 
 Existing named suites retain manifest, native host health/OpenAPI/HTTP,
 web/browser/axe, startup, valid-v0 recovery, privacy and failure-propagation
 steps alongside required storage inventory/provider/scenario checks.
 No missing provider or zero-test run is skipped into success.
+
+The first assessed implementation CI run is
+[39792182400](https://github.com/Stonefly-Labs/Kofte/actions/runs/39792182400),
+with [repository checks](https://github.com/Stonefly-Labs/Kofte/actions/runs/39792182371)
+passing. Its checkout merge revision was
+`818895dc3400615d8756e1c26a89c680f800a2e9`. Both failing contexts reached the
+same storage PostgreSQL test command; the existing wrapper discarded the native
+failure identity along with private output. A scoped diagnostic extension now
+retains only repository-source-allowlisted test symbols and fixed storage codes,
+never theory arguments, raw exceptions, paths or payloads. Focused Python
+regressions and the full 109-test Python suite pass. This improves evidence,
+not the underlying failure or the task's passing status; CI diagnosis continues.
 
 ## Requirement, scenario, task and principle mapping
 

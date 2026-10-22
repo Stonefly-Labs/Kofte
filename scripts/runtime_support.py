@@ -40,10 +40,15 @@ class CommandDiagnostics:
         rb"([1-9][0-9]{0,8}):([1-9][0-9]{0,8})(?![0-9])",
     )
 
-    def __init__(self, kind, codes=()):
+    storage_test = re.compile(rb"^\s*failed (Kofte\.Storage\.IntegrationTests\.[A-Za-z0-9_.]{1,240})(?=[( ])")
+    storage_code = re.compile(rb"\b(?:StorageException|XunitException)\s*:\s*([A-Za-z_]{1,64})\b")
+
+    def __init__(self, kind, codes=(), tests=()):
         self.kind, self.codes = kind, frozenset(codes)
+        self.tests = frozenset(tests)
         self.failures = Failures()
         self.sources, self.dependency_codes = set(), set()
+        self.failed_tests, self.storage_codes = set(), set()
         self.lock = threading.Lock()
         self.closed = False
 
@@ -66,6 +71,16 @@ class CommandDiagnostics:
                 with self.lock:
                     if not self.closed and len(self.dependency_codes) < 2:
                         self.dependency_codes.add(event["eventCode"])
+        elif self.kind == "storage":
+            test = self.storage_test.match(line)
+            code = self.storage_code.search(line)
+            with self.lock:
+                if self.closed:
+                    return
+                if test and test[1].decode("ascii") in self.tests and len(self.failed_tests) < 32:
+                    self.failed_tests.add(test[1].decode("ascii"))
+                if code and code[1].decode("ascii") in self.codes:
+                    self.storage_codes.add(code[1].decode("ascii"))
 
     def read(self, stream):
         pending = b""
@@ -92,6 +107,11 @@ class CommandDiagnostics:
                 return {"sourceLocations": sorted(self.sources)}
             if self.kind == "dependency" and len(self.dependency_codes) == 1:
                 return {"dependencyFailureCode": next(iter(self.dependency_codes))}
+            if self.kind == "storage":
+                return {
+                    **({"failedStorageTests": sorted(self.failed_tests)} if self.failed_tests else {}),
+                    **({"storageFailureCodes": sorted(self.storage_codes)} if self.storage_codes else {}),
+                }
             return {}
 
     def clear(self):
@@ -99,6 +119,8 @@ class CommandDiagnostics:
             self.closed = True
             self.sources.clear()
             self.dependency_codes.clear()
+            self.failed_tests.clear()
+            self.storage_codes.clear()
 
 
 class OutputCapture:

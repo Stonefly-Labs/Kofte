@@ -170,6 +170,26 @@ class VerifyTests(unittest.TestCase):
         self.assertNotIn("/private/layout", report.path.read_text())
         self.assertEqual(set(), diagnostic.dependency_codes)
 
+    def test_failed_storage_command_retains_only_source_known_symbols_and_fixed_codes(self):
+        runner = verify.Runner(self.root, self.report("integration"), {})
+        diagnostic = verify.command_diagnostics([
+            "dotnet", "test", "--project", verify.STORAGE_INTEGRATION,
+        ])
+        name = ("Kofte.Storage.IntegrationTests.Registry.PostgresRegistrationConcurrencyTests."
+                "TwentyRoundsOfTenSeparateProcessesKeepActualOwnershipUnique")
+        output = (f'failed {name}(same: "credential-canary") (1s)\n'
+                  'StorageException : DeadlineExceeded\n/private/credential-canary')
+        with self.assertRaisesRegex(verify.VerificationError, "command_failed"):
+            runner.command("storage-integration-postgres", [
+                "python3", "-c", f"import sys; print({output!r}); sys.exit(2)",
+            ], diagnostics=diagnostic)
+        step = runner.report.data["steps"][-1]
+        self.assertEqual([name], step["failedStorageTests"])
+        self.assertEqual(["DeadlineExceeded"], step["storageFailureCodes"])
+        self.assertNotIn("credential", runner.report.path.read_text())
+        self.assertEqual(set(), diagnostic.failed_tests)
+        self.assertEqual(set(), diagnostic.storage_codes)
+
     def test_successful_browser_command_never_publishes_failure_diagnostics(self):
         report = self.report("browser")
         runner = verify.Runner(self.root, report, {})

@@ -190,6 +190,22 @@ class RuntimeSupportTests(unittest.TestCase):
         diagnostic.clear()
         self.assertEqual({}, diagnostic.safe_fields())
 
+    def test_storage_diagnostics_keep_only_known_symbols_and_codes_not_arguments_or_exceptions(self):
+        name = "Kofte.Storage.IntegrationTests.Registry.PostgresRegistrationConcurrencyTests.KnownCase"
+        diagnostic = support.CommandDiagnostics("storage", ["Busy", "storage_busy"], [name])
+        diagnostic.read(io.BytesIO((
+            f"failed {name}(owner: \"credential-canary\") (3s)\n"
+            "failed Kofte.Storage.IntegrationTests.Registry.credential_canary.Unknown (1s)\n"
+            "StorageException : Busy\nXunitException : storage_busy\nStorageException : credentialCanary\n"
+            "/private/credential-canary Exception stack and arbitrary provider data\n"
+        ).encode()))
+        self.assertEqual({
+            "failedStorageTests": [name], "storageFailureCodes": ["Busy", "storage_busy"],
+        }, diagnostic.safe_fields())
+        self.assertNotIn("credential", json.dumps(vars(diagnostic), default=str))
+        diagnostic.clear()
+        self.assertEqual({}, diagnostic.safe_fields())
+
     def test_runtime_capture_overflow_and_reader_failure_fail_closed(self):
         capture = support.OutputCapture(self.failures, [], limit=3)
         capture.read(io.BytesIO(b"oversized output"))
