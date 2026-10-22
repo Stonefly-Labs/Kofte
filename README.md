@@ -68,8 +68,8 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**Spec 003 / converge completed with gaps; implement is next** on its original
-feature branch. The preceding implementation checkpoint followed completed
+**Spec 003 / implement closes T079-T080; follow-up converge is next** on its original
+feature branch. The initial implementation checkpoint followed completed
 specify through analyze and explicit human approval of
 [ADR 0005](docs/adr/0005-module-storage-ownership.md).
 The [specification](specs/003-storage-registry/spec.md), [plan](specs/003-storage-registry/plan.md)
@@ -101,15 +101,19 @@ for exact revisions, commands, results and supported limits, and the
 and executable examples. Normal serving remains module-free; storage is not
 a new endpoint, module loader or authorization bypass. Work stays on
 `feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
-The subsequent [convergence assessment](specs/003-storage-registry/convergence.md)
-finds **two HIGH partial public-example gaps**: `same-id-retry` does not execute
-its promised three process restarts with retained data, and `collision` covers
-an unowned occupied target rather than the prescribed distinct-registered-ID
-conflict. Integration tests cover the core restart/collision behavior; no
-storage-engine defect is demonstrated. Convergence appends **T079-T080** only,
-preserving all 78 original tasks and product/test code. **Implement is next**
-on this same branch/draft PR, then a separate follow-up convergence, final
-review and explicit numbered-feature acceptance. No intermediate merge is requested.
+The first [convergence assessment](specs/003-storage-registry/convergence.md)
+identified two HIGH partial public-example gaps and appended **T079-T080**.
+The [remediation increment](specs/003-storage-registry/implementation.md#convergence-remediation-t079-t080)
+now makes `same-id-retry` release maintenance and launch three fresh processes,
+each re-registering changed metadata and verifying two exact assignments and
+retained sentinels. `collision` now forces a second distinct ID against a
+registered owner's candidate, verifies the real UNIQUE rejection and unchanged
+assignment/data/inventory, and retains the separate unowned-target refusal.
+Standalone and `all` harnesses require these observations, not positive counts
+alone. All 80 tasks are evidenced; no runtime storage rule or dependency changes.
+**Follow-up convergence is next** on this same draft PR, then final review and
+explicit numbered-feature acceptance. The earlier gaps report remains historical;
+this implementation does not itself re-run convergence or request a merge.
 
 **Spec 002 is explicitly human-accepted and merged.**
 The [acceptance record](specs/002-platform-contracts/acceptance.md) preserves

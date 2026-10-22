@@ -16,6 +16,23 @@ public abstract class RegistrationContractTests
         await using var scope = await StorageProviderScope.CreateAsync(Provider, TestContext.Current.CancellationToken);
         var result = await StorageConsumerHarness.RunAsync(scope, scenario, TestContext.Current.CancellationToken);
         Assert.True(result.Assertions >= 2);
+        if (scenario == "same-id-retry")
+        {
+            var observed = result.Observations[scenario];
+            Assert.Equal(3, observed.ProcessRestarts);
+            Assert.Equal(6, observed.RetainedAssignments);
+            Assert.Equal(6, observed.RetainedSentinels);
+        }
+        if (scenario == "collision")
+        {
+            var observed = result.Observations[scenario];
+            Assert.Equal(1, observed.RegisteredOwnerConflicts);
+            Assert.Equal(1, observed.RetainedAssignments);
+            Assert.Equal(1, observed.RetainedSentinels);
+            Assert.Equal(1, observed.PreservedInventories);
+            Assert.Equal(1, observed.UnallocatedContenders);
+            Assert.Equal(1, observed.UnownedTargetsPreserved);
+        }
     }
 }
 

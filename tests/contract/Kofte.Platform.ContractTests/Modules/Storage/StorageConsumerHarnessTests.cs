@@ -64,7 +64,8 @@ public sealed class StorageConsumerHarnessTests
             scenario,
             status,
             assertions,
-            scenarios = new Dictionary<string, int> { ["clean-install"] = assertions }
+            scenarios = new Dictionary<string, int> { ["clean-install"] = assertions },
+            observations = new { }
         });
         Assert.Throws<InvalidOperationException>(() =>
             StorageConsumerHarness.RequireSuccess(new ProcessOutput(exit, json, stderr), "sqlite", "clean-install"));
@@ -98,11 +99,56 @@ public sealed class StorageConsumerHarnessTests
             scenario = "all",
             status = "passed",
             assertions = StorageScenarioCatalog.Scenarios.Count + (fault == "sum" ? 1 : 0),
-            scenarios = cases
+            scenarios = cases,
+            observations = new Dictionary<string, StorageExampleEvidence>
+            {
+                ["same-id-retry"] = new(3, 6, 6, 0, 0, 0, 0),
+                ["collision"] = new(0, 1, 1, 1, 1, 1, 1)
+            }
         });
         if (fault == "duplicate")
             json = json.Replace("\"no-storage\":1", "\"clean-install\":1", StringComparison.Ordinal);
         Assert.Throws<InvalidOperationException>(() =>
             StorageConsumerHarness.RequireSuccess(new ProcessOutput(0, json, ""), "sqlite", "all"));
+    }
+
+    [Theory]
+    [InlineData("same-id-retry")]
+    [InlineData("collision")]
+    [InlineData("all")]
+    public void PositiveAssertionTotalsWithoutRequiredObservationsCannotPass(string scenario)
+    {
+        IEnumerable<string> selected = scenario == "all" ? StorageScenarioCatalog.Scenarios : [scenario];
+        var cases = selected.ToDictionary(name => name, _ => 100, StringComparer.Ordinal);
+        var evidence = new Dictionary<string, StorageExampleEvidence>
+        {
+            ["same-id-retry"] = new(3, 6, 6, 0, 0, 0, 0),
+            ["collision"] = new(0, 1, 1, 1, 1, 1, 1)
+        }.Where(item => cases.ContainsKey(item.Key)).ToDictionary();
+        var valid = JsonSerializer.SerializeToNode(new
+        {
+            eventCode = "storage_scenario_passed",
+            component = "storage-consumer",
+            correlationId = new string('a', 32),
+            provider = "sqlite",
+            scenario,
+            status = "passed",
+            assertions = cases.Values.Sum(),
+            scenarios = cases,
+            observations = evidence
+        })!;
+        StorageConsumerHarness.RequireSuccess(new ProcessOutput(0, valid.ToJsonString(), ""), "sqlite", scenario);
+        foreach (var item in evidence)
+            foreach (var property in JsonSerializer.SerializeToElement(item.Value).EnumerateObject()
+                .Where(property => property.Value.GetInt32() > 0))
+            {
+                var incomplete = valid.DeepClone();
+                incomplete["observations"]![item.Key]![property.Name] = property.Value.GetInt32() - 1;
+                Assert.Throws<InvalidOperationException>(() => StorageConsumerHarness.RequireSuccess(
+                    new ProcessOutput(0, incomplete.ToJsonString(), ""), "sqlite", scenario));
+            }
+        valid.AsObject().Remove("observations");
+        Assert.Throws<InvalidOperationException>(() => StorageConsumerHarness.RequireSuccess(
+            new ProcessOutput(0, valid.ToJsonString(), ""), "sqlite", scenario));
     }
 }

@@ -157,8 +157,16 @@ finds two HIGH partial public-example gaps, not a demonstrated storage-engine
 defect or changed architecture decision. T079-T080 require the promised public
 three-restart/data retry and distinct-registered-ID collision examples; separate
 integration tests already cover the core behavior. No product/test code or
-approved design changes during convergence. Implement is next on the same draft
-PR, then follow-up convergence, final review and explicit human acceptance.
+approved design changes during convergence.
+The [T079-T080 remediation](../specs/003-storage-registry/implementation.md#convergence-remediation-t079-t080)
+now supplies those public observations: three fresh processes retain both exact
+assignments and sentinels; the forced registered-owner UNIQUE conflict preserves
+assignment/data/inventory and creates no contender allocation. Standalone/`all`
+harnesses require measured evidence, and the unowned-target refusal remains.
+Only the test-support assembly gains access to the existing internal allocator
+seam; no public override, runtime storage rule or dependency is added.
+All 80 tasks are evidenced. Follow-up convergence is next on the same draft PR,
+then final review and explicit human acceptance.
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.

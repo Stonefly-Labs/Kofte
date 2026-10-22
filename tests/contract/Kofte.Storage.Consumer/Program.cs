@@ -17,6 +17,8 @@ public static class Program
     {
         if (args.FirstOrDefault() == "--storage-crash-worker")
             return await StorageCrashWorker.RunAsync(args, AlphaStorage.Create);
+        if (args.FirstOrDefault() == "--storage-restart-worker")
+            return await RestartWorkerAsync(args);
         var worker = args.FirstOrDefault() == "--storage-worker";
         if (worker) args = args[1..];
         string? provider = null;
@@ -58,22 +60,32 @@ public static class Program
                 IReadOnlyList<string> selected = scenario == "all" ? StorageScenarioCatalog.Scenarios : [scenario];
                 var assertions = 0;
                 var completed = new Dictionary<string, int>(StringComparer.Ordinal);
+                var observations = new Dictionary<string, StorageExampleEvidence>(StringComparer.Ordinal);
                 foreach (var item in selected)
                 {
                     var before = RegistrationScenarios.Assertions;
                     int count;
-                    if (item is "interrupted-provisioning" or "stopped-restore")
+                    if (item == "same-id-retry")
+                    {
+                        observations.Add(item, await RegistrationScenarios.RetryAsync(installation, deadline.Token));
+                        count = RegistrationScenarios.Assertions - before;
+                    }
+                    else if (item is "interrupted-provisioning" or "stopped-restore")
                         count = await RecoveryScenarios.RunAsync(installation, item, deadline.Token);
                     else if (item == "corrected-retry")
                         count = await CorrectedRetryScenario.RunAsync(installation, deadline.Token);
                     else
                     {
                         await using var scope = await maintenance.AcquireAsync(deadline.Token);
-                        count = item switch
+                        if (item == "collision")
                         {
-                            "no-storage" or "same-id-retry" =>
+                            observations.Add(item, await CollisionScenario.RunAsync(installation, scope, deadline.Token));
+                            count = RegistrationScenarios.Assertions - before;
+                        }
+                        else count = item switch
+                        {
+                            "no-storage" =>
                                 await RegistrationScenarios.RunAsync(installation, scope, item, deadline.Token),
-                            "collision" => await CollisionScenario.RunAsync(installation, scope, deadline.Token),
                             "clean-install" or "isolated-upgrade" or "path-rejection" =>
                                 await ModuleScenarios.RunAsync(installation, scope, item, deadline.Token),
                             _ => throw new ScenarioException("storage_scenario_unimplemented")
@@ -86,6 +98,7 @@ public static class Program
                     assertions += count;
                 }
                 ValidateDiagnostics(captured.ToString(), installation.Provider, scenario == "all");
+                StorageExampleEvidence.Read(JsonSerializer.SerializeToElement(observations), selected);
                 if (assertions <= 0) throw new ScenarioException("storage_scenario_no_assertions");
                 Console.SetError(originalError);
                 Console.WriteLine(JsonSerializer.Serialize(new
@@ -97,7 +110,8 @@ public static class Program
                     scenario,
                     status = "passed",
                     assertions,
-                    scenarios = completed
+                    scenarios = completed,
+                    observations
                 }));
                 return 0;
             }
@@ -147,8 +161,8 @@ public static class Program
             using var document = JsonDocument.Parse(new string(buffer, 0, length));
             var result = document.RootElement;
             var names = result.EnumerateObject().Select(property => property.Name).ToArray();
-            if (names.Length != 8 || names.Distinct(StringComparer.Ordinal).Count() != 8 ||
-                names.Except(["eventCode", "component", "correlationId", "provider", "scenario", "status", "assertions", "scenarios"]).Any() ||
+            if (names.Length != 9 || names.Distinct(StringComparer.Ordinal).Count() != 9 ||
+                names.Except(["eventCode", "component", "correlationId", "provider", "scenario", "status", "assertions", "scenarios", "observations"]).Any() ||
                 result.GetProperty("eventCode").GetString() != "storage_scenario_passed" ||
                 result.GetProperty("component").GetString() != "storage-consumer" ||
                 !Regex.IsMatch(result.GetProperty("correlationId").GetString() ?? "", @"\A[0-9a-f]{32}\z") ||
@@ -159,6 +173,7 @@ public static class Program
                 throw new ScenarioException("storage_scenario_result_invalid");
             var cases = result.GetProperty("scenarios").EnumerateObject().ToArray();
             IEnumerable<string> expected = scenario == "all" ? StorageScenarioCatalog.Scenarios : [scenario];
+            var observations = StorageExampleEvidence.Read(result.GetProperty("observations"), expected);
             if (!cases.Select(item => item.Name).SequenceEqual(expected) ||
                 cases.Any(item => !item.Value.TryGetInt32(out var count) || count <= 0) ||
                 cases.Sum(item => item.Value.GetInt64()) != assertions)
@@ -172,11 +187,42 @@ public static class Program
                 scenario,
                 status = "passed",
                 assertions,
-                scenarios = cases.ToDictionary(item => item.Name, item => item.Value.GetInt32(), StringComparer.Ordinal)
+                scenarios = cases.ToDictionary(item => item.Name, item => item.Value.GetInt32(), StringComparer.Ordinal),
+                observations
             });
         });
         Console.WriteLine(completed ?? throw new ScenarioException("storage_scenario_result_invalid"));
         return 0;
+    }
+
+    private static async Task<int> RestartWorkerAsync(string[] args)
+    {
+        var originalError = Console.Error;
+        using var captured = new DiagnosticCapture();
+        using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+        try
+        {
+            Console.SetError(captured);
+            if (args is not ["--storage-restart-worker", "sqlite" or "postgres", "1" or "2" or "3"])
+                throw new ScenarioException("storage_restart_invalid");
+            await StorageMaintenanceProcess.AdmitAsync(deadline.Token);
+            var installation = args[1] == "sqlite"
+                ? StorageInstallation.Sqlite(Environment.GetEnvironmentVariable("KOFTE_DATA_ROOT") ??
+                    throw new ScenarioException("storage_scenario_configuration_required"))
+                : StorageInstallation.PostgreSql(Environment.GetEnvironmentVariable("KOFTE_POSTGRES_CONNECTION") ??
+                    throw new ScenarioException("storage_scenario_configuration_required"),
+                    Environment.GetEnvironmentVariable("KOFTE_POSTGRES_PROVISIONING_CONNECTION"));
+            var result = await RegistrationScenarios.ProbeRestartAsync(installation, args[2], deadline.Token);
+            ValidateDiagnostics(captured.ToString(), installation.Provider, requireEveryOutcome: false);
+            Console.WriteLine(JsonSerializer.Serialize(result));
+            return 0;
+        }
+        catch (Exception)
+        {
+            originalError.WriteLine("""{"eventCode":"storage_restart_failed"}""");
+            return 1;
+        }
+        finally { Console.SetError(originalError); }
     }
 
     internal static void ConfigureChild(ProcessStartInfo start)

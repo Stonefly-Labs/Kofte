@@ -52,9 +52,16 @@ appends T079-T080 for two HIGH partial public-example gaps: the standalone/`all`
 checks, and `collision` does not yet demonstrate a distinct-registered-ID
 candidate conflict. Existing integration tests cover the core behavior; current
 positive public-case counts do not prove these omitted observations.
-No product/test code or supported command changes in convergence.
-**Implement is next** on the same feature branch/draft PR, then a separate
-follow-up convergence.
+No product/test code or supported command changed in convergence.
+The [T079-T080 implementation increment](../../specs/003-storage-registry/implementation.md#convergence-remediation-t079-t080)
+now executes three fresh processes after releasing maintenance, verifying both
+exact assignments and original sentinels after every restart. The collision
+example now includes a fixture-forced real registered-owner UNIQUE conflict,
+unchanged assignment/data/inventory and no contender allocation, while retaining
+unowned-target refusal. Standalone and `all` result validation requires those
+observations, not only assertion totals. All 80 tasks are evidenced.
+**Follow-up convergence is next** on this same feature branch/draft PR; no
+convergence pass, final review or feature acceptance is inferred.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).

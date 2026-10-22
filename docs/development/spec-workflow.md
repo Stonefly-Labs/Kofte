@@ -6,7 +6,20 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 003 / converge completed with **gaps** on the original
+**Current checkpoint:** 003 / implement closes **T079-T080** on the original
+`feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
+The [remediation evidence](../../specs/003-storage-registry/implementation.md#convergence-remediation-t079-t080)
+records three genuine restarted public-consumer processes, with two exact
+assignments and original sentinels retained after every restart. The collision
+example now forces a second distinct ID against a registered owner's candidate:
+the real UNIQUE conflict preserves assignment/data/inventory and leaves the
+contender unallocated; separate unowned-target refusal remains.
+Standalone and `all` harnesses require measured observations. All 80 tasks are
+evidenced. **Follow-up converge is next** on the same branch/draft PR; this
+implementation does not rewrite the prior gaps report, execute convergence,
+perform final review, accept the feature or request merge.
+
+**First convergence checkpoint (historical):** 003 / converge completed with **gaps** on the original
 `feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 The [assessment](../../specs/003-storage-registry/convergence.md) covers all
 40 requirements/outcomes/scenarios, fourteen plan decisions, all 78 original
@@ -16,8 +29,8 @@ retained data, and `collision` tests an unowned target instead of the required
 forced distinct-registered-ID conflict. Separate integration tests cover both
 core behaviors; no storage-engine defect is demonstrated.
 Exactly T079-T080 are appended in Phase 8, preserving every original task byte
-and all product/test/design/checklist evidence. **Implement is next** on this
-same branch/draft PR; remediate those tasks before a separate follow-up converge.
+and all product/test/design/checklist evidence. That checkpoint selected
+implement; the completed remediation is above, before a separate follow-up converge.
 No final review, human acceptance or intermediate merge is performed here.
 
 **Implementation checkpoint (historical):** 003 / implement completed on this

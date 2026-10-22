@@ -1,16 +1,116 @@
 # Implementation: 003 - Storage Registry and Module Isolation
 
-**Stage:** Implement complete; all 78 tasks evidenced, complete local gate and assessed-head CI passed.
+**Stage:** Implement remediation T079-T080 complete; all 80 tasks evidenced.
+The original 78-task checkpoint and its complete local/CI evidence are preserved below.
 **Branch / PR:** `feature/003-storage-registry` /
 [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 **Started:** 2026-10-22 (UTC).
 **Completed:** 2026-10-22 (UTC).
-**Verified product revision:** `4eb236a9cfb4196fb385ee7fbff1cf8ffc6017ee`.
-**Assessed CI head:** `92e942efcc1e9033f17c7e24f7b20c53c940f9da`.
+**Original verified product revision:** `4eb236a9cfb4196fb385ee7fbff1cf8ffc6017ee`.
+**Original assessed CI head:** `92e942efcc1e9033f17c7e24f7b20c53c940f9da`.
 The latter changes only CI mirror setup and documentation, not product, test or
 verification-script source. The final publication adds stage documentation,
 task completion and the driver transition; its checks are recorded in the PR
 without a self-referential bookkeeping commit.
+
+## Convergence remediation T079-T080
+
+**Date:** 2026-10-22 (UTC). **Stage:** Implement only, on the original branch
+and draft PR. The [first convergence](convergence.md) appended these two HIGH
+partial public-example tasks; its historical gaps result is not rewritten by
+implementation. Follow-up convergence, final review and explicit human
+acceptance remain separate invocations.
+
+The remediation source is the tested worktree based on
+`e9e0a7bf06cb3202dff20f0c8bd5b3f84d9418b6`, published together with this report,
+all 80 completed task markers and the driver transition. Git blob identities
+identify the exact tested consumer sources before the publication commit:
+
+| Source under `tests/` | Tested blob |
+| --- | --- |
+| `contract/Kofte.Storage.Consumer/Program.cs` | `6b53829216e11aad27b88bc361a38327f4e6d508` |
+| `contract/Kofte.Storage.Consumer/Scenarios/RegistrationScenarios.cs` | `0a23d7def9c9b3a1d10ce3c5d24660024d52d59c` |
+| `contract/Kofte.Storage.Consumer/Scenarios/CollisionScenario.cs` | `64f46be7f954fed39c1babdd92533307cc5ac191` |
+| `integration/Kofte.TestSupport/StorageRestartProcess.cs` | `37e3d7b708ed9724122f3502211df5ddec1f4429` |
+| `integration/Kofte.TestSupport/StorageCollisionFixture.cs` | `e5e34907b173247fea1e8e36fb035c6983872d01` |
+| `integration/Kofte.TestSupport/StorageExampleEvidence.cs` | `44db6e6367d2915d5ab47aebb851f41e8a031206` |
+
+### Actual observations and acceptance mapping
+
+| Task / intent | Actual public example and required observations |
+| --- | --- |
+| T079 / F1; FR-004/016, SC-003/006, US1.2 | Public Alpha/Beta assigned contexts migrate and write distinct original records. All bindings, contexts and the setup maintenance scope are disposed before child launches. Three sequential admitted processes reopen the same installation, re-register with changed display/release metadata, resolve both owners and read both original records. Each child releases its own maintenance scope and is reaped before the next starts. Parent comparisons cover contract version, canonical owner, provider, installation UUID, allocation UUID/key, allocator version and revision. Observations require three distinct non-parent process IDs, six exact assignments and six retained sentinel reads. Conflicting-need refusal remains. |
+| T080 / F2; FR-003/016, SC-002/006, US2.3 | Register/migrate a real original owner and write/read its module-local sentinel through the public Alpha context. The test-support fixture routes a second distinct ID to that existing candidate using the existing internal allocator seam. Actual registry INSERT encounters the real provider UNIQUE boundary; bounded rejection is `storage_conflict`, `correct_configuration`, unchanged durability, under 30 seconds. Compare the original exact assignment, read the original record, reject resolution of the absent contender and compare complete stopped inventories before/after, including registry revision, rows, physical schemas/files, markers and histories. The existing separate unowned occupied-object refusal and preserved bytes/row/no-marker assertions still execute. |
+| T079/T080 public gate; FR-016, SC-006 | Both standalone registration tests and the `all` guide require the semantic observations, not only a positive assertion total. The supervisor and independent contract harness validate the bounded nine-field result including `observations`; missing observations or decrementing any required observation fails even with 100 assertions per case. |
+
+The provider constraint is not fabricated by the fixture: only candidate
+selection changes, and the real `StorageRegistry.RegisterAsync` reservation
+transaction runs unchanged. The only production-project change grants the
+dedicated test-support assembly access to the existing internal constructor.
+No production candidate override, registry/provider behavior, package, lock,
+module context/migration, approved requirement, ADR or reviewer-owned checklist
+changes. All .NET source stays inside its owning test project.
+
+The restart helper reuses `StorageMaintenanceProcess.RunAsync`/`AdmitAsync`,
+bounded output and private environment configuration; it does not create a
+parallel lifecycle/supervision mechanism. Restart-worker diagnostics are
+captured and validated, errors remain fixed safe failures, and no sentinel
+payload, credential or private path enters the public result.
+Constitution III/IV/V/VI/X/XI/XII remain enforced; other principle/interface
+applicability is unchanged from the original mapping below.
+
+### Executed remediation checks
+
+Environment was freshly observed: macOS 26.5 arm64, Apple M5 Pro, 64 GiB RAM,
+18 logical CPUs, Python 3.15.0, Docker server 29.8.2; selected .NET SDK
+10.0.402 and Node 24.22.0/npm 11.19.1. Provider versions/image and reviewed
+dependencies are unchanged from the original environment below. Inherited
+runtime/provisioning connection settings were unset. Tests use only the
+existing explicitly owned disposable PostgreSQL fixture and private SQLite roots.
+
+```bash
+export DOTNET_ROOT="$PWD/artifacts/toolchain/dotnet-10.0.402"
+export PATH="$DOTNET_ROOT:$(dirname "$(fnm exec --using=24.22.0 node -p 'process.execPath')"):$PATH"
+unset KOFTE_POSTGRES_CONNECTION KOFTE_POSTGRES_PROVISIONING_CONNECTION
+```
+
+| Exact command | Observed result |
+| --- | --- |
+| `dotnet build tests/contract/Kofte.Platform.ContractTests/Kofte.Platform.ContractTests.csproj --no-restore -c Release --nologo -v quiet` | Passed, zero warnings/errors. |
+| `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*RegistrationContractTests' --filter-class '*StorageGuideTests' --filter-class '*StorageConsumerHarnessTests' --minimum-expected-tests 35` | Passed all 35, zero skipped, 74.387 seconds. |
+| `dotnet format Kofte.slnx --verify-no-changes --no-restore` | Passed after correcting the new nested-loop indentation with the existing formatter. |
+| `dotnet build Kofte.slnx --no-restore -c Release -warnaserror --nologo -v quiet` | Passed, zero warnings/errors. |
+| `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*SqliteRegistrationContractTests' --minimum-expected-tests 4` | Passed 4/4, zero skipped, 7.257 seconds. |
+| `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*PostgresRegistrationContractTests' --minimum-expected-tests 4` | Passed 4/4, zero skipped, 29.455 seconds. |
+| `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*SqliteStorageGuideTests' --minimum-expected-tests 1` | Passed 1/1, all nine examples, 5.938 seconds. |
+| `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*PostgresStorageGuideTests' --minimum-expected-tests 1` | Passed 1/1, all nine examples, 44.215 seconds. |
+| `python3 scripts/verify.py --suite contract --provider both --disposable-postgres` | Passed all 37 named steps, including public contracts and both-provider native OpenAPI/HTTP/host/web/output checks. |
+| `python3 scripts/check_repository.py` | Passed. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed all 111 tests. |
+| `git diff --check` | Passed. |
+
+The four separately executed provider selectors are the exact published
+standalone/`all` guide commands, not a substitute corpus. Each `all` result still
+requires all nine scenarios and seven actual diagnostic outcomes, and now also
+the complete restart/collision observations. Synthetic harness regressions
+accept a complete valid result first, then independently remove/decrement
+required observations and require rejection.
+
+The initial red run built the strengthened contract harness against the
+unchanged eight-field consumer and failed all four selected SQLite registration
+tests with `storage_consumer_result_invalid`; this demonstrates the new wire gate,
+not a claim that those failures individually exercised restart retention.
+One intermediate build caught a local declaration-order error; it was corrected.
+The later combined 35-test run and the final exact guide commands above passed.
+
+No new local complete `--suite all`, integration, recovery, privacy, unit or
+quality-suite run is claimed by this focused remediation. The original complete
+local/CI evidence below remains historical, not final-remediation-head evidence.
+Publication-head CI is reported in the PR after pushing, without a second
+bookkeeping commit. No before/after implement hook is configured:
+`.specify/extensions.yml` remains absent.
+
+## Original implementation checkpoint (historical)
 
 ## Entry gates and approval
 

@@ -7,9 +7,12 @@ and reviewer-authorized requirements-quality checklist.
 quality criteria. Passing analyze and explicit human approval of Proposed
 ADR 0005 are required **before implementation**, not inferred from this list.
 **Constitution**: Adopted v2.0.1, principles I-XII.
-**Status**: All 78 tasks are evidenced, including all six named gates, both
+**Status**: All 80 tasks are evidenced, including the original six named gates, both
 published public `all` commands, the complete local 200-step gate and eleven
-passing assessed-head CI contexts. Implement is complete; converge is next,
+passing assessed-head CI contexts. T079-T080 now close the first convergence's
+public restart/collision gaps with standalone and `all` observations on both
+providers; fresh remediation checks are in `implementation.md`.
+Implement is complete; follow-up converge is next,
 not performed here. This is not feature acceptance.
 
 **Tests**: The specification and constitution explicitly require these tests.
@@ -337,10 +340,10 @@ gate is neither performed nor waived by this internal slice.
 
 ## Completion and Human Handoff
 
-This task list contains **78 tasks**, all evidenced:
+This task list contains **80 tasks**, all evidenced:
 six setup, eight foundational,
 13 US1, eight US2, twelve US3, sixteen US4, seven US5 and eight final evidence
-tasks. All 18 acceptance scenarios, 16 functional requirements, six outcomes and
+tasks, plus two convergence remediation tasks. All 18 acceptance scenarios, 16 functional requirements, six outcomes and
 twelve principles have explicit task/evidence coverage. Parallel markers do
 not change dependencies or authorize concurrent Spec Kit stages.
 
@@ -362,5 +365,5 @@ tasks, successful tests or an earlier merge.
 
 ## Phase 8: Convergence
 
-- [ ] T079 Complete the public `same-id-retry` example in `tests/contract/Kofte.Storage.Consumer/Scenarios/RegistrationScenarios.cs` and its owned process harness under `tests/integration/Kofte.TestSupport/`: write distinguishable module-local sentinel data through public assigned contexts, stop/release maintenance before each of three genuine child-process restarts, re-register with changed display/release metadata and assert the exact installation/owner/provider/key/allocation/revision plus readable original data after every restart on SQLite and PostgreSQL. Strengthen `tests/contract/Kofte.Platform.ContractTests/Modules/Storage/RegistrationContractTests.cs` and `StorageGuideTests.cs` so both standalone and `all` executions require those observations rather than accepting a positive assertion total alone; retain conflicting-need refusal, private configuration, bounded owned-child cleanup and public-only module consumption. Re-execute both documented provider guide commands and record exact results in `specs/003-storage-registry/implementation.md`; do not weaken the prescribed example in `contracts/storage-v1.md:189`. Depends: T017, T063, T068, T075. Trace: FR-004/016, SC-003/006, US1.2; plan: public registration/restart examples; F1 (HIGH, partial).
-- [ ] T080 Complete the public `collision` example in `tests/contract/Kofte.Storage.Consumer/Scenarios/CollisionScenario.cs`, arranging deterministic test-owned fixture evidence through `tests/integration/Kofte.TestSupport/` so a second distinct canonical ID attempts an already registered owner's physical candidate and the real registry UNIQUE boundary rejects it. Assert the original owner's exact assignment, sentinel data and physical inventory remain unchanged, the second ID gains no alternate/shared allocation, and bounded rejection/guidance are observed on both real providers; preserve the existing unowned-target refusal as a separate assertion. Keep forced-candidate controls fixture-only, with no production override or internal access from public module implementations. Strengthen `tests/contract/Kofte.Platform.ContractTests/Modules/Storage/RegistrationContractTests.cs` and `StorageGuideTests.cs` to require these observations in standalone and `all` runs; execute both documented provider guide commands and record actual results in `specs/003-storage-registry/implementation.md` without weakening `contracts/storage-v1.md:190`. Depends: T029, T034, T035, T068, T075. Trace: FR-003/016, SC-002/006, US2.3; plan: forced-collision/public-example proof; F2 (HIGH, partial).
+- [X] T079 Complete the public `same-id-retry` example in `tests/contract/Kofte.Storage.Consumer/Scenarios/RegistrationScenarios.cs` and its owned process harness under `tests/integration/Kofte.TestSupport/`: write distinguishable module-local sentinel data through public assigned contexts, stop/release maintenance before each of three genuine child-process restarts, re-register with changed display/release metadata and assert the exact installation/owner/provider/key/allocation/revision plus readable original data after every restart on SQLite and PostgreSQL. Strengthen `tests/contract/Kofte.Platform.ContractTests/Modules/Storage/RegistrationContractTests.cs` and `StorageGuideTests.cs` so both standalone and `all` executions require those observations rather than accepting a positive assertion total alone; retain conflicting-need refusal, private configuration, bounded owned-child cleanup and public-only module consumption. Re-execute both documented provider guide commands and record exact results in `specs/003-storage-registry/implementation.md`; do not weaken the prescribed example in `contracts/storage-v1.md:189`. Depends: T017, T063, T068, T075. Trace: FR-004/016, SC-003/006, US1.2; plan: public registration/restart examples; F1 (HIGH, partial).
+- [X] T080 Complete the public `collision` example in `tests/contract/Kofte.Storage.Consumer/Scenarios/CollisionScenario.cs`, arranging deterministic test-owned fixture evidence through `tests/integration/Kofte.TestSupport/` so a second distinct canonical ID attempts an already registered owner's physical candidate and the real registry UNIQUE boundary rejects it. Assert the original owner's exact assignment, sentinel data and physical inventory remain unchanged, the second ID gains no alternate/shared allocation, and bounded rejection/guidance are observed on both real providers; preserve the existing unowned-target refusal as a separate assertion. Keep forced-candidate controls fixture-only, with no production override or internal access from public module implementations. Strengthen `tests/contract/Kofte.Platform.ContractTests/Modules/Storage/RegistrationContractTests.cs` and `StorageGuideTests.cs` to require these observations in standalone and `all` runs; execute both documented provider guide commands and record actual results in `specs/003-storage-registry/implementation.md` without weakening `contracts/storage-v1.md:190`. Depends: T029, T034, T035, T068, T075. Trace: FR-003/016, SC-002/006, US2.3; plan: forced-collision/public-example proof; F2 (HIGH, partial).

@@ -89,8 +89,13 @@ KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/contract/K
 ```
 
 These four cases per provider are no-storage, same-ID retry with immutable-need
-conflict, corrected privilege/outage retry and occupied/unowned-target
-preservation. Execute the complete `all` corpus through fresh owned fixtures:
+conflict and three fresh processes, corrected privilege/outage retry, and both
+registered-owner collision and occupied/unowned-target preservation.
+The retry case uses public Alpha/Beta contexts to write distinguishable sentinels,
+releases maintenance before each child launch, and changes display/release metadata
+on each restart. Every child re-registers/resolves both exact assignments and
+reads both original records without reinitializing or rewriting them.
+Execute the complete `all` corpus through fresh owned fixtures:
 
 ```bash
 dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*SqliteStorageGuideTests' --minimum-expected-tests 1
@@ -102,7 +107,15 @@ These invoke `Kofte.Storage.Consumer --provider sqlite --scenario all` and
 injected owned configuration. Do not copy fixture credentials or targets into
 arguments. Each consumer supervises an admitted maintenance child, rejects
 nonzero exit/invalid output, and returns bounded JSON with measured per-scenario
-assertion counts. `all` requires all seven actual diagnostic outcomes and every
+assertion counts. Its bounded `observations` result additionally requires three
+distinct restarted processes, six exact-assignment comparisons and six retained
+sentinel reads. Collision observations require the real registered-owner conflict,
+exact assignment, retained data, unchanged complete registry/physical inventory,
+no alternate/shared contender allocation and separate unowned-target preservation.
+The forced candidate is arranged only by the test-support fixture through the
+existing internal seam; public module contexts gain no internal or physical
+override. Missing or incomplete observations fail standalone and `all`, even
+with positive assertion totals. `all` requires all seven actual diagnostic outcomes and every
 named case in
 [storage-v1](contracts/storage-v1.md#required-public-examples), never skip
 negative/recovery examples as optional. Missing configuration, Docker or

@@ -14,6 +14,13 @@ the existing bootstrap/manifest checks and add actual storage integration,
 crash/recovery and captured privacy tests; unavailable providers fail explicitly.
 The [guide](../quickstart.md) runs both providers without exposing private
 configuration in command arguments.
+The T079-T080 increment additionally requires bounded public `observations`:
+three fresh processes preserve both exact assignments and original sentinels;
+a forced distinct-ID UNIQUE conflict preserves the registered owner's assignment,
+data and complete inventory, leaves the contender unallocated, and retains
+unowned-target refusal. Standalone and `all` reject missing/incomplete observations
+even when assertion totals are positive. Test-support-only access to the existing
+internal allocator seam adds no production candidate override.
 
 ## Authority and public shape
 

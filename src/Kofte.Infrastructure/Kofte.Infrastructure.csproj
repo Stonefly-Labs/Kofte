@@ -9,5 +9,6 @@
         <InternalsVisibleTo Include="Kofte.Host.Tests" />
         <InternalsVisibleTo Include="Kofte.Host" />
         <InternalsVisibleTo Include="Kofte.Storage.IntegrationTests" />
+        <InternalsVisibleTo Include="Kofte.TestSupport" />
     </ItemGroup>
 </Project>

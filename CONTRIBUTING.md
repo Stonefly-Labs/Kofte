@@ -47,12 +47,18 @@ and captured privacy evidence. All nine public examples execute in admitted,
 supervised maintenance children. The implementation checkpoint marked all 78
 original tasks complete; its complete local 200-step gate and eleven assessed-head
 CI contexts pass. The subsequent
-[convergence](specs/003-storage-registry/convergence.md) identifies two HIGH
+[first convergence](specs/003-storage-registry/convergence.md) identifies two HIGH
 partial public-example gaps and appends T079-T080: real three-restart/data
 proof in `same-id-retry`, and a forced distinct-registered-ID conflict in
 `collision`. Separate integration tests cover the core behavior; no product
-code is changed. **Implement is next** on the original branch/draft PR, followed
-by another convergence invocation.
+code was changed by convergence. The
+[T079-T080 implementation increment](specs/003-storage-registry/implementation.md#convergence-remediation-t079-t080)
+now executes three fresh processes with exact Alpha/Beta assignments and retained
+data, plus a fixture-forced registered-owner UNIQUE collision with unchanged
+assignment/data/inventory and no contender allocation. The unowned-target
+refusal remains separate. Both standalone and `all` public harnesses require
+measured observations; all 80 tasks are evidenced. **Follow-up convergence is
+next** on the original branch/draft PR.
 This is not feature acceptance or permission to merge.
 The following paragraphs preserve the historical design-stage checkpoint.
 

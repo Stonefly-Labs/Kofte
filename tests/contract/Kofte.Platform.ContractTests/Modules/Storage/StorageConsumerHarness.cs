@@ -6,7 +6,7 @@ using Kofte.TestSupport;
 namespace Kofte.Platform.ContractTests.Modules.Storage;
 
 internal sealed record StorageConsumerResult(string Provider, string Scenario, int Assertions,
-    IReadOnlyDictionary<string, int> Scenarios);
+    IReadOnlyDictionary<string, int> Scenarios, IReadOnlyDictionary<string, StorageExampleEvidence> Observations);
 
 internal static class StorageConsumerHarness
 {
@@ -54,8 +54,8 @@ internal static class StorageConsumerHarness
             using var document = JsonDocument.Parse(output.Stdout);
             var result = document.RootElement;
             var names = result.EnumerateObject().Select(p => p.Name).ToArray();
-            if (names.Length != 8 || names.Distinct(StringComparer.Ordinal).Count() != 8 ||
-                names.Except(["eventCode", "component", "correlationId", "provider", "scenario", "status", "assertions", "scenarios"]).Any() ||
+            if (names.Length != 9 || names.Distinct(StringComparer.Ordinal).Count() != 9 ||
+                names.Except(["eventCode", "component", "correlationId", "provider", "scenario", "status", "assertions", "scenarios", "observations"]).Any() ||
                 result.GetProperty("eventCode").GetString() != "storage_scenario_passed" ||
                 result.GetProperty("component").GetString() != "storage-consumer" ||
                 !Regex.IsMatch(result.GetProperty("correlationId").GetString() ?? "", @"\A[0-9a-f]{32}\z") ||
@@ -71,7 +71,8 @@ internal static class StorageConsumerHarness
                 cases.Sum(item => item.Value.GetInt64()) != assertions)
                 throw new InvalidOperationException("storage_consumer_result_invalid");
             return new(provider, scenario, assertions,
-                cases.ToDictionary(item => item.Name, item => item.Value.GetInt32(), StringComparer.Ordinal));
+                cases.ToDictionary(item => item.Name, item => item.Value.GetInt32(), StringComparer.Ordinal),
+                StorageExampleEvidence.Read(result.GetProperty("observations"), expected));
         }
         catch (Exception error) when (error is JsonException or KeyNotFoundException or InvalidOperationException or FormatException)
         {

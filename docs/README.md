@@ -152,13 +152,19 @@ original tasks complete; its complete local 200-step gate and eleven assessed-he
 CI contexts pass.
 The subsequent [convergence](../specs/003-storage-registry/convergence.md)
 checks all 40 requirements/outcomes/scenarios, fourteen plan decisions, 78
-original tasks and twelve principles. It finds two HIGH partial public-example
+original tasks and twelve principles. It found two HIGH partial public-example
 gaps: three process restarts with retained data in `same-id-retry`, and the
 forced distinct-registered-ID conflict in `collision`. Core integration proof
 exists; no storage-engine defect is demonstrated. Only T079-T080 are appended;
-all original tasks and product/test code are preserved. **Implement is next**
-on this same draft PR, then a separate follow-up convergence. This is not
-feature acceptance.
+all original tasks and product/test code were preserved by convergence.
+The [T079-T080 implementation increment](../specs/003-storage-registry/implementation.md#convergence-remediation-t079-t080)
+now executes three fresh processes, checking exact Alpha/Beta assignments and
+retained sentinels after each, plus a forced registered-owner UNIQUE collision
+with preserved assignment/data/inventory and no contender allocation. The
+unowned-target refusal remains. Both standalone and `all` public harnesses now
+require those observations; all 80 tasks are evidenced.
+**Follow-up convergence is next** on this same draft PR. The existing gaps
+assessment remains historical, not a fresh convergence result or feature acceptance.
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 

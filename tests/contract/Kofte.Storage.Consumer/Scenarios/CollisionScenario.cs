@@ -1,8 +1,12 @@
+using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using Kofte.Infrastructure.Storage;
+using Kofte.Infrastructure.Storage.Recovery;
 using Kofte.Infrastructure.Storage.Registry;
 using Kofte.Platform.Modules.Storage;
+using Kofte.Storage.Consumer.Modules.Alpha;
+using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Kofte.TestSupport;
 
@@ -10,7 +14,45 @@ namespace Kofte.Storage.Consumer.Scenarios;
 
 internal static class CollisionScenario
 {
-    internal static async Task<int> RunAsync(StorageInstallation installation, IStorageMaintenanceScope scope,
+    internal static async Task<StorageExampleEvidence> RunAsync(StorageInstallation installation, IStorageMaintenanceScope scope,
+        CancellationToken token)
+    {
+        var registry = new StorageRegistry(installation);
+        var owner = RegistrationScenarios.Module("org.example.registered-collision-owner");
+        var contender = RegistrationScenarios.Module("org.example.registered-collision-contender");
+        RegistrationScenarios.Ready(await registry.RegisterAsync(owner, scope, token));
+        await using var binding = await registry.BindAsync(owner.Id, token);
+        RegistrationScenarios.Ready(await binding.MigrateAsync(AlphaStorage.Create, scope, cancellationToken: token));
+        await using (var context = await binding.CreateContextAsync(AlphaStorage.Create, token))
+        {
+            context.Records.Add(new Modules.Alpha.Record { Id = 1, Payload = "registered-owner-preserved" });
+            await context.SaveChangesAsync(token);
+        }
+        var original = RegistrationScenarios.Ready(await registry.ResolveAsync(owner.Id, token)).Assignment;
+        var before = await RecoverySetVerifier.InspectStoppedAsync(installation, scope, token);
+        var started = Stopwatch.GetTimestamp();
+        var result = StorageResultChecks.Check(await StorageCollisionFixture.RegisterAtExistingCandidateAsync(
+            installation, contender, original, scope, token));
+        RegistrationScenarios.Require(Stopwatch.GetElapsedTime(started) < TimeSpan.FromSeconds(30));
+        RegistrationScenarios.Require(result.Outcome == StorageOutcome.Rejected &&
+            result.Durability == StorageDurability.Unchanged && result.Diagnostics.Count == 1 &&
+            result.Diagnostics[0].Code == "storage_conflict" &&
+            result.Diagnostics[0].Guidance == "correct_configuration");
+        var resolved = RegistrationScenarios.Ready(await registry.ResolveAsync(owner.Id, token)).Assignment;
+        RegistrationScenarios.Require(StorageAssignmentSnapshot.From(original) == StorageAssignmentSnapshot.From(resolved));
+        await using (var context = await binding.CreateContextAsync(AlphaStorage.Create, token))
+            RegistrationScenarios.Require((await context.Records.SingleAsync(token)).Payload == "registered-owner-preserved");
+        var missing = StorageResultChecks.Check(await registry.ResolveAsync(contender.Id, token));
+        RegistrationScenarios.Require(missing.Outcome == StorageOutcome.Rejected &&
+            missing.Diagnostics.Single().Code == "storage_request_invalid");
+        var after = await RecoverySetVerifier.InspectStoppedAsync(installation, scope, token);
+        RegistrationScenarios.Require(System.Text.Json.JsonSerializer.Serialize(before) ==
+            System.Text.Json.JsonSerializer.Serialize(after));
+        await PreserveUnownedTargetAsync(installation, scope, token);
+        return new(0, 1, 1, 1, 1, 1, 1);
+    }
+
+    private static async Task PreserveUnownedTargetAsync(StorageInstallation installation, IStorageMaintenanceScope scope,
         CancellationToken token)
     {
         var owner = RegistrationScenarios.Module("org.example.collision");
@@ -75,6 +117,5 @@ internal static class CollisionScenario
             marker.Parameters.AddWithValue("key", key);
             RegistrationScenarios.Require(await marker.ExecuteScalarAsync(token) is 0L);
         }
-        return 4;
     }
 }
