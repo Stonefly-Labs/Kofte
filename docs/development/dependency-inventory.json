@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "reviewDate": "2026-10-21",
-  "scope": "001 bootstrap adopted graph; exact identities and integrity, not temporary workspace paths",
+  "scope": "001 bootstrap and 002 platform projects; unchanged reviewed 403 npm/69 NuGet identities and integrity",
   "npm": {
     "@adobe/css-tools@4.5.0": {
       "name": "@adobe/css-tools",

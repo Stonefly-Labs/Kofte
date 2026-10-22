@@ -92,7 +92,53 @@ independent code/test assessment found no acceptance defect, and a fresh complet
 local gate passes all 170 named steps with assessed-head CI parity.
 [Explicit human acceptance](../specs/001-repository-bootstrap/acceptance.md)
 now completes spec 001's agreed bootstrap scope, retaining the documented
-limitations. Its original PR awaits human merge before spec 002 may begin.
+limitations. Its original PR is now human-merged with accepted evidence on main.
+Spec 002 has a [draft requirements specification](../specs/002-platform-contracts/spec.md)
+for minimal platform contracts and module identity; clarification is complete
+with no material ambiguity or spec changes. Its [plan](../specs/002-platform-contracts/plan.md)
+now proposes a minimal shared library, strict JSON/schema and bounded pure
+validation with explicit SemVer compatibility. [ADR 0004](adr/0004-module-manifest-contract.md)
+records the human-approved design choices.
+Its [quality review](../specs/002-platform-contracts/checklists/quality.md)
+now satisfies all 36 requirements-quality criteria after explicit reviewer
+authorization, with no blocking gap. The subsequent explicit ADR 0004 approval
+resolves that design gate; subsequent evidence and explicit requirement
+amendments are tracked below. The [48 tasks](../specs/002-platform-contracts/tasks.md)
+now order identity and compatibility components before the complete public
+validation path, then safe correction and cross-cutting evidence. All requirements,
+outcomes and scenarios are mapped. The read-only
+[analysis](../specs/002-platform-contracts/analysis.md) passes with concrete coverage
+of all 21 requirements/outcomes and 14 scenarios, no unmapped task and no
+actionable or constitutional finding at its analyzed checkpoint.
+The current [implementation](../specs/002-platform-contracts/implementation.md)
+adds the pure platform library and test-owned author/host-facing consumers,
+not a module loader or storage registry. Its
+[author guide](../specs/002-platform-contracts/quickstart.md) is executable.
+The human-directed ADR amendment accepts actual available-workstation/CI timing,
+not a fixed Ubuntu/CPU/RAM profile. The subsequent author-guide amendment replaces
+the manual timed exercise with automated guide/correction/retry proof.
+The [T049 implementation increment](../specs/002-platform-contracts/implementation.md#convergence-remediation-t049)
+closes the prior [convergence](../specs/002-platform-contracts/convergence.md)
+public/repeated-corpus evidence gap: documented boundaries, ordered errors and
+truncation now run 100 times per consumer per real culture. No parser defect
+was exposed, and no production code, schema or architecture decision changed.
+Follow-up [convergence](../specs/002-platform-contracts/convergence.md) now
+passes with zero actionable gaps after assessing all 35 requirements/outcomes/
+scenarios, twelve plan decisions, all 49 tasks and twelve principles. No task,
+product code or architecture decision changes in that stage. The independent
+[final review](../specs/002-platform-contracts/review.md) now also passes with
+source/test evidence for all 35 requirements/outcomes/scenarios, twelve plan
+decisions, 49 tasks and twelve principles, and no acceptance defect.
+Fresh quality/unit/both-provider contracts pass 62 targeted steps; assessed-head
+CI passes all eleven contexts and 177 product steps. No architecture or product
+change is made by review.
+[Explicit human acceptance](../specs/002-platform-contracts/acceptance.md)
+now separately records feature 002's approval with its existing scope and
+limitations. The original PR awaits human merge before any later start of
+003; no architecture change, new local all-suite or human-usability claim
+is made by acceptance.
+The host only gains a library project reference; its startup,
+routes, stores and web console remain module-free.
 The broader stack/module/deployment proposals below remain future work, not
 installed features or proof of module isolation, production readiness or acceptance.
 
@@ -158,6 +204,12 @@ permissions:
   - environments.read
   - environments.write
 ```
+
+The YAML above is conceptual background, **not accepted spec 002 input**.
+The implemented [schema 1 contract](../specs/002-platform-contracts/contracts/validation.md)
+uses strict UTF-8 JSON, explicit collections, `hostContract`, separate versioned
+capability objects and `storage.relational` only. Its example/grammar/budgets
+are governed by Accepted ADR 0004; schema success alone is not full acceptance.
 
 ### 5.2 Extension points (level 3)
 

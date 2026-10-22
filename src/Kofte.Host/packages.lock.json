@@ -124,6 +124,9 @@
         "dependencies": {
           "SQLitePCLRaw.core": "2.1.13"
         }
+      },
+      "kofte.platform": {
+        "type": "Project"
       }
     }
   }

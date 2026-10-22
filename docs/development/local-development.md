@@ -10,10 +10,46 @@ no actionable gaps or appended tasks.
 no acceptance defect and a fresh complete 170-step local gate reconciled with
 actual assessed-head CI.
 [Explicit human acceptance](../../specs/001-repository-bootstrap/acceptance.md)
-is now recorded for spec 001's bootstrap scope and limits. Its original PR
-awaits human merge before spec 002 may begin.
+is now recorded for spec 001's bootstrap scope and limits. Its original
+[PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) is human-merged.
+Spec 002's [author guide](../../specs/002-platform-contracts/quickstart.md)
+now runs the pure manifest validator and test-owned console, offline after
+restore. Its implementation stage is complete, not feature acceptance.
+The subsequent [convergence](../../specs/002-platform-contracts/convergence.md)
+public/repeated-corpus gap is now addressed by the
+[T049 implementation increment](../../specs/002-platform-contracts/implementation.md#convergence-remediation-t049).
+Documented limits, reversed ranges and ordered multi-error/truncation cases
+now run 100 times per public consumer in both real cultures, with corrected
+retry retained. Focused quality/unit/both-provider contract gates pass.
+Follow-up [convergence](../../specs/002-platform-contracts/convergence.md) now
+passes with zero actionable gaps and no task/product change. Fresh named unit
+and both-provider contract suites pass all 44 targeted steps, including the
+complete repeated corpus and actual SQLite/PostgreSQL HTTP/OpenAPI/adapter
+fixtures. The [final review](../../specs/002-platform-contracts/review.md)
+now passes with no acceptance defect: actual source/tests cover all 35
+requirements/outcomes/scenarios, twelve plan decisions, 49 tasks and twelve
+principles. Fresh quality/unit/both-provider contract checks pass 62 targeted
+steps; actual assessed-head CI passes all eleven contexts and 177 product
+steps. No new local all-suite run or bootstrap behavior change is asserted.
+[Explicit human acceptance](../../specs/002-platform-contracts/acceptance.md)
+is now recorded separately from review. The same PR #5 awaits human merge;
+acceptance adds no bootstrap behavior or new product measurement. A later
+invocation may begin 003 only after that merge.
+Spec 002 timing now uses an available supported workstation/CI runner with
+actual metadata, not a fixed Ubuntu/CPU/RAM profile, per the human's ADR amendment.
+The subsequent author-guide amendment removes the manual timed exercise and
+requires real automated guide/error/corrected-retry checks instead; no human
+usability or elapsed-time claim is inferred.
+It adds no host route, module loading or store change to this bootstrap.
 This is not a feature-acceptance or production guide.
 See the [implementation evidence](../../specs/001-repository-bootstrap/implementation.md).
+
+The existing named `unit` suite now requires the platform unit project. `contract`
+builds the author consumer, runs public .NET corpus/culture/privacy/retry/timing
+tests and offline schema tests before retaining all real-provider HTTP checks.
+`quality` builds/formats the expanded solution and checks structural TypeScript.
+Missing required platform files/projects or zero selected .NET tests fail closed.
+CI invokes these same commands; there is no separate CI-only validator.
 
 ## Prerequisites and explicit restore
 

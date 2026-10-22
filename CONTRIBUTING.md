@@ -1,13 +1,43 @@
 # Contributing to Köfte
 
-Welcome! **Spec 001's bootstrap is explicitly human-accepted** and awaits
-human merge of [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4).
+Welcome! **Spec 001's bootstrap is explicitly human-accepted** and
+[PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) is human-merged.
 The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves
 the decision and limits; the [review](specs/001-repository-bootstrap/review.md)
 records source/test coverage and the complete local gate.
 The local host/web, real-provider verification, guarded recovery and generated
 contract do not introduce feature modules or prove production readiness.
-Spec 002 waits for the accepted feature's merge and updated main.
+Spec 002 now implements the [approved manifest/identity contract](docs/adr/0004-module-manifest-contract.md)
+in `Kofte.Platform` with dedicated unit/public-consumer/schema tests. Follow the
+[executable author guide](specs/002-platform-contracts/quickstart.md); no host,
+module loading or database is needed after restore. The
+[implementation report](specs/002-platform-contracts/implementation.md) records
+actual evidence. The human-directed benchmark amendment allows measured available
+workstations/CI runners, without fixed Ubuntu/CPU/RAM. T044 has actual local
+evidence. The subsequent human-directed author-guide amendment replaces T045's
+manual timed exercise with actual automated guide/correction/retry proof.
+The [T049 implementation increment](specs/002-platform-contracts/implementation.md#convergence-remediation-t049)
+now closes the prior [convergence](specs/002-platform-contracts/convergence.md)
+public-corpus evidence gap. Documented limits, reversed ranges and ordered
+multi-error/truncation cases run 100 times per public consumer per real culture.
+All 49 tasks and focused quality/unit/both-provider contract gates are evidenced;
+no production code or contract rule changed. Follow-up
+[convergence](specs/002-platform-contracts/convergence.md) now passes with zero
+actionable gaps after assessing all 35 requirements/outcomes/scenarios, twelve
+plan decisions, 49 tasks and twelve principles. The task file is unchanged.
+The [final review](specs/002-platform-contracts/review.md) now also passes:
+all 35 requirements/outcomes/scenarios, twelve plan decisions, 49 tasks and
+twelve principles trace to source/tests, with no defect or remediation.
+Fresh quality/unit/both-provider contracts pass 62 targeted steps; assessed-head
+CI passes all eleven contexts and 177 product steps.
+[Explicit human acceptance](specs/002-platform-contracts/acceptance.md) now
+records **"spec is fully human approved"** for feature 002 and its documented
+limits. Human merge of the same PR #5 is next; only then may a later invocation
+start 003. No new local all-suite run, human usability study or permission to
+chain stages is inferred.
+The author/quality checklists remain 16/16 and 36/36, and
+[analysis](specs/002-platform-contracts/analysis.md) passes. Continue on the same
+feature branch and PR #5 for human merge; module runtimes remain future work.
 See the [current local guide](docs/development/local-development.md).
 
 ## Prerequisites

@@ -1,5 +1,9 @@
 <Solution>
   <Project Path="src/Kofte.Host/Kofte.Host.csproj" />
+  <Project Path="src/Kofte.Platform/Kofte.Platform.csproj" />
+  <Project Path="tests/unit/Kofte.Platform.Tests/Kofte.Platform.Tests.csproj" />
+  <Project Path="tests/contract/Kofte.Platform.ContractTests/Kofte.Platform.ContractTests.csproj" />
+  <Project Path="tests/contract/Kofte.Manifest.Consumer/Kofte.Manifest.Consumer.csproj" />
   <Project Path="tests/unit/Kofte.Host.Tests/Kofte.Host.Tests.csproj" />
   <Project Path="tests/integration/Kofte.Host.IntegrationTests/Kofte.Host.IntegrationTests.csproj" />
 </Solution>

@@ -7,6 +7,18 @@ and NuGet identity, archive source/integrity, declared license, available notice
 hashes, source commits where published, image digest and action SHAs.
 No floating direct dependency is approved.
 
+## Spec 002 project adoption
+
+The platform library and test-owned author console introduce no runtime package.
+Two dedicated test projects reuse the centrally pinned xUnit/test SDK; the
+host-facing contract project also has the existing host's transitive graph.
+Generated new project locks and updated host-reference locks were reviewed:
+the union remains exactly **403 npm and 69 NuGet identities**, with the same
+archives, integrity, provenance, licenses and retained notices below.
+`dotnet restore Kofte.slnx --locked-mode` and `npm run dependencies:check`
+passed after these project changes. No pin, source, license decision, production
+test dependency or new NuGet identity was added; existing Ajv 8.20.0 is reused.
+
 ## Adopted baseline and compatibility
 
 Use .NET SDK **10.0.402**, runtime **10.0.13**, Node **24.22.0** and bundled npm

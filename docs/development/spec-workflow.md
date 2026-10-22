@@ -6,6 +6,60 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
+**Current checkpoint:** 002 / explicitly human-accepted on the original branch
+and PR #5. After the passing review and numbered-feature acceptance handoff, the
+human stated **"spec is fully human approved"**. The
+[acceptance record](../../specs/002-platform-contracts/acceptance.md) preserves
+the exact decision, reviewed scope and limits. The driver records it through
+`complete --approval`; no approval is inferred from tasks, ADRs or CI.
+Acceptance leaves product/tests/tasks/design/checklists/review evidence unchanged.
+The same feature PR is ready for **human merge**; no assistant merge, close,
+auto-merge or branch deletion is permitted. Spec 003 requires that merge and
+accepted evidence on updated main before a later invocation may start it.
+Acceptance does not create a 003 branch, directory or active stage.
+
+The completed review checkpoint follows. The independent
+[review](../../specs/002-platform-contracts/review.md) traces all 15 functional
+requirements, six amended outcomes, 14 acceptance scenarios, twelve plan
+decisions, all 49 tasks and twelve principles to actual source/tests. No
+acceptance defect, remediation or unresolved within-scope design decision
+remains. Fresh quality/unit/both-provider contract checks pass all 62 targeted
+steps; all eleven assessed-head CI contexts and all 177 product-report steps
+pass. The synthetic merge parents were verified against main and the assessed
+feature head. Review leaves product/tests/tasks/design/checklists unchanged
+and does not claim a new local all-suite run or human-usability study.
+Review selected accept, requiring an explicit human feature decision; that
+decision was not performed by review. The separate completed acceptance is
+recorded above. No intermediate merge occurred.
+
+The preceding convergence/remediation checkpoint follows. The
+[remediation evidence](../../specs/002-platform-contracts/implementation.md#convergence-remediation-t049)
+records the documented public boundaries, reversed range, recursively reordered
+collected errors and exact 32/33-diagnostic truncation. Every corpus case runs
+100 times through each public consumer in both real cultures. All 49 tasks
+and focused quality/unit/both-provider contract gates pass, with no production
+code, contract-rule or dependency change. The
+[follow-up assessment](../../specs/002-platform-contracts/convergence.md) checks
+all 35 requirements/outcomes/scenarios, twelve plan decisions, all 49 tasks and
+twelve principles with zero actionable gaps. The task file is byte-for-byte
+unchanged, and fresh named unit/both-provider contract suites pass all 44
+targeted steps. Review was selected next by convergence; neither review nor
+explicit human acceptance was performed by convergence. The first convergence
+report is preserved below the current passing assessment as historical gap
+evidence. The original
+implementation checkpoint remains in
+[implementation.md](../../specs/002-platform-contracts/implementation.md).
+The human-directed ADR 0004 amendment removed T044's fixed Ubuntu/CPU/RAM
+benchmark profile; available supported workstation timing now satisfies it.
+The subsequent explicit author-guide amendment removes T045's manual timed
+exercise; actual automated guide/example/error/corrected-retry checks supply
+amended SC-001. All 48 original task markers were completed at that checkpoint,
+without claiming a human study; T049 now supplies F1's missing public proof.
+The first implementation selected converge; that assessment selected implement,
+and the remediation selected the fresh passing converge invocation. It selected
+review, whose completed result is above. Do not infer feature acceptance or
+request an intermediate merge. Earlier stage descriptions below are historical.
+
 In Copilot, reload project skills with `/skills reload`, then ask:
 
 ```text
@@ -139,11 +193,185 @@ measurements are invented. Production readiness, future feature obligations
 and MVP completion are explicitly excluded.
 All stages remained on `feature/001-specify-repository-bootstrap` and the same
 [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4),
-**without an intermediate merge**. The accepted feature may now be marked
-ready and handed to the human for merge. Spec 002 is the next inventory entry,
-but must not begin until PR #4 is human-merged and the accepted ledger/evidence
-are on updated main. Acceptance does not create a spec 002 branch, directory
-or active stage.
+**without an intermediate merge**. PR #4 was subsequently human-merged;
+its accepted ledger and all five acceptance evidence hashes were verified on
+updated `origin/main` before beginning the next numbered feature. Acceptance
+itself did not create a spec 002 branch, directory or active stage.
+
+**002 / specify is now complete** on the fresh
+`feature/002-platform-contracts` branch from updated `origin/main`.
+The driver extracted the exact 002 fenced inventory prompt and the installed
+`speckit-specify` skill used the resolved project spec override to produce
+[`spec.md`](../../specs/002-platform-contracts/spec.md) and its
+[`checklists/requirements.md`](../../specs/002-platform-contracts/checklists/requirements.md).
+Four independently testable stories, 14 acceptance scenarios, 15 functional
+requirements and six measurable outcomes define minimal public contracts,
+canonical immutable identity, versioned manifests, host compatibility,
+capabilities/dependencies, non-authoritative permission/storage metadata and
+bounded safe validation. All twelve constitutional principles have explicit
+applicability or later-runtime justification. All 16 built-in author criteria
+are satisfied; no material question or before/after specification hook remains.
+Serialization, concrete contract versions/range rules, limits and packaging are
+reserved for planning. No product implementation, plan, reviewer-owned quality
+checklist, runtime proof or human acceptance is claimed.
+
+**002 / clarify is now complete** on that same branch and
+[draft PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5).
+The installed `speckit-clarify` skill resolved the recorded explicit feature
+directory and assessed the specification against the constitution and canonical
+sources. **No critical ambiguities detected worth formal clarification.**
+Zero questions were asked or answered; no human decision or clarification
+session was invented. No specification section was changed. Revalidation of the
+built-in author checklist remains **16/16 to 16/16**, with no newly passing
+items, regressions or unchecked criteria; its content is unchanged. This does
+not evaluate or mark the later reviewer-owned quality checklist.
+
+| Ambiguity category | Status | Requirements-level evidence in spec 002 |
+| --- | --- | --- |
+| Functional scope and behavior | Clear | Scope, actors and exclusions; US1-4; FR-001/014/015 distinguish declaration validation from activation. |
+| Domain and data model | Clear | Key Entities, FR-003-009 and Data Ownership define canonical identity, immutable update comparison, version domains and transient metadata; no registry lifecycle is claimed. |
+| Interaction and UX flow | Clear | US1-4 and Experience specify accept/reject, safe correction/retry and valid empty lists; no new web journey or loading/focus state applies. |
+| Non-functional quality attributes | Clear | FR-002/010-012 and SC-001-006 define bounded execution, deterministic offline behavior, privacy, side-effect safety and measurable author/performance evidence. |
+| Integration and external dependencies | Clear | Accepted/merged 001 is the prerequisite; Interfaces and FR-005/006/013-015 distinguish schema/semantic checks, explicit compatibility context, consumer proof and later runtimes. |
+| Edge cases and failure handling | Clear | Edge Cases, US1.2-3/US2.2-3/US3.1-4/US4.1-3 and FR-002/008/010-012 cover malformed/duplicate/over-budget input, compatibility boundaries, safe diagnostics and uncontaminated retry. |
+| Constraints and tradeoffs | Clear | Locked versus undecided and principles I-XII preserve minimal contracts, trust, storage/permission boundaries, portability and the numbered release scope. |
+| Terminology and consistency | Clear | FR-003-009, Data Ownership and Key Entities separate module ID/display name, schema/module/host/capability versions and declared versus installed capabilities/dependencies. |
+| Completion signals | Clear | Four stories, 14 Given/When/Then scenarios, FR-001-015, SC-001-006 and Required Validation provide independently verifiable acceptance and future evidence obligations. |
+| Miscellaneous and placeholders | Clear | No unresolved clarification marker or material unquantified requirement; remaining choices are explicitly assigned to planning. |
+
+Serialization/field names, precise range/prerelease rules, initial supported
+schema/host/capability versions, numeric budgets, reference conditions and
+package/invocation design remain planning work, not unanswered product-policy
+questions. No before/after clarification hooks are configured
+(`.specify/extensions.yml` is absent). No plan, tasks, product code, package
+installation, runtime proof or feature acceptance was produced by clarification.
+
+**002 / plan is now complete** on the same branch and
+[draft PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5).
+The installed planning skill used the explicit recorded directory and resolved
+project template. Its setup output's `BRANCH` value is the feature-directory
+basename, not a branch change; actual Git remains `feature/002-platform-contracts`.
+The [plan](../../specs/002-platform-contracts/plan.md),
+[research](../../specs/002-platform-contracts/research.md),
+[data model](../../specs/002-platform-contracts/data-model.md),
+[contracts](../../specs/002-platform-contracts/contracts/validation.md) and
+[future quickstart](../../specs/002-platform-contracts/quickstart.md) define strict
+JSON/schema `1`, distinct initial host/capability contract versions `1.0.0`,
+immutable canonical identity, a small SemVer range grammar, explicit context,
+non-authoritative declarations and bounded deterministic safe rejection.
+The machine-readable schema, examples and independently expected corpus
+distinguish structural from semantic/contextual acceptance. One minimal shared
+library and test-owned public consumers avoid a new endpoint/runtime/package.
+
+Pre-research and post-design constitutional gates pass at design level, with all
+requirements/scenarios mapped to future evidence. Official standards/.NET web
+sources were used because Microsoft Learn/Context7 MCP tools are not connected.
+No planning hooks are configured. [ADR 0004](../adr/0004-module-manifest-contract.md)
+is Proposed pending human review, not an implementation approval. No product
+source, dependency adoption, runtime proof, quality-checklist marking or feature
+acceptance was added. **Checklist is next** on the same draft PR, including its
+human-owned review gate; no intermediate merge or next stage is executed here.
+
+**002 / checklist is now complete** on the same branch and
+[draft PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5).
+The installed `speckit-checklist` skill resolved the recorded explicit feature
+directory and canonical checklist template. It generated
+[`checklists/quality.md`](../../specs/002-platform-contracts/checklists/quality.md)
+with 36 unchecked, sequential, specification-traced criteria. This standard,
+risk-focused requirements review covers contract completeness/clarity/consistency,
+identity/version boundaries, permission/storage/MCP applicability, author UX,
+bounded diagnostics, privacy, operations, measurable acceptance and human gates.
+No checklist hooks are configured.
+
+The reviewer explicitly requested: **"bro you rn through the checklist and tell
+me if anything needs my attention.  that's how we'll do checklists from now on"**.
+That request authorized evaluation and marking in this stage. All 36 criteria
+were assessed against the spec, plan, data model, public contract, schema,
+examples, independent corpus, quickstart, research, proposed ADR and constitution;
+each satisfied marker has its own evidence. No blocking requirements-quality
+gap, canonical conflict or constitutional waiver was identified.
+
+Human attention remains on **Proposed ADR 0004 before implementation**,
+especially strict JSON/closed schema, exact-or-two-bound range syntax and
+same-core prerelease opt-in, initial version domains, budgets and minimal
+library/test-owned author consumer. The unfamiliar-author timed exercise and
+reference-environment timing require later actual evidence, not this assessment.
+Project locks/inventory, public consumers, corpus/privacy/side-effect tests and
+bootstrap preservation likewise remain implementation obligations. Evaluation
+authorization is not ADR approval, feature acceptance or a merge request.
+The spec/design/schema/examples/corpus and built-in author checklist are unchanged;
+no tasks, product code or runtime proof was generated. **Tasks is next** on the
+same branch/draft PR, without an intermediate merge. It was not executed here.
+
+**Subsequent ADR 0004 approval**: On 2026-10-21 the human explicitly stated
+**"adr 0004 is approved"**. [ADR 0004](../adr/0004-module-manifest-contract.md)
+is now Accepted for its design choices, resolving the checklist's design-approval
+attention item. Earlier planning/checklist artifacts and ledger notes retain their
+historical Proposed/pending-review statements; this later explicit decision is
+the current authority for ADR status. Their requirements, markers and historical
+evidence hashes are unchanged. The approval does not adopt unreviewed dependencies,
+provide runtime/manual evidence, accept feature 002 or authorize merge.
+Recording it does not execute another stage: **tasks remains next**, with no
+active stage, on the same feature branch/draft PR.
+
+**002 / tasks is now complete** on `feature/002-platform-contracts` and the same
+[draft PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5). The installed
+`speckit-tasks` skill used the explicit recorded feature directory and resolved
+project override to generate
+[`tasks.md`](../../specs/002-platform-contracts/tasks.md): **48 unstarted tasks**,
+with four setup, five foundational, six US2 identity, eight US3 compatibility,
+nine US1 public-author-validation, eight US4 safe-correction and eight
+cross-cutting tasks. An interrupted tasks run was resumed on its recorded branch
+after verifying that the partial task list and progress-doc changes belonged to
+that run; its original start and prior evidence were preserved. The three P1
+stories are ordered by actual component
+dependencies (US2, US3, US1), followed by P2 US4; US1 remains the first useful
+author-facing increment, not feature or MVP completion.
+
+Every task has a concrete path, direct earlier-task prerequisites and requirement/
+principle traceability; the list maps all 15 FRs, six SCs, 14 scenarios and twelve
+principles. Seventeen parallel markers are conditional on completed dependencies
+and non-overlapping files. Mandatory evidence covers original-byte/schema/public
+corpus parity, identity immutability, full SemVer/range/declaration boundaries,
+two consumers and real cultures with 100 repetitions, exact budgets, private
+output, observed zero side effects, clean retry, fail-closed verifier wiring and
+unchanged real-provider/browser/startup behavior. Actual unfamiliar-author and
+specified reference-timing proof remain explicit implementation gates.
+
+Accepted ADR 0004 resolves design approval, not dependency adoption or runtime/
+human evidence. The previous spec/design/schema/examples/corpus, both reviewed
+checklists and ADR remain unchanged. No before/after tasks hooks are configured.
+No task is executed/checked, product package installed or analysis/implementation/
+acceptance report created. The ledger completes tasks only and selects
+**analyze** on the same branch/draft PR, without an intermediate merge.
+
+**002 / analyze is now complete** on the same branch and
+[draft PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5).
+The installed `speckit-analyze` skill resolved the explicit recorded feature
+directory and performed a read-only consistency, quality and constitutional
+review of the spec, plan, tasks and supporting design. Its
+[`analysis.md`](../../specs/002-platform-contracts/analysis.md) records
+**Result: pass** with all 15 functional requirements, six measurable outcomes
+and 14 acceptance scenarios mapped to concrete work. All 48 unchecked tasks
+are mapped, path-specific and dependency-ordered; 17 conditional parallel
+markers remain. No actionable ambiguity, harmful duplication, missing coverage,
+invalid prerequisite/cycle or constitutional conflict was identified.
+
+Both reviewed checklists and all prior spec 002 evidence hashes are unchanged.
+The Accepted ADR 0004 resolves the earlier historical Proposed-status statements;
+it does not provide runtime or dependency-adoption proof. Existing solution,
+project settings, contract workspace and verifier/CI boundaries were inspected
+for feasible integration, not executed as an unbuilt parser. No before/after
+analysis hooks are configured. The spec, plan, tasks, research, model, contracts,
+schema/examples/corpus, checklists and ADR remain unchanged.
+
+The driver completes analyze only and selects **implement**. Reviewed locks/
+inventory, actual public/schema/locale/privacy/effect/retry checks, fail-closed
+verifier wiring and preserved full bootstrap local/current-head CI remain
+implementation obligations. Actual unfamiliar-author and specified Ubuntu
+reference-timing evidence are mandatory, not inferred from this pass. No task
+was checked, product code added or feature accepted; no later stage is executed
+and no intermediate merge or mark-ready is requested.
 
 The human-directed [workflow correction](../adr/0001-feature-delivery-lifecycle.md)
 removes per-step merge gates. Its constitution v2.0.0 amendment travels with this

@@ -55,6 +55,23 @@ REQUIRED_SUITE_FILES = {
         "scripts/tests/test_dev_output.py",
     ),
 }
+PLATFORM_REQUIRED_FILES = (
+    "src/Kofte.Platform/Kofte.Platform.csproj",
+    "tests/unit/Kofte.Platform.Tests/Kofte.Platform.Tests.csproj",
+    "tests/contract/Kofte.Platform.ContractTests/Kofte.Platform.ContractTests.csproj",
+    "tests/contract/Kofte.Manifest.Consumer/Kofte.Manifest.Consumer.csproj",
+    "tests/contract/Kofte.Manifest.Consumer/Program.cs",
+    "tests/contract/module-manifest.test.ts",
+    *(f"tests/unit/Kofte.Platform.Tests/Modules/Manifest/{name}.cs" for name in (
+        "ValidationResultTests", "ModuleIdTests", "IdentityUpdateTests", "SemanticVersionTests",
+        "VersionRangeTests", "DeclarationTests", "ManifestParsingTests", "ManifestBudgetTests",
+    )),
+    *(f"tests/contract/Kofte.Platform.ContractTests/Modules/Manifest/{name}.cs" for name in (
+        "ManifestCorpus", "ConsumerHarness", "IdentityContractTests", "CompatibilityContractTests",
+        "PublicConsumerTests", "DeterminismTests", "SafeOutputTests", "SideEffectTests",
+        "RetryTests", "ManifestPerformanceTests",
+    )),
+)
 HOST = "src/Kofte.Host/bin/Release/net10.0/Kofte.Host.dll"
 INTEGRATION = "tests/integration/Kofte.Host.IntegrationTests"
 FIXTURE = f"{INTEGRATION}/bin/Release/net10.0/Kofte.Host.IntegrationTests.dll"
@@ -786,6 +803,11 @@ def integration_command(provider, suite=None):
 
 def execute_suite(runner, suite, provider, arguments):
     runner.operation("workspace-inventory", lambda _: workspace_inventory(runner.root))
+    if suite in ("quality", "unit", "contract"):
+        def platform_inventory(_):
+            if any(not (runner.root / path).is_file() for path in PLATFORM_REQUIRED_FILES):
+                raise VerificationError("platform_target_missing")
+        runner.operation("platform-inventory", platform_inventory)
     if suite in UNIMPLEMENTED and any(
         not (runner.root / path).is_file() for path in REQUIRED_SUITE_FILES[suite]
     ):
@@ -801,6 +823,10 @@ def execute_suite(runner, suite, provider, arguments):
             "dotnet", "test", "--project", "tests/unit/Kofte.Host.Tests",
             "--no-restore", "-c", "Release", "--minimum-expected-tests", "1",
         ])
+        runner.command("platform-unit", [
+            "dotnet", "test", "--project", "tests/unit/Kofte.Platform.Tests",
+            "--no-restore", "-c", "Release", "--minimum-expected-tests", "1",
+        ])
         for workspace in ("apps/web", "packages/bootstrap-contract"):
             runner.command(f"{workspace}-unit", ["npm", "run", "test:unit", "--workspace", workspace])
         runner.command("python-tests", [
@@ -812,6 +838,18 @@ def execute_suite(runner, suite, provider, arguments):
             environment=provider_environment(runner, arguments, provider),
         )
     elif suite in ("recovery", "contract", "privacy"):
+        if suite == "contract":
+            runner.command("manifest-author-build", [
+                "dotnet", "build", "tests/contract/Kofte.Manifest.Consumer",
+                "--no-restore", "-c", "Release", "-warnaserror",
+            ])
+            runner.command("platform-public-contracts", [
+                "dotnet", "test", "--project", "tests/contract/Kofte.Platform.ContractTests",
+                "--no-restore", "-c", "Release", "--minimum-expected-tests", "1",
+            ])
+            runner.command("module-manifest-schema", [
+                "npm", "run", "test", "--workspace", "tests/contract", "--", "module-manifest.test.ts",
+            ])
         providers = ("sqlite", "postgres") if provider == "both" else (provider,)
         if "postgres" in providers:
             provider_environment(runner, arguments, "postgres")

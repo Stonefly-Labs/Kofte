@@ -18,6 +18,10 @@ class VerifyTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory(dir=base)
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name).resolve()
+        for name in verify.PLATFORM_REQUIRED_FILES:
+            path = self.root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("required platform fixture")
         for workspace, scripts in verify.REQUIRED_SCRIPTS.items():
             path = self.root / workspace / "package.json"
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -218,6 +222,57 @@ class VerifyTests(unittest.TestCase):
             verify.execute_suite(runner, "integration", "postgres", arguments)
         command.assert_not_called()
 
+    def test_missing_platform_target_fails_unit_quality_and_contract_before_tools(self):
+        for name in verify.PLATFORM_REQUIRED_FILES:
+            path = self.root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("required target fixture")
+        for suite in ("unit", "quality", "contract"):
+            for name in verify.PLATFORM_REQUIRED_FILES:
+                with self.subTest(suite=suite, name=name):
+                    path = self.root / name
+                    path.unlink()
+                    runner = verify.Runner(self.root, self.report(suite), {})
+                    with patch.object(runner, "versions") as versions, \
+                            self.assertRaisesRegex(verify.VerificationError, "platform_target_missing"):
+                        verify.execute_suite(runner, suite, "sqlite", Mock())
+                    versions.assert_not_called()
+                    self.assertEqual("platform-inventory", runner.report.data["steps"][-1]["name"])
+                    self.assertEqual("failed", runner.report.data["steps"][-1]["outcome"])
+                    path.write_text("required target fixture")
+
+    def test_platform_unit_commands_cannot_skip_or_allow_zero_tests(self):
+        for name in verify.PLATFORM_REQUIRED_FILES:
+            path = self.root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("required target fixture")
+        runner = verify.Runner(self.root, self.report("unit"), {})
+        with patch.object(runner, "versions"), patch.object(runner, "command") as command:
+            verify.execute_suite(runner, "unit", None, Mock())
+        platform = next(call for call in command.call_args_list if call.args[0] == "platform-unit")
+        self.assertIn("tests/unit/Kofte.Platform.Tests", platform.args[1])
+        self.assertEqual(["--minimum-expected-tests", "1"], platform.args[1][-2:])
+        self.assertNotIn("--if-present", platform.args[1])
+        self.assertTrue(any(call.args[0] == "host-unit" for call in command.call_args_list))
+
+    def test_platform_child_failure_and_timeout_preserve_safe_named_failure(self):
+        for name, command, timeout, code in (
+            ("platform-public-contracts", ["python3", "-c", "import sys; print('private-marker'); sys.exit(8)"],
+             5, "command_failed"),
+            ("platform-public-contracts", ["python3", "-c", "import time; time.sleep(60)"],
+             0.1, "command_timeout"),
+        ):
+            with self.subTest(code=code):
+                report = self.report("contract")
+                runner = verify.Runner(self.root, report, {})
+                with self.assertRaisesRegex(verify.VerificationError, code):
+                    runner.command(name, command, timeout=timeout)
+                self.assertEqual("failed", report.data["steps"][-1]["outcome"])
+                self.assertEqual(name, report.data["steps"][-1]["name"])
+                self.assertNotIn("private-marker", report.path.read_text())
+                if code == "command_failed":
+                    self.assertEqual(8, report.data["steps"][-1]["exitCode"])
+
     def test_environment_and_command_reports_never_copy_operator_secrets(self):
         clean = verify.child_environment({
             "PATH": "/tools", "KOFTE_POSTGRES_CONNECTION": "credential-canary",
@@ -362,6 +417,17 @@ class VerifyTests(unittest.TestCase):
                 self.assertIn("scripts/run_python_tests.py", capture.args[1])
                 self.assertIn("test_dev_output.py", capture.args[1])
             else:
+                public = next(call for call in command.call_args_list
+                              if call.args[0] == "platform-public-contracts")
+                self.assertEqual(["--minimum-expected-tests", "1"], public.args[1][-2:])
+                author = next(i for i, call in enumerate(command.call_args_list)
+                              if call.args[0] == "manifest-author-build")
+                contracts = next(i for i, call in enumerate(command.call_args_list)
+                                 if call.args[0] == "platform-public-contracts")
+                self.assertLess(author, contracts)
+                schema = next(call for call in command.call_args_list
+                              if call.args[0] == "module-manifest-schema")
+                self.assertIn("module-manifest.test.ts", schema.args[1])
                 native = [call for call in command.call_args_list
                           if call.args[0].startswith("native-openapi-policy-")]
                 self.assertEqual(2, len(native))
