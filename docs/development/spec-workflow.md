@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 003 / specify and clarify are complete on
+**Current checkpoint:** 003 / specify, clarify and plan are complete on
 `feature/003-storage-registry`, originally created from updated `origin/main`,
 and the same [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 The exact inventory prompt and resolved project spec template produced
@@ -29,13 +29,26 @@ The specification and author checklist remain unchanged: **16/16 to 16/16**,
 with no newly passing items, regressions or unchecked criteria.
 The driver completion note records category-to-requirement evidence.
 No before/after clarification hooks are configured.
-Allocator/hash rules, contract/status shapes, budgets, migration/locking,
-provisioning credentials and recovery verification remain planning/ADR choices,
-not unresolved product intent. Planning must explicitly reconcile PostgreSQL
-schema provisioning with the bootstrap credential's lack of database CREATE
-privilege, without weakening fixture/runtime safety.
-No product code, plan, reviewer-owned quality checklist or human acceptance
-is created. Plan is next on this same feature branch and draft PR;
+The [plan](../../specs/003-storage-registry/plan.md),
+[research](../../specs/003-storage-registry/research.md),
+[data model](../../specs/003-storage-registry/data-model.md),
+[storage contract](../../specs/003-storage-registry/contracts/storage-v1.md),
+[migration/recovery contract](../../specs/003-storage-registry/contracts/migrations-and-recovery.md)
+and [future validation guide](../../specs/003-storage-registry/quickstart.md)
+now resolve those technical choices. Proposed allocator v1 persists bounded
+keys with real database uniqueness and exclusive maintenance. Ownership markers
+and durable phases support truthful interruption recovery; assigned EF models,
+cache keys, history and migration operations preserve the physical boundary.
+Offline PostgreSQL provisioning uses a separate credential; the normal host
+still lacks database CREATE and keeps existing fixture/runtime safety.
+SQLite keeps private per-module files and the stopped-host lease. Explicit
+bootstrap upgrade and stopped complete-set recovery avoid registry-only reset.
+Pre-research and post-design constitution checks pass at design level, with
+no planning hooks. [ADR 0005](../adr/0005-module-storage-ownership.md) remains
+Proposed and requires human approval before implementation.
+No product code, dependency adoption, runtime proof, reviewer-owned quality
+checklist, tasks or human acceptance is created. **Checklist is next** on this
+same feature branch/draft PR and requires reviewer-owned evaluation;
 do not merge between stages.
 
 **Completed prerequisite:** 002 / explicitly human-accepted on the original branch

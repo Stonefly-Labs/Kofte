@@ -153,5 +153,22 @@ were asked or answered, and the specification and author checklist are unchanged
 Allocator, contracts, budgets, provisioning credentials and migration/recovery
 mechanisms remain planning/ADR decisions, including explicit reconciliation
 of the bootstrap PostgreSQL CREATE restriction. No clarification hooks are
-configured. Plan is next; no implementation, reviewer-owned quality review
-or feature acceptance is claimed.
+configured. No implementation, reviewer-owned quality review or feature
+acceptance was performed by clarification.
+
+**003 / plan is complete** on that same branch/draft PR.
+The [plan](../specs/003-storage-registry/plan.md),
+[research](../specs/003-storage-registry/research.md),
+[data model](../specs/003-storage-registry/data-model.md),
+[storage contract](../specs/003-storage-registry/contracts/storage-v1.md),
+[migration/recovery contract](../specs/003-storage-registry/contracts/migrations-and-recovery.md)
+and [future guide](../specs/003-storage-registry/quickstart.md) propose
+immutable allocator-v1 mappings plus real uniqueness/locking, explicit physical
+ownership, owner-bound EF models/history/migrations and stopped complete-set
+recovery. Offline PostgreSQL provisioning is separate from the unchanged
+restricted runtime credential; SQLite retains private per-module files and the
+existing stopped-host lease. Pre-research and post-design constitutional checks
+pass at design level; planning hooks remain absent.
+[ADR 0005](adr/0005-module-storage-ownership.md) is Proposed, not approved.
+Checklist is next and requires reviewer-owned evaluation. No product command,
+package adoption, runtime/provider proof, tasks or feature acceptance is added.

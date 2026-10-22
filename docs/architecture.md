@@ -144,11 +144,19 @@ defines the next storage slice: immutable registry ownership, concurrent
 collision-safe allocation, isolated module tables/history and crash/recovery
 semantics. Clarification now finds all ten ambiguity categories clear, with
 zero questions and no spec/checklist changes; the author checklist remains
-16/16. Plan is next on the same feature branch/draft PR, not implementation.
-Allocator/hash choices, migration/lock mechanisms and provisioning privilege
-separation remain planning/ADR decisions. In particular, schema provisioning
-must explicitly reconcile the bootstrap credential's lack of database CREATE
-privilege without silently weakening the existing fixture/runtime safety.
+16/16. Its [plan](../specs/003-storage-registry/plan.md) now proposes immutable
+allocator-v1 keys with actual UNIQUE/concurrency checks, verified ownership
+markers, assigned EF model/history/migration binding and explicit stopped
+complete-set recovery. [Proposed ADR 0005](adr/0005-module-storage-ownership.md)
+separates offline PostgreSQL provisioning from the runtime credential: database
+CREATE remains denied to the host, and existing owned fixture/runtime checks
+remain intact. SQLite retains separate private files and the existing
+stopped-host maintenance lease. Bootstrap upgrade is explicit; unsafe legacy
+platform-only recovery/reset will be refused once registry/module data exists.
+Both constitutional design gates pass; no package or code is adopted.
+Checklist is next on the same feature branch/draft PR. ADR approval,
+reviewer-owned quality evaluation and actual both-provider proof remain future
+gates, not consequences of planning.
 The broader stack/module/deployment proposals below remain future work, not
 installed features or proof of module isolation, production readiness or acceptance.
 

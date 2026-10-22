@@ -35,10 +35,16 @@ steps. No new local all-suite run or bootstrap behavior change is asserted.
 is now recorded separately from review. The same
 [PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5) is human-merged;
 acceptance adds no bootstrap behavior or new product measurement.
-Spec 003 now has [draft storage requirements](../../specs/003-storage-registry/spec.md)
-and a completed author checklist; clarify is next on its own feature branch/
-draft PR. No registry/module storage, new command or changed startup/recovery
-behavior is implemented by this specification stage.
+Spec 003 now has [draft storage requirements](../../specs/003-storage-registry/spec.md),
+a completed author checklist, zero-question clarification and a
+[proposed plan](../../specs/003-storage-registry/plan.md). Its
+[future validation guide](../../specs/003-storage-registry/quickstart.md)
+describes commands/cases that are **not implemented yet**.
+[ADR 0005](../adr/0005-module-storage-ownership.md) proposes offline provisioning,
+explicit bootstrap upgrade, assigned EF migrations and stopped full-set recovery;
+it is not human-approved. Checklist is next on the same draft PR. No
+registry/module storage, package adoption, new command or changed
+startup/recovery behavior is implemented by this planning stage.
 Spec 002 timing now uses an available supported workstation/CI runner with
 actual metadata, not a fixed Ubuntu/CPU/RAM profile, per the human's ADR amendment.
 The subsequent author-guide amendment removes the manual timed exercise and

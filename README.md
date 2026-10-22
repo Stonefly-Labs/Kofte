@@ -35,7 +35,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 | 🔐 Explicit boundaries | Team-scoped authorization, audited actions and module-owned storage |
 
 > [!IMPORTANT]
-> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003 now has storage-isolation requirements, not an implemented registry. Nothing here claims production readiness or MVP completion.
+> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003 now has storage-isolation requirements and a proposed design, not an implemented registry. Nothing here claims production readiness or MVP completion.
 
 ## 🧭 The shape of things to come
 
@@ -68,7 +68,7 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**Spec 003 / specify and clarify are complete; plan is next.** The
+**Spec 003 / specify, clarify and plan are complete; checklist is next.** The
 [draft specification](specs/003-storage-registry/spec.md) and
 [author checklist](specs/003-storage-registry/checklists/requirements.md)
 define durable module storage ownership, concurrent collision-safe registration,
@@ -77,12 +77,21 @@ recovery and safe diagnostics. Five stories, 18 scenarios, 16 functional
 requirements and six measurable outcomes cover both providers; all 16 author
 criteria are satisfied. Clarification found all ten ambiguity categories clear
 at requirements level, with zero questions and no spec/checklist changes.
-Allocator, contracts, budgets, locking, provisioning privileges and recovery
-mechanisms remain planning/ADR decisions, not unresolved product intent.
+The [plan](specs/003-storage-registry/plan.md),
+[research](specs/003-storage-registry/research.md),
+[data model](specs/003-storage-registry/data-model.md),
+[storage contract](specs/003-storage-registry/contracts/storage-v1.md) and
+[future validation guide](specs/003-storage-registry/quickstart.md) now propose
+persisted collision-safe allocation, offline provisioning, owner-bound EF
+migrations and stopped complete-set recovery. The runtime PostgreSQL credential
+keeps its database CREATE restriction; a separate offline provisioner creates
+module schemas. [ADR 0005](docs/adr/0005-module-storage-ownership.md) is
+**Proposed**, requiring human approval before implementation.
 Work continues on `feature/003-storage-registry` and
 [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
-No plan, storage implementation, reviewer-owned quality review or human
-acceptance is claimed.
+Pre-research and post-design constitutional gates pass at design level.
+No storage implementation, package adoption, runtime proof, reviewer-owned
+quality review or human feature acceptance is claimed.
 
 **Spec 002 is explicitly human-accepted and merged.**
 The [acceptance record](specs/002-platform-contracts/acceptance.md) preserves

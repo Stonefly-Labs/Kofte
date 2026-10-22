@@ -38,14 +38,21 @@ usability study or permission to chain stages is inferred.
 The author/quality checklists remain 16/16 and 36/36, and the passing
 [analysis](specs/002-platform-contracts/analysis.md) preserves the feature's
 design-stage evidence; module runtimes remain future work.
-Spec **003 / specify and clarify** now establish the
+Spec **003 / specify and clarify** establish the
 [storage registry and isolation requirements](specs/003-storage-registry/spec.md)
 and [16/16 author checklist](specs/003-storage-registry/checklists/requirements.md).
 Clarification found all ten ambiguity categories clear, with zero questions;
 the specification and 16/16 author checklist remain unchanged.
-Plan is next on `feature/003-storage-registry` and
+The [completed plan](specs/003-storage-registry/plan.md), research, data model,
+storage/migration/recovery contracts and future guide now define the proposed
+allocation, offline privilege separation, assigned EF binding and stopped
+recovery design. [ADR 0005](docs/adr/0005-module-storage-ownership.md) remains
+Proposed and needs human approval before implementation. Both constitutional
+design gates pass; no dependency adoption or runtime proof is claimed.
+Checklist is next on `feature/003-storage-registry` and
 [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
-No module storage, plan or later-stage approval is introduced by clarification.
+No module storage, reviewer-owned quality review or feature acceptance is
+introduced by this planning checkpoint.
 See the [current local guide](docs/development/local-development.md).
 
 ## Prerequisites
