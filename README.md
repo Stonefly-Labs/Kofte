@@ -82,7 +82,12 @@ the complete 20-by-ten connection/process race matrix, killed-process recovery,
 focused evidence. All nine public examples execute, including corrected retry,
 real interrupted provisioning and provider-backed complete-set restore.
 The original PostgreSQL failures did not reproduce in the unchanged 105-case
-baseline; no increased timeout, blanket serialization or non-busy retry hides them.
+baseline. Later Linux CI identified a process-worker acquisition deadline:
+ownership verification and the first lease probe now share one guarded query,
+and worker provider initialization completes before the ten-way race barrier.
+Budgets and Busy-only retry rules are unchanged. The corrected complete local
+gate passes all 200 steps. Final CI is pending the browser-prerequisite mirror
+correction documented in the local guide.
 Baseline provider selection and warm-restart fixtures now honor the new
 registry/module ownership boundary without weakening its checks.
 See the [implementation report](specs/003-storage-registry/implementation.md)

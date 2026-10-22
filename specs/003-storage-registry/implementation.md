@@ -245,8 +245,21 @@ Later contended probes retain the existing Busy behavior. A real-provider
 regression verifies acquisition, contention and invalid-owner refusal while
 another connection proves the invalid owner did not retain the lock.
 No budget or retry classification is relaxed. The corrected four-case process
-matrix and six ownership/session/correction cases pass locally. A fresh complete
-gate and assessed-head CI must still pass before T076 can be completed.
+matrix and six ownership/session/correction cases pass locally. The fresh
+complete local gate at `4eb236a9cfb4196fb385ee7fbff1cf8ffc6017ee` also passes
+all ten reports / 200 steps, from 15:03:22 to 15:31:03 UTC on 2026-10-22.
+Every report records that same revision and `completeGate: true`.
+
+Nine product CI jobs and repository checks pass at `4eb236a`; recovery was
+delayed in browser prerequisites. Two recovery attempts were cancelled after
+long-running setup metadata; the second completed setup as cancellation took
+effect and had begun native recovery, so it is explicitly not passing evidence.
+Its retrieved log identifies very slow HTTP Azure Ubuntu archive downloads
+(a 7 MB font took nearly eight minutes), not a product assertion failure.
+CI now maps that mirror to the official HTTPS Ubuntu archive, preserving the
+configured other mirrors, signed apt verification and the exact existing
+Playwright/Chromium prerequisite installation. No product pin or check changes.
+Fresh assessed-head CI must still pass before T076 can be completed.
 
 ## Requirement, scenario, task and principle mapping
 

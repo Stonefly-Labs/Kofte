@@ -88,7 +88,10 @@ jobs:
           docker pull postgres:17@sha256:a63c1ea3f6a3a5a1621f97d2aba3b30faecfab4224c1b0000cc85ced57bb1939
       - name: Prepare pinned Chromium and OS dependencies
         if: matrix.browser
-        run: npm exec --workspace tests/e2e -- playwright install --with-deps chromium
+        run: |
+          grep -Fq 'http://azure.archive.ubuntu.com/ubuntu' /etc/apt/apt-mirrors.txt
+          sudo sed -i 's|http://azure\.archive\.ubuntu\.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' /etc/apt/apt-mirrors.txt
+          npm exec --workspace tests/e2e -- playwright install --with-deps chromium
       - name: Run named host, manifest and storage verification
         env:
           VERIFICATION_ARGUMENTS: ${{ matrix.arguments }}

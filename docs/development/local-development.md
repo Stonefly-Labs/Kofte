@@ -101,6 +101,10 @@ tests and offline schema tests before retaining all real-provider HTTP checks.
 `quality` builds/formats the expanded solution and checks structural TypeScript.
 Missing required platform files/projects or zero selected .NET tests fail closed.
 CI invokes these same commands; there is no separate CI-only validator.
+Browser-enabled Ubuntu CI jobs use the official HTTPS Ubuntu archive in place
+of the runner's slow Azure HTTP mirror. They still install the same Playwright
+OS prerequisites and pinned Chromium; package signatures and browser checks
+are not bypassed.
 
 ## Prerequisites and explicit restore
 
