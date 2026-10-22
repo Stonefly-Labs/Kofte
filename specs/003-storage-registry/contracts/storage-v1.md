@@ -1,8 +1,8 @@
 # Storage Contract v1
 
-**Status**: Approved design; implementation has resumed and final verification is in progress, not accepted.
+**Status**: Approved design; implementation stage complete, not human-accepted.
 The human explicitly approved [ADR 0005](../../../docs/adr/0005-module-storage-ownership.md).
-See [actual evidence and remaining obligations](../implementation.md).
+See [actual implementation and local/CI evidence](../implementation.md).
 This document defines the target contract; it does not prove every requirement
 is implemented. No public registry endpoint, module loader or authorization
 role is introduced by this storage slice.

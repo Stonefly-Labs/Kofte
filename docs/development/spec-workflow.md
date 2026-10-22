@@ -6,14 +6,16 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 003 / implement has resumed on the original
+**Current checkpoint:** 003 / implement is complete on the original
 `feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 The human explicitly selected **"Approve ADR 0005 for implementation"**.
 The [implementation report](../../specs/003-storage-registry/implementation.md)
 records actual dependency/provider, assigned-EF, crash, deadline, public recovery
-and privacy evidence and remaining verification. No further human decision
-blocks this engineering. Continue this same active implement stage; do not begin another stage,
-infer completion from code, request an intermediate merge or self-accept 003.
+and privacy evidence, all 78 completed tasks, the complete local 200-step gate
+and eleven passing assessed-head CI contexts. **Converge is next**, on a separate
+invocation using this same branch and draft PR. This checkpoint does not perform
+convergence, final review or explicit human acceptance. Do not request an
+intermediate merge or self-accept 003.
 
 **Pre-implementation checkpoint (historical):** 003 / specify, clarify, plan, checklist, tasks and analyze are complete on
 `feature/003-storage-registry`, originally created from updated `origin/main`,

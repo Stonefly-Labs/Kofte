@@ -35,7 +35,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 | 🔐 Explicit boundaries | Team-scoped authorization, audited actions and module-owned storage |
 
 > [!IMPORTANT]
-> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage implementation checkpoint is incomplete; its [evidence and remaining work](specs/003-storage-registry/implementation.md) are not feature acceptance. Nothing here claims production readiness or MVP completion.
+> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage implementation stage is complete; its [implementation evidence](specs/003-storage-registry/implementation.md) is not feature acceptance. Nothing here claims production readiness or MVP completion.
 
 ## 🧭 The shape of things to come
 
@@ -68,7 +68,7 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**Spec 003 / implement is running on its original feature branch**, after completed specify through analyze
+**Spec 003 / implement is complete on its original feature branch**, after completed specify through analyze
 and explicit human approval of [ADR 0005](docs/adr/0005-module-storage-ownership.md).
 The [specification](specs/003-storage-registry/spec.md), [plan](specs/003-storage-registry/plan.md)
 and [78-task list](specs/003-storage-registry/tasks.md) remain the approved scope;
@@ -86,17 +86,18 @@ baseline. Later Linux CI identified a process-worker acquisition deadline:
 ownership verification and the first lease probe now share one guarded query,
 and worker provider initialization completes before the ten-way race barrier.
 Budgets and Busy-only retry rules are unchanged. The corrected complete local
-gate passes all 200 steps. Final CI is pending the browser-prerequisite mirror
-correction documented in the local guide.
+gate passes all 200 steps. Assessed-head Linux CI also passes all ten product
+jobs / 200 steps and repository checks after the browser-prerequisite mirror
+correction documented in the local guide. All 78 implementation tasks are evidenced.
 Baseline provider selection and warm-restart fixtures now honor the new
 registry/module ownership boundary without weakening its checks.
 See the [implementation report](specs/003-storage-registry/implementation.md)
-for exact evidence and remaining verification, and the
+for exact revisions, commands, results and supported limits, and the
 [validation guide](specs/003-storage-registry/quickstart.md) for supported checks
-versus still-required proof. Normal serving remains module-free; storage is not
+and executable examples. Normal serving remains module-free; storage is not
 a new endpoint, module loader or authorization bypass. Work stays on
 `feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
-The active invocation completes implement only; it does not run convergence.
+This invocation completes implement only; **converge is next**, not performed here.
 Convergence, independent review and explicit numbered-feature acceptance remain
 separate later stages; no intermediate merge is requested.
 

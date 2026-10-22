@@ -38,14 +38,15 @@ usability study or permission to chain stages is inferred.
 The author/quality checklists remain 16/16 and 36/36, and the passing
 [analysis](specs/002-platform-contracts/analysis.md) preserves the feature's
 design-stage evidence; module runtimes remain future work.
-Spec **003 / implement is running** on `feature/003-storage-registry` and
+Spec **003 / implement is complete** on `feature/003-storage-registry` and
 [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6), with explicit human
 approval of [ADR 0005](docs/adr/0005-module-storage-ownership.md).
 The [implementation report](specs/003-storage-registry/implementation.md)
-distinguishes actual provider, assigned-EF, crash, deadline, complete-set recovery
-and captured privacy evidence from remaining verification. All nine public
-examples now execute in admitted, supervised maintenance children. Continue this
-same implement stage on the original branch and draft PR.
+records actual provider, assigned-EF, crash, deadline, complete-set recovery
+and captured privacy evidence. All nine public examples execute in admitted,
+supervised maintenance children. All 78 tasks, the complete local 200-step gate
+and eleven assessed-head CI contexts pass. **Converge is next**, as a separate
+invocation on the original branch and draft PR.
 This is not feature acceptance or permission to merge.
 The following paragraphs preserve the historical design-stage checkpoint.
 

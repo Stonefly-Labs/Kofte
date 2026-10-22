@@ -136,7 +136,7 @@ product or measurement is claimed. The same
 Its accepted ledger and all five acceptance evidence hashes were verified on
 updated main before starting 003. Acceptance itself did not start it.
 
-**003 / implement is running** on `feature/003-storage-registry` and
+**003 / implement is complete** on `feature/003-storage-registry` and
 [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 The human explicitly approved [ADR 0005](adr/0005-module-storage-ownership.md)
 for implementation. Reviewed dependencies, storage contracts, registry,
@@ -147,8 +147,9 @@ The resumed implementation adds actual before/after-commit process death,
 explicit verified abandoned-lock recovery, bounded worker cleanup, all-nine-case
 public examples and captured seven-outcome privacy proof. The named verifier now
 includes storage integration/recovery/privacy and public consumers alongside
-the existing bootstrap gates. Final verification is still in progress; this is
-not feature acceptance. Keep this same branch and draft PR through later stages.
+the existing bootstrap gates. All 78 tasks, the complete local 200-step gate and
+eleven assessed-head CI contexts pass. **Converge is next**, not performed here;
+this is not feature acceptance. Keep this same branch and draft PR through later stages.
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 

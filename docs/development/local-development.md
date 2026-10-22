@@ -35,7 +35,7 @@ steps. No new local all-suite run or bootstrap behavior change is asserted.
 is now recorded separately from review. The same
 [PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5) is human-merged;
 acceptance adds no bootstrap behavior or new product measurement.
-Spec 003's **implementation has resumed**, with explicit human approval of
+Spec 003's **implementation stage is complete**, with explicit human approval of
 [ADR 0005](../adr/0005-module-storage-ownership.md).
 The [implementation report](../../specs/003-storage-registry/implementation.md)
 records actual registry/provider races, assigned EF boundaries, killed workers,
@@ -43,9 +43,9 @@ explicit migration recovery, bounded cleanup and captured privacy evidence.
 The [validation guide](../../specs/003-storage-registry/quickstart.md)
 includes all nine executable public examples and actual stopped provider
 backup/restore, with safe legacy refusals. Named suites now include the storage
-projects. Final verification remains in progress; no feature acceptance is inferred.
-Implementation stays on the original feature branch and draft PR.
-The next paragraph preserves the pre-implementation design-stage history.
+projects. All 78 tasks, the complete local 200-step gate and eleven assessed-head
+CI contexts pass; no feature acceptance is inferred. **Converge is next**, as a
+separate invocation on the original feature branch and draft PR.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).
@@ -65,6 +65,7 @@ JSON logs, spans and bounded operation/provider/outcome metrics are observable
 audit-relevant records, not spec 009's durable audit runtime. Ownership is not a
 hostile-plugin sandbox or future actor/team/resource authorization.
 
+The following paragraph preserves the pre-implementation design-stage history.
 Spec 003 now has [draft storage requirements](../../specs/003-storage-registry/spec.md),
 a completed author checklist, zero-question clarification and a
 [proposed plan](../../specs/003-storage-registry/plan.md). Its

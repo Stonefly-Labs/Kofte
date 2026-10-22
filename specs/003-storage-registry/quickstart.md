@@ -1,10 +1,10 @@
 # Validation Guide: 003 Storage Registry
 
-**Status**: Executable implementation guide; final verification is in progress, not feature
+**Status**: Executable guide for the completed implementation stage, not feature
 acceptance. [ADR 0005](../../docs/adr/0005-module-storage-ownership.md) is
 human-approved and its dependency graph is reviewed. The
 [implementation report](implementation.md) identifies actual executed commands
-and remaining verification. All nine public examples, actual interrupted
+and passing local/CI evidence. All nine public examples, actual interrupted
 provisioning and stopped provider-backed restore now execute. Only recorded
 results count as evidence; the guide does not grant feature acceptance.
 Existing startup/recovery guidance remains in the

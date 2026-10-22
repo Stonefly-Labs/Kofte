@@ -1,7 +1,7 @@
 # Migration and Recovery Contract
 
-**Status**: Human-approved 003 design; implementation is incomplete, not
-accepted. See [actual evidence and remaining work](../implementation.md).
+**Status**: Human-approved 003 design; implementation stage complete, not
+human-accepted. See [actual implementation and local/CI evidence](../implementation.md).
 Assigned contexts/migrations and stopped whole-set exercises have focused
 both-provider proof. Supported DDL is currently limited to assigned
 create-table/primary-key and add-column operations with int/text columns;

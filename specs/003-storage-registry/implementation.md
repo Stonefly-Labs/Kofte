@@ -1,12 +1,16 @@
 # Implementation: 003 - Storage Registry and Module Isolation
 
-**Stage:** Implement running; T001-T075 evidenced, complete local gate passed, CI diagnosis in progress.
+**Stage:** Implement complete; all 78 tasks evidenced, complete local gate and assessed-head CI passed.
 **Branch / PR:** `feature/003-storage-registry` /
 [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 **Started:** 2026-10-22 (UTC).
-**Implementation revision:** `b787a48dd8d218b85b217318cfdacdb0fb1e0ad9`.
-Earlier commands began on the matching resumed worktree before that commit;
-their recorded parent HEAD is `320d565d14698e1aac98ac25865bd414dfe7305a`.
+**Completed:** 2026-10-22 (UTC).
+**Verified product revision:** `4eb236a9cfb4196fb385ee7fbff1cf8ffc6017ee`.
+**Assessed CI head:** `92e942efcc1e9033f17c7e24f7b20c53c940f9da`.
+The latter changes only CI mirror setup and documentation, not product, test or
+verification-script source. The final publication adds stage documentation,
+task completion and the driver transition; its checks are recorded in the PR
+without a self-referential bookkeeping commit.
 
 ## Entry gates and approval
 
@@ -165,8 +169,8 @@ process-race cases passed 2/2 without a speculative race fix. A later
 131-case run passed 130 and exposed a negative fixture assuming EF history
 already existed at the native early barrier; the fixture was corrected.
 The public full run exposed omitted measured assertions in the older module
-examples; those now use the shared real assertion counter. Final results
-below must be populated only from actual reruns.
+examples; those now use the shared real assertion counter. Passing results
+below come from actual executed commands.
 
 | Exact command / selection | Result |
 | --- | --- |
@@ -190,30 +194,30 @@ below must be populated only from actual reruns.
 | `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --filter-class '*RegistrationConcurrencyTests' --filter-method '*TwentyRoundsOfTenSeparateProcesses*' --minimum-expected-tests 4` | Passed, all four actual process-race cases after the atomic verified-probe correction |
 | `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --filter-class '*PostgresLeaseLossTests' --filter-class '*CorrectedRetryTests' --minimum-expected-tests 6` | Passed, 6/6, zero skipped, including the new ownership/contention probe regression |
 | `python3 scripts/verify.py --suite all --disposable-postgres` | Passed, all ten suite reports / 200 steps, `completeGate: true` |
-| Assessed-head CI at `b787a48` | 9/11 contexts passed; storage PostgreSQL integration failed, also failing the failure-propagation baseline. T076 remains open. |
+| Assessed-head CI at `92e942e` | Passed, all ten product jobs / 200 report steps and repository checks: eleven contexts |
 
 Existing named suites retain manifest, native host health/OpenAPI/HTTP,
 web/browser/axe, startup, valid-v0 recovery, privacy and failure-propagation
 steps alongside required storage inventory/provider/scenario checks.
-No missing provider or zero-test run is skipped into success. The complete local
-gate ran from 14:00:35 to 14:28:08 UTC on 2026-10-22: quality 19, unit 11,
+No missing provider or zero-test run is skipped into success. An earlier complete
+local gate ran from 14:00:35 to 14:28:08 UTC on 2026-10-22: quality 19, unit 11,
 SQLite integration 7, PostgreSQL integration 9, recovery 38, contract 37,
 browser 16, privacy 36, startup 9 and failure-propagation 18 steps. Its first
 three reports record parent `320d565`; later reports record `b787a48`.
-The product source was unchanged across that publication. Only the separately
-tested Python failure-diagnostic extension was subsequently edited.
+The product source was unchanged across that publication. Subsequent diagnostic
+and verified-acquisition corrections and their fresh full gate are detailed below.
 
 The first assessed implementation CI run is
 [39792182400](https://github.com/Stonefly-Labs/Kofte/actions/runs/39792182400),
 with [repository checks](https://github.com/Stonefly-Labs/Kofte/actions/runs/39792182371)
-passing. Its checkout merge revision was
+passing; nine of eleven contexts passed overall. Its checkout merge revision was
 `818895dc3400615d8756e1c26a89c680f800a2e9`. Both failing contexts reached the
 same storage PostgreSQL test command; the existing wrapper discarded the native
 failure identity along with private output. A scoped diagnostic extension now
 retains only repository-source-allowlisted test symbols and fixed storage codes,
 never theory arguments, raw exceptions, paths or payloads. Focused Python
-regressions and the full 109-test Python suite pass. This improves evidence,
-not the underlying failure or the task's passing status; CI diagnosis continues.
+regressions and the then-full 109-test Python suite passed. This improved
+diagnostic evidence, not the underlying failure or that checkpoint's passing status.
 Console-only extraction at diagnostic head `933cefa` did not retain a native
 failure identity. Native storage commands now also generate the installed
 xUnit XML report inside a fresh private root, extract only source-allowlisted
@@ -259,7 +263,25 @@ Its retrieved log identifies very slow HTTP Azure Ubuntu archive downloads
 CI now maps that mirror to the official HTTPS Ubuntu archive, preserving the
 configured other mirrors, signed apt verification and the exact existing
 Playwright/Chromium prerequisite installation. No product pin or check changes.
-Fresh assessed-head CI must still pass before T076 can be completed.
+The corrected assessed-head product run
+[39808405984](https://github.com/Stonefly-Labs/Kofte/actions/runs/39808405984)
+now passes all ten jobs. Downloaded safe artifacts contain exactly ten reports
+and **200 passing steps**: quality 19, unit 11, SQLite integration 7,
+PostgreSQL integration 9, recovery 38, contract 37, browser 16, privacy 36,
+startup 9 and failure-propagation 18. These are separate named CI suites
+(`completeGate: false` individually), collectively matching the complete local
+gate; the local all-suite reports have `completeGate: true`.
+[Repository checks 39808405951](https://github.com/Stonefly-Labs/Kofte/actions/runs/39808405951)
+also pass at the exact same head, `92e942e`: eleven passing contexts.
+Every product report records assessed merge revision
+`36d84a5f2942df5781432b6ed5b70521c62041bb`; its actual parents were verified as
+main `66f0e4a950bc3590cdb3a25f1622afbd13a0c226` and head
+`92e942efcc1e9033f17c7e24f7b20c53c940f9da`.
+Observed hosted-runner report metadata is Linux x86_64, four logical CPUs,
+16,760,340,480 bytes RAM and Python 3.12.3; the workflow selects Ubuntu 24.04
+and the same pinned SDK/Node/npm/provider image. No fixed benchmark profile
+or human usability study is inferred. The final 111-test Python suite and
+repository/whitespace checks also pass. T076-T078 are complete.
 
 ## Requirement, scenario, task and principle mapping
 
@@ -289,10 +311,10 @@ Fresh assessed-head CI must still pass before T076 can be completed.
 | US3.1-4 / SC-001 | Both independent Alpha/Beta implementations, clean/additive upgrade, model/history/cache and forbidden-target negatives; T036-T047 |
 | US4.1-4 / SC-004 | All 31 boundary kills (including the native callback), real budgets/lease loss, upgrade and whole-set restore/refusal; T048-T063 |
 | US5.1-2 / SC-005 | Seven-outcome captured-channel privacy, result bounds and retained-data correction; T064-T070, boundary negatives |
-| SC-006 | Executable public guides, existing host/manifest/browser gates and assessed-head CI; T071-T078, pending final execution |
+| SC-006 | Executable public guides, existing host/manifest/browser gates, complete local gate and passing assessed-head CI; T071-T078 |
 
 These rows cover all 18 acceptance scenarios, 16 FRs and six SCs;
-coverage mapping is not a substitute for the pending passing gates.
+coverage mapping is supported by the executed passing gates above, not file existence.
 
 | Constitution | Evidence / applicability |
 | --- | --- |
@@ -325,8 +347,8 @@ point remains the operator's explicit data-loss responsibility; UUID/hash
 consistency does not authenticate malicious forgery or prove that no newer lost
 backup exists.
 
-T001-T075 are evidenced. The complete local gate, assessed-head CI, final
-report/publication and driver completion transition remain open until their
-actual evidence exists.
-The only next stage after successful publication is **converge**.
+All 78 tasks are evidenced. Complete local and assessed-head CI gates pass;
+this report, task accounting and the driver completion transition are published
+together on the original feature branch and draft PR.
+The only next stage is **converge**, not performed by this invocation.
 The PR stays draft: no feature acceptance or merge is requested here.

@@ -150,8 +150,10 @@ actual killed-process recovery, explicit owner-bound abandoned-lock recovery,
 admitted maintenance supervision and captured privacy checks. Migration physical
 verification rejects unexpected tables/columns/defaults, missing primary keys,
 secondary constraints/indexes, generated columns and views/routines/triggers.
-The complete local/CI obligations remain a verification gate, not an inferred
-acceptance. The following paragraphs
+The implementation stage is complete: all 78 tasks, the complete local 200-step
+gate and eleven assessed-head CI contexts pass. Converge, final review and
+explicit human acceptance remain separate later stages, not inferred from
+these results. The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.
 

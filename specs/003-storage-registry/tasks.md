@@ -7,10 +7,10 @@ and reviewer-authorized requirements-quality checklist.
 quality criteria. Passing analyze and explicit human approval of Proposed
 ADR 0005 are required **before implementation**, not inferred from this list.
 **Constitution**: Adopted v2.0.1, principles I-XII.
-**Status**: T001-T075 are evidenced, including all six named gates and both
-published public `all` commands. T076-T078 remain open while the complete local
-gate and assessed-head CI run. This is the same implement stage, not convergence
-or feature acceptance.
+**Status**: All 78 tasks are evidenced, including all six named gates, both
+published public `all` commands, the complete local 200-step gate and eleven
+passing assessed-head CI contexts. Implement is complete; converge is next,
+not performed here. This is not feature acceptance.
 
 **Tests**: The specification and constitution explicitly require these tests.
 Use actual PostgreSQL 17 and SQLite, not substitutes. Write story cases before
@@ -216,9 +216,9 @@ evidence across all channels, and corrected retry is actually usable.
 - [X] T073 Reconcile actual adopted direct/transitive/native dependencies, retained notices and locked restores after the final project graph in `docs/development/dependencies.md`, `docs/development/third-party-notices.md` and affected `packages.lock.json` files; run `python3 scripts/check_dependencies.py` and prove no unreviewed package, incompatible native asset or unnecessary EF Design/tool adoption remains. Depends: T071. Trace: FR-009/010/013, SC-006; principles III, VI, X.
 - [X] T074 Update `README.md`, `CONTRIBUTING.md`, `docs/README.md`, `docs/architecture.md`, `docs/development/local-development.md`, `docs/development/spec-workflow.md` and `specs/003-storage-registry/quickstart.md` to match actual implemented APIs/configuration/commands, explicit v0/v1 and legacy refusal changes, stopped recovery responsibilities, supported environments and measured limits; keep all later modules/authorization/MCP/jobs/deployment work and feature acceptance unclaimed. Depends: T070, T072, T073. Trace: FR-001/010/013-016, SC-006; principles I-XII.
 - [X] T075 Run the focused named gates `python3 scripts/verify.py --suite unit`, `python3 scripts/verify.py --suite integration --provider both --disposable-postgres`, `python3 scripts/verify.py --suite contract --provider both --disposable-postgres`, `python3 scripts/verify.py --suite recovery --provider both --disposable-postgres`, `python3 scripts/verify.py --suite privacy --provider both --disposable-postgres` and `python3 scripts/verify.py --suite quality`; execute both documented `tests/contract/Kofte.Storage.Consumer` all-scenario commands and retain exact nonzero case counts/results and safe evidence in `specs/003-storage-registry/implementation.md`. Depends: T074. Trace: FR-001-016, SC-001-006; principles III-VI, X, XI.
-- [ ] T076 Run the complete existing gate `python3 scripts/verify.py --suite all --disposable-postgres` and inspect actual assessed-head CI for all required contexts; retain pure manifest, host health/OpenAPI/HTTP/web/browser/axe, startup, v0 recovery, privacy and failure-propagation regressions as well as new storage evidence in `specs/003-storage-registry/implementation.md`. Report unavailable or failing checks honestly and leave this task open until actual green evidence; focused checks do not replace the full gate. Depends: T075. Trace: FR-013/015/016, SC-001-006; principles I, IX-XI.
-- [ ] T077 Finish `specs/003-storage-registry/implementation.md` with requirement/scenario/outcome/task/principle mappings, exact commands/results and actual revision, SDK/runtime, OS/architecture, CPU/memory/available conditions, provider/image identity, concurrency/restart/crash/deadline counts and sanitized inventories; account explicitly for all 16 FRs, six SCs, 18 scenarios and documented preserved-block/recovery limitations without inventing a fixed benchmark host or manual usability study. Depends: T076. Trace: FR-001-016, SC-001-006; principles I-XII.
-- [ ] T078 Run `python3 scripts/check_repository.py`, `python3 -m unittest discover -s scripts/tests -v` and `git diff --check`, review the complete scoped diff/secrets/artifacts, and publish implementation evidence and `.specify/drive-state.json` together on `feature/003-storage-registry` and draft PR #6 with immediate push after each commit; complete only implement when all tasks/evidence pass and hand off converge as the next invocation, not review/acceptance/merge now. Depends: T077. Trace: FR-016, SC-006; principles XI, XII/governance.
+- [X] T076 Run the complete existing gate `python3 scripts/verify.py --suite all --disposable-postgres` and inspect actual assessed-head CI for all required contexts; retain pure manifest, host health/OpenAPI/HTTP/web/browser/axe, startup, v0 recovery, privacy and failure-propagation regressions as well as new storage evidence in `specs/003-storage-registry/implementation.md`. Report unavailable or failing checks honestly and leave this task open until actual green evidence; focused checks do not replace the full gate. Depends: T075. Trace: FR-013/015/016, SC-001-006; principles I, IX-XI.
+- [X] T077 Finish `specs/003-storage-registry/implementation.md` with requirement/scenario/outcome/task/principle mappings, exact commands/results and actual revision, SDK/runtime, OS/architecture, CPU/memory/available conditions, provider/image identity, concurrency/restart/crash/deadline counts and sanitized inventories; account explicitly for all 16 FRs, six SCs, 18 scenarios and documented preserved-block/recovery limitations without inventing a fixed benchmark host or manual usability study. Depends: T076. Trace: FR-001-016, SC-001-006; principles I-XII.
+- [X] T078 Run `python3 scripts/check_repository.py`, `python3 -m unittest discover -s scripts/tests -v` and `git diff --check`, review the complete scoped diff/secrets/artifacts, and publish implementation evidence and `.specify/drive-state.json` together on `feature/003-storage-registry` and draft PR #6 with immediate push after each commit; complete only implement when all tasks/evidence pass and hand off converge as the next invocation, not review/acceptance/merge now. Depends: T077. Trace: FR-016, SC-006; principles XI, XII/governance.
 
 ## Dependencies and Execution Order
 
@@ -337,7 +337,7 @@ gate is neither performed nor waived by this internal slice.
 
 ## Completion and Human Handoff
 
-This task list contains **78 tasks**, with T001-T075 evidenced so far:
+This task list contains **78 tasks**, all evidenced:
 six setup, eight foundational,
 13 US1, eight US2, twelve US3, sixteen US4, seven US5 and eight final evidence
 tasks. All 18 acceptance scenarios, 16 functional requirements, six outcomes and
@@ -345,9 +345,9 @@ twelve principles have explicit task/evidence coverage. Parallel markers do
 not change dependencies or authorize concurrent Spec Kit stages.
 
 The tasks-generation and analyze gates are historical and passed; the human
-approved ADR 0005 before implementation. Current remaining work is complete-gate
-and assessed-head CI evidence, final reporting and publication. Never check a
-task solely because a file exists.
+approved ADR 0005 before implementation. The complete local gate and assessed-head
+CI pass; exact revisions, results and supported limits are recorded in
+`implementation.md`. Completion does not follow from file existence alone.
 
 During implement, retain actual commands/results and acceptance mapping in
 `implementation.md`; blocked/unavailable checks remain open and actionable.
