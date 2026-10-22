@@ -49,10 +49,15 @@ allocation, offline privilege separation, assigned EF binding and stopped
 recovery design. [ADR 0005](docs/adr/0005-module-storage-ownership.md) remains
 Proposed and needs human approval before implementation. Both constitutional
 design gates pass; no dependency adoption or runtime proof is claimed.
-Checklist is next on `feature/003-storage-registry` and
+The [quality checklist](specs/003-storage-registry/checklists/quality.md) now
+satisfies 36/36 requirements-quality criteria after explicit reviewer
+authorization, with per-item evidence and no blocking gap. ADR 0005 still needs
+human approval before implementation; dependency adoption and actual provider
+proof are not completed by checklist review.
+Tasks is next on `feature/003-storage-registry` and
 [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
-No module storage, reviewer-owned quality review or feature acceptance is
-introduced by this planning checkpoint.
+No module storage, implementation task list or feature acceptance is introduced
+by this checklist checkpoint.
 See the [current local guide](docs/development/local-development.md).
 
 ## Prerequisites

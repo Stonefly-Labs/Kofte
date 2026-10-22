@@ -154,9 +154,13 @@ remain intact. SQLite retains separate private files and the existing
 stopped-host maintenance lease. Bootstrap upgrade is explicit; unsafe legacy
 platform-only recovery/reset will be refused once registry/module data exists.
 Both constitutional design gates pass; no package or code is adopted.
-Checklist is next on the same feature branch/draft PR. ADR approval,
-reviewer-owned quality evaluation and actual both-provider proof remain future
-gates, not consequences of planning.
+The [quality checklist](../specs/003-storage-registry/checklists/quality.md)
+now passes all 36 requirements-quality criteria under explicit reviewer
+authorization, with per-item evidence and no blocking gap or constitutional
+conflict. This does not approve ADR 0005 or prove the design: human ADR approval,
+dependency adoption and actual both-provider proof remain future gates.
+Tasks is next on the same feature branch/draft PR; no architecture change is
+made by checklist evaluation.
 The broader stack/module/deployment proposals below remain future work, not
 installed features or proof of module isolation, production readiness or acceptance.
 

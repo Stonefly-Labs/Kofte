@@ -170,5 +170,15 @@ restricted runtime credential; SQLite retains private per-module files and the
 existing stopped-host lease. Pre-research and post-design constitutional checks
 pass at design level; planning hooks remain absent.
 [ADR 0005](adr/0005-module-storage-ownership.md) is Proposed, not approved.
-Checklist is next and requires reviewer-owned evaluation. No product command,
-package adoption, runtime/provider proof, tasks or feature acceptance is added.
+No product command, package adoption, runtime/provider proof, tasks or feature
+acceptance was added by planning.
+
+**003 / checklist is complete** on the same branch/draft PR.
+The [quality checklist](../specs/003-storage-registry/checklists/quality.md)
+was generated with 36 unchecked criteria, then evaluated and marked at the
+reviewer's explicit request. All 36 requirements-quality criteria are satisfied
+with per-item evidence; no blocking gap or constitutional conflict remains.
+Storage/permission boundaries, migrations/recovery, budgets/privacy, real-provider
+acceptance and explicit MCP/UI applicability are covered. Proposed ADR 0005
+still needs human approval before implementation; dependency adoption and
+actual runtime proof remain later gates. Tasks is next, not executed here.

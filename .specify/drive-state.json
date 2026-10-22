@@ -14,7 +14,7 @@
     },
     "003": {
       "directory": "specs/003-storage-registry",
-      "next_step": "checklist"
+      "next_step": "tasks"
     }
   },
   "active": null,
@@ -449,6 +449,22 @@
         "specs/003-storage-registry/plan.md": "4bd71c5b4d243ac46ff0296f39b37446f135e4009ad57ce4f2dd613ec3cb3c46",
         "specs/003-storage-registry/research.md": "3c0b79e07c89891881ba703608d07941febbc5f583f56c357057b5d252bd636e",
         "specs/003-storage-registry/quickstart.md": "73c1642f59a9bc6ea570bb65694490100b7c92dd60d6f3a3d6a57230138e330a"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "checklist",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-22T02:49:16+00:00",
+      "completed_at": "2026-10-22T03:01:45+00:00",
+      "outcome": "pass",
+      "note": "Executed speckit-checklist against the recorded explicit feature directory and resolved template. Generated 36 unchecked requirements-quality criteria across storage/authority, migration/recovery, operability/privacy, measurable real-provider acceptance and explicit MCP/UI applicability. The reviewer explicitly selected \"assisted\" when asked to authorize assessment and marking with per-item evidence and human-attention findings. Assessed all 36 against spec, plan, research, data model, storage/migration/recovery contracts, future guide and constitution: 36/36 satisfied, all spec-traceable, with no blocking requirements-quality gap or constitutional conflict. Proposed ADR 0005 still needs explicit human approval before implementation: allocator ownership, separate offline PostgreSQL provisioner, assigned/restricted migration binding, finite budgets and stopped complete-set recovery. Actual dependency graph/license/provenance/native-asset/lock review and real-provider isolation/concurrency/crash/deadline/privacy/recovery proof remain implementation gates, not completed by checklist review. No material scope question or before/after checklist hooks. Spec/design/author checklist unchanged; no tasks, product code, runtime proof, ADR approval or feature acceptance. Tasks is next on the same branch/draft PR without intermediate merge.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/checklists/quality.md": "fbb14e996cbcd6c19959ee5e76369a3377943f4ca485b92fe7ed54467a23a6c5",
+        "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
       }
     }
   ]

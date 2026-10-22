@@ -42,9 +42,13 @@ a completed author checklist, zero-question clarification and a
 describes commands/cases that are **not implemented yet**.
 [ADR 0005](../adr/0005-module-storage-ownership.md) proposes offline provisioning,
 explicit bootstrap upgrade, assigned EF migrations and stopped full-set recovery;
-it is not human-approved. Checklist is next on the same draft PR. No
-registry/module storage, package adoption, new command or changed
-startup/recovery behavior is implemented by this planning stage.
+it is not human-approved. The
+[quality checklist](../../specs/003-storage-registry/checklists/quality.md) now
+satisfies all 36 requirements-quality criteria after explicit reviewer
+authorization, with no blocking gap. Tasks is next on the same draft PR.
+ADR approval, dependency adoption and actual provider proof remain later gates.
+No registry/module storage, new command or changed startup/recovery behavior
+is implemented by this checklist stage.
 Spec 002 timing now uses an available supported workstation/CI runner with
 actual metadata, not a fixed Ubuntu/CPU/RAM profile, per the human's ADR amendment.
 The subsequent author-guide amendment removes the manual timed exercise and

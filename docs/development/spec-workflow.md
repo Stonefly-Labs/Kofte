@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 003 / specify, clarify and plan are complete on
+**Current checkpoint:** 003 / specify, clarify, plan and checklist are complete on
 `feature/003-storage-registry`, originally created from updated `origin/main`,
 and the same [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 The exact inventory prompt and resolved project spec template produced
@@ -46,10 +46,30 @@ bootstrap upgrade and stopped complete-set recovery avoid registry-only reset.
 Pre-research and post-design constitution checks pass at design level, with
 no planning hooks. [ADR 0005](../adr/0005-module-storage-ownership.md) remains
 Proposed and requires human approval before implementation.
-No product code, dependency adoption, runtime proof, reviewer-owned quality
-checklist, tasks or human acceptance is created. **Checklist is next** on this
-same feature branch/draft PR and requires reviewer-owned evaluation;
-do not merge between stages.
+Planning created no product code, dependency adoption, runtime proof,
+reviewer-owned quality checklist, tasks or human acceptance.
+
+The [quality checklist](../../specs/003-storage-registry/checklists/quality.md)
+has now been generated with 36 unchecked requirements-quality criteria.
+The reviewer explicitly selected **"assisted"** when asked whether the agent
+should assess and mark the checklist with per-item evidence, highlighting human
+attention items. Under that authorization, all 36 criteria are assessed and
+satisfied with evidence and no blocking requirements-quality or constitutional
+finding. All criteria trace to the specification and cover storage/permission
+boundaries, migration/recovery, operability/privacy, acceptance measurability
+and explicit MCP/UI applicability. No material scope question was needed.
+No before/after checklist hooks are configured.
+
+Human attention remains **Proposed ADR 0005**: immutable allocation, offline
+PostgreSQL provisioning authority, assigned migration boundaries/restrictions,
+finite budgets and stopped complete-set recovery. Checklist assessment does
+not approve it. Dependency graph/license/provenance/native-asset/lock review
+and actual both-provider concurrency, migration, interruption, deadline,
+privacy and executable-recovery proof remain implementation gates.
+Spec, plan, research, data model, contracts, future guide and the 16/16 author
+checklist are unchanged by this stage. **Tasks is next** on the same feature
+branch/draft PR; no task list, product code or feature acceptance is created.
+Do not merge between stages.
 
 **Completed prerequisite:** 002 / explicitly human-accepted on the original branch
 and PR #5. After the passing review and numbered-feature acceptance handoff, the
