@@ -4,6 +4,10 @@
 Focused evidence is in [implementation.md](implementation.md). The human removed
 the manual usability gate; implementation is complete, not feature acceptance. The
 [local guide](../../docs/development/local-development.md) covers the unchanged host.
+The subsequent [convergence assessment](convergence.md) qualifies that original
+checkpoint: T049 must complete documented public/repeated corpus coverage before
+the feature can pass convergence. Existing passing selections omit that evidence;
+no product defect is demonstrated.
 
 ## Prerequisites
 

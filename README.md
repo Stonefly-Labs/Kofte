@@ -68,7 +68,15 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**Spec 002 / implement is complete; converge is next, not executed here.**
+**Spec 002 / converge found one evidence gap; implement is next.**
+The [convergence assessment](specs/002-platform-contracts/convergence.md)
+checks all 35 requirements/outcomes/scenarios, twelve plan decisions and all
+48 original tasks. Existing checks pass, but the public corpus omits documented
+boundary recipes and full repeated multi-error proof. Append-only T049 adds that
+required evidence; no product defect is demonstrated and no product code changed
+during convergence. Review and explicit human acceptance remain separate gates.
+
+The original completed implementation checkpoint follows.
 The [approved design](docs/adr/0004-module-manifest-contract.md) now has a pure
 `Kofte.Platform` library with strict bounded JSON, immutable identity, SemVer
 compatibility, safe ordered diagnostics and non-authoritative declarations.
@@ -80,9 +88,10 @@ complete implementation evidence. The human removed the fixed Ubuntu/CPU/RAM ben
 T044 is evidenced on the available supported workstation with actual metadata
 and 100 individually timed checks. The human also removed T045's manual timed
 exercise; actual automated guide/error/corrected-retry checks now satisfy it.
-No human study or elapsed-time attestation is claimed. All 48 implementation
-tasks are evidenced; separate convergence, review and explicit feature acceptance remain.
-The [48-task list](specs/002-platform-contracts/tasks.md), passing
+No human study or elapsed-time attestation is claimed. All 48 original
+implementation tasks have recorded evidence; convergence now qualifies corpus completeness
+with T049. Remediation, follow-up convergence, review and explicit feature acceptance remain.
+The [task list, now including T049](specs/002-platform-contracts/tasks.md), passing
 [analysis](specs/002-platform-contracts/analysis.md), 16/16 author checklist and
 36/36 reviewer-authorized quality checklist preserve traceability, not acceptance.
 Keep `feature/002-platform-contracts` and

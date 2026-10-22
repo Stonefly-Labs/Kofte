@@ -76,7 +76,7 @@ gates. The read-only [analysis](../specs/002-platform-contracts/analysis.md)
 passes with all 21 requirements/outcomes and 14 scenarios covered, no unmapped
 task and no actionable or constitutional finding.
 
-**002 / implement is complete; converge is next, not executed here.**
+**002 / original implementation checkpoint is complete.**
 The pure library and test-owned consumers implement the approved design; the
 [author guide](../specs/002-platform-contracts/quickstart.md) is executable.
 [Implementation evidence](../specs/002-platform-contracts/implementation.md)
@@ -88,3 +88,13 @@ exercise; seven actual automated guide/example/error/corrected-retry checks
 satisfy amended T045. All 48 tasks are evidenced, with no human-study claim.
 No module runtime or feature acceptance is claimed. The next invocation keeps
 this feature branch/draft PR; there is no intermediate merge.
+
+**002 / converge is complete with gaps; implement is next.**
+The [assessment](../specs/002-platform-contracts/convergence.md) covers all 35
+requirements/outcomes/scenarios, twelve plan decisions and 48 original tasks.
+It appends T049 for one HIGH partial acceptance-evidence gap: missing documented
+public boundary cases and complete 100-run/two-consumer/two-culture ordered
+multi-diagnostic proof. Existing named unit and both-provider contract suites
+pass, but do not cover those omissions. No product defect is demonstrated;
+no product/test/spec/plan change was made. Follow-up convergence, review and
+explicit human acceptance remain required on the same draft PR.

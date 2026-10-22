@@ -15,6 +15,10 @@ is now recorded for spec 001's bootstrap scope and limits. Its original
 Spec 002's [author guide](../../specs/002-platform-contracts/quickstart.md)
 now runs the pure manifest validator and test-owned console, offline after
 restore. Its implementation stage is complete, not feature acceptance.
+Subsequent [convergence](../../specs/002-platform-contracts/convergence.md)
+found one public/repeated-corpus evidence gap and appended T049. Implement is
+next to close it; existing passing suites do not establish the omitted coverage.
+No product defect or bootstrap behavior change is asserted.
 Spec 002 timing now uses an available supported workstation/CI runner with
 actual metadata, not a fixed Ubuntu/CPU/RAM profile, per the human's ADR amendment.
 The subsequent author-guide amendment removes the manual timed exercise and
