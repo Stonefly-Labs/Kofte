@@ -6,8 +6,9 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 003 / specify is complete on the fresh
-`feature/003-storage-registry` branch from updated `origin/main`.
+**Current checkpoint:** 003 / specify and clarify are complete on
+`feature/003-storage-registry`, originally created from updated `origin/main`,
+and the same [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 The exact inventory prompt and resolved project spec template produced
 [spec.md](../../specs/003-storage-registry/spec.md) and
 [checklists/requirements.md](../../specs/003-storage-registry/checklists/requirements.md).
@@ -16,10 +17,25 @@ requirements and six outcomes cover durable ownership, real uniqueness/
 concurrency protection, isolated schemas/files and migration history,
 interrupted provisioning/recovery and safe diagnostics. All 16 built-in author
 criteria are satisfied, with no material unresolved question or specification
-hook. Allocator/hash rules, contract/status shapes, budgets, migration/locking,
-provisioning credentials and recovery verification remain planning/ADR choices.
+hook.
+
+The installed clarification skill resolved the recorded feature directory
+explicitly and found all ten ambiguity categories clear at requirements level:
+functional scope, domain/data, interaction/UX, nonfunctional quality,
+integration/dependencies, edge cases/failures, constraints/tradeoffs,
+terminology, completion signals and miscellaneous/placeholders. Zero questions
+were asked or answered, and no human decisions were invented.
+The specification and author checklist remain unchanged: **16/16 to 16/16**,
+with no newly passing items, regressions or unchecked criteria.
+The driver completion note records category-to-requirement evidence.
+No before/after clarification hooks are configured.
+Allocator/hash rules, contract/status shapes, budgets, migration/locking,
+provisioning credentials and recovery verification remain planning/ADR choices,
+not unresolved product intent. Planning must explicitly reconcile PostgreSQL
+schema provisioning with the bootstrap credential's lack of database CREATE
+privilege, without weakening fixture/runtime safety.
 No product code, plan, reviewer-owned quality checklist or human acceptance
-is created. Clarify is next on this same feature branch and one draft PR;
+is created. Plan is next on this same feature branch and draft PR;
 do not merge between stages.
 
 **Completed prerequisite:** 002 / explicitly human-accepted on the original branch

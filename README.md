@@ -68,16 +68,21 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**Spec 003 / specify is complete; clarify is next.** The
+**Spec 003 / specify and clarify are complete; plan is next.** The
 [draft specification](specs/003-storage-registry/spec.md) and
 [author checklist](specs/003-storage-registry/checklists/requirements.md)
 define durable module storage ownership, concurrent collision-safe registration,
 isolated schemas/files and migration history, interrupted provisioning,
 recovery and safe diagnostics. Five stories, 18 scenarios, 16 functional
 requirements and six measurable outcomes cover both providers; all 16 author
-criteria are satisfied. Work continues on `feature/003-storage-registry` and
-one draft PR. No plan, storage implementation, reviewer-owned quality review
-or human acceptance is claimed.
+criteria are satisfied. Clarification found all ten ambiguity categories clear
+at requirements level, with zero questions and no spec/checklist changes.
+Allocator, contracts, budgets, locking, provisioning privileges and recovery
+mechanisms remain planning/ADR decisions, not unresolved product intent.
+Work continues on `feature/003-storage-registry` and
+[draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
+No plan, storage implementation, reviewer-owned quality review or human
+acceptance is claimed.
 
 **Spec 002 is explicitly human-accepted and merged.**
 The [acceptance record](specs/002-platform-contracts/acceptance.md) preserves

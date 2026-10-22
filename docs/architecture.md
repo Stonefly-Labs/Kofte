@@ -142,7 +142,9 @@ routes, stores and web console remain module-free.
 Spec 003's [draft specification](../specs/003-storage-registry/spec.md) now
 defines the next storage slice: immutable registry ownership, concurrent
 collision-safe allocation, isolated module tables/history and crash/recovery
-semantics. Its author checklist passes 16/16; clarify is next, not implementation.
+semantics. Clarification now finds all ten ambiguity categories clear, with
+zero questions and no spec/checklist changes; the author checklist remains
+16/16. Plan is next on the same feature branch/draft PR, not implementation.
 Allocator/hash choices, migration/lock mechanisms and provisioning privilege
 separation remain planning/ADR decisions. In particular, schema provisioning
 must explicitly reconcile the bootstrap credential's lack of database CREATE

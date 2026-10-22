@@ -143,7 +143,15 @@ inventory prompt and resolved project template. Five stories, 18 scenarios,
 real uniqueness/concurrency protection, per-schema/per-file ownership and
 migration history, interruption/recovery, least privilege and safe diagnostics.
 The [author checklist](../specs/003-storage-registry/checklists/requirements.md)
-satisfies all 16 criteria. Allocator, contracts, budgets, provisioning credentials
-and migration/recovery mechanisms remain planning/ADR decisions. Clarify is
-next on the same branch/draft PR; no implementation, reviewer-owned quality
-review or feature acceptance is claimed.
+satisfies all 16 criteria.
+
+**003 / clarify is complete** on the same branch and
+[draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
+All ten ambiguity categories are clear at requirements level; zero questions
+were asked or answered, and the specification and author checklist are unchanged
+(16/16 before and after, with no regressions or unchecked items).
+Allocator, contracts, budgets, provisioning credentials and migration/recovery
+mechanisms remain planning/ADR decisions, including explicit reconciliation
+of the bootstrap PostgreSQL CREATE restriction. No clarification hooks are
+configured. Plan is next; no implementation, reviewer-owned quality review
+or feature acceptance is claimed.

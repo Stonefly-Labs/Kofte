@@ -38,11 +38,14 @@ usability study or permission to chain stages is inferred.
 The author/quality checklists remain 16/16 and 36/36, and the passing
 [analysis](specs/002-platform-contracts/analysis.md) preserves the feature's
 design-stage evidence; module runtimes remain future work.
-Spec **003 / specify** now defines the
+Spec **003 / specify and clarify** now establish the
 [storage registry and isolation requirements](specs/003-storage-registry/spec.md)
 and [16/16 author checklist](specs/003-storage-registry/checklists/requirements.md).
-Clarify is next on `feature/003-storage-registry` and its one draft PR.
-No module storage, plan or later-stage approval is introduced by specification.
+Clarification found all ten ambiguity categories clear, with zero questions;
+the specification and 16/16 author checklist remain unchanged.
+Plan is next on `feature/003-storage-registry` and
+[draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
+No module storage, plan or later-stage approval is introduced by clarification.
 See the [current local guide](docs/development/local-development.md).
 
 ## Prerequisites
