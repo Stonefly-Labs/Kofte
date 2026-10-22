@@ -5,9 +5,9 @@ using System.Text.RegularExpressions;
 using Kofte.Host.Bootstrap;
 using Npgsql;
 
-namespace Kofte.Host.IntegrationTests;
+namespace Kofte.TestSupport;
 
-public sealed partial class PostgresFixture
+public sealed partial class PostgresResources
 {
     private sealed record BackupRecord(string Format, string RunId, string Schema, int Major, string Sha256);
     private static readonly JsonSerializerOptions BackupOptions = new()
@@ -16,7 +16,7 @@ public sealed partial class PostgresFixture
         RespectRequiredConstructorParameters = true
     };
 
-    private sealed class RecoveryLease(PostgresFixture fixture, NpgsqlConnection connection,
+    private sealed class RecoveryLease(PostgresResources fixture, NpgsqlConnection connection,
         int previousLimit) : IAsyncDisposable
     {
         public async ValueTask DisposeAsync()
@@ -27,7 +27,7 @@ public sealed partial class PostgresFixture
         }
     }
 
-    internal async Task<IAsyncDisposable> AcquireRecoveryAsync(CancellationToken token)
+    public async Task<IAsyncDisposable> AcquireRecoveryAsync(CancellationToken token)
     {
         await ValidateOwnershipAsync(token);
         if (service is null) throw new InvalidOperationException("postgres_owned_image_required");
@@ -99,6 +99,14 @@ public sealed partial class PostgresFixture
     public async Task BackupAsync(string output, CancellationToken token)
     {
         await using var lease = await AcquireRecoveryAsync(token);
+        if (await AdminAsync("""
+            SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_tables
+              WHERE schemaname='kofte_system' AND (lower(tablename) LIKE '\_\_kofte\_%' ESCAPE '\'
+                OR lower(tablename) LIKE '\_\_efmigrations%' ESCAPE '\'))
+              OR EXISTS (SELECT 1 FROM pg_catalog.pg_namespace
+                WHERE nspname !~ '^pg_' AND nspname NOT IN ('kofte_system','public','information_schema'))
+            """, token, target: true) is not false)
+            throw new InvalidOperationException("postgres_registry_requires_complete_recovery_set");
         var tools = service ?? throw new InvalidOperationException("postgres_owned_image_required");
         var path = BackupPath(output, createDirectory: true);
         if (UnixStorePaths.ValidateFile(path, allowMissing: true) ||
@@ -150,6 +158,9 @@ public sealed partial class PostgresFixture
             record.Sha256 != digest || !header.AsSpan().SequenceEqual("PGDMP"u8))
             throw new InvalidOperationException("postgres_backup_invalid");
         archive.Position = 0;
+        var validationTools = service ?? throw new InvalidOperationException("postgres_owned_image_required");
+        await validationTools.ValidateLegacyArchiveAsync(archive, token);
+        archive.Position = 0;
         await using var lease = await AcquireRecoveryAsync(token);
         var tools = service ?? throw new InvalidOperationException("postgres_owned_image_required");
         if (await AdminAsync("""
@@ -158,16 +169,10 @@ public sealed partial class PostgresFixture
                 AND refobjid=(SELECT oid FROM pg_catalog.pg_namespace WHERE nspname='kofte_system'))
             """, token, target: true) is not false)
             throw new InvalidOperationException("postgres_restore_target_not_empty");
-        await AdminAsync($"GRANT CREATE ON DATABASE \"{database}\" TO \"{role}\"", token);
-        try
-        {
-            await tools.RunToolAsync("pg_restore", database, role, archive, token);
-            await AdminAsync($"COMMENT ON SCHEMA kofte_system IS '{ownership}'", token, target: true);
-        }
-        finally
-        {
-            using var cleanup = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-            await AdminAsync($"REVOKE CREATE ON DATABASE \"{database}\" FROM \"{role}\"", cleanup.Token);
-        }
+        await tools.RunToolAsync("pg_restore", database, provisioner, archive, token);
+        await AdminAsync($"""
+            REASSIGN OWNED BY "{provisioner}" TO "{role}";
+            COMMENT ON SCHEMA kofte_system IS '{ownership}';
+            """, token, target: true);
     }
 }

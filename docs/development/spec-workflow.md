@@ -6,7 +6,15 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 003 / specify, clarify, plan, checklist, tasks and analyze are complete on
+**Current checkpoint:** 003 / implement is blocked on remaining implementation on the original
+`feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
+The human explicitly selected **"Approve ADR 0005 for implementation"**.
+The [implementation report](../../specs/003-storage-registry/implementation.md)
+records actual dependency/provider/race evidence and the remaining obligations.
+The next invocation resumes this same blocked implement stage; do not begin another stage,
+infer completion from code, request an intermediate merge or self-accept 003.
+
+**Pre-implementation checkpoint (historical):** 003 / specify, clarify, plan, checklist, tasks and analyze are complete on
 `feature/003-storage-registry`, originally created from updated `origin/main`,
 and the same [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 The exact inventory prompt and resolved project spec template produced

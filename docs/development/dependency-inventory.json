@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "reviewDate": "2026-10-21",
-  "scope": "001 bootstrap and 002 platform projects; unchanged reviewed 403 npm/69 NuGet identities and integrity",
+  "reviewDate": "2026-10-22",
+  "scope": "Specs 001-003 reviewed locked dependency graph; not feature acceptance",
   "npm": {
     "@adobe/css-tools@4.5.0": {
       "name": "@adobe/css-tools",
@@ -3934,6 +3934,114 @@
       },
       "notices": {}
     },
+    "microsoft.entityframeworkcore.abstractions@10.0.13": {
+      "name": "Microsoft.EntityFrameworkCore.Abstractions",
+      "version": "10.0.13",
+      "license": "MIT",
+      "source": "https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore.abstractions/10.0.13/microsoft.entityframeworkcore.abstractions.10.0.13.nupkg",
+      "integrity": "ARw+tZ3eiTosnK5nJPUGEzeUQcjyqCqs3qKA3lPtIRH5yJo3qIgxm7AvkZVIT9iWkS2083UsWe3Rj1MysW3p5A==",
+      "notices": {},
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "4099f83977f4d29604a9aeb971fb0a7bc1d5f699"
+      }
+    },
+    "microsoft.entityframeworkcore.analyzers@10.0.13": {
+      "name": "Microsoft.EntityFrameworkCore.Analyzers",
+      "version": "10.0.13",
+      "license": "MIT",
+      "source": "https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore.analyzers/10.0.13/microsoft.entityframeworkcore.analyzers.10.0.13.nupkg",
+      "integrity": "zBx6VeEz/hkhlm0BJ2V+9xebUuDDIszcKvurJceQHuZPEXuXubrL6Lneo9VZiliRyJbQlB2oNKLkJXd3gHteQA==",
+      "notices": {},
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "4099f83977f4d29604a9aeb971fb0a7bc1d5f699"
+      }
+    },
+    "microsoft.entityframeworkcore.relational@10.0.13": {
+      "name": "Microsoft.EntityFrameworkCore.Relational",
+      "version": "10.0.13",
+      "license": "MIT",
+      "source": "https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore.relational/10.0.13/microsoft.entityframeworkcore.relational.10.0.13.nupkg",
+      "integrity": "QU/sbTtDR5wVAJRVecC1GwM7mwH8bvKOZNm+lulzMr5rhjdb8DDEFIqqdhF08JIo51DPv5uQdZ1nXoZsD5pTag==",
+      "notices": {},
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "4099f83977f4d29604a9aeb971fb0a7bc1d5f699"
+      }
+    },
+    "microsoft.entityframeworkcore.sqlite.core@10.0.13": {
+      "name": "Microsoft.EntityFrameworkCore.Sqlite.Core",
+      "version": "10.0.13",
+      "license": "MIT",
+      "source": "https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore.sqlite.core/10.0.13/microsoft.entityframeworkcore.sqlite.core.10.0.13.nupkg",
+      "integrity": "zXJAJOS34unH9sWP6ywyUmaZ/yeHy0/CljvdsHvzhN/rXHRBXsPRYymTU65my0rGoa60mh7HUXVPEGOxfsiWSg==",
+      "notices": {},
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "4099f83977f4d29604a9aeb971fb0a7bc1d5f699"
+      }
+    },
+    "microsoft.entityframeworkcore.sqlite@10.0.13": {
+      "name": "Microsoft.EntityFrameworkCore.Sqlite",
+      "version": "10.0.13",
+      "license": "MIT",
+      "source": "https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore.sqlite/10.0.13/microsoft.entityframeworkcore.sqlite.10.0.13.nupkg",
+      "integrity": "CqPgFVpKjdNjPHO1fqK5Uw/h7RfY6LyjPko9cLiXTBkxUhjO0Bt48tnF/ddw5PL2k5JaR8myDcyogcONY7juLg==",
+      "notices": {},
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "4099f83977f4d29604a9aeb971fb0a7bc1d5f699"
+      }
+    },
+    "microsoft.entityframeworkcore@10.0.13": {
+      "name": "Microsoft.EntityFrameworkCore",
+      "version": "10.0.13",
+      "license": "MIT",
+      "source": "https://api.nuget.org/v3-flatcontainer/microsoft.entityframeworkcore/10.0.13/microsoft.entityframeworkcore.10.0.13.nupkg",
+      "integrity": "u/z4nTQUJ5nJEXAQekgQEQZkh0delp4gL+ESHn7Z6k037c8HC5mSNu1/YdBgxGm7DtLjhOxktNl+aQMzw6wN7A==",
+      "notices": {},
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "4099f83977f4d29604a9aeb971fb0a7bc1d5f699"
+      }
+    },
+    "microsoft.extensions.caching.abstractions@10.0.13": {
+      "name": "Microsoft.Extensions.Caching.Abstractions",
+      "version": "10.0.13",
+      "license": "MIT",
+      "source": "https://api.nuget.org/v3-flatcontainer/microsoft.extensions.caching.abstractions/10.0.13/microsoft.extensions.caching.abstractions.10.0.13.nupkg",
+      "integrity": "UOJqcdNMoFcV/5RUcOlVKq9pPmbrcmbpLx5iYz9QtrmMcWRQzlL5Q/NZRfbPPLNyIEc1HWjjs5Z7nIwqewU1sg==",
+      "notices": {
+        "THIRD-PARTY-NOTICES.TXT": "6d15e10a101c6bfff2ab4429ed061bf76c456fc4b23ad6b03e0d0f8377148a21"
+      },
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "4099f83977f4d29604a9aeb971fb0a7bc1d5f699"
+      }
+    },
+    "microsoft.extensions.caching.memory@10.0.13": {
+      "name": "Microsoft.Extensions.Caching.Memory",
+      "version": "10.0.13",
+      "license": "MIT",
+      "source": "https://api.nuget.org/v3-flatcontainer/microsoft.extensions.caching.memory/10.0.13/microsoft.extensions.caching.memory.10.0.13.nupkg",
+      "integrity": "q+At65RACuCtGwUDVI08TmmrC73YFouimMkJAtlhsGhFcU/dVpqYEKpNBOF9TUxkJ6aefEOShqe7StLK7q3NqA==",
+      "notices": {
+        "THIRD-PARTY-NOTICES.TXT": "6d15e10a101c6bfff2ab4429ed061bf76c456fc4b23ad6b03e0d0f8377148a21"
+      },
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "4099f83977f4d29604a9aeb971fb0a7bc1d5f699"
+      }
+    },
     "microsoft.extensions.configuration.abstractions@10.0.13": {
       "name": "Microsoft.Extensions.Configuration.Abstractions",
       "version": "10.0.13",
@@ -4479,6 +4587,19 @@
         "THIRD-PARTY-NOTICES.TXT": "78e22d4d24a710d2a09426c09060f3448204778ed506b1da55447a6089b54fae"
       }
     },
+    "npgsql.entityframeworkcore.postgresql@10.0.3": {
+      "name": "Npgsql.EntityFrameworkCore.PostgreSQL",
+      "version": "10.0.3",
+      "license": "PostgreSQL",
+      "source": "https://api.nuget.org/v3-flatcontainer/npgsql.entityframeworkcore.postgresql/10.0.3/npgsql.entityframeworkcore.postgresql.10.0.3.nupkg",
+      "integrity": "IPGrrZnRkuW7OlHDhUESZz4G5DLkW7Nej/O3Cx+0iTsgyU5XJxBgpsvTHLloo3WWuAKKbDHXBvWPVkX1deRh1Q==",
+      "notices": {},
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/npgsql/efcore.pg",
+        "commit": "5e912bf071068a44e5abbdab497b313ba99d3ee1"
+      }
+    },
     "npgsql@10.0.3": {
       "name": "Npgsql",
       "version": "10.0.3",
@@ -4817,7 +4938,7 @@
     "nugetAuditVulnerabilities": 0,
     "npmVerifiedRegistrySignatures": 310,
     "npmVerifiedAttestations": 128,
-    "nugetVerifiedSignaturesLinux": 69,
+    "nugetVerifiedSignaturesLinux": 78,
     "nugetNativeMacVerification": "unsupported; failed platform trust chains, not bypassed",
     "linuxVerifier": "mcr.microsoft.com/dotnet/sdk@sha256:0d99ebf1ccad15037b5c98c9fe8979d6b8dbac23812feae2277a0b277b5c5ffa"
   },

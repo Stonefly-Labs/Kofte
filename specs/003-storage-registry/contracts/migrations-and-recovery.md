@@ -1,7 +1,16 @@
 # Migration and Recovery Contract
 
-**Status**: Proposed 003 design. No migration, backup, reset or restore is run
-by the plan stage. All provider and crash claims below require real tests.
+**Status**: Human-approved 003 design; implementation is incomplete, not
+accepted. See [actual evidence and remaining work](../implementation.md).
+Assigned contexts/migrations and stopped whole-set exercises have focused
+both-provider proof. Supported DDL is currently limited to assigned
+create-table/primary-key and add-column operations with int/text columns;
+raw SQL, transaction suppression, foreign/reserved/unknown targets and other
+operations/annotations fail closed before pending SQL. Killed-migration/
+abandoned-lock recovery, the durable crash matrix, complete worker/deadline
+proof and executable public recovery examples remain incomplete. Do not delete
+EF lock rows or fabricate history to bypass that block. Remaining sections
+define required behavior, not proof that every obligation has passed.
 
 ## Installation scope and host integration
 
@@ -22,7 +31,7 @@ SQLite's local lease file must not be removed/replaced as a recovery trick.
 ## Registry v0 to v1
 
 Add explicit local maintenance syntax `--registry upgrade` for both existing
-profiles. This is a **future command**, separate from `--store init`.
+profiles. This is an explicit maintenance command, separate from `--store init`.
 SQLite init still creates a table-free bootstrap v0; host startup accepts
 valid module-free v0/v1 but never upgrades either automatically.
 PostgreSQL keeps its existing owned fixture bootstrap provisioning.

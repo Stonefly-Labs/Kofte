@@ -1,9 +1,11 @@
 # Storage Contract v1
 
-**Status**: Proposed public .NET and trusted local-maintenance contract.
-No endpoint, CLI implementation, database or authorization role is introduced
-by this document. [ADR 0005](../../../docs/adr/0005-module-storage-ownership.md)
-requires human approval before implementation.
+**Status**: Approved design; implementation is incomplete and the stage is blocked, not accepted.
+The human explicitly approved [ADR 0005](../../../docs/adr/0005-module-storage-ownership.md).
+See [actual evidence and remaining obligations](../implementation.md).
+This document defines the target contract; it does not prove every requirement
+is implemented. No public registry endpoint, module loader or authorization
+role is introduced by this storage slice.
 
 ## Authority and public shape
 
@@ -17,6 +19,13 @@ EF/provider binding lives in `Kofte.Infrastructure.Storage`.
 | `IModuleStorage` | Host-bound owner-only accessor; no public `Resolve(otherId)` or caller-selected connection/schema/file |
 | `StorageAssignment` | Read-only contract/provider/owner/allocation identity and boundary metadata; host-issued binding required for actual context access |
 | `IStorageMaintenance` | Acquire exclusive installation scope, explicit upgrade, provision/retry and module-local migration; unavailable to normal module DI |
+
+The current provider-neutral interface exposes `AcquireAsync` and `UpgradeAsync`.
+Explicit registration uses the held scope through `IStorageRegistry`; EF
+migration uses the infrastructure-issued owner binding, not extra methods on
+the pure maintenance interface. `UpgradeAsync` returns `Task`: successful registry
+upgrade has no module assignment to return. Safe `StorageException.Code` reports
+maintenance failure; register/resolve return the disjoint `StorageResult`.
 
 A valid description proves syntax/compatibility, **not caller authorization**.
 Only the trusted composition/maintenance root receives the registry service.

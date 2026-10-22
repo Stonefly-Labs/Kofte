@@ -139,6 +139,18 @@ no architecture change, new local all-suite or human-usability claim is made
 by acceptance.
 The host only gains a library project reference; its startup,
 routes, stores and web console remain module-free.
+Spec 003's [ADR 0005](adr/0005-module-storage-ownership.md) is now explicitly
+human-approved for implementation. The
+[implementation checkpoint](../specs/003-storage-registry/implementation.md)
+adds reviewed EF/provider dependencies, a platform-local registry, immutable
+assignments, marker-verified module schemas/files and real both-provider
+registration/constraint/process-race evidence. Normal serving remains
+module-free. Implement is blocked on the remaining assigned migration,
+interruption/recovery, privacy and complete local/CI obligations; these are not
+inferred from this increment. The following paragraphs
+preserve the earlier design-stage history; their Proposed/unstarted statements
+do not describe current implementation progress.
+
 Spec 003's [draft specification](../specs/003-storage-registry/spec.md) now
 defines the next storage slice: immutable registry ownership, concurrent
 collision-safe allocation, isolated module tables/history and crash/recovery

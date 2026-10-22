@@ -7,8 +7,9 @@ and reviewer-authorized requirements-quality checklist.
 quality criteria. Passing analyze and explicit human approval of Proposed
 ADR 0005 are required **before implementation**, not inferred from this list.
 **Constitution**: Adopted v2.0.1, principles I-XII.
-**Status**: Tasks generation only. Every task is unstarted; no product code,
-dependency adoption, runtime evidence, ADR approval or feature acceptance.
+**Status**: Implement is incomplete and blocked on remaining obligations.
+T001-T006 are evidenced; T007-T078 remain open even where partial code/checks
+exist. Resume this same implement stage, not convergence or feature acceptance.
 
 **Tests**: The specification and constitution explicitly require these tests.
 Use actual PostgreSQL 17 and SQLite, not substitutes. Write story cases before
@@ -38,12 +39,12 @@ prerequisites are not falsely independent.
 
 ## Phase 1: Setup and Shared Prerequisites
 
-- [ ] T001 Obtain explicit human approval or requested revisions for `docs/adr/0005-module-storage-ownership.md` and record the exact decision in `specs/003-storage-registry/implementation.md`; block implementation while Proposed, and route material design changes through human review/re-analysis rather than silently editing approved intent. Depends: none. Trace: FR-001-016; principles III, IV, X, XII/governance.
-- [ ] T002 Review the candidate EF Core/Relational/Sqlite 10.0.13 and Npgsql EF 10.0.3 dependency closure before adoption in `docs/development/dependencies.md` and `docs/development/third-party-notices.md`: verify direct/transitive licenses, provenance/advisories, supported-target compatibility, native SQLite assets and exact versions; add EF Design only if actually needed and development-only. Depends: T001. Trace: FR-009/010/013; principles III, VI, X.
-- [ ] T003 Create only the justified adapter/test projects and references in `src/Kofte.Infrastructure/Kofte.Infrastructure.csproj`, `tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj`, `tests/contract/Kofte.Storage.Consumer/Kofte.Storage.Consumer.csproj`, `tests/integration/Kofte.TestSupport/Kofte.TestSupport.csproj` and `Kofte.slnx`; update `Directory.Packages.props`, affected project references and `packages.lock.json` files with reviewed exact packages, retaining pure `Kofte.Platform`, normal test inclusion, nullable/warnings-as-errors and locked restore. Depends: T002. Trace: FR-001/009/013/016; principles II, III, X.
-- [ ] T004 [P] Set up actual storage-test discovery and provider selectors in `tests/integration/Kofte.Storage.IntegrationTests/StorageTestEnvironment.cs` and `tests/integration/Kofte.Storage.IntegrationTests/Usings.cs`; use the existing xUnit runner conventions, explicit unavailable-provider failure and test-owned cancellation/resource scopes, not skip-shaped success. Depends: T003. Trace: FR-013/016, SC-001/004; principles III, XI.
-- [ ] T005 [P] Set up the independent public-process harness in `tests/contract/Kofte.Platform.ContractTests/Modules/Storage/StorageConsumerHarness.cs` and selector/result handling in `tests/contract/Kofte.Storage.Consumer/Program.cs`; accept only named inert scenarios and provider selectors, fail on unknown/missing scenario, missing provider, zero assertions or bad exit/result, and keep credentials/targets out of arguments and output. Depends: T003. Trace: FR-001/014/016, SC-006; principles VI, XI.
-- [ ] T006 Extract reusable owned provider/process resources into `tests/integration/Kofte.TestSupport/PostgresResources.cs` and `tests/integration/Kofte.TestSupport/OwnedProcesses.cs`, delegating from `tests/integration/Kofte.Host.IntegrationTests/PostgresFixture.cs` and its existing partials without copying cleanup logic; extend fixtures with separate offline provisioner and fresh recovery targets while retaining loopback/image/database-OID/role-OID/comment checks, original-resource preservation and targeted cleanup. Depends: T004, T005. Trace: FR-013/015/016; principles III, VI, X, XI.
+- [X] T001 Obtain explicit human approval or requested revisions for `docs/adr/0005-module-storage-ownership.md` and record the exact decision in `specs/003-storage-registry/implementation.md`; block implementation while Proposed, and route material design changes through human review/re-analysis rather than silently editing approved intent. Depends: none. Trace: FR-001-016; principles III, IV, X, XII/governance.
+- [X] T002 Review the candidate EF Core/Relational/Sqlite 10.0.13 and Npgsql EF 10.0.3 dependency closure before adoption in `docs/development/dependencies.md` and `docs/development/third-party-notices.md`: verify direct/transitive licenses, provenance/advisories, supported-target compatibility, native SQLite assets and exact versions; add EF Design only if actually needed and development-only. Depends: T001. Trace: FR-009/010/013; principles III, VI, X.
+- [X] T003 Create only the justified adapter/test projects and references in `src/Kofte.Infrastructure/Kofte.Infrastructure.csproj`, `tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj`, `tests/contract/Kofte.Storage.Consumer/Kofte.Storage.Consumer.csproj`, `tests/integration/Kofte.TestSupport/Kofte.TestSupport.csproj` and `Kofte.slnx`; update `Directory.Packages.props`, affected project references and `packages.lock.json` files with reviewed exact packages, retaining pure `Kofte.Platform`, normal test inclusion, nullable/warnings-as-errors and locked restore. Depends: T002. Trace: FR-001/009/013/016; principles II, III, X.
+- [X] T004 [P] Set up actual storage-test discovery and provider selectors in `tests/integration/Kofte.Storage.IntegrationTests/StorageTestEnvironment.cs` and `tests/integration/Kofte.Storage.IntegrationTests/Usings.cs`; use the existing xUnit runner conventions, explicit unavailable-provider failure and test-owned cancellation/resource scopes, not skip-shaped success. Depends: T003. Trace: FR-013/016, SC-001/004; principles III, XI.
+- [X] T005 [P] Set up the independent public-process harness in `tests/contract/Kofte.Platform.ContractTests/Modules/Storage/StorageConsumerHarness.cs` and selector/result handling in `tests/contract/Kofte.Storage.Consumer/Program.cs`; accept only named inert scenarios and provider selectors, fail on unknown/missing scenario, missing provider, zero assertions or bad exit/result, and keep credentials/targets out of arguments and output. Depends: T003. Trace: FR-001/014/016, SC-006; principles VI, XI.
+- [X] T006 Extract reusable owned provider/process resources into `tests/integration/Kofte.TestSupport/PostgresResources.cs` and `tests/integration/Kofte.TestSupport/OwnedProcesses.cs`, delegating from `tests/integration/Kofte.Host.IntegrationTests/PostgresFixture.cs` and its existing partials without copying cleanup logic; extend fixtures with separate offline provisioner and fresh recovery targets while retaining loopback/image/database-OID/role-OID/comment checks, original-resource preservation and targeted cleanup. Depends: T004, T005. Trace: FR-013/015/016; principles III, VI, X, XI.
 
 ## Phase 2: Foundational Boundaries
 
@@ -335,7 +336,8 @@ gate is neither performed nor waived by this internal slice.
 
 ## Completion and Human Handoff
 
-This task list contains **78 unstarted tasks**: six setup, eight foundational,
+This task list contains **78 tasks**, with setup T001-T006 evidenced so far:
+six setup, eight foundational,
 13 US1, eight US2, twelve US3, sixteen US4, seven US5 and eight final evidence
 tasks. All 18 acceptance scenarios, 16 functional requirements, six outcomes and
 twelve principles have explicit task/evidence coverage. Parallel markers do

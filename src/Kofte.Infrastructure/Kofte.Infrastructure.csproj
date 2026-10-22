@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <ItemGroup>
+        <EmbeddedResource Include="Storage/Registry/Migrations/**/*.sql" />
+        <ProjectReference Include="../Kofte.Platform/Kofte.Platform.csproj" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+        <InternalsVisibleTo Include="Kofte.Host.Tests" />
+        <InternalsVisibleTo Include="Kofte.Storage.IntegrationTests" />
+    </ItemGroup>
+</Project>

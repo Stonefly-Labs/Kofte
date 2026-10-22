@@ -136,6 +136,19 @@ product or measurement is claimed. The same
 Its accepted ledger and all five acceptance evidence hashes were verified on
 updated main before starting 003. Acceptance itself did not start it.
 
+**003 / implement is blocked on remaining implementation** on `feature/003-storage-registry` and
+[draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
+The human explicitly approved [ADR 0005](adr/0005-module-storage-ownership.md)
+for implementation. Reviewed dependencies, storage contracts, registry,
+physical provisioning and real both-provider registration/constraint/process
+race evidence are now recorded in the
+[implementation report](../specs/003-storage-registry/implementation.md).
+Incomplete crash/recovery, assigned EF, privacy and final evidence obligations
+remain explicit; this is not a completed implement stage or feature acceptance.
+The next invocation resumes implement on this same branch and draft PR.
+The following specify-through-analyze paragraphs preserve historical checkpoints,
+including their then-Proposed ADR and unstarted-task statements.
+
 **003 / specify is complete** on `feature/003-storage-registry`.
 The [draft requirements](../specs/003-storage-registry/spec.md) use the exact
 inventory prompt and resolved project template. Five stories, 18 scenarios,

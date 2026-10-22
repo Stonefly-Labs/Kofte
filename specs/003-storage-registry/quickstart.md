@@ -1,22 +1,44 @@
-# Future Validation Guide: 003 Storage Registry
+# Validation Guide: 003 Storage Registry
 
-**Status**: Planning artifact, not runnable new product functionality today.
-Do not run the proposed registry commands/consumer until implementation adds
-them. Current startup/recovery remains in the [local guide](../../docs/development/local-development.md).
-This guide is a validation/run guide, not implementation code or proof of a
-manual usability exercise.
+**Status**: Blocked implementation checkpoint, not a passing complete guide or feature
+acceptance. [ADR 0005](../../docs/adr/0005-module-storage-ownership.md) is
+human-approved and its dependency graph is reviewed. The
+[implementation report](implementation.md) identifies actual executed commands
+and remaining obligations. Sections below remain acceptance targets unless
+that report records their successful execution; do not treat planned recovery
+or `all` consumer examples as available/passing functionality.
+Existing startup/recovery guidance remains in the
+[local guide](../../docs/development/local-development.md).
+
+## Executed registry checks
+
+After selecting the pinned SDK and restoring locked dependencies, the focused
+registry suite runs actual SQLite and explicitly owned disposable PostgreSQL:
+
+```bash
+export KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true
+dotnet build tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj --no-restore -c Release
+dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --filter-class '*SqliteRegistrationTests' --filter-class '*PostgresRegistrationTests' --filter-class '*RegistryConstraintTests' --filter-class '*RegistryFormatTests' --minimum-expected-tests 1
+dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --filter-class '*RegistrationConcurrencyTests' --minimum-expected-tests 8
+```
+
+The race selector runs all 20-by-ten same/distinct-ID rounds on both providers,
+with independent connections and barrier-started independent processes.
+It checks actual rows, schema/file inventories and owner markers after each
+round. Provider unavailability is a failure, not a skip. These focused checks
+do not replace the remaining migration/crash/recovery/privacy/full-gate proof.
 
 ## Prerequisites
 
 Use the existing supported macOS 15+ arm64 or Ubuntu 24.04 x64 environment,
 .NET SDK 10.0.402/runtime 10.0.13, Node 24.22.0/npm 11.19.1 and Python 3.11+.
 PostgreSQL evidence uses only the existing explicitly owned disposable
-PostgreSQL 17 fixture/image; Docker is not required for SQLite. Review/approve
-[ADR 0005](../../docs/adr/0005-module-storage-ownership.md) before implementation.
-Resolve the candidate EF graph, licenses/provenance/notices and committed locks
-before restoring/adopting it. Do not install tooling just to execute this plan.
+PostgreSQL 17 fixture/image; Docker is not required for SQLite.
+[ADR 0005](../../docs/adr/0005-module-storage-ownership.md) has explicit
+human approval and the EF graph/licenses/provenance/notices are reviewed.
+Use the committed exact locks; do not change pins to accommodate an older shell.
 
-Once implemented and dependencies reviewed:
+Restore the reviewed dependencies explicitly:
 
 ```bash
 dotnet restore Kofte.slnx --locked-mode
@@ -50,19 +72,28 @@ an explicit failure; fixing them permits retry against the same reservation.
 
 ## Independent public consumer examples
 
-The proposed console below belongs to `tests/contract`, not the product runtime.
-It creates only owned fixtures, accepts scenario/provider selectors rather than
-arbitrary storage targets, validates documented results and exits nonzero on a
-missing scenario, unavailable provider, zero assertions or mismatched outcome.
+The console belongs to `tests/contract`, not the product runtime.
+Its harness creates explicitly owned fixtures and passes private installation
+configuration through the child environment. The console itself accepts only
+named scenario/provider selectors, not arbitrary targets. Running it without
+that owned configuration deliberately fails. The parent rejects missing
+scenarios, unavailable providers, zero assertions or mismatched outcomes.
+
+The implemented registration examples can be invoked without copying any
+credential or absolute target into command arguments:
 
 ```bash
-dotnet run --project tests/contract/Kofte.Storage.Consumer --no-build -c Release -- --provider sqlite --scenario all
-dotnet run --project tests/contract/Kofte.Storage.Consumer --no-build -c Release -- --provider postgres --scenario all
+dotnet build tests/contract/Kofte.Platform.ContractTests/Kofte.Platform.ContractTests.csproj --no-restore -c Release
+dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*SqliteRegistrationContractTests' --minimum-expected-tests 4
+KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*PostgresRegistrationContractTests' --minimum-expected-tests 4
 ```
 
-`all` must execute each named case in
-[storage-v1](contracts/storage-v1.md#required-public-examples), not skip the
-negative/recovery examples as optional.
+These four cases per provider are no-storage, same-ID retry, corrected
+declaration retry and occupied/unowned-target preservation. They are not the
+complete guide/privacy/recovery corpus. `all` remains a fail-closed acceptance
+target: it must execute every named case in
+[storage-v1](contracts/storage-v1.md#required-public-examples), never skip
+unimplemented negative/recovery examples as optional.
 
 | Scenario | Expected observed result |
 | --- | --- |

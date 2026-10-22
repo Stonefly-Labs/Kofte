@@ -101,6 +101,45 @@ public sealed partial class SqlitePlatformStore
                 throw new BootstrapException(BootstrapError.StoreBusy);
     }
 
+    private static void RejectModuleEvidence(string root)
+    {
+        var modules = Path.Combine(root, "modules");
+        UnixStorePaths.ValidateRoot(modules, allowMissing: true);
+        if (Directory.Exists(modules) && Directory.EnumerateFileSystemEntries(modules).Any())
+            throw new BootstrapException(BootstrapError.StorageInvalid);
+    }
+
+    private static void RequireLegacyStore(SqliteConnection connection)
+    {
+        CheckIntegrity(connection);
+        using var command = connection.CreateCommand();
+        command.CommandText = "PRAGMA user_version";
+        if (command.ExecuteScalar() is not 0L)
+            throw new BootstrapException(BootstrapError.StorageInvalid);
+        command.CommandText = """
+            SELECT name FROM sqlite_master
+            WHERE lower(name) GLOB '__kofte_*' OR lower(name) GLOB '__efmigrations*'
+            """;
+        if (command.ExecuteScalar() is not null)
+            throw new BootstrapException(BootstrapError.StorageInvalid);
+    }
+
+    private static void RejectRecoveryLocationEvidence(string path)
+    {
+        var directory = Path.GetDirectoryName(path)!;
+        RejectModuleEvidence(directory);
+        var root = Path.GetFileName(directory) == "platform" ? Path.GetDirectoryName(directory)! : directory;
+        RejectModuleEvidence(root);
+        var platform = Path.Combine(root, "platform", "platform.db");
+        UnixStorePaths.ValidateRoot(Path.GetDirectoryName(platform)!, allowMissing: true);
+        if (UnixStorePaths.ValidateFile(platform, allowMissing: true))
+        {
+            NoSidecars(platform);
+            using var existing = OpenRecoveryFile(platform, readOnly: true);
+            RequireLegacyStore(existing);
+        }
+    }
+
     private static BackupManifest ValidateBackup(string path)
     {
         UnixStorePaths.ValidateRoot(Path.GetDirectoryName(path)!, allowMissing: false);
@@ -120,8 +159,9 @@ public sealed partial class SqlitePlatformStore
             Hash(path) != manifest.BackupSha256)
             throw new BootstrapException(BootstrapError.StorageInvalid);
         NoSidecars(path);
+        RejectRecoveryLocationEvidence(path);
         using var connection = OpenRecoveryFile(path, readOnly: true);
-        CheckIntegrity(connection);
+        RequireLegacyStore(connection);
         return manifest;
     }
 
@@ -130,9 +170,11 @@ public sealed partial class SqlitePlatformStore
         var destination = RecoveryPath(output);
         var metadata = destination + ".metadata.json";
         using var lease = StoreLease.Acquire(Root);
+        RejectModuleEvidence(Root);
+        RejectRecoveryLocationEvidence(destination);
         NoSidecars(DatabasePath);
         using var source = Open();
-        CheckIntegrity(source);
+        RequireLegacyStore(source);
         var sourceHash = Hash(DatabasePath);
         PrivateDirectory(Path.GetDirectoryName(destination)!);
         if (UnixStorePaths.ValidateFile(destination, allowMissing: true) ||
@@ -172,6 +214,7 @@ public sealed partial class SqlitePlatformStore
             throw new BootstrapException(BootstrapError.ConfigurationInvalid);
         PrivateDirectory(Root);
         using var lease = StoreLease.Acquire(Root);
+        RejectModuleEvidence(Root);
         var directory = Path.GetDirectoryName(DatabasePath)!;
         PrivateDirectory(directory);
         NoSidecars(DatabasePath);
@@ -179,6 +222,8 @@ public sealed partial class SqlitePlatformStore
         string? previousHash = null;
         if (existing)
         {
+            using (var target = OpenRecoveryFile(DatabasePath, readOnly: true))
+                RequireLegacyStore(target);
             if (!confirmReplacement || previousBackup is null)
                 throw new BootstrapException(BootstrapError.ConfirmationRequired);
             var prior = RecoveryPath(previousBackup);
@@ -216,7 +261,14 @@ public sealed partial class SqlitePlatformStore
     {
         if (!confirmed) throw new BootstrapException(BootstrapError.ConfirmationRequired);
         using var lease = StoreLease.Acquire(Root);
+        RejectModuleEvidence(Root);
         UnixStorePaths.ValidateRoot(Path.GetDirectoryName(DatabasePath)!, allowMissing: false);
+        NoSidecars(DatabasePath);
+        if (UnixStorePaths.ValidateFile(DatabasePath, allowMissing: true))
+        {
+            using var existing = OpenRecoveryFile(DatabasePath, readOnly: true);
+            RequireLegacyStore(existing);
+        }
         var files = new[] { DatabasePath, DatabasePath + "-journal", DatabasePath + "-wal", DatabasePath + "-shm" }
             .Where(path => UnixStorePaths.ValidateFile(path, allowMissing: true)).ToArray();
         if (files.Length == 0) throw new BootstrapException(BootstrapError.StorageMissing);

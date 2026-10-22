@@ -1,7 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
     <ItemGroup>
         <ProjectReference Include="../Kofte.Platform/Kofte.Platform.csproj" />
+        <ProjectReference Include="../Kofte.Infrastructure/Kofte.Infrastructure.csproj" />
         <InternalsVisibleTo Include="Kofte.Host.IntegrationTests" />
+        <InternalsVisibleTo Include="Kofte.TestSupport" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
         <PackageReference Include="Microsoft.Data.Sqlite" />
         <PackageReference Include="Npgsql" />

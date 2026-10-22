@@ -27,6 +27,7 @@ public sealed class PostgresOwnershipTests
         {
             await Assert.ThrowsAsync<InvalidOperationException>(() =>
                 fixture.ValidateOwnershipAsync(TestContext.Current.CancellationToken));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => fixture.DisposeAsync().AsTask());
             Assert.True(await fixture.DatabaseExistsAsync(TestContext.Current.CancellationToken));
         }
         finally
@@ -34,5 +35,20 @@ public sealed class PostgresOwnershipTests
             await fixture.SetDatabaseOwnershipAsync(valid: true, TestContext.Current.CancellationToken);
         }
         await fixture.ValidateOwnershipAsync(TestContext.Current.CancellationToken);
+    }
+
+    [Fact]
+    public async Task MissingProvisionerOwnershipRefusesCleanupBeforeDeletingTheDatabase()
+    {
+        var token = TestContext.Current.CancellationToken;
+        await using var fixture = await PostgresFixture.CreateFromEnvironmentAsync(token);
+        await fixture.SetProvisionerOwnershipAsync(valid: false, token);
+        try
+        {
+            await Assert.ThrowsAsync<InvalidOperationException>(() => fixture.DisposeAsync().AsTask());
+            Assert.True(await fixture.DatabaseExistsAsync(token));
+        }
+        finally { await fixture.SetProvisionerOwnershipAsync(valid: true, token); }
+        await fixture.ValidateOwnershipAsync(token);
     }
 }

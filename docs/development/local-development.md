@@ -35,6 +35,17 @@ steps. No new local all-suite run or bootstrap behavior change is asserted.
 is now recorded separately from review. The same
 [PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5) is human-merged;
 acceptance adds no bootstrap behavior or new product measurement.
+Spec 003's **implementation is incomplete and the stage is blocked**, with explicit human approval of
+[ADR 0005](../adr/0005-module-storage-ownership.md).
+The [implementation report](../../specs/003-storage-registry/implementation.md)
+records actual reviewed dependencies, registry/provider/constraint and complete
+connection/process race evidence, plus unfinished obligations.
+The [validation guide](../../specs/003-storage-registry/quickstart.md)
+separates executable focused checks from still-required migration/crash/
+recovery/privacy proof. No acceptance or complete local/CI gate is inferred.
+The next invocation resumes implement on the original feature branch and draft PR.
+The next paragraph preserves the pre-implementation design-stage history.
+
 Spec 003 now has [draft storage requirements](../../specs/003-storage-registry/spec.md),
 a completed author checklist, zero-question clarification and a
 [proposed plan](../../specs/003-storage-registry/plan.md). Its
@@ -131,11 +142,27 @@ occupants are never killed. Repeat `python3 scripts/dev.py` to restart.
 Persistent SQLite data is `data/platform/platform.db`; directories are private
 to the current owner and the database is owner read/write only. Normal startup
 opens an existing store, never creates missing data, switches providers or resets
-it. Stop/retry/restart do not delete data. No application/fixture table, migration
-history or registry is shipped. A host-held exclusive operation lock prevents
+it. Stop/retry/restart do not delete data. Fresh format-0 initialization has no
+application/fixture table, migration history or registry. A host-held exclusive operation lock prevents
 concurrent initialization; the lock file remains in place after clean shutdown.
 
+On the 003 feature branch, initialization still creates genuine table-free
+format 0. The separate `--registry upgrade` maintenance command establishes
+format 1; normal serving never initializes or migrates it automatically.
+The host remains module-free, and no public registration command is provided.
+Do not put `KOFTE_POSTGRES_PROVISIONING_CONNECTION` in serving configuration:
+the elevated connection is accepted only by owned offline maintenance.
+
 ## Stopped-host SQLite recovery
+
+The following legacy procedures apply **only to genuine table-free format 0**.
+Once registry/history/module evidence exists, including leftover module stores
+beside a missing platform file, init/platform-only backup/restore/reset must
+refuse rather than orphan data. Restore inspects source and destination; even
+confirmed reset does not waive the storage guard. Preserve the original
+installation and use the complete-set procedure only after its remaining
+[implementation evidence](../../specs/003-storage-registry/implementation.md)
+is complete; the new verifier is not an automatic backup product.
 
 Stop the supervisor/host before any backup, restore or reset. These operations
 take the same exclusive store lease as the host and refuse an active owner.

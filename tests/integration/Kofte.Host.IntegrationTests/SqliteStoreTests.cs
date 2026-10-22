@@ -1,19 +1,15 @@
 using Kofte.Host.Bootstrap;
 using Microsoft.Data.Sqlite;
 using Xunit;
+using Kofte.TestSupport;
 
 namespace Kofte.Host.IntegrationTests;
 
 public sealed class TempRoot : IDisposable
 {
-    public string Path { get; } = System.IO.Path.Combine(
-        OperatingSystem.IsMacOS() ? "/private/tmp" : System.IO.Path.GetTempPath(),
-        "kofte-test-" + Guid.NewGuid().ToString("N"));
-
-    public void Dispose()
-    {
-        if (Directory.Exists(Path)) Directory.Delete(Path, true);
-    }
+    private readonly OwnedTestRoot root = new();
+    public string Path => root.Path;
+    public void Dispose() => root.Dispose();
 }
 
 [Trait("Provider", "sqlite")]

@@ -1,6 +1,6 @@
 # 0005: Durable module storage ownership and offline provisioning
 
-**Status:** Proposed
+**Status:** Accepted for implementation
 **Date:** 2026-10-21
 **Spec:** [003 - Storage registry and module isolation](../../specs/003-storage-registry/spec.md)
 
@@ -15,7 +15,7 @@ Neither restriction may be silently weakened when module storage arrives.
 
 ## Decision
 
-Propose allocator v1 `m_<24-character ASCII slug>_<32-hex SHA-256 prefix>`,
+Use allocator v1 `m_<24-character ASCII slug>_<32-hex SHA-256 prefix>`,
 at most 59 bytes, plus database UNIQUE constraints, reserved/existing-object
 checks and installation-wide exclusive maintenance. Persist key/version and
 random installation/allocation identity permanently. Schema/file ownership
@@ -93,9 +93,11 @@ newer lost backup; mixed/stale replacement evidence still must block.
 
 ## Approval
 
-**Not yet approved.** Proposed on the existing
-[draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
-Human approval is required before implementation adopts these choices.
-Planning completion, later checked tasks or a passing automated check do not
-constitute ADR approval, requirements-quality review, numbered-feature
-acceptance or permission to merge.
+The human explicitly selected **"Approve ADR 0005 for implementation"** on
+2026-10-22 (UTC), after reviewing the immutable allocation, separate offline
+PostgreSQL authority, assigned EF migration boundaries, finite budgets and
+stopped complete-set recovery design. This decision authorizes implementation
+on the existing [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
+It does not approve an unreviewed dependency, constitute numbered-feature
+acceptance or authorize merge. Actual both-provider implementation evidence
+and the remaining Spec Kit stages are still required.
