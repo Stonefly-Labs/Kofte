@@ -122,8 +122,12 @@ closes the prior [convergence](../specs/002-platform-contracts/convergence.md)
 public/repeated-corpus evidence gap: documented boundaries, ordered errors and
 truncation now run 100 times per consumer per real culture. No parser defect
 was exposed, and no production code, schema or architecture decision changed.
-Follow-up convergence is next; review and explicit acceptance remain separate
-stages. No human-usability/time claim is made. The host only gains a library project reference; its startup,
+Follow-up [convergence](../specs/002-platform-contracts/convergence.md) now
+passes with zero actionable gaps after assessing all 35 requirements/outcomes/
+scenarios, twelve plan decisions, all 49 tasks and twelve principles. No task,
+product code or architecture decision changes in that stage. Review is next;
+explicit acceptance remains a separate human gate. No human-usability/time
+claim is made. The host only gains a library project reference; its startup,
 routes, stores and web console remain module-free.
 The broader stack/module/deployment proposals below remain future work, not
 installed features or proof of module isolation, production readiness or acceptance.

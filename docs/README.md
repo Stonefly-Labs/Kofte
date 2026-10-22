@@ -99,7 +99,7 @@ pass, but do not cover those omissions. No product defect is demonstrated;
 no product/test/spec/plan change was made. Follow-up convergence, review and
 explicit human acceptance remain required on the same draft PR.
 
-**002 / implement now closes T049; converge is next.**
+**002 / implement closes T049; follow-up converge now passes.**
 The [remediation evidence](../specs/002-platform-contracts/implementation.md#convergence-remediation-t049)
 records all documented public limit/range recipes and ordered multi-diagnostic
 cases, including exact 32/33 truncation and recursively reordered object fields.
@@ -107,4 +107,14 @@ The complete corpus runs 100 times per public consumer per real `en-US`/`tr-TR`
 culture; corrected retry remains covered. All 49 tasks and focused
 quality/unit/both-provider contract gates pass. No production code, schema,
 contract rule, dependency or broader runtime changed. This closes the implement
-task, not the next convergence/review or human-owned feature acceptance.
+task, not review or human-owned feature acceptance.
+
+The [follow-up convergence](../specs/002-platform-contracts/convergence.md)
+assesses all 35 requirements/outcomes/scenarios, twelve plan decisions, all
+49 tasks and twelve constitutional principles against current source/tests and
+actual evidence. F1 is closed: the complete independent public corpus, including
+ordered multi-errors and truncation, runs 100 times per consumer per real
+culture. No actionable gap remains; no task or product code is changed.
+Fresh named unit and both-provider contract suites pass all 44 targeted steps.
+The original gaps assessment is preserved as history. **Review is next** on the
+same draft PR #5; explicit human feature acceptance remains later, not inferred.

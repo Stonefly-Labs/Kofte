@@ -9,8 +9,10 @@ repeated-corpus evidence. The [T049 implementation increment](implementation.md#
 now includes every documented boundary, reversed range and ordered multi-error/
 truncation case in the 100-run/two-consumer/two-real-culture proof, with corrected
 retry retained. No production or contract-rule change was needed.
-Follow-up convergence is next, not already passed; review and acceptance remain
-separate gates.
+Follow-up [convergence](convergence.md) now passes with zero actionable gaps and
+no task/product change. Fresh named unit and both-provider contract suites pass
+all 44 targeted steps. Review is next; it and explicit human acceptance remain
+separate later gates.
 
 ## Prerequisites
 

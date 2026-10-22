@@ -21,8 +21,11 @@ now closes the prior [convergence](specs/002-platform-contracts/convergence.md)
 public-corpus evidence gap. Documented limits, reversed ranges and ordered
 multi-error/truncation cases run 100 times per public consumer per real culture.
 All 49 tasks and focused quality/unit/both-provider contract gates are evidenced;
-no production code or contract rule changed. Follow-up convergence is next on
-the same draft PR, then review and explicit human acceptance. No human usability
+no production code or contract rule changed. Follow-up
+[convergence](specs/002-platform-contracts/convergence.md) now passes with zero
+actionable gaps after assessing all 35 requirements/outcomes/scenarios, twelve
+plan decisions, 49 tasks and twelve principles. The task file is unchanged.
+Review is next on the same draft PR, followed by explicit human acceptance. No human usability
 study, feature acceptance or permission to chain stages is inferred.
 The author/quality checklists remain 16/16 and 36/36, and
 [analysis](specs/002-platform-contracts/analysis.md) passes. Continue on the same

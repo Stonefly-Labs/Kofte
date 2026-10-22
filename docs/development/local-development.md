@@ -21,8 +21,12 @@ public/repeated-corpus gap is now addressed by the
 Documented limits, reversed ranges and ordered multi-error/truncation cases
 now run 100 times per public consumer in both real cultures, with corrected
 retry retained. Focused quality/unit/both-provider contract gates pass.
-Follow-up convergence is next; no new convergence/review/acceptance outcome
-or bootstrap behavior change is asserted.
+Follow-up [convergence](../../specs/002-platform-contracts/convergence.md) now
+passes with zero actionable gaps and no task/product change. Fresh named unit
+and both-provider contract suites pass all 44 targeted steps, including the
+complete repeated corpus and actual SQLite/PostgreSQL HTTP/OpenAPI/adapter
+fixtures. Review is next; no final review, acceptance or bootstrap behavior
+change is asserted.
 Spec 002 timing now uses an available supported workstation/CI runner with
 actual metadata, not a fixed Ubuntu/CPU/RAM profile, per the human's ADR amendment.
 The subsequent author-guide amendment removes the manual timed exercise and
