@@ -96,9 +96,14 @@ The [T082 increment](specs/003-storage-registry/implementation.md#final-review-r
 now supplies assignment-independent correlated upgrade records, failed-acquisition
 records, fixed guidance/durability and safe supervised CLI projection. Both real
 providers capture successful/idempotent upgrades, rejected scopes, unsupported/
-corrupt formats and sanitized commit-boundary failures. All 82 tasks are evidenced;
-**follow-up converge is next** on the same draft PR. No review result is rewritten,
-feature accepted or merge requested by implementation.
+corrupt formats and sanitized commit-boundary failures. All 82 tasks were evidenced at that implementation checkpoint, which selected
+follow-up converge. The [current convergence](specs/003-storage-registry/convergence.md)
+now records **gaps**: R2/T082 and prior T079-T081 are closed, but one MEDIUM
+finding F3 reproduces absent correlated records for a rejected public recovery
+inspection. Exactly T083 is appended for recovery-set boundary/mutation
+diagnostics and real-provider captures, preserving every prior task byte,
+product/test source and historical reports. **Implement T083 is next** on the
+same draft PR; no new design approval, intermediate merge or acceptance is implied.
 The following paragraphs preserve the historical design-stage checkpoint.
 
 Spec **003 / specify and clarify** establish the

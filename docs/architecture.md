@@ -212,8 +212,16 @@ without changing `IStorageMaintenance` or manufacturing a module result.
 The supervisor maps allowlisted worker exit identities into safe operation
 records; raw output remains drained. Both-provider capture/CLI regressions cover
 commits, idempotence, boundary refusals and sanitized uncertain failures.
-All 82 tasks are evidenced; **follow-up converge is next** on the same draft PR.
-No approved architecture, dependency, historical review or acceptance changes.
+All 82 tasks were evidenced at that implementation checkpoint, which selected
+follow-up converge. The [current assessment](../specs/003-storage-registry/convergence.md)
+now records **gaps**: R2/T082 and prior T079-T081 are closed, but the public
+recovery-set inspection/verification/manifest-write entry points bypass correlated
+operation records. A rejected inspection reproduces zero records/spans/counters.
+One MEDIUM partial finding F3 appends T083 for the existing FR-014 diagnostic
+obligation and capture regressions, not a new durable audit service or design.
+**Implement T083 is next** on the same draft PR. All prior task bytes,
+product/test code, approved architecture, dependencies and historical reports
+remain unchanged; no feature acceptance or intermediate merge is requested.
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.

@@ -101,8 +101,17 @@ The [T082 increment](../../specs/003-storage-registry/implementation.md#final-re
 now emits correlated upgrade/failed-acquisition records and safely projects
 worker outcomes in the CLI. Both-provider capture/host regressions cover commits,
 unchanged retries, rejected scopes, unsupported/corrupt formats and sanitized
-commit-boundary failures. All 82 tasks are evidenced; **follow-up converge is next**
-on this same draft PR, not acceptance or a new design/merge prerequisite.
+commit-boundary failures. All 82 tasks were evidenced at that implementation
+checkpoint, which selected follow-up converge.
+The [current convergence](../../specs/003-storage-registry/convergence.md)
+now records **gaps**: R2/T082 and prior T079-T081 are closed, but one MEDIUM
+partial finding F3 reproduces a rejected public recovery inspection with zero
+correlated records/spans/counters. T083 is appended for recovery-set boundary/
+mutation diagnostics and real-provider captures, preserving all original task
+bytes, product/test code, supported commands and historical evidence.
+**Implement T083 is next** on the same draft PR, not acceptance or a new
+design/merge prerequisite. Recovery refusals still preserve data; this finding
+does not demonstrate a storage-isolation or recovery-corruption failure.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).

@@ -6,7 +6,24 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 003 / implement completes **T082** on the original
+**Current checkpoint:** 003 / converge records **gaps after T082** on the original
+`feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
+The [assessment](../../specs/003-storage-registry/convergence.md) covers all
+40 requirements/outcomes/scenarios, fourteen plan decisions, all 82 existing
+tasks and twelve principles against actual source/assertions. R2/T082 and prior
+R1/T081/public F1/F2 are closed. One MEDIUM partial finding F3 remains: public
+recovery-set inspection/verification/manifest-write boundaries bypass the
+required correlated operation records. A session-local public-API probe
+reproduces `RequestInvalid` with zero records, spans or counters and unchanged
+installation state. Existing passing checks do not establish the absent records.
+Exactly **T083** is appended unchecked in Phase 11, preserving all 82 prior
+task bytes/markers, product/test code, approved intent, implementation and
+historical review/convergence evidence. **Implement T083 is next**, in a
+separate invocation on this same draft PR, then converge/review and explicit
+human acceptance. No new design approval, merge prerequisite or 004 work is
+introduced; this stage does not implement the fix or accept the feature.
+
+**T082 implementation checkpoint (historical):** 003 / implement completes **T082** on the original
 `feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 The [implementation evidence](../../specs/003-storage-registry/implementation.md#final-review-remediation-t082)
 records assignment-independent correlated upgrade diagnostics, failed-acquisition

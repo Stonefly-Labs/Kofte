@@ -14,7 +14,7 @@
     },
     "003": {
       "directory": "specs/003-storage-registry",
-      "next_step": "converge"
+      "next_step": "implement"
     }
   },
   "active": null,
@@ -653,6 +653,22 @@
         "specs/003-storage-registry/implementation.md": "a378fc4a9dd5c6f798dfede63408c522e078b0b2f4e1f932ae3c17f5098ebaa8",
         "specs/003-storage-registry/checklists/quality.md": "fbb14e996cbcd6c19959ee5e76369a3377943f4ca485b92fe7ed54467a23a6c5",
         "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "converge",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-22T23:05:25+00:00",
+      "completed_at": "2026-10-22T23:13:45+00:00",
+      "outcome": "gaps",
+      "note": "Executed installed speckit-converge against current spec/plan/all 82 tasks and actual source/assertions under constitution v2.0.1. Assessed 40 requirements/outcomes/scenarios, fourteen plan decisions and twelve principles. R2/T082 and prior R1/T081/public F1/F2 are closed. One MEDIUM partial F3 remains: public recovery-set inspection/verification/manifest-write operations bypass required correlated diagnostics. A public-API probe reproduces RequestInvalid with zero records/spans/counters and unchanged installation. Appended only T083 in Phase 11, preserving every original task byte/marker; product/test code, approved intent, implementation, historical review and checklists are unchanged. Fresh privacy/contract/unit gates pass all 84 targeted steps; actual assessed-head CI has eleven successful contexts and 200 verified steps, with downloaded reports and merge parents checked. Green existing tests do not prove absent records; no new full local gate or feature acceptance is claimed. No hooks. Complete converge with gaps only; implement T083 is next on the same original branch/draft PR without a new approval or intermediate merge.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/tasks.md": "2c39825d032b3439dac6769a8d3bba82898d5383f38cb25e3f3ac8447f2d3c7b",
+        "specs/003-storage-registry/convergence.md": "3ce776261dda7710ff14603f84e07404ffe2ccd7871f4174aab34385d09a0d27"
       }
     }
   ]

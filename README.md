@@ -68,8 +68,18 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**Spec 003 / implement completes T082; follow-up converge is next** on its
-original feature branch. The initial implementation checkpoint followed completed
+**Spec 003 / converge reports one remaining gap after T082** on its original
+feature branch and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
+The [current assessment](specs/003-storage-registry/convergence.md) closes R2/T082
+and retains the prior T079-T081 closures, but reproduces missing correlated
+records for a rejected public recovery inspection. One MEDIUM partial finding
+F3 appends **T083** for recovery-set boundary/mutation diagnostics and capture
+regressions. All 82 prior task bytes and historical reports are preserved;
+product/test code is unchanged. **Implement T083 is next**, separately on this
+same draft PR, before converge, review and explicit human acceptance.
+
+The following paragraphs preserve the implementation and earlier stage history.
+The initial implementation checkpoint followed completed
 specify through analyze and explicit human approval of
 [ADR 0005](docs/adr/0005-module-storage-ownership.md).
 The [specification](specs/003-storage-registry/spec.md), [plan](specs/003-storage-registry/plan.md)
@@ -161,8 +171,9 @@ and truthful durability, without manufacturing a module result. The CLI projects
 allowlisted worker outcomes while continuing to discard raw child output.
 Both-provider captures cover commit, idempotent retry, rejected scopes,
 unsupported/corrupt registries and sanitized commit-boundary failures.
-All 82 tasks are evidenced. **Follow-up converge is next** on the same draft PR;
-historical review/convergence remain unchanged, and feature acceptance is separate.
+All 82 tasks were evidenced at that implementation checkpoint, which selected
+follow-up converge. The current assessment above appends T083 without rewriting
+those historical markers; feature acceptance remains separate.
 
 **Spec 002 is explicitly human-accepted and merged.**
 The [acceptance record](specs/002-platform-contracts/acceptance.md) preserves

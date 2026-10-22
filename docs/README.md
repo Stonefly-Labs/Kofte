@@ -206,9 +206,17 @@ The [T082 implementation](../specs/003-storage-registry/implementation.md#final-
 now emits private correlated upgrade/failed-acquisition records, fixed guidance
 and truthful durability; the CLI projects allowlisted worker outcomes without
 forwarding raw output. Both-provider capture and host cases cover success,
-idempotence and refused/uncertain upgrades. All 82 tasks are evidenced.
-**Follow-up converge is next** on the same draft PR; historical review and
-convergence remain unchanged, with human feature acceptance still separate.
+idempotence and refused/uncertain upgrades. All 82 tasks were evidenced at that
+implementation checkpoint, which selected follow-up converge.
+The [current convergence](../specs/003-storage-registry/convergence.md) now
+records **gaps** after checking all 40 requirements/outcomes/scenarios, fourteen
+plan decisions, 82 tasks and twelve principles. R2/T082 and prior T079-T081 are
+closed; one MEDIUM partial finding F3 reproduces a rejected public recovery
+inspection with zero correlated records/spans/counters. T083 is appended for
+recovery-set boundary/mutation diagnostics and real-provider captures.
+All prior task bytes, product/test code, approved intent and historical reports
+are preserved. **Implement T083 is next** on the same draft PR, with review and
+explicit human feature acceptance still separate.
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 

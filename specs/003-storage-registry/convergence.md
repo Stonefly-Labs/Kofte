@@ -1,3 +1,207 @@
+# Convergence after T082: 003 - Storage Registry and Module Isolation
+
+**Result:** gaps
+
+**Date:** 2026-10-22 (UTC).
+**Stage:** Follow-up converge after T082; assessment only.
+**Assessed source:** `ff03ca4a72742b0a6fc8275f0c673a509e29e2f5`.
+**Branch / PR:** `feature/003-storage-registry` /
+[draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
+**Next stage:** Implement T083, separately on this same branch/draft PR.
+
+## Method and findings
+
+Executed the installed `speckit-converge` skill using
+`SPECIFY_FEATURE_DIRECTORY=specs/003-storage-registry` and its single
+`check-prerequisites.sh --json --require-spec --require-tasks --include-tasks`
+invocation. The preceding implement ledger entry and all four evidence hashes
+match the current 82-task implementation/checklists. No before/after convergence
+hooks are configured: `.specify/extensions.yml` is absent.
+
+Intent is the specification, plan and every task, governed by constitution
+v2.0.1. Referenced contracts explain that intent; checked markers, historical
+reports and green CI are not substitutes for current code/assertion inspection.
+Scope includes contracts, registry/SQL, allocation/provisioning, assigned EF,
+budgets/authority, recovery, diagnostics, host/public consumers and verification.
+No later-feature requirement or branch-comparison-derived intent is introduced.
+
+| ID | Gap type | Severity | Source | Actual evidence | Remaining work |
+| --- | --- | --- | --- | --- | --- |
+| F3 | partial | MEDIUM | FR-014/015; US4.4, US5.1; T057/T065/T066; plan D13/D14 | Public `RecoverySetVerifier` inspection/verification/manifest-write entry points bypass the diagnostic emitter. A rejected inspection reproducibly emits zero records, spans and counters. | T083: correlated private recovery-boundary/mutation records and real-provider capture regressions. |
+
+Checked **40 requirements/outcomes/scenarios** (16 FRs, six buildable SCs,
+18 scenarios), **14 plan decisions**, **82 existing tasks** and **12
+constitutional principles**. Findings: missing 0, partial 1, contradicts 0,
+unrequested 0; CRITICAL 0, HIGH 0, MEDIUM 1, LOW 0. This is a partial secondary
+diagnostic requirement, not a demonstrated ownership/data-loss failure or a
+new constitutional/design dispute. R2/T082 and earlier R1/T081/public F1/F2
+are closed; F3 prevents a clean convergence result.
+
+## F3: recovery-set operations omit correlated records
+
+FR-014 requires structured correlated diagnostics for migration/recovery, and
+operator-visible audit-relevant records for mutations and failed boundaries.
+US5.1 includes operation, outcome, correlation and safe recovery guidance.
+`contracts/storage-v1.md`, Outcomes and diagnostics, explicitly applies this
+to every mutation and rejected boundary; T066 carries the same obligation.
+T057 makes the recovery verifier a product API, not merely a test assertion.
+The future durable audit product remains out of scope.
+
+At `src/Kofte.Infrastructure/Storage/Recovery/RecoverySetVerifier.cs`:
+
+- `InspectStoppedAsync` (`:24-33`) directly rejects a non-infrastructure scope
+  at `:28`, verifies foreign/disposed authority through `MaintenanceScope`,
+  and reads the stopped inventory without entering a correlated operation.
+- `VerifyAsync` (`:60-69`) sanitizes certain exception classes but emits no
+  records. Its core rejects invalid format, artifact digest/inventory/path,
+  scope and ownership evidence (`:71-132`); neither the public entry point nor
+  those refusal paths wrap the operation in `StorageDiagnostics`.
+- `WriteManifestAsync` (`:44-58`) validates input and writes the recovery
+  manifest with exclusive creation, again without mutation/refusal telemetry.
+- Public `ModuleMigrationRecovery.RecoverAsync` does use the emitter, but it
+  is a different operation and is not a wrapper around these recovery-set APIs.
+  Successful setup/registration logs cannot correlate a later verifier refusal.
+
+A session-local console probe references the actual infrastructure project and
+uses its public APIs. It creates a canonical private empty root, installs
+`Kofte.Storage` activity/meter listeners and captures `Console.Error` only around
+`InspectStoppedAsync(installation, nonInfrastructureScope)`. It requires the
+expected safe exception and removes its own empty root afterward. Actual result:
+
+```json
+{"operation":"InspectStoppedAsync","provider":"sqlite","rejectedCode":"RequestInvalid","structuredRecords":0,"spans":0,"counters":0,"installationUnchanged":true}
+```
+
+This proves the missing diagnostic boundary, not an unauthorized write.
+The initial probe setup used macOS's linked temporary-directory ancestor and
+was correctly refused by the existing path guard before the operation. Moving
+only the probe's private root under ignored `artifacts/` enabled the successful
+reproduction above; production guards were not changed. The probe and its
+build outputs are session evidence outside Git, not product/test additions.
+
+Existing recovery tests meaningfully prove refusal and preservation:
+`RecoverySetTests`, `PostgresRecoveryExercise` and public `RecoveryScenarios`
+exercise real complete sets, changed history, mixed ownership, bad hashes,
+unsafe paths and fresh-target refusal. They do not assert a verifier operation
+record. `StoragePrivacyTests` covers all seven module outcomes; T082's
+`StorageMaintenanceDiagnosticsTests` covers upgrade/acquire, not these APIs.
+Their passing results therefore do not close F3.
+
+Exactly **T083** is appended unchecked in **Phase 11: Convergence**. It preserves
+the current public return/exception shapes, authority, deadlines and privacy;
+requires truthful manifest-write durability; and includes failures before
+provider metadata is validated. Provider context must be trusted/allowlisted,
+never arbitrary manifest text. No fabricated module assignment, successful
+pure-helper logging, durable audit runtime or product fix is introduced here.
+
+## Closed remediation and complete coverage
+
+Paths below are relative to `src/Kofte.Infrastructure/Storage/` and
+`tests/integration/Kofte.Storage.IntegrationTests/` unless qualified.
+
+| Intent | Current implementation/assertions and disposition |
+| --- | --- |
+| FR-001/002/004; US1.1-4; SC-003 | Pure versioned contracts, stored-record-first registration, explicit no-storage and immutable owner/provider/key/token. `RegistrationTests` verifies changed-allocator zero calls and persisted no-storage refusal with exact assignment/data/revision/inventory preservation; R1/T081 remains closed. |
+| FR-003/005; US2.1-4; SC-002 | Both SQL scripts enforce actual unique ID/key/token and immutable registration rules; exclusive maintenance, byte-safe allocator and marker-verified schemas. `RegistrationConcurrencyTests` implements twenty rounds of ten independent connections and processes for same/distinct IDs; direct bypass/forced/reserved/unowned cases preserve original owners. |
+| FR-006/008; US3.3/4; SC-005 | `ModuleStorePaths`, `UnixStorePaths` and existing-file-only opens reject aliases, traversal, sidecars, missing/corrupt stores. Actual-open negatives and registry resolution preserve other stores rather than recreate or fall back. |
+| FR-007/011/012; US4.1/2; SC-004 | Separate reservation/physical/ready commits, verified retry or preserved block, monotonic budgets and admitted/reaped worker supervision. Actual crash/deadline/lease-loss assertions retain original allocation and truthful incomplete/uncertain state; no cross-module atomicity. |
+| FR-009/010; US3.1/2, US4.3; SC-001 | Assigned context/cache/history/migration/snapshot binding and whole-pending-set preflight; physical model verification and explicit abandoned-lock recovery. Actual Alpha-only upgrade preserves Beta/history; registry format/upgrade tests cover v0/v1, unsupported/corrupt and killed commits. |
+| FR-013 | Explicit roots/provider/credential sources, verified offline PostgreSQL authority, runtime no-CREATE posture and owned disposable fixture restrictions. Configuration/privilege/outage/corrected-retry assertions retain those limits. |
+| FR-014; US5.1 | T082's shared assignment-independent emitter records real upgrade commits, unchanged retries, invalid scopes, unsupported/corrupt formats, sanitized commit-boundary failures and contended acquisition. Host projection allowlists exit identities and drains raw child output. R2/T082 is closed; recovery-set entry points remain partial under F3. |
+| FR-015; US4.4 | Actual SQLite provider backups and PostgreSQL custom dumps restore complete fresh-target sets with marker/history/data preservation; strict manifest/inventory/hash and legacy source/destination/reset refusals. Physical recovery behavior is supported; its missing diagnostic evidence is F3. |
+| FR-016; US5.2; SC-006 | Nine executable both-provider public examples and module-free foundation gates. Three distinct restart processes retain six exact assignments/sentinels; forced registered-owner UNIQUE collision preserves full inventory and leaves the contender absent. F1/T079 and F2/T080 remain closed; standalone and `all` semantic observation guards remain mandatory. |
+
+| Plan decision inventory | Assessment |
+| --- | --- |
+| D01 pure contracts/one adapter; D02 reviewed dependencies/test ownership | Provider-neutral platform, justified infrastructure, reviewed exact dependency graph and normal inclusion inside dedicated test projects; no loader/mediator/EF Design adoption. |
+| D03 persisted allocator; D04 real versioned registry | Actual byte/reserved rules, unique constraints/triggers, format/digest/history/revision validation and allocator-evolution preservation. |
+| D05 reused lease; D06 offline authority; D07 private SQLite | Same installation lock, non-pooled verified session, separate restricted runtime/provisioner and canonical exclusive file ownership. |
+| D08 durable phases; D09 assigned EF; D10 migration recovery | Marker-verified durable commits, bound model/cache/assembly/preflight/history and verified physical effects/abandoned lock. |
+| D11 finite supervision; D12 explicit upgrade/serving compatibility | Shared monotonic budgets, admission/drain/reap, strict command/configuration and no automatic serving migration. T082 retains Task/safe-exception contracts and truthful durability. |
+| D13 coherent recovery; D14 safe diagnostics/examples/gates | Complete-set behavior/public corpus/verifier wiring supported. Recovery-set diagnostic boundaries remain partial under F3; upgrade diagnostics are now supported. |
+
+| Every existing task assessed | Evidence/disposition |
+| --- | --- |
+| T001-T006 | Recorded human ADR approval, reviewed locks/notices, required projects, fail-closed selectors and shared owned provider/process fixtures. |
+| T007-T014 | Public contracts/results, common budget/scope/path/lease, real registry scripts/version runner and maintenance-only configuration. |
+| T015-T027 | Byte-safe allocation, immutable/no-storage registration, ready-only binding, module-free compatibility and public examples; T081 supplies the previously missing allocator/no-storage regressions. |
+| T028-T035 | Full race matrix, direct database constraints, forced/reserved/unowned collision preservation and bounded retry guidance. |
+| T036-T047 | Assigned model/cache/history/assembly/preflight and physical-boundary proof through independent Alpha/Beta integration/public contexts. |
+| T048-T063 | Real process crashes/deadlines, upgrade/legacy refusal, explicit verified migration recovery and complete provider backup/restore. T057's operations work physically but still owe F3's T066 diagnostics. |
+| T064-T070 | Bounded result/telemetry/public-corpus/corrected-retry assertions. T066 remains partial for recovery-set APIs despite meaningful seven-outcome and upgrade capture coverage. |
+| T071-T078 | Required suite/source inventories and negative harness tests, reviewed dependencies/docs and historical complete local gate; actual assessed-head CI verified below. No new full local gate is inferred. |
+| T079-T081 | Public restart/collision semantics and exact immutable registration assertions remain present; no historical marker or evidence is rewritten. |
+| T082 | Actual eighteen new inherited provider captures plus host projection/strict consumer parser/verifier wiring close R2. Fresh named privacy/contract gates pass; no equivalent recovery-set captures exist yet. |
+
+All twelve principles were assessed: I portable module-free brand; II minimal
+trusted versioned contracts; III native DI/test ownership/reviewed licensing;
+IV unique immutable schema/file/history ownership; V honest local transactions;
+VI least privilege/private failures; VII no MCP bypass or new surface; VIII
+storage intent, not a job/event runtime; IX unchanged visual scope; X portable
+upgrade/budget/recovery; XI actual provider and negative evidence; XII scoped
+append-only one-stage delivery. F3 is the concrete remaining diagnostic work,
+not permission to waive it. Later authentication/MCP/jobs/deployment/reference
+module obligations remain later features, neither introduced nor waived.
+
+## Fresh verification and limits
+
+Selected existing .NET SDK 10.0.402 and Node 24.22.0/npm 11.19.1, with inherited
+PostgreSQL runtime/provisioning connections unset. Provider/runtime helpers used
+private SQLite and explicitly owned disposable PostgreSQL 17 resources only.
+
+| Exact command | Observed result |
+| --- | --- |
+| `python3 scripts/verify.py --suite privacy --provider both --disposable-postgres` | Passed all 36 named steps; 160.278 seconds. |
+| `python3 scripts/verify.py --suite contract --provider both --disposable-postgres` | Passed all 37 named steps; 192.027 seconds, including both-provider standalone and complete public examples. |
+| `python3 scripts/verify.py --suite unit` | Passed all 11 named steps; 5.304 seconds, including all 111 Python tests. |
+| `dotnet run --project "$SESSION_FILES/recovery-diagnostic-probe/Probe.csproj" --no-restore -c Release --verbosity quiet` | Probe executed successfully and reproduced F3: safe RequestInvalid, zero records/spans/counters, unchanged installation. `SESSION_FILES` is the session evidence directory outside Git. |
+
+The three safe local reports under ignored `artifacts/verification/` are
+`privacy-both-f3a082197d1c4042a9559bf741e833b6.json`,
+`contract-both-87bf9036c84442c3943419d1e3a765d3.json` and
+`unit-none-15ef9568299e4fd8916bffffd943db47.json`. They identify assessed head,
+Darwin 25.5.0 arm64, 18 logical CPUs, 64 GiB RAM and Python 3.15.0.
+All **84 targeted named steps** pass; every report remains `scope: targeted`,
+`completeGate: false`. Repository/checker/whitespace publication checks are
+recorded with exact outcomes in the PR. No new local standalone integration,
+recovery, quality, startup, failure-propagation or full all-suite run is claimed.
+
+Actual assessed-head [product CI run 39864368582](https://github.com/Stonefly-Labs/Kofte/actions/runs/39864368582)
+and [repository CI run 39864368599](https://github.com/Stonefly-Labs/Kofte/actions/runs/39864368599)
+are successful for `ff03ca4a72742b0a6fc8275f0c673a509e29e2f5`; all eleven
+contexts are SUCCESS. All ten safe product reports were downloaded and checked:
+**200/200 steps pass** (quality 19, unit 11, integration SQLite 7/PostgreSQL 9,
+recovery 38, contract 37, browser 16, privacy 36, startup 9,
+failure-propagation 18). Every report's synthetic merge is
+`40bc5c2d4d9ddde517971018f3d3a16f4c52eef7`; GitHub confirms parents main
+`66f0e4a950bc3590cdb3a25f1622afbd13a0c226` and assessed head. These actual
+targeted CI results are not a new local full gate and do not prove absent
+recovery diagnostics.
+
+Trusted code is not sandboxed; assigned DDL remains deliberately narrow;
+ambiguous ownership stays blocked; recovery is stopped, complete-set and
+fresh-target; older recovery-point/data-loss choice remains operator-owned.
+Earlier timing failures and passing reruns remain historical, without a claimed
+root cause or weakened deadline. No human usability, production readiness,
+MVP completion or feature acceptance is claimed.
+
+## Disposition
+
+One task is appended, not implemented. All original task bytes are preserved
+as a prefix at SHA-256
+`cc237a7cf30ede1256c1ed201428ed92682ff7e150d739821ddd50c448f10288`.
+The file now has 83 tasks: 82 historical completed markers and exactly T083 open.
+Spec, plan, contracts, implementation report, historical review, reviewer-owned
+checklists, product/test code, dependencies and approved design are unchanged.
+The driver completes **converge with gaps** and selects **implement**. Do not run
+it in this invocation, mark the PR ready or request an intermediate merge.
+Final review and explicit human acceptance remain separate later stages.
+
+## Previous convergence reports (historical)
+
+The following reports are preserved as historical evidence. Their prior clean
+results do not establish the absent recovery-set diagnostic records found above.
+
 # Convergence: 003 - Storage Registry and Module Isolation
 
 **Result:** pass
