@@ -171,6 +171,18 @@ and product/test source remain unchanged. Actual assessed-head CI passes eleven
 contexts and 200 product steps. **Review is next** on this same draft PR,
 not executed by convergence. The original gaps assessment is preserved as
 history; neither passing converge nor checked tasks constitute feature acceptance.
+The subsequent [final review](../specs/003-storage-registry/review.md) records
+**changes**: one MEDIUM finding identifies absent regressions for changed-allocator
+retry of an existing mapping and persisted no-storage-to-relational refusal.
+Production code appears correct; no storage-engine defect is demonstrated.
+T081 is appended for both-provider preservation assertions, retaining all 80
+historical task markers and earlier reports. Prior public F1/F2 remain closed.
+Fresh quality/unit/both-provider integration/recovery/contract/privacy checks
+pass 157 targeted steps; actual assessed-head CI passes eleven contexts and
+200 product steps. Existing passes cannot establish absent assertions.
+**Implement T081 is next** on the same draft PR, without a new approval or merge
+prerequisite. Review changes no product/test code or approved intent and does not
+accept the numbered feature.
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 

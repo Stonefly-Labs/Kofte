@@ -173,6 +173,18 @@ public-example findings are closed and leaves tasks, product/test source and
 architecture decisions unchanged. Actual assessed-head CI passes eleven contexts
 and 200 product steps. Review is next on the same draft PR, followed separately
 by explicit human acceptance; convergence does neither and requests no merge.
+The subsequent [final review](../specs/003-storage-registry/review.md) records
+**changes** for one MEDIUM regression-evidence gap, not a demonstrated runtime
+defect or changed architecture decision. T081 must prove that a changed allocator
+is not called for a persisted owner and that a persisted no-storage owner cannot
+become relational, preserving exact assignments/data/revisions/inventory.
+All 80 historical task markers and prior reports are retained; public F1/F2
+remain closed. Fresh quality/unit/both-provider integration/recovery/contract/
+privacy checks pass 157 targeted steps and actual assessed-head CI passes all
+eleven contexts/200 product steps, without supplying the absent regressions.
+**Implement T081 is next** on the same draft PR. No new design approval or merge
+is needed; review changes no product/test source, contract or approved intent
+and does not accept the feature.
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.

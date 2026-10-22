@@ -6,7 +6,28 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 003 / follow-up converge **passes** on the original
+**Current checkpoint:** 003 / final review records **changes** on the original
+`feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
+The [review](../../specs/003-storage-registry/review.md) assesses all 40
+requirements/outcomes/scenarios, fourteen plan decisions, all 80 existing tasks
+and twelve principles against actual source/assertions. One MEDIUM evidence
+finding R1 remains: changed-allocator retry of an existing mapping and persisted
+no-storage-to-relational refusal lack their prescribed regressions. Production
+code appears correct; no storage-engine failure or new design decision is found.
+Exactly **T081** is appended unchecked; all 80 historical task bytes/markers,
+implementation/convergence reports and reviewed checklists are preserved.
+Public F1/T079 and F2/T080 remain closed.
+Fresh quality/unit/both-provider integration/recovery/contract/privacy checks pass
+157 targeted steps; actual assessed-head CI passes eleven contexts and all
+200 product steps with downloaded reports and merge provenance verified.
+Those passes cannot establish absent assertions.
+**Implement T081 is next**, in a separate invocation on the same draft PR,
+then follow-up converge/review and explicit human feature acceptance. No new
+approval, credential or merge is needed for the scoped test work.
+Review changes no product/test source, dependency or approved intent and does
+not mark ready, accept 003, request merge or begin 004.
+
+**Follow-up convergence checkpoint (historical):** 003 / converge **passes** on the original
 `feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 The [assessment](../../specs/003-storage-registry/convergence.md) covers all
 40 requirements/outcomes/scenarios, fourteen plan decisions, all 80 tasks and

@@ -63,8 +63,17 @@ all 40 requirements/outcomes/scenarios, fourteen plan decisions, 80 tasks and
 twelve principles were assessed against source/tests with zero actionable gaps.
 Both public findings are closed; the task file and product/test code remain
 unchanged. Actual assessed-head CI passes eleven contexts and 200 product steps.
-**Review is next** on the original branch/draft PR.
-This is not feature acceptance or permission to merge.
+The subsequent [final review](specs/003-storage-registry/review.md) records
+**changes** for one MEDIUM evidence gap: the required changed-allocator retry
+of a persisted mapping and no-storage-to-relational refusal lack regressions.
+Existing production behavior appears correct; no storage-engine failure is
+demonstrated. Exactly T081 is appended, preserving all 80 original markers and
+historical reports; prior public F1/F2 remain closed.
+Fresh quality/unit/both-provider integration/recovery/contract/privacy gates
+pass 157 targeted steps; actual assessed-head CI passes eleven contexts and
+200 product steps. **Implement T081 is next** on the original branch/draft PR.
+No new approval or merge is needed for that test work. Review changes no product,
+test or approved design and is not feature acceptance or permission to merge.
 The following paragraphs preserve the historical design-stage checkpoint.
 
 Spec **003 / specify and clarify** establish the

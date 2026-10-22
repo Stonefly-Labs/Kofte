@@ -68,8 +68,8 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**Spec 003 / follow-up converge passes; review is next** on its original
-feature branch. The initial implementation checkpoint followed completed
+**Spec 003 / final review requires test-evidence remediation (T081)** on its
+original feature branch. The initial implementation checkpoint followed completed
 specify through analyze and explicit human approval of
 [ADR 0005](docs/adr/0005-module-storage-ownership.md).
 The [specification](specs/003-storage-registry/spec.md), [plan](specs/003-storage-registry/plan.md)
@@ -120,6 +120,19 @@ CI passes all eleven contexts and 200 product steps. **Review is next** on this
 same draft PR, followed separately by explicit numbered-feature acceptance.
 The earlier gaps assessment is preserved as history; convergence does not
 perform final review, accept the feature or request a merge.
+
+The subsequent [final review](specs/003-storage-registry/review.md) records
+**changes** for one MEDIUM evidence finding: the prescribed changed-allocator
+retry of an existing mapping and persisted no-storage-to-relational refusal
+lack regression assertions. Production code appears correct; no storage-engine
+failure is demonstrated. Prior public F1/F2 are closed. Exactly **T081** is
+appended, preserving all 80 historical task markers and earlier reports.
+Fresh quality/unit/both-provider integration/recovery/contract/privacy gates
+pass 157 targeted steps; actual assessed-head CI passes eleven contexts and
+200 product steps. Passing existing tests does not supply the absent cases.
+**Implement T081 is next** on the same draft PR, with no new approval or merge
+needed for that test work. No product/test code or approved intent changes in
+review; feature acceptance remains separate.
 
 **Spec 002 is explicitly human-accepted and merged.**
 The [acceptance record](specs/002-platform-contracts/acceptance.md) preserves

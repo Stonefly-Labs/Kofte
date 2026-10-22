@@ -14,7 +14,7 @@
     },
     "003": {
       "directory": "specs/003-storage-registry",
-      "next_step": "review"
+      "next_step": "implement"
     }
   },
   "active": null,
@@ -565,6 +565,24 @@
       "evidence_sha256": {
         "specs/003-storage-registry/tasks.md": "ba34dada5adbc45b979dfa3210f2ba1c0df76362983c83817d9b9fc163092fdd",
         "specs/003-storage-registry/convergence.md": "dae58562234facaf235d9e75ddc9ee3d4a3c8a9ea9c83e59152448a8db556acb"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "review",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-22T18:56:22+00:00",
+      "completed_at": "2026-10-22T19:17:42+00:00",
+      "outcome": "changes",
+      "note": "Executed final spec-review rubric against assessed head 2d65cd0: all16FRs/sixSCs/18scenarios, fourteen plan decisions, T001-T080 and twelve principles inspected. Prior F1/T079 and F2/T080 closed by actual public process-restart/data and registered-owner UNIQUE preservation assertions. One MEDIUM evidence finding R1 remains: required changed-allocator persisted-owner retry and persisted no-storage-to-relational refusal regressions absent; bounded cross-source follow-up confirms neither is superseded. Production register code appears correct, with no demonstrated storage-engine defect or unresolved design decision. Appended exactly unchecked T081 for two inherited facts/four real-provider cases using existing fixture/internal seam and exact assignment/sentinel/revision/full-inventory preservation. Original80 task bytes/markers, implementation/convergence, requirements/design/ADR/checklists/product/test/dependency files remain preserved. Fresh quality19/unit11/integrationSQLite7+Postgres9/recovery38/contract37/privacy36 all pass:157 targeted steps, no new full-local claim. Actual assessed-head product39823017354/repository39823017532 CI all eleven contexts and ten downloaded targeted reports/200 steps pass; merge7f4d09e parents main66f0e4a/head2d65cd0 verified. Review/progress docs qualify historical completeness, no hooks. Next invocation implement T081 on original branch/draftPR6; no new approval, credential or merge prerequisite. No implementation, self-acceptance, readiness, merge or004 in this review stage.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/tasks.md": "1abd459afeb96bba10fdc4abbf5c02a110ac12d159a3766c88e81924b698dd00",
+        "specs/003-storage-registry/review.md": "3d0637b5239c1e5d898e66663a9617b3795e0cee0c7ed362d2d6c0d9288ac321",
+        "specs/003-storage-registry/checklists/quality.md": "fbb14e996cbcd6c19959ee5e76369a3377943f4ca485b92fe7ed54467a23a6c5",
+        "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
       }
     }
   ]

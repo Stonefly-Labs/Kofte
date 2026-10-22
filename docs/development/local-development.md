@@ -67,6 +67,17 @@ Both prior public-example findings are closed; tasks and product/test source
 remain unchanged. Actual assessed-head CI passes eleven contexts and 200
 product steps. **Review is next** on this same feature branch/draft PR; no
 final review, feature acceptance or changed supported command is inferred.
+The subsequent [final review](../../specs/003-storage-registry/review.md) records
+**changes** for one MEDIUM evidence gap: absent changed-allocator persisted-owner
+retry and no-storage-to-relational refusal regressions. Production code appears
+correct; no storage-engine failure or supported-command change is demonstrated.
+Exactly T081 is appended, preserving all 80 historical markers and earlier
+reports; prior public F1/F2 remain closed. Fresh quality/unit/both-provider
+integration/recovery/contract/privacy gates pass 157 targeted steps and actual
+assessed-head CI passes eleven contexts/200 product steps.
+**Implement T081 is next** on this same draft PR; no credential, new approval or
+merge is needed for that test work. No product/test code is edited by review,
+and existing green suites do not close assertions absent from their source.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).
