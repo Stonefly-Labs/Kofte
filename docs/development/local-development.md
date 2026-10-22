@@ -60,8 +60,13 @@ example now includes a fixture-forced real registered-owner UNIQUE conflict,
 unchanged assignment/data/inventory and no contender allocation, while retaining
 unowned-target refusal. Standalone and `all` result validation requires those
 observations, not only assertion totals. All 80 tasks are evidenced.
-**Follow-up convergence is next** on this same feature branch/draft PR; no
-convergence pass, final review or feature acceptance is inferred.
+The [follow-up convergence](../../specs/003-storage-registry/convergence.md)
+now passes: all 40 requirements/outcomes/scenarios, fourteen plan decisions,
+80 tasks and twelve principles were assessed with zero actionable gaps.
+Both prior public-example findings are closed; tasks and product/test source
+remain unchanged. Actual assessed-head CI passes eleven contexts and 200
+product steps. **Review is next** on this same feature branch/draft PR; no
+final review, feature acceptance or changed supported command is inferred.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).

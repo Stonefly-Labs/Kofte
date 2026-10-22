@@ -57,8 +57,13 @@ now executes three fresh processes with exact Alpha/Beta assignments and retaine
 data, plus a fixture-forced registered-owner UNIQUE collision with unchanged
 assignment/data/inventory and no contender allocation. The unowned-target
 refusal remains separate. Both standalone and `all` public harnesses require
-measured observations; all 80 tasks are evidenced. **Follow-up convergence is
-next** on the original branch/draft PR.
+measured observations; all 80 tasks are evidenced.
+The [follow-up convergence](specs/003-storage-registry/convergence.md) now passes:
+all 40 requirements/outcomes/scenarios, fourteen plan decisions, 80 tasks and
+twelve principles were assessed against source/tests with zero actionable gaps.
+Both public findings are closed; the task file and product/test code remain
+unchanged. Actual assessed-head CI passes eleven contexts and 200 product steps.
+**Review is next** on the original branch/draft PR.
 This is not feature acceptance or permission to merge.
 The following paragraphs preserve the historical design-stage checkpoint.
 

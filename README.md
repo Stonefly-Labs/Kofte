@@ -68,7 +68,7 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**Spec 003 / implement closes T079-T080; follow-up converge is next** on its original
+**Spec 003 / follow-up converge passes; review is next** on its original
 feature branch. The initial implementation checkpoint followed completed
 specify through analyze and explicit human approval of
 [ADR 0005](docs/adr/0005-module-storage-ownership.md).
@@ -111,9 +111,15 @@ registered owner's candidate, verifies the real UNIQUE rejection and unchanged
 assignment/data/inventory, and retains the separate unowned-target refusal.
 Standalone and `all` harnesses require these observations, not positive counts
 alone. All 80 tasks are evidenced; no runtime storage rule or dependency changes.
-**Follow-up convergence is next** on this same draft PR, then final review and
-explicit numbered-feature acceptance. The earlier gaps report remains historical;
-this implementation does not itself re-run convergence or request a merge.
+The [follow-up convergence](specs/003-storage-registry/convergence.md) now
+assesses all 40 requirements/outcomes/scenarios, fourteen plan decisions,
+80 tasks and twelve principles against current source/tests, with zero actionable
+gaps. Both public-example findings are closed; `tasks.md` is byte-for-byte
+unchanged and no product/test code is edited by convergence. Actual assessed-head
+CI passes all eleven contexts and 200 product steps. **Review is next** on this
+same draft PR, followed separately by explicit numbered-feature acceptance.
+The earlier gaps assessment is preserved as history; convergence does not
+perform final review, accept the feature or request a merge.
 
 **Spec 002 is explicitly human-accepted and merged.**
 The [acceptance record](specs/002-platform-contracts/acceptance.md) preserves

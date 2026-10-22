@@ -165,8 +165,14 @@ assignment/data/inventory and creates no contender allocation. Standalone/`all`
 harnesses require measured evidence, and the unowned-target refusal remains.
 Only the test-support assembly gains access to the existing internal allocator
 seam; no public override, runtime storage rule or dependency is added.
-All 80 tasks are evidenced. Follow-up convergence is next on the same draft PR,
-then final review and explicit human acceptance.
+All 80 tasks are evidenced.
+The [follow-up convergence](../specs/003-storage-registry/convergence.md) now
+passes with zero actionable gaps across all 40 requirements/outcomes/scenarios,
+fourteen plan decisions, 80 tasks and twelve principles. It verifies both
+public-example findings are closed and leaves tasks, product/test source and
+architecture decisions unchanged. Actual assessed-head CI passes eleven contexts
+and 200 product steps. Review is next on the same draft PR, followed separately
+by explicit human acceptance; convergence does neither and requests no merge.
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.

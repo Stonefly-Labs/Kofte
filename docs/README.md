@@ -163,8 +163,14 @@ retained sentinels after each, plus a forced registered-owner UNIQUE collision
 with preserved assignment/data/inventory and no contender allocation. The
 unowned-target refusal remains. Both standalone and `all` public harnesses now
 require those observations; all 80 tasks are evidenced.
-**Follow-up convergence is next** on this same draft PR. The existing gaps
-assessment remains historical, not a fresh convergence result or feature acceptance.
+The [follow-up convergence](../specs/003-storage-registry/convergence.md) now
+passes after assessing all 40 requirements/outcomes/scenarios, fourteen plan
+decisions, 80 tasks and twelve principles against source/tests. Both prior
+public-example findings are closed, with zero actionable gaps; the task file
+and product/test source remain unchanged. Actual assessed-head CI passes eleven
+contexts and 200 product steps. **Review is next** on this same draft PR,
+not executed by convergence. The original gaps assessment is preserved as
+history; neither passing converge nor checked tasks constitute feature acceptance.
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 

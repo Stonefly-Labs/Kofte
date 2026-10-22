@@ -6,7 +6,21 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 003 / implement closes **T079-T080** on the original
+**Current checkpoint:** 003 / follow-up converge **passes** on the original
+`feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
+The [assessment](../../specs/003-storage-registry/convergence.md) covers all
+40 requirements/outcomes/scenarios, fourteen plan decisions, all 80 tasks and
+twelve principles against current source/tests. Both prior public-example
+findings are closed: genuine three-process restart/data proof and the real
+distinct-registered-owner UNIQUE collision now execute in standalone and `all`.
+No actionable missing, partial, contradictory or unrequested gap remains.
+The task file is byte-for-byte unchanged; product/test/design/checklist evidence
+is untouched. Actual assessed-head CI passes eleven contexts and all 200 product
+steps, with downloaded reports and synthetic-merge provenance verified.
+**Review is next**, in a separate invocation on the same draft PR; convergence
+does not perform final review, accept 003, mark ready or request merge.
+
+**Remediation checkpoint (historical):** 003 / implement closes **T079-T080** on the original
 `feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 The [remediation evidence](../../specs/003-storage-registry/implementation.md#convergence-remediation-t079-t080)
 records three genuine restarted public-consumer processes, with two exact
