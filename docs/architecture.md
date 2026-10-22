@@ -182,9 +182,15 @@ All 80 historical task markers and prior reports are retained; public F1/F2
 remain closed. Fresh quality/unit/both-provider integration/recovery/contract/
 privacy checks pass 157 targeted steps and actual assessed-head CI passes all
 eleven contexts/200 product steps, without supplying the absent regressions.
-**Implement T081 is next** on the same draft PR. No new design approval or merge
-is needed; review changes no product/test source, contract or approved intent
-and does not accept the feature.
+That review selected implement without a new design approval or merge.
+The [T081 regressions](../specs/003-storage-registry/implementation.md#final-review-remediation-t081)
+now pass all four real-provider cases, proving zero allocator calls for persisted
+owners and immutable no-storage declarations, with exact assignment/data/revision/
+inventory preservation. Controlled mutations demonstrate failure detection.
+All 81 tasks are evidenced; quality/unit/integration gates pass 46 targeted steps
+after an unchanged PostgreSQL rerun of two initial deadline failures. No runtime,
+API, dependency or architecture change is introduced. **Follow-up converge is
+next** on the same draft PR; historical reports and separate acceptance remain.
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.

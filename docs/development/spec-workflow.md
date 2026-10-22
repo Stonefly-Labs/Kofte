@@ -6,7 +6,23 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 003 / final review records **changes** on the original
+**Current checkpoint:** 003 / implement completes **T081** on the original
+`feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
+The [implementation evidence](../../specs/003-storage-registry/implementation.md#final-review-remediation-t081)
+records two inherited facts/four real-provider cases for changed-allocator
+persisted-owner retry and no-storage-to-relational rejection. They assert zero
+allocator calls and exact assignments/data/revisions/complete inventory across
+reopening; controlled mutations fail all four for the intended assertions.
+Production is restored byte-for-byte and unchanged. All 81 tasks are evidenced.
+Fresh quality/unit/integration gates pass 46 targeted steps after an unchanged
+PostgreSQL rerun of two initial model/boundary deadline failures; both initial
+failure and passing focused/full reruns are recorded, with no weakened gate.
+APIs, dependencies, design and read-only checklists are unchanged.
+**Follow-up converge is next**, on this same draft PR. Historical convergence
+and review results remain unchanged; this stage does not reconverge, review,
+accept 003, request merge or begin 004.
+
+**Final review checkpoint (historical):** 003 / review records **changes** on the original
 `feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 The [review](../../specs/003-storage-registry/review.md) assesses all 40
 requirements/outcomes/scenarios, fourteen plan decisions, all 80 existing tasks

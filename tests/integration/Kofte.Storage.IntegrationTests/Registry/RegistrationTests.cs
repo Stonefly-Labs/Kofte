@@ -1,6 +1,8 @@
 using System.Text.Json;
 using Kofte.Host.Bootstrap;
 using Kofte.Infrastructure.Storage;
+using Kofte.Infrastructure.Storage.Allocation;
+using Kofte.Infrastructure.Storage.Recovery;
 using Kofte.Infrastructure.Storage.Registry;
 using Kofte.Platform.Modules.Manifest;
 using Kofte.Platform.Modules.Storage;
@@ -74,6 +76,100 @@ public abstract class RegistrationTests
             alpha.Id, TestContext.Current.CancellationToken)).Assignment;
         Assert.Equal(original.AllocationId, after.AllocationId);
         await fixture.AssertInventoryAsync(1, 1, TestContext.Current.CancellationToken);
+    }
+
+    [Fact]
+    public async Task ChangedAllocatorIsNeverInvokedForPersistedOwnerAndPreservesInventoryAcrossReopen()
+    {
+        var token = TestContext.Current.CancellationToken;
+        await using var fixture = await RegistryFixture.CreateAsync(Provider, token);
+        var alpha = RegistryFixture.Module("org.example.alpha");
+        var beta = RegistryFixture.Module("org.example.beta");
+        StorageAssignment original;
+        StorageAssignment other;
+        RecoveryInventory before;
+        await using (var scope = await fixture.Maintenance.AcquireAsync(token))
+        {
+            original = Assert.IsType<StorageResult.Ready>(await fixture.Registry.RegisterAsync(
+                alpha, scope, token)).Assignment;
+            other = Assert.IsType<StorageResult.Ready>(await fixture.Registry.RegisterAsync(
+                beta, scope, token)).Assignment;
+            await RegistrySentinel.WriteAsync(fixture, original, "alpha-before-allocator-change");
+            await RegistrySentinel.WriteAsync(fixture, other, "beta-before-allocator-change");
+            before = await RecoverySetVerifier.InspectStoppedAsync(fixture.Installation, scope, token);
+        }
+        var changedCandidate = StorageAllocator.Allocate(RegistryFixture.Module("org.example.reallocated-alpha").Id);
+        Assert.NotEqual(original.AllocationKey, changedCandidate);
+        var allocatorCalls = 0;
+        var installation = fixture.NewInstallation();
+        var registry = new StorageRegistry(installation, _ =>
+        {
+            allocatorCalls++;
+            return changedCandidate;
+        });
+        await using var reopened = await new StorageMaintenance(installation).AcquireAsync(token);
+        var changed = RegistryFixture.Module(alpha.Id.Value, version: "2.0.0", display: "Renamed Köfte module");
+        var retried = Assert.IsType<StorageResult.Ready>(await registry.RegisterAsync(changed, reopened, token));
+        Assert.Equal(StorageDurability.Unchanged, retried.Durability);
+        Assert.Equal(StorageAssignmentSnapshot.From(original), StorageAssignmentSnapshot.From(retried.Assignment));
+        var resolved = Assert.IsType<StorageResult.Ready>(await registry.ResolveAsync(alpha.Id, token)).Assignment;
+        Assert.Equal(StorageAssignmentSnapshot.From(original), StorageAssignmentSnapshot.From(resolved));
+        Assert.Equal(StorageAssignmentSnapshot.From(other), StorageAssignmentSnapshot.From(
+            Assert.IsType<StorageResult.Ready>(await registry.ResolveAsync(beta.Id, token)).Assignment));
+        Assert.Equal("alpha-before-allocator-change", await RegistrySentinel.ReadAsync(fixture, resolved));
+        Assert.Equal("beta-before-allocator-change", await RegistrySentinel.ReadAsync(fixture, other));
+        var after = await RecoverySetVerifier.InspectStoppedAsync(installation, reopened, token);
+        Assert.Equal(before.RegistryRevision, after.RegistryRevision);
+        Assert.Equal(JsonSerializer.Serialize(before), JsonSerializer.Serialize(after));
+        Assert.Equal(0, allocatorCalls);
+    }
+
+    [Fact]
+    public async Task PersistedNoStorageCannotBecomeRelationalAndPreservesInventoryAcrossReopen()
+    {
+        var token = TestContext.Current.CancellationToken;
+        await using var fixture = await RegistryFixture.CreateAsync(Provider, token);
+        var alpha = RegistryFixture.Module("org.example.alpha");
+        var noStorage = RegistryFixture.Module("org.example.stateless", relational: false);
+        StorageAssignment original;
+        RecoveryInventory before;
+        await using (var scope = await fixture.Maintenance.AcquireAsync(token))
+        {
+            original = Assert.IsType<StorageResult.Ready>(await fixture.Registry.RegisterAsync(
+                alpha, scope, token)).Assignment;
+            Assert.IsType<StorageResult.NoStorage>(await fixture.Registry.RegisterAsync(noStorage, scope, token));
+            await RegistrySentinel.WriteAsync(fixture, original, "alpha-before-rejected-storage-change");
+            before = await RecoverySetVerifier.InspectStoppedAsync(fixture.Installation, scope, token);
+        }
+        var allocatorCalls = 0;
+        var installation = fixture.NewInstallation();
+        var registry = new StorageRegistry(installation, owner =>
+        {
+            allocatorCalls++;
+            return StorageAllocator.Allocate(owner);
+        });
+        await using var reopened = await new StorageMaintenance(installation).AcquireAsync(token);
+        var relational = RegistryFixture.Module(noStorage.Id.Value, version: "2.0.0", display: "Relational request");
+        var rejected = await registry.RegisterAsync(relational, reopened, token);
+        Assert.Equal(StorageOutcome.Rejected, rejected.Outcome);
+        Assert.Equal(StorageDurability.Unchanged, rejected.Durability);
+        var diagnostic = Assert.Single(rejected.Diagnostics);
+        Assert.Equal("storage_conflict", diagnostic.Code);
+        Assert.Equal("correct_configuration", diagnostic.Guidance);
+        Assert.IsType<StorageResult.NoStorage>(await registry.ResolveAsync(noStorage.Id, token));
+        var resolved = Assert.IsType<StorageResult.Ready>(await registry.ResolveAsync(alpha.Id, token)).Assignment;
+        Assert.Equal(StorageAssignmentSnapshot.From(original), StorageAssignmentSnapshot.From(resolved));
+        Assert.Equal("alpha-before-rejected-storage-change", await RegistrySentinel.ReadAsync(fixture, resolved));
+        var after = await RecoverySetVerifier.InspectStoppedAsync(installation, reopened, token);
+        var persisted = Assert.Single(after.Allocations, row => row.ModuleId == noStorage.Id.Value);
+        Assert.False(persisted.Relational);
+        Assert.Equal("no_storage", persisted.State);
+        Assert.Null(persisted.AllocationKey);
+        Assert.Null(persisted.AllocationId);
+        Assert.Null(persisted.AllocatorVersion);
+        Assert.Equal(before.RegistryRevision, after.RegistryRevision);
+        Assert.Equal(JsonSerializer.Serialize(before), JsonSerializer.Serialize(after));
+        Assert.Equal(0, allocatorCalls);
     }
 
     [Fact]

@@ -68,7 +68,7 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**Spec 003 / final review requires test-evidence remediation (T081)** on its
+**Spec 003 / T081 implementation is complete; follow-up converge is next** on its
 original feature branch. The initial implementation checkpoint followed completed
 specify through analyze and explicit human approval of
 [ADR 0005](docs/adr/0005-module-storage-ownership.md).
@@ -130,9 +130,16 @@ appended, preserving all 80 historical task markers and earlier reports.
 Fresh quality/unit/both-provider integration/recovery/contract/privacy gates
 pass 157 targeted steps; actual assessed-head CI passes eleven contexts and
 200 product steps. Passing existing tests does not supply the absent cases.
-**Implement T081 is next** on the same draft PR, with no new approval or merge
-needed for that test work. No product/test code or approved intent changes in
-review; feature acceptance remains separate.
+That review selected implement without a new approval or merge prerequisite.
+The [T081 implementation](specs/003-storage-registry/implementation.md#final-review-remediation-t081)
+now adds both inherited regressions: all four real-provider cases pass and
+detect controlled behavioral mutations. Exact assignments, sentinels, revisions
+and complete inventory remain unchanged after reopening. All 81 tasks are
+evidenced; fresh quality/unit/integration gates pass 46 targeted steps after
+an unchanged PostgreSQL rerun of two initial deadline failures. Production,
+APIs and dependencies are unchanged. **Follow-up converge is next** on the
+same draft PR; historical review/convergence reports are preserved, and
+feature acceptance remains separate.
 
 **Spec 002 is explicitly human-accepted and merged.**
 The [acceptance record](specs/002-platform-contracts/acceptance.md) preserves

@@ -14,7 +14,7 @@
     },
     "003": {
       "directory": "specs/003-storage-registry",
-      "next_step": "implement"
+      "next_step": "converge"
     }
   },
   "active": null,
@@ -581,6 +581,24 @@
       "evidence_sha256": {
         "specs/003-storage-registry/tasks.md": "1abd459afeb96bba10fdc4abbf5c02a110ac12d159a3766c88e81924b698dd00",
         "specs/003-storage-registry/review.md": "3d0637b5239c1e5d898e66663a9617b3795e0cee0c7ed362d2d6c0d9288ac321",
+        "specs/003-storage-registry/checklists/quality.md": "fbb14e996cbcd6c19959ee5e76369a3377943f4ca485b92fe7ed54467a23a6c5",
+        "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "implement",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-22T19:34:19+00:00",
+      "completed_at": "2026-10-22T19:51:01+00:00",
+      "outcome": "pass",
+      "note": "T081 implemented: two inherited facts/four real-provider cases prove persisted-owner retry never calls a changed allocator and persisted no-storage cannot become relational; exact assignments/data/revisions/full inventory preserved. Baseline and restored focused4/4 pass; controlled behavior mutations fail4/4 as intended; production restored byte-for-byte. Quality19/unit11/SQLite integration7 pass; initial PostgreSQL model/boundary DeadlineExceeded in two existing cases did not reproduce in unchanged focused2/2 or full PostgreSQL9-step rerun. 46 targeted steps pass, no new all-suite claim. Exact commands, tested base607d281/blob357898be and limitations in implementation.md; all81 tasks checked, reviewer-owned checklists unchanged16/16 and36/36, no hooks. Historical review/convergence untouched; next converge only, no acceptance/merge.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/tasks.md": "9d737096a2e927be6737eedbe8526460a7b8292a8cc377743b30a09aa115cec4",
+        "specs/003-storage-registry/implementation.md": "a0ff7c5590c9d124d56c239992f7f65fb2ffde543a4823b42260622ba831a8cf",
         "specs/003-storage-registry/checklists/quality.md": "fbb14e996cbcd6c19959ee5e76369a3377943f4ca485b92fe7ed54467a23a6c5",
         "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
       }

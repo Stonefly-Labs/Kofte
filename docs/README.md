@@ -180,9 +180,14 @@ historical task markers and earlier reports. Prior public F1/F2 remain closed.
 Fresh quality/unit/both-provider integration/recovery/contract/privacy checks
 pass 157 targeted steps; actual assessed-head CI passes eleven contexts and
 200 product steps. Existing passes cannot establish absent assertions.
-**Implement T081 is next** on the same draft PR, without a new approval or merge
-prerequisite. Review changes no product/test code or approved intent and does not
-accept the numbered feature.
+That review selected implement without a new approval or merge prerequisite.
+The [T081 implementation](../specs/003-storage-registry/implementation.md#final-review-remediation-t081)
+now passes all four inherited real-provider cases and detects controlled
+behavioral mutations, preserving exact assignments/data/revisions/inventory.
+All 81 tasks are evidenced; quality/unit/integration gates pass 46 targeted steps
+after an unchanged PostgreSQL rerun of two initial deadline failures. Production,
+APIs and dependencies are unchanged. **Follow-up converge is next** on the same
+draft PR; historical reports/checklists are preserved and acceptance is separate.
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 

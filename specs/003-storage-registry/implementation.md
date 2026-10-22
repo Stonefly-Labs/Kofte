@@ -1,7 +1,7 @@
 # Implementation: 003 - Storage Registry and Module Isolation
 
-**Stage:** Implement remediation T079-T080 complete; all 80 tasks evidenced.
-The original 78-task checkpoint and its complete local/CI evidence are preserved below.
+**Stage:** Implement remediation T081 complete; all 81 tasks evidenced.
+The earlier implementation checkpoints and their local/CI evidence are preserved below.
 **Branch / PR:** `feature/003-storage-registry` /
 [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 **Started:** 2026-10-22 (UTC).
@@ -12,6 +12,98 @@ The latter changes only CI mirror setup and documentation, not product, test or
 verification-script source. The final publication adds stage documentation,
 task completion and the driver transition; its checks are recorded in the PR
 without a self-referential bookkeeping commit.
+
+## Final review remediation T081
+
+**Date:** 2026-10-22 (UTC). **Stage:** Implement only, on the original branch
+and draft PR. The [final review](review.md) recorded one MEDIUM evidence
+finding R1 and appended T081; its historical changes result is not rewritten.
+Follow-up converge, review and explicit human acceptance remain separate stages.
+
+The tested worktree is based on `607d2819b14ec99141c2d461a7d150cc768569be`.
+The sole test-source change is
+`tests/integration/Kofte.Storage.IntegrationTests/Registry/RegistrationTests.cs`,
+Git blob `357898be9e562862efb918fab1d690f9fcd8640a`. Both facts are inherited
+by the existing SQLite and PostgreSQL classes: **four actual provider cases**,
+with no skipped or missing cases.
+
+### Actual assertions and acceptance mapping
+
+| Fact | Required observations |
+| --- | --- |
+| `ChangedAllocatorIsNeverInvokedForPersistedOwnerAndPreservesInventoryAcrossReopen` | Register Alpha/Beta and write distinguishable module-local sentinels. Release maintenance, reopen the same installation and retry Alpha with changed display/release metadata through a counted allocator returning a different valid candidate. Require Ready/Unchanged, zero allocator calls, exact eight-field Alpha assignments from registration/resolution, unchanged Beta assignment, both retained sentinels, unchanged installation revision and structurally identical complete stopped inventory. |
+| `PersistedNoStorageCannotBecomeRelationalAndPreservesInventoryAcrossReopen` | Register Alpha and a no-storage owner, write Alpha's sentinel, release maintenance and reopen. Request relational storage for the persisted no-storage ID. Require Rejected/Unchanged, `storage_conflict`/`correct_configuration`, zero allocator calls, continued NoStorage resolution, false/no_storage/null allocation fields, unchanged row/installation revisions and complete inventory, plus preserved Alpha assignment/data. |
+
+These close T081's missing T015/T016 assertions for FR-002/004, SC-003,
+US1.2-4 and principles IV/XI. Existing assignment snapshots compare contract,
+owner, provider, installation/allocation UUIDs, key, allocator version and
+revision. Existing stopped-inventory inspection verifies registered physical
+schemas/files and marker/history metadata, so equality also excludes an
+alternate allocation or new module objects. Inventory collections are compared
+structurally using the existing deterministic serialization pattern.
+
+No production source, public API, provider dependency, lockfile, supported
+behavior, approved design or reviewer-owned checklist changes. Existing owned
+fixtures, internal allocator seam, sentinel and snapshot helpers are reused.
+All .NET test source remains inside its dedicated project under `tests/`.
+
+### Executed remediation checks
+
+Safe reports observed Darwin 25.5.0 arm64, 18 logical CPUs, 64 GiB and Python
+3.15.0; selected tools were .NET SDK 10.0.402 and Node 24.22.0/npm 11.19.1.
+Provider versions and the owned PostgreSQL image remain those recorded below.
+Commands used the existing private SQLite and disposable PostgreSQL fixtures:
+
+```bash
+export DOTNET_ROOT="$PWD/artifacts/toolchain/dotnet-10.0.402"
+export PATH="$DOTNET_ROOT:$(dirname "$(fnm exec --using=24.22.0 node -p 'process.execPath')"):$PATH"
+unset KOFTE_POSTGRES_CONNECTION KOFTE_POSTGRES_PROVISIONING_CONNECTION
+```
+
+| Exact command | Observed result |
+| --- | --- |
+| `dotnet format Kofte.slnx --no-restore --include tests/integration/Kofte.Storage.IntegrationTests/Registry/RegistrationTests.cs` | Passed; existing formatter applied. |
+| `dotnet build tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj --no-restore -c Release --nologo -v quiet` | Passed, zero warnings/errors. |
+| `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --filter-method '*ChangedAllocatorIsNeverInvokedForPersistedOwnerAndPreservesInventoryAcrossReopen' --filter-method '*PersistedNoStorageCannotBecomeRelationalAndPreservesInventoryAcrossReopen' --minimum-expected-tests 4` | Baseline passed 4/4 in 15.965 seconds; controlled mutation failed all four as intended; restored-source run passed 4/4 in 14.424 seconds, zero skipped. |
+| `python3 scripts/verify.py --suite quality` | Passed 19 steps, 23.267 seconds; includes full format/build, web quality, dependency and repository checks. |
+| `python3 scripts/verify.py --suite unit` | Passed 11 steps, 5.631 seconds. |
+| `python3 scripts/verify.py --suite integration --provider both --disposable-postgres` | SQLite passed 7 steps, 208.342 seconds. PostgreSQL initially failed its storage step in 203.452 seconds with `DeadlineExceeded` in two pre-existing model/boundary tests; the four new cases were not the reported failures. |
+| `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --filter-trait 'Provider=postgres' --filter-method '*SameContextTypeUsesDistinctAssignedModelsAndDesignTimeCacheKeys' --filter-method '*FactoryCannotReplaceTheInternallySelectedConnection' --minimum-expected-tests 2` | Both initially failing cases passed unchanged, 2/2, zero skipped, 7.159 seconds. |
+| `python3 scripts/verify.py --suite integration --provider postgres --disposable-postgres` | Full PostgreSQL rerun passed all 9 steps unchanged, 177.461 seconds. |
+| `python3 scripts/check_repository.py` | Passed after final artifact/ledger writes. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed all 111 tests after final artifact/ledger writes. |
+| `git diff --check` | Passed. |
+
+The mutation run temporarily called the allocator for an existing relational
+record and weakened the symmetric storage-need mismatch guard to reject only
+relational-to-no-storage changes. Both providers failed the new facts on the
+intended assertions: zero allocator calls versus one, and Rejected versus
+NoStorage. This was **four behavioral failures**, not build/setup failures.
+Production source was restored byte-for-byte before the final focused run and
+all named gates; `git diff --quiet HEAD -- src` passed. No mutation is published.
+
+The initial broader PostgreSQL failure named
+`PostgresAssignedModelTests.SameContextTypeUsesDistinctAssignedModelsAndDesignTimeCacheKeys`
+and `PostgresStorageBoundaryTests.FactoryCannotReplaceTheInternallySelectedConnection`.
+The unchanged focused and full reruns did not reproduce it; no timing limit,
+assertion, fixture or gate was weakened. This observation does not establish
+the cause or eliminate timing sensitivity.
+
+An additional Markdown-only probe,
+`node_modules/.bin/prettier --check README.md CONTRIBUTING.md docs/README.md docs/architecture.md docs/development/local-development.md docs/development/spec-workflow.md specs/003-storage-registry/implementation.md specs/003-storage-registry/tasks.md`,
+reported style differences in six files. Comparing formatter output against
+HEAD confirmed the same six already differ there; the two others match before
+and after. Markdown is outside the repository's configured `format:check`
+scope, which passed in quality. No unrelated whole-document reformat is included.
+
+The four successful safe reports total **46 targeted steps** (19 + 11 + 7 + 9),
+identify the base revision above and honestly retain `completeGate: false`.
+The separate failed PostgreSQL report is retained locally, not erased or
+counted as passing. This increment does not claim a new local `--suite all`,
+recovery, contract, browser, privacy, startup or failure-propagation run.
+Publication-head CI is recorded in the PR after pushing.
+No implement hooks are configured: `.specify/extensions.yml` is absent.
+Author/quality checklists remain read-only at 16/16 and 36/36.
 
 ## Convergence remediation T079-T080
 

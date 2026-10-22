@@ -7,13 +7,15 @@ and reviewer-authorized requirements-quality checklist.
 quality criteria. Passing analyze and explicit human approval of Proposed
 ADR 0005 are required **before implementation**, not inferred from this list.
 **Constitution**: Adopted v2.0.1, principles I-XII.
-**Status**: All 80 tasks are evidenced, including the original six named gates, both
-published public `all` commands, the complete local 200-step gate and eleven
-passing assessed-head CI contexts. T079-T080 now close the first convergence's
-public restart/collision gaps with standalone and `all` observations on both
-providers; fresh remediation checks are in `implementation.md`.
-Implement is complete; follow-up converge is next,
-not performed here. This is not feature acceptance.
+**Status**: All 81 tasks are evidenced. T081 adds the final review's missing
+changed-allocator retry and no-storage-to-relational refusal regressions on both
+real providers, with preserved assignments/data/revisions/inventory and actual
+mutation red/green evidence. Fresh quality/unit/integration gates pass 46 targeted
+steps after an unchanged PostgreSQL deadline-failure rerun; exact results and
+limitations are in `implementation.md`. The original complete local/CI gates and
+T079-T080 public-example remediation remain historical evidence.
+Implement is complete; follow-up converge is next, not performed here.
+This is not feature acceptance.
 
 **Tests**: The specification and constitution explicitly require these tests.
 Use actual PostgreSQL 17 and SQLite, not substitutes. Write story cases before
@@ -292,9 +294,9 @@ Separate commits must be pushed immediately; no parallel stage execution.
 | Requirement | Concrete implementation / evidence tasks |
 | --- | --- |
 | FR-001 trusted versioned contract/authority | T007, T014, T017, T024, T037, T045, T068 |
-| FR-002 identity/no-storage/immutable need | T010-T013, T016, T019, T030, T033 |
+| FR-002 identity/no-storage/immutable need | T010-T013, T016, T019, T030, T033, T081 |
 | FR-003 actual UNIQUE/concurrent allocation | T011-T013, T018, T028-T034 |
-| FR-004 persisted immutable ownership | T015-T019, T022-T024, T033, T053 |
+| FR-004 persisted immutable ownership | T015-T019, T022-T024, T033, T053, T081 |
 | FR-005 PostgreSQL schema/names/history | T011, T018, T020, T022, T029, T036-T046 |
 | FR-006 private SQLite file/path/alias boundary | T009, T012, T021, T037, T044, T051, T058 |
 | FR-007 truthful durable provisioning state | T007, T019-T023, T048, T052-T054, T061 |
@@ -307,7 +309,7 @@ Separate commits must be pushed immediately; no parallel stage execution.
 | FR-014 correlated bounded private output | T005, T007, T055, T064-T072 |
 | FR-015 coherent recovery/legacy protection | T050/T051, T054, T056-T063, T074-T077 |
 | FR-016 executable public examples/bootstrap compatibility | T005/T006, T017, T025-T027, T035, T045-T047, T060/T063, T068, T071-T078 |
-| US1.1-4 / SC-003 | T015-T027, T044, T075-T077 |
+| US1.1-4 / SC-003 | T015-T027, T044, T075-T077, T081 |
 | US2.1-4 / SC-002 | T028-T035, T075-T077 |
 | US3.1-4 / SC-001 | T036-T047, T075-T077 |
 | US4.1-4 / SC-004 | T048-T063, T075-T077 |
@@ -340,10 +342,11 @@ gate is neither performed nor waived by this internal slice.
 
 ## Completion and Human Handoff
 
-This task list contains **80 tasks**, all evidenced:
+This task list contains **81 tasks**, all evidenced:
 six setup, eight foundational,
 13 US1, eight US2, twelve US3, sixteen US4, seven US5 and eight final evidence
-tasks, plus two convergence remediation tasks. All 18 acceptance scenarios, 16 functional requirements, six outcomes and
+tasks, plus two convergence remediation tasks and one final-review regression
+remediation task. All 18 acceptance scenarios, 16 functional requirements, six outcomes and
 twelve principles have explicit task/evidence coverage. Parallel markers do
 not change dependencies or authorize concurrent Spec Kit stages.
 
@@ -372,7 +375,7 @@ tasks, successful tests or an earlier merge.
 
 Final review R1 identifies two missing regression assertions prescribed by T015/T016,
 not a demonstrated storage-engine defect. Historical tasks and convergence evidence
-remain historical; current review/progress documentation records the incomplete
-evidence until T081 passes.
+remain historical. T081 is now implemented and evidenced in `implementation.md`;
+the historical review result remains changes pending separate converge/review.
 
-- [ ] T081 [US1] Close final-review R1 with two shared both-provider regression tests in `tests/integration/Kofte.Storage.IntegrationTests/Registry/RegistrationTests.cs`, inherited by the existing SQLite/PostgreSQL classes. First, persist a relational owner and distinguishable sentinel data, release maintenance, reopen the same installation through the existing internal allocator seam with a counted allocator returning a different valid candidate, and re-register that existing canonical ID with changed display/release metadata; require Ready, zero allocator invocations, the exact original eight-field assignment from registration and resolution, retained sentinel data, unchanged registration and installation revisions, structurally identical complete stopped inventory and no alternate allocation/schema/file. Second, persist a no-storage owner, release/reopen maintenance, retry that same canonical ID with relational storage, and require Rejected/`storage_conflict`/`correct_configuration` with Unchanged durability, zero allocator invocations, continued NoStorage resolution, unchanged persisted no-storage/null-allocation state and row revision, unchanged installation revision/full inventory, zero module objects for that ID and preserved existing owners/sentinels. Reuse existing owned fixtures, snapshot/sentinel helpers and stopped-inventory inspection; keep changes test-only with no public API, production override, provider dependency or gate weakening. Execute both facts on both real providers and the existing integration/quality/unit gates, fail on zero/missing provider cases, and record exact test names, provider counts, revision and safe results in `specs/003-storage-registry/implementation.md`. Preserve historical convergence evidence and qualify current completeness through review/progress documentation. Depends: T018, T019, T023, T057, T071, T079, T080. Trace: FR-002/004, SC-003, US1.2-4; principles IV, XI; final-review R1 (MEDIUM); closes missing T015/T016 regression evidence.
+- [X] T081 [US1] Close final-review R1 with two shared both-provider regression tests in `tests/integration/Kofte.Storage.IntegrationTests/Registry/RegistrationTests.cs`, inherited by the existing SQLite/PostgreSQL classes. First, persist a relational owner and distinguishable sentinel data, release maintenance, reopen the same installation through the existing internal allocator seam with a counted allocator returning a different valid candidate, and re-register that existing canonical ID with changed display/release metadata; require Ready, zero allocator invocations, the exact original eight-field assignment from registration and resolution, retained sentinel data, unchanged registration and installation revisions, structurally identical complete stopped inventory and no alternate allocation/schema/file. Second, persist a no-storage owner, release/reopen maintenance, retry that same canonical ID with relational storage, and require Rejected/`storage_conflict`/`correct_configuration` with Unchanged durability, zero allocator invocations, continued NoStorage resolution, unchanged persisted no-storage/null-allocation state and row revision, unchanged installation revision/full inventory, zero module objects for that ID and preserved existing owners/sentinels. Reuse existing owned fixtures, snapshot/sentinel helpers and stopped-inventory inspection; keep changes test-only with no public API, production override, provider dependency or gate weakening. Execute both facts on both real providers and the existing integration/quality/unit gates, fail on zero/missing provider cases, and record exact test names, provider counts, revision and safe results in `specs/003-storage-registry/implementation.md`. Preserve historical convergence evidence and qualify current completeness through review/progress documentation. Depends: T018, T019, T023, T057, T071, T079, T080. Trace: FR-002/004, SC-003, US1.2-4; principles IV, XI; final-review R1 (MEDIUM); closes missing T015/T016 regression evidence.
