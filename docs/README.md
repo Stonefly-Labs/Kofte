@@ -89,7 +89,7 @@ satisfy amended T045. All 48 tasks are evidenced, with no human-study claim.
 No module runtime or feature acceptance is claimed. The next invocation keeps
 this feature branch/draft PR; there is no intermediate merge.
 
-**002 / converge is complete with gaps; implement is next.**
+**002 / first convergence completed with gaps (historical checkpoint).**
 The [assessment](../specs/002-platform-contracts/convergence.md) covers all 35
 requirements/outcomes/scenarios, twelve plan decisions and 48 original tasks.
 It appends T049 for one HIGH partial acceptance-evidence gap: missing documented
@@ -98,3 +98,13 @@ multi-diagnostic proof. Existing named unit and both-provider contract suites
 pass, but do not cover those omissions. No product defect is demonstrated;
 no product/test/spec/plan change was made. Follow-up convergence, review and
 explicit human acceptance remain required on the same draft PR.
+
+**002 / implement now closes T049; converge is next.**
+The [remediation evidence](../specs/002-platform-contracts/implementation.md#convergence-remediation-t049)
+records all documented public limit/range recipes and ordered multi-diagnostic
+cases, including exact 32/33 truncation and recursively reordered object fields.
+The complete corpus runs 100 times per public consumer per real `en-US`/`tr-TR`
+culture; corrected retry remains covered. All 49 tasks and focused
+quality/unit/both-provider contract gates pass. No production code, schema,
+contract rule, dependency or broader runtime changed. This closes the implement
+task, not the next convergence/review or human-owned feature acceptance.

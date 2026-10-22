@@ -68,13 +68,16 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**Spec 002 / converge found one evidence gap; implement is next.**
-The [convergence assessment](specs/002-platform-contracts/convergence.md)
-checks all 35 requirements/outcomes/scenarios, twelve plan decisions and all
-48 original tasks. Existing checks pass, but the public corpus omits documented
-boundary recipes and full repeated multi-error proof. Append-only T049 adds that
-required evidence; no product defect is demonstrated and no product code changed
-during convergence. Review and explicit human acceptance remain separate gates.
+**Spec 002 / implement closes T049; converge is next.**
+The [implementation increment](specs/002-platform-contracts/implementation.md#convergence-remediation-t049)
+adds the documented public boundary recipes, reversed range and ordered
+multi-error/truncation cases identified by the
+[prior convergence assessment](specs/002-platform-contracts/convergence.md).
+Every corpus case now runs 100 times through each public consumer in both real
+`en-US` and `tr-TR` cultures, including recursively reordered properties;
+corrected retry remains covered. Focused quality/unit/both-provider contract gates pass; no
+production code or contract rule changed. Follow-up convergence, review and
+explicit human acceptance remain separate gates, not performed by implementation.
 
 The original completed implementation checkpoint follows.
 The [approved design](docs/adr/0004-module-manifest-contract.md) now has a pure
@@ -88,9 +91,9 @@ complete implementation evidence. The human removed the fixed Ubuntu/CPU/RAM ben
 T044 is evidenced on the available supported workstation with actual metadata
 and 100 individually timed checks. The human also removed T045's manual timed
 exercise; actual automated guide/error/corrected-retry checks now satisfy it.
-No human study or elapsed-time attestation is claimed. All 48 original
-implementation tasks have recorded evidence; convergence now qualifies corpus completeness
-with T049. Remediation, follow-up convergence, review and explicit feature acceptance remain.
+No human study or elapsed-time attestation is claimed. All 49
+implementation tasks, including T049's corpus remediation, have recorded
+evidence. Follow-up convergence, review and explicit feature acceptance remain.
 The [task list, now including T049](specs/002-platform-contracts/tasks.md), passing
 [analysis](specs/002-platform-contracts/analysis.md), 16/16 author checklist and
 36/36 reviewer-authorized quality checklist preserve traceability, not acceptance.

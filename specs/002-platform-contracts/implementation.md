@@ -4,6 +4,12 @@
 **Branch:** `feature/002-platform-contracts`
 **PR:** [draft #5](https://github.com/Stonefly-Labs/Kofte/pull/5)
 
+**Latest increment:** [T049 convergence remediation](#convergence-remediation-t049)
+closes the omitted public/repeated-corpus proof. Earlier sections preserve the
+original implementation checkpoint and its subsequent human amendments.
+Follow-up converge is next; no new convergence/review result or acceptance is
+claimed here.
+
 ## Entry gates
 
 The worktree was clean and HEAD matched its remote at
@@ -317,3 +323,102 @@ dedicated test ownership, pure-library dependencies and future-spec boundaries
 are unchanged. Historical analysis/reviewer checklists and prior ledger entries
 remain intact. The driver completes **implement only**, selecting **converge**.
 Converge, final review, explicit feature acceptance and merge are not executed.
+
+## Convergence remediation: T049
+
+**Date:** 2026-10-22 UTC. **Stage:** implement only.
+Entry HEAD/upstream: `81aa80c009b683e42bdab01bb487f2fe26fc42af`.
+The worktree was clean, updated `origin/main` was an ancestor and PR #5 remained
+open/draft on the original recorded branch. The driver selected implement after
+the first convergence's `gaps` outcome; it began once, not via resume.
+Every downstream command used
+`SPECIFY_FEATURE_DIRECTORY=specs/002-platform-contracts`; prerequisites resolved
+that directory. Read-only checklist gates still pass, 16/16 and 36/36, with no
+marker edits. Analysis and Accepted ADR 0004/amendments remain applicable.
+No implementation hooks are configured; existing ignores and tool pins remain.
+
+The prior [convergence report](convergence.md) is retained unchanged as historical
+F1 evidence. This increment completes T049 rather than rewriting that assessment,
+prior ledger history or original T001-T048 completion markers.
+
+### Independently expected public proof
+
+`ManifestCorpus.cs` now supplies the missing documented recipes from
+`contracts/acceptance-corpus.md` to the same shared complete-corpus entry point.
+`ManifestCase` can carry exact ordered diagnostic identities, not just one code.
+The common assertion and all acceptance/rejection selectors use that full
+expectation, so multi-error inputs cannot accidentally be treated as accepted
+or omitted from retry. No production parser helper supplies expected results.
+
+| T049 / acceptance gap | Added actual public evidence |
+| --- | --- |
+| Original bytes | Minimal and genuinely multibyte UTF-8 declarations padded to exactly 65,536 bytes accept; one extra space rejects `input_too_large`. Over-budget invalid UTF-8 rejects by byte budget before decoding. Original duplicate/encoding fixtures are unchanged. |
+| Depth precedence | Unknown root field with total container depth 8 rejects `field_unknown`; depth 9 rejects `depth_limit` before shape. All other base declarations remain present. |
+| Collection boundaries | Capabilities 9/10, unique dependencies 64/65 and permissions 128/129 exercise accepted limits versus early `collection_limit`, not duplicate errors or truncated acceptance. |
+| String boundaries | Supplementary display scalars 128/129, permission-description scalars 256/257, ASCII permission names 64/65 and full module versions 128/129 accept/reject at the documented semantic fields. |
+| Ranges and versions | Reversed `>=2.0.0 <1.0.0` returns `range_invalid`. Two valid 128-character endpoints accept. Both 512/513-character invalid range tokens reject, without claiming the defensive budget makes arbitrary syntax valid. The full documented SemVer precedence chain and huge bounded core/prerelease numeric comparisons now also run publicly, alongside the existing inclusive/exclusive/prerelease/build table. |
+| Collected diagnostics | Independently ordered context host/prior, module fields, capability children, dependency items 0-10 and permission children prove context/schema/child/numeric ordering. Recursively reversed root and nested object properties produce the same ordered identities without reordering array entries. |
+| Exact 32 versus 33 | Thirty-two invalid dependency IDs return all 32 ordered errors. Thirty-three return the first 31 plus root `diagnostics_truncated`; numeric index 2 precedes 10. The same fixtures feed repeated proof and the existing retained-result/corrected-retry test. |
+| Phase applicability | Raw duplicate before unsupported schema, unsupported schema before shape, shape before semantics, and semantic failure before incompatibility are repeated public fixtures. Context errors do not bypass those earlier phases. |
+| SC-003 / FR-010/011/013 | Every corpus case runs 100 times through the host-facing public calls and 100 independent validations within the library-only author process, under each actual `en-US` and `tr-TR` culture. Culture name/decimal confirmation, author exit, every result line and the full ordered identity list are asserted. |
+| SC-005 / US4.3 | Every rejection, including multi-errors and truncation, is followed by corrected minimal input/context without reset; retained accepted descriptions remain unchanged. Existing privacy/side-effect/timing checks also pass. |
+
+This supplies F1's missing FR-013 / SC-003/006 proof, including US1.4,
+US3.1/2 and US4.2/3. Existing identity/update and descriptor/declaration proof
+remains in the same corpus. No product defect was exposed: production library,
+author adapter, host, schema, contract rules, examples, dependencies and broader
+runtime behavior are unchanged.
+
+### Executed gates and input reconciliation
+
+Selected existing SDK **10.0.402**, Node **24.22.0**, npm **11.19.1** and pinned
+runtime **10.0.13**, not older initial shell defaults. No tool installation or
+dependency/pin change was needed; quality uses the existing locked restores.
+All evidence below assesses the working
+increment from entry HEAD, not a claim that entry HEAD already had T049.
+
+| Exact command | Actual outcome |
+| --- | --- |
+| `dotnet format Kofte.slnx --no-restore --include tests/contract/Kofte.Platform.ContractTests/Modules/Manifest` | Passed; formats only the affected test source. |
+| `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore -c Release --minimum-expected-tests 15` | Passed; 15 tests, zero failed/skipped, including both 100-run real-culture theories. |
+| `python3 scripts/verify.py --suite quality` | Passed; all 18 named steps, including locked restore, full solution format/build, npm format/lint/types/build, dependencies and repository gates. |
+| `python3 scripts/verify.py --suite unit` | Passed; all 10 named steps, retaining platform/host/web/shared/Python units. |
+| `python3 scripts/verify.py --suite contract --provider both --disposable-postgres` | Passed; all 34 named steps, including author build, expanded public .NET corpus, exact offline schema, real SQLite/PostgreSQL native/HTTP/adapter fixtures, scans and owned cleanup. |
+| `python3 scripts/check_repository.py` | Passed after progress/artifact edits; assets, links, MCP parity and driver state valid. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed after progress/artifact edits; 103 tests. |
+| `git diff --check` | Passed; no whitespace errors. |
+| `git diff --exit-code fea8862392c17953a34e4f4c17e02ffe71d9ec3d -- apps src scripts .github/workflows .github/skills .specify/scripts Directory.Build.props Directory.Packages.props global.json package.json package-lock.json Kofte.slnx` | Passed; production, broader tooling/workflows and dependency inputs match the prior complete local gate. |
+| `git diff --exit-code fea8862392c17953a34e4f4c17e02ffe71d9ec3d -- tests ':!tests/contract/Kofte.Platform.ContractTests/Modules/Manifest/*.cs'` | Passed; all other tests match that gate. The eight changed files are the corpus, its common harness and consumers/selectors, all exercised by the new focused gates. |
+
+The first build exposed nullable return flow in the test-only recursive
+property reorderer; its return is now accurately annotated `NotNullIfNotNull`.
+An attempted unsupported `--output-detailed` runner option failed its handshake
+with zero tests/exit 5; it is not test evidence. The supported command above
+then ran all 15 tests successfully. No assertion, minimum count or product rule
+was weakened to obtain a pass.
+
+Task/ledger preservation inspection also passed: all original 48 checked task
+descriptions/markers and prior ledger history are unchanged; only T049 is newly
+checked. Before/after implementation hooks remain absent.
+
+Fresh named reports span **00:57:45-00:59:53 UTC**, with 18 + 10 + 34 = **62
+passing named steps**. All identify entry HEAD plus this increment, have
+`completeGate: false` and remain ignored; this is not a new local all-suite
+run. The earlier 177-step complete local execution remains historical. Its
+broader inputs are unchanged, but its old public corpus is not substituted
+for the new evidence. Current publication-head CI must be inspected after push;
+its exact SHA, eleven check results and run URLs are recorded in PR #5 rather
+than invented here or added through a second bookkeeping commit.
+
+README, contributor, index, architecture, local/workflow and executable-guide
+progress now identify the implemented T049 and next converge stage. All 49
+tasks are evidenced. Principles III/XI are satisfied by dedicated test-owned
+public proof without production links; II/IV-VIII/X/XII retain pure versioned
+descriptions, no runtime/authority/storage expansion, portable tools and honest
+one-stage delivery. No new UX or migration is introduced (IX); branding and
+scope remain unchanged (I/XII).
+
+Complete implement only through the driver and publish artifacts, task marker
+and ledger together on the same draft PR. A fresh converge invocation, final
+review, explicit human acceptance and human merge remain required; none is
+executed or inferred here.

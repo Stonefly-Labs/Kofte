@@ -9,7 +9,7 @@ public sealed class RetryTests
     {
         var original = Assert.IsType<ManifestValidationResult.Accepted>(
             ManifestValidator.Validate(ManifestCorpus.Minimal, new("1.0.0"))).Description;
-        foreach (var item in ManifestCorpus.Cases().Where(c => c.Code is not null))
+        foreach (var item in ManifestCorpus.Cases().Where(c => !c.IsAccepted))
         {
             ConsumerHarness.Expected(item, ConsumerHarness.Host(item));
             // Correct erroneous context as well as input; otherwise context errors must remain errors.

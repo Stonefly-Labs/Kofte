@@ -12,7 +12,7 @@ public sealed class PublicConsumerTests
         {
             ConsumerHarness.Expected(item, ConsumerHarness.Host(item));
             var output = await ConsumerHarness.Author(item.Bytes, ConsumerHarness.Arguments(item));
-            Assert.Equal(item.Code is null ? 0 : 2, output.ExitCode);
+            Assert.Equal(item.IsAccepted ? 0 : 2, output.ExitCode);
             ConsumerHarness.Expected(item, ConsumerHarness.Parse(output.Stdout));
             Assert.StartsWith("culture_verified:", output.Stderr);
         }
@@ -61,21 +61,13 @@ public sealed class PublicConsumerTests
     {
         var retained = Assert.IsType<ManifestValidationResult.Accepted>(
             ManifestValidator.Validate(ManifestCorpus.Minimal, new("1.0.0"))).Description;
-        foreach (var count in new[] { 32, 33 })
+        foreach (var item in ManifestCorpus.CollectedDiagnosticCases().Where(c =>
+            c.Name is "diagnostics-32" or "diagnostics-33"))
         {
-            var bytes = ManifestCorpus.Change(n => n["dependencies"] = new System.Text.Json.Nodes.JsonArray(
-                Enumerable.Range(0, count).Select(_ => (System.Text.Json.Nodes.JsonNode)new System.Text.Json.Nodes.JsonObject
-                {
-                    ["id"] = "BAD",
-                    ["versionRange"] = "1.0.0"
-                }).ToArray()));
-            var expected = Enumerable.Range(0, count == 32 ? 32 : 31)
-                .Select(i => ("manifest", $"/dependencies/{i}/id", "module_id_invalid")).ToList();
-            if (count == 33) expected.Add(("manifest", "", "diagnostics_truncated"));
-            Assert.Equal(expected, ConsumerHarness.Host(new("multi", bytes)).Diagnostics);
-            var author = await ConsumerHarness.Author(bytes, "--host-contract", "1.0.0");
+            ConsumerHarness.Expected(item, ConsumerHarness.Host(item));
+            var author = await ConsumerHarness.Author(item.Bytes, ConsumerHarness.Arguments(item));
             Assert.Equal(2, author.ExitCode);
-            Assert.Equal(expected, ConsumerHarness.Parse(author.Stdout).Diagnostics);
+            ConsumerHarness.Expected(item, ConsumerHarness.Parse(author.Stdout));
             Assert.Equal("accepted", ConsumerHarness.Host(new("retry", ManifestCorpus.Minimal)).Status);
             var retry = await ConsumerHarness.Author(ManifestCorpus.Minimal, "--host-contract", "1.0.0");
             Assert.Equal(0, retry.ExitCode);

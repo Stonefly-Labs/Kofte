@@ -10,7 +10,7 @@ public sealed class CompatibilityContractTests
         {
             ConsumerHarness.Expected(item, ConsumerHarness.Host(item));
             var output = await ConsumerHarness.Author(item.Bytes, ConsumerHarness.Arguments(item));
-            Assert.Equal(item.Code is null ? 0 : 2, output.ExitCode);
+            Assert.Equal(item.IsAccepted ? 0 : 2, output.ExitCode);
             ConsumerHarness.Expected(item, ConsumerHarness.Parse(output.Stdout));
         }
     }

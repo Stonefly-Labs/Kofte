@@ -15,10 +15,14 @@ is now recorded for spec 001's bootstrap scope and limits. Its original
 Spec 002's [author guide](../../specs/002-platform-contracts/quickstart.md)
 now runs the pure manifest validator and test-owned console, offline after
 restore. Its implementation stage is complete, not feature acceptance.
-Subsequent [convergence](../../specs/002-platform-contracts/convergence.md)
-found one public/repeated-corpus evidence gap and appended T049. Implement is
-next to close it; existing passing suites do not establish the omitted coverage.
-No product defect or bootstrap behavior change is asserted.
+The subsequent [convergence](../../specs/002-platform-contracts/convergence.md)
+public/repeated-corpus gap is now addressed by the
+[T049 implementation increment](../../specs/002-platform-contracts/implementation.md#convergence-remediation-t049).
+Documented limits, reversed ranges and ordered multi-error/truncation cases
+now run 100 times per public consumer in both real cultures, with corrected
+retry retained. Focused quality/unit/both-provider contract gates pass.
+Follow-up convergence is next; no new convergence/review/acceptance outcome
+or bootstrap behavior change is asserted.
 Spec 002 timing now uses an available supported workstation/CI runner with
 actual metadata, not a fixed Ubuntu/CPU/RAM profile, per the human's ADR amendment.
 The subsequent author-guide amendment removes the manual timed exercise and

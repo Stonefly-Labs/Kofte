@@ -27,7 +27,7 @@ public sealed class ManifestPerformanceTests(ITestOutputHelper output)
             var result = ManifestValidator.Validate(item.Bytes, new("1.0.0"));
             var elapsed = Stopwatch.GetElapsedTime(start);
             Assert.True(elapsed < TimeSpan.FromSeconds(1), "initialized_call_exceeded_one_second");
-            Assert.Equal(item.Code is null, result is ManifestValidationResult.Accepted);
+            Assert.Equal(item.IsAccepted, result is ManifestValidationResult.Accepted);
             durations.Add(new { index = i, caseId = item.Name, milliseconds = elapsed.TotalMilliseconds });
         }
         var metadata = new

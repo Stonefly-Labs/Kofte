@@ -11,12 +11,15 @@ is Accepted: **"adr 0004 is approved"**. Earlier design/checklist statements
 that it is Proposed are historical, not an outstanding approval gate.
 Passing read-only analysis is still required before implementation.
 **Constitution**: Adopted v2.0.1; applicable principles I-XII are mapped below.
-**Status**: Implement complete. All 48 tasks have evidence in
+**Status**: Implement complete, including convergence-remediation T049.
+All 49 tasks have evidence in
 [implementation.md](implementation.md). The human-directed ADR 0004 amendment
 removes T044's fixed Ubuntu/CPU/RAM profile; actual available-machine measurements
 satisfy T044. The subsequent author-guide amendment replaces T045's manual timed
 exercise with actual automated guide/correction/retry proof. No human exercise
-is claimed. Converge is next on the same draft PR; it is not executed here.
+is claimed. T049 now completes the public/repeated boundary and multi-diagnostic
+corpus identified by the first convergence. A fresh converge is next on the
+same draft PR; it is not executed here.
 No feature acceptance is claimed. Historical stage-generation notes below
 describe the original task-list checkpoint, not current task status.
 
@@ -333,4 +336,4 @@ The first convergence assessment found one partial acceptance-evidence gap.
 The original 48 task markers and implementation checkpoint above are historical;
 they do not discharge this newly identified work. See [convergence.md](convergence.md).
 
-- [ ] T049 Complete the independently expected public corpus in `tests/contract/Kofte.Platform.ContractTests/Modules/Manifest/ManifestCorpus.cs` and its harness/tests with the omitted recipes from `specs/002-platform-contracts/contracts/acceptance-corpus.md`: exact/one-over byte and depth limits, dependency/permission counts, display/permission/version/range lengths, the documented reversed range `>=2.0.0 <1.0.0`, and collected-error/32-versus-33-diagnostic ordering/truncation cases. Reuse the existing recipe expectations, preserve original bytes and distinguish shape/semantic rejection from budget failure; do not derive expectations from production helpers or change contract limits. Extend expected-result representation as needed for multiple ordered diagnostics. Execute every documented corpus case 100 times through each public consumer in both real `en-US` and `tr-TR` cultures, retaining corrected retry and exact ordered identities; helper-only unit tests, structural schema tests and one-off public checks do not replace this evidence. Update `specs/002-platform-contracts/implementation.md` and affected progress docs with exact commands/results and coverage, run the required repository and focused named unit/contract gates, and reconcile unchanged broader gate inputs/current-head CI before completing implement. No product-code change is required unless a new case exposes a defect. Prerequisites: T004, T023, T026, T031, T033, T040, T046, T047. HIGH; per SC-003/006, FR-013 and plan: complete independent public corpus (partial; F1).
+- [x] T049 Complete the independently expected public corpus in `tests/contract/Kofte.Platform.ContractTests/Modules/Manifest/ManifestCorpus.cs` and its harness/tests with the omitted recipes from `specs/002-platform-contracts/contracts/acceptance-corpus.md`: exact/one-over byte and depth limits, dependency/permission counts, display/permission/version/range lengths, the documented reversed range `>=2.0.0 <1.0.0`, and collected-error/32-versus-33-diagnostic ordering/truncation cases. Reuse the existing recipe expectations, preserve original bytes and distinguish shape/semantic rejection from budget failure; do not derive expectations from production helpers or change contract limits. Extend expected-result representation as needed for multiple ordered diagnostics. Execute every documented corpus case 100 times through each public consumer in both real `en-US` and `tr-TR` cultures, retaining corrected retry and exact ordered identities; helper-only unit tests, structural schema tests and one-off public checks do not replace this evidence. Update `specs/002-platform-contracts/implementation.md` and affected progress docs with exact commands/results and coverage, run the required repository and focused named unit/contract gates, and reconcile unchanged broader gate inputs/current-head CI before completing implement. No product-code change is required unless a new case exposes a defect. Prerequisites: T004, T023, T026, T031, T033, T040, T046, T047. HIGH; per SC-003/006, FR-013 and plan: complete independent public corpus (partial; F1).

@@ -16,12 +16,14 @@ actual evidence. The human-directed benchmark amendment allows measured availabl
 workstations/CI runners, without fixed Ubuntu/CPU/RAM. T044 has actual local
 evidence. The subsequent human-directed author-guide amendment replaces T045's
 manual timed exercise with actual automated guide/correction/retry proof.
-The original implementation checkpoint is complete.
-[Convergence](specs/002-platform-contracts/convergence.md) found one HIGH partial
-evidence gap: documented boundaries and repeated multi-diagnostic cases are
-missing from the complete public-consumer corpus. Append-only T049 must close
-that gap; implement is next on the same draft PR. No product defect or human
-usability study, feature acceptance or permission to chain stages is inferred.
+The [T049 implementation increment](specs/002-platform-contracts/implementation.md#convergence-remediation-t049)
+now closes the prior [convergence](specs/002-platform-contracts/convergence.md)
+public-corpus evidence gap. Documented limits, reversed ranges and ordered
+multi-error/truncation cases run 100 times per public consumer per real culture.
+All 49 tasks and focused quality/unit/both-provider contract gates are evidenced;
+no production code or contract rule changed. Follow-up convergence is next on
+the same draft PR, then review and explicit human acceptance. No human usability
+study, feature acceptance or permission to chain stages is inferred.
 The author/quality checklists remain 16/16 and 36/36, and
 [analysis](specs/002-platform-contracts/analysis.md) passes. Continue on the same
 feature branch and draft PR #5; module runtimes remain future work.

@@ -33,8 +33,8 @@ internal static class ConsumerHarness
 
     internal static void Expected(ManifestCase item, Decision result)
     {
-        Assert.Equal(item.Code is null ? "accepted" : "rejected", result.Status);
-        Assert.Equal(item.Code is null ? [] : new[] { (item.Origin, item.Path, item.Code) }, result.Diagnostics);
+        Assert.Equal(item.IsAccepted ? "accepted" : "rejected", result.Status);
+        Assert.Equal(item.ExpectedDiagnostics, result.Diagnostics);
     }
 
     internal static async Task<ConsumerOutput> Author(byte[] bytes, params string[] arguments)

@@ -117,12 +117,13 @@ not a module loader or storage registry. Its
 The human-directed ADR amendment accepts actual available-workstation/CI timing,
 not a fixed Ubuntu/CPU/RAM profile. The subsequent author-guide amendment replaces
 the manual timed exercise with automated guide/correction/retry proof.
-The original implement checkpoint is complete.
-[Convergence](../specs/002-platform-contracts/convergence.md) found one partial
-acceptance-evidence gap in complete public/repeated corpus coverage, not a
-demonstrated parser defect or architecture conflict. Append-only T049 routes the
-next invocation to implement; follow-up convergence, review and explicit
-acceptance remain separate stages. No human-usability/time claim is made. The host only gains a library project reference; its startup,
+The [T049 implementation increment](../specs/002-platform-contracts/implementation.md#convergence-remediation-t049)
+closes the prior [convergence](../specs/002-platform-contracts/convergence.md)
+public/repeated-corpus evidence gap: documented boundaries, ordered errors and
+truncation now run 100 times per consumer per real culture. No parser defect
+was exposed, and no production code, schema or architecture decision changed.
+Follow-up convergence is next; review and explicit acceptance remain separate
+stages. No human-usability/time claim is made. The host only gains a library project reference; its startup,
 routes, stores and web console remain module-free.
 The broader stack/module/deployment proposals below remain future work, not
 installed features or proof of module isolation, production readiness or acceptance.

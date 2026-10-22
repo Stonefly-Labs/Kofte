@@ -6,24 +6,27 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 002 / converge is complete with gaps on the
-original branch/draft PR #5. The
-[convergence report](../../specs/002-platform-contracts/convergence.md) records
-one HIGH partial acceptance-evidence gap: the public corpus omits documented
-boundaries and complete repeated multi-diagnostic proof. T049 is appended
-without changing original task bytes or product code. **Implement is next** to
-close it; another convergence and final review remain before explicit human
-acceptance. Existing unit/both-provider contract checks pass but do not prove
-the omitted coverage. The original implementation checkpoint remains in
+**Current checkpoint:** 002 / implement closes T049 on the original
+branch/draft PR #5. The
+[remediation evidence](../../specs/002-platform-contracts/implementation.md#convergence-remediation-t049)
+records the documented public boundaries, reversed range, recursively reordered
+collected errors and exact 32/33-diagnostic truncation. Every corpus case runs
+100 times through each public consumer in both real cultures. All 49 tasks
+and focused quality/unit/both-provider contract gates pass, with no production
+code, contract-rule or dependency change. **Converge is next**, not executed
+here; final review and explicit human acceptance remain later stages.
+The [prior convergence report](../../specs/002-platform-contracts/convergence.md)
+remains historical gap evidence, not a newly passing convergence. The original
+implementation checkpoint remains in
 [implementation.md](../../specs/002-platform-contracts/implementation.md).
 The human-directed ADR 0004 amendment removed T044's fixed Ubuntu/CPU/RAM
 benchmark profile; available supported workstation timing now satisfies it.
 The subsequent explicit author-guide amendment removes T045's manual timed
 exercise; actual automated guide/example/error/corrected-retry checks supply
 amended SC-001. All 48 original task markers were completed at that checkpoint,
-without claiming a human study; F1 now qualifies the full-corpus evidence.
-That implementation invocation selected converge; the subsequent convergence
-assessment now selects implement. Do not infer feature acceptance or request an
+without claiming a human study; T049 now supplies F1's missing public proof.
+The first implementation selected converge; that assessment selected implement,
+and this remediation selects a fresh converge invocation. Do not infer feature acceptance or request an
 intermediate merge. Earlier stage descriptions below are historical.
 
 In Copilot, reload project skills with `/skills reload`, then ask:
