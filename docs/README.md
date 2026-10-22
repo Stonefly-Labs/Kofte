@@ -192,7 +192,17 @@ across all 40 requirements/outcomes/scenarios, fourteen plan decisions, all
 81 tasks and twelve principles. Actual assertions close R1/T081; prior public
 F1/F2 remain closed, with zero actionable gaps and no appended task.
 Tasks, product/test code, approved intent, historical review and checklists are
-unchanged. **Review is next** on the same draft PR; human acceptance is separate.
+unchanged. That convergence selected review on the same draft PR.
+The [follow-up final review](../specs/003-storage-registry/review.md) now records
+**changes** for one MEDIUM implementation finding R2: explicit registry-upgrade
+mutations and rejected boundaries omit required correlated operation records.
+Existing CLI success/generic failure summaries do not supply the direct API's
+complete evidence. R1/T081 and prior public F1/F2 are closed. Exactly T082 is
+appended unchecked for private bounded telemetry/CLI projection and real
+both-provider captures, preserving all 81 historical task bytes/markers, code,
+approved intent and earlier reports. No storage-isolation failure or new design
+decision is demonstrated. **Implement T082 is next** on this same draft PR;
+review does not implement the fix, accept the feature or request merge.
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 

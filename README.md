@@ -68,7 +68,7 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**Spec 003 / follow-up converge passes after T081; review is next** on its
+**Spec 003 / follow-up review records changes; implement T082 is next** on its
 original feature branch. The initial implementation checkpoint followed completed
 specify through analyze and explicit human approval of
 [ADR 0005](docs/adr/0005-module-storage-ownership.md).
@@ -143,8 +143,19 @@ all 40 requirements/outcomes/scenarios, fourteen plan decisions, all 81 tasks
 and twelve principles against actual source/assertions. R1/T081 and prior public
 F1/F2 are closed, with zero actionable gaps and no appended task. Tasks,
 product/test code, approved intent and the historical review remain unchanged.
-**Review is next** on the same draft PR; explicit human feature acceptance
-remains separate.
+That convergence selected review on the same draft PR. The subsequent
+[follow-up final review](specs/003-storage-registry/review.md) confirms R1/T081
+and public F1/F2 are closed, but identifies one MEDIUM implementation finding
+R2: explicit registry-upgrade mutations and rejected boundaries bypass required
+correlated storage records. Existing CLI success/generic failure summaries do
+not supply the direct API's complete operation evidence. Exactly **T082** is
+appended unchecked for safe direct-API/CLI telemetry and both-provider captures;
+all 81 historical task bytes/markers, code, design and earlier reports remain
+unchanged. No storage-isolation failure or new design decision is demonstrated.
+Fresh relevant gates pass 157 targeted steps; actual assessed-head CI passes
+eleven contexts and 200 product steps, not the absent upgrade-record assertions.
+**Implement T082 is next** on the same draft PR; this review does not implement
+the fix, accept the feature or request merge.
 
 **Spec 002 is explicitly human-accepted and merged.**
 The [acceptance record](specs/002-platform-contracts/acceptance.md) preserves

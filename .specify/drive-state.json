@@ -14,7 +14,7 @@
     },
     "003": {
       "directory": "specs/003-storage-registry",
-      "next_step": "review"
+      "next_step": "implement"
     }
   },
   "active": null,
@@ -617,6 +617,24 @@
       "evidence_sha256": {
         "specs/003-storage-registry/tasks.md": "9d737096a2e927be6737eedbe8526460a7b8292a8cc377743b30a09aa115cec4",
         "specs/003-storage-registry/convergence.md": "de95c76e8e3be47ee0675b15c98b92f423dd003b82122f0438871db3ab807bf4"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "review",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-22T20:39:35+00:00",
+      "completed_at": "2026-10-22T21:00:11+00:00",
+      "outcome": "changes",
+      "note": "Follow-up final spec-review at assessed head72d45756: all40 FR/SC/scenarios,14 plan decisions,81 existing tasks,12 principles inspected. R1/T081 and prior F1/T079,F2/T080 closed by actual assertions. One MEDIUM implementation finding R2 remains: explicit registry-upgrade commits and rejected scope/installation/version/consistency boundaries bypass required correlated storage records (FR014/T066). Bounded follow-up reconciles Task/exception semantics, existing Upgrade vocabulary and CLI correlated success/generic failure summaries; independent successful acquisition/disposal logging and full acquisition matrix are not new requirements. Appended only unchecked T082 for safe direct-API emitter/CLI projection and real both-provider capture regressions; preserved all81 prior task bytes/markers and entire historical review verbatim. No storage-isolation failure/new design decision; no product/test/dependency/intent/implementation/convergence/checklist changes. Fresh quality19/unit11/SQLite integration7/Postgres9/recovery38/contract37/privacy36 all pass157 targeted steps; repository/Python111/format/diff checks pass. Actual assessed-head product39847794129/repository39847793832 CI all11 contexts and10 downloaded reports/200 steps pass; merge1425e692 parents main66f0e4a/head72d45756 verified. No new local all-suite or mutation/human-study claim; historical timing limits retained. Next invocation implement T082 on original draft PR6; no acceptance/readiness/merge/004.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/tasks.md": "e3cc6e3abdd8ba117d386affb7417a24226389d653bbd59dca6f19d3564eb2b0",
+        "specs/003-storage-registry/review.md": "2e11019acba0babec5991c89a9f01a985040c3ffcfb22cbae15b25244d95fa96",
+        "specs/003-storage-registry/checklists/quality.md": "fbb14e996cbcd6c19959ee5e76369a3377943f4ca485b92fe7ed54467a23a6c5",
+        "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
       }
     }
   ]

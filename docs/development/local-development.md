@@ -87,8 +87,17 @@ The [current convergence](../../specs/003-storage-registry/convergence.md) now
 passes across all 40 requirements/outcomes/scenarios, fourteen plan decisions,
 81 tasks and twelve principles. R1/T081 and prior public F1/F2 are closed, with
 zero actionable gaps and no appended task. Tasks, product/test code, approved
-intent and the historical review remain unchanged. **Review is next** on the
-same draft PR, not feature acceptance or a supported-command change.
+intent and the historical review remain unchanged. That convergence selected
+review on the same draft PR.
+The [follow-up final review](../../specs/003-storage-registry/review.md) now records
+**changes** for one MEDIUM finding R2: explicit registry-upgrade mutations and
+rejected boundaries bypass required correlated storage records. Existing CLI
+success/generic failure summaries are present but do not supply complete direct
+API evidence. R1/T081 and public F1/F2 are closed. Exactly T082 is appended
+unchecked for safe direct-API/CLI projection and real both-provider captures;
+all 81 historical task bytes/markers, code, supported commands and previous
+reports remain unchanged. **Implement T082 is next** on this same draft PR,
+not feature acceptance or a new design/merge prerequisite.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).

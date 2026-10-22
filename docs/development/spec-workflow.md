@@ -6,7 +6,28 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 003 / converge **passes after T081** on the original
+**Current checkpoint:** 003 / review records **changes after T081** on the original
+`feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
+The [follow-up review](../../specs/003-storage-registry/review.md) assesses all
+40 requirements/outcomes/scenarios, fourteen plan decisions, 81 existing tasks
+and twelve principles against actual implementation/assertions. R1/T081 and
+prior public F1/F2 are closed. One MEDIUM implementation finding R2 remains:
+explicit registry-upgrade mutations and rejected boundaries lack required
+correlated operation records. Existing CLI success/generic failure summaries
+do not replace direct-API operation/provider/outcome evidence.
+Exactly **T082** is appended unchecked for bounded private telemetry, safe CLI
+projection and real both-provider captures. All 81 historical task bytes/markers,
+product/test code, approved intent, implementation/convergence evidence and
+reviewed checklists remain unchanged. No storage-isolation failure or new design
+decision is demonstrated. **Implement T082 is next**, in a separate invocation
+on this same draft PR, then converge/review and explicit human acceptance.
+Fresh quality/unit/both-provider integration/recovery/contract/privacy gates
+pass all 157 targeted steps. Actual assessed-head CI passes eleven contexts and
+all 200 product steps; downloaded reports and synthetic-merge parents are
+verified. Neither proves the absent upgrade records or a new local full gate.
+This stage does not implement the fix, accept 003, request merge or begin 004.
+
+**Follow-up convergence checkpoint (historical):** 003 / converge **passes after T081** on the original
 `feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 The [current assessment](../../specs/003-storage-registry/convergence.md)
 checks all 40 requirements/outcomes/scenarios, fourteen plan decisions, all
