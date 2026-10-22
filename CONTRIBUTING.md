@@ -60,11 +60,15 @@ explicit dependencies and path-specific implementation/validation. Real
 provider constraints/process races, assigned EF boundaries, interruption,
 deadlines/privacy, executable recovery and bootstrap regressions remain
 mandatory evidence. All tasks are unstarted; US1 is an internal increment,
-not full feature acceptance. Analyze is next on `feature/003-storage-registry` and
+not full feature acceptance. The read-only
+[analysis](specs/003-storage-registry/analysis.md) now passes with all 22
+requirements/outcomes and 18 scenarios covered, all 78 tasks mapped and no
+actionable or constitutional finding. Inputs and all markers remain unchanged.
+Implement is next on `feature/003-storage-registry` and
 [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
-Passing analysis and explicit human ADR 0005 approval are prerequisites to
-implementation. No module storage, dependency adoption, runtime evidence or
-feature acceptance is introduced by this tasks checkpoint.
+Explicit human ADR 0005 approval remains a prerequisite to implementation.
+No module storage, dependency adoption, runtime evidence or feature acceptance
+is introduced by this analysis checkpoint.
 See the [current local guide](docs/development/local-development.md).
 
 ## Prerequisites

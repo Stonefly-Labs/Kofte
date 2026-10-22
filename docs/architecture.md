@@ -163,9 +163,13 @@ The [78-task list](../specs/003-storage-registry/tasks.md) now orders all five
 stories with explicit prerequisites and required both-provider evidence:
 durable allocation, process races/constraints, assigned models/history/
 migrations, interruption/recovery and safe diagnostics. All tasks are unchecked.
-Analyze is next on the same feature branch/draft PR; passing analysis and
-explicit ADR 0005 approval gate implementation. Task generation adopts no
-dependency, changes no architecture decision and proves no runtime behavior.
+The read-only [analysis](../specs/003-storage-registry/analysis.md) now passes
+with concrete coverage of all 22 requirements/outcomes and 18 scenarios,
+all 78 tasks mapped and no actionable or constitutional finding.
+Requirements/design and task/checklist markers remain unchanged.
+Implement is next on the same feature branch/draft PR; explicit human ADR 0005
+approval still gates implementation. This analysis adopts no dependency,
+changes no architecture decision and proves no runtime behavior.
 The broader stack/module/deployment proposals below remain future work, not
 installed features or proof of module isolation, production readiness or acceptance.
 

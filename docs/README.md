@@ -191,6 +191,15 @@ eight cross-cutting evidence tasks, all unchecked. Explicit dependencies and
 including real uniqueness/process races, assigned EF models/history/migrations,
 crash/deadline/privacy observations and executable complete-set recovery.
 US1 is the smallest useful internal increment, not full feature/MVP completion.
-Analyze is next; passing analysis and explicit ADR 0005 approval gate
-implementation. No product code, package adoption, runtime proof, later-stage
-report or human feature acceptance is created by tasks generation.
+At the tasks checkpoint, analyze was next; task generation created no product
+code, package adoption, runtime proof, later-stage report or human acceptance.
+
+**003 / analyze is complete** on the same branch/draft PR.
+The read-only [analysis](../specs/003-storage-registry/analysis.md) passes:
+all 22 requirements/outcomes and 18 scenarios have concrete task coverage,
+all 78 tasks are mapped, and no actionable or constitutional finding remains.
+The task graph has 130 valid earlier-ID edges and 24 parallel markers; all
+tasks remain unchecked. The analyzed requirements/design and both reviewed
+checklists are unchanged. **Implement is next**, but explicit human ADR 0005
+approval remains required before implementation. No dependency adoption,
+product/runtime proof, ADR approval or human feature acceptance is inferred.
