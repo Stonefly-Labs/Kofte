@@ -33,13 +33,15 @@ internal sealed class ModuleStorePaths(StorageInstallation installation, string 
             throw new StorageException(StorageCode.ReconciliationRequired);
         Directory.CreateDirectory(Path.Combine(installation.Root!, "modules"), UnixStorePaths.DirectoryMode);
         Directory.CreateDirectory(DirectoryPath, UnixStorePaths.DirectoryMode);
+        StorageDiagnostics.Checkpoint("sqlite_directory_created", installation.Provider);
         ValidateAncestors(allowMissing: false);
-        using var file = new FileStream(DatabasePath, new FileStreamOptions
+        using (var file = new FileStream(DatabasePath, new FileStreamOptions
         {
             Mode = FileMode.CreateNew,
             Access = FileAccess.ReadWrite,
             Share = FileShare.None,
             UnixCreateMode = UnixStorePaths.FileMode
-        });
+        })) { }
+        StorageDiagnostics.Checkpoint("sqlite_file_created", installation.Provider);
     }
 }

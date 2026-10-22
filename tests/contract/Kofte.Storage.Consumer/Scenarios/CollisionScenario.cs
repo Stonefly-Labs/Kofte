@@ -4,6 +4,7 @@ using Kofte.Infrastructure.Storage;
 using Kofte.Infrastructure.Storage.Registry;
 using Kofte.Platform.Modules.Storage;
 using Npgsql;
+using Kofte.TestSupport;
 
 namespace Kofte.Storage.Consumer.Scenarios;
 
@@ -52,7 +53,7 @@ internal static class CollisionScenario
             await command.ExecuteNonQueryAsync(token);
         }
         var registry = new StorageRegistry(installation);
-        var result = await registry.RegisterAsync(owner, scope, token);
+        var result = StorageResultChecks.Check(await registry.RegisterAsync(owner, scope, token));
         RegistrationScenarios.Require(result.Outcome == StorageOutcome.ReconciliationRequired);
         RegistrationScenarios.Require(await registry.ResolveAsync(owner.Id, token) is not StorageResult.Ready);
         if (path is not null)

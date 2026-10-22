@@ -2,6 +2,12 @@ namespace Kofte.TestSupport;
 
 public static class StorageScenarioCatalog
 {
+    public static IReadOnlyList<string> Scenarios { get; } = Array.AsReadOnly(new[]
+    {
+        "clean-install", "no-storage", "same-id-retry", "collision", "path-rejection",
+        "interrupted-provisioning", "corrected-retry", "isolated-upgrade", "stopped-restore"
+    });
+
     public static string RequireProvider(string? provider) => provider switch
     {
         "sqlite" or "postgres" => provider,

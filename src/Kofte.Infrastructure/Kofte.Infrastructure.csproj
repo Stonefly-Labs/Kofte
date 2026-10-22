@@ -7,6 +7,7 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
         <InternalsVisibleTo Include="Kofte.Host.Tests" />
+        <InternalsVisibleTo Include="Kofte.Host" />
         <InternalsVisibleTo Include="Kofte.Storage.IntegrationTests" />
     </ItemGroup>
 </Project>

@@ -1,12 +1,12 @@
 # Validation Guide: 003 Storage Registry
 
-**Status**: Blocked implementation checkpoint, not a passing complete guide or feature
+**Status**: Executable implementation guide; final verification is in progress, not feature
 acceptance. [ADR 0005](../../docs/adr/0005-module-storage-ownership.md) is
 human-approved and its dependency graph is reviewed. The
 [implementation report](implementation.md) identifies actual executed commands
-and remaining obligations. Sections below remain acceptance targets unless
-that report records their successful execution; do not treat planned recovery
-or `all` consumer examples as available/passing functionality.
+and remaining verification. All nine public examples, actual interrupted
+provisioning and stopped provider-backed restore now execute. Only recorded
+results count as evidence; the guide does not grant feature acceptance.
 Existing startup/recovery guidance remains in the
 [local guide](../../docs/development/local-development.md).
 
@@ -26,7 +26,7 @@ The race selector runs all 20-by-ten same/distinct-ID rounds on both providers,
 with independent connections and barrier-started independent processes.
 It checks actual rows, schema/file inventories and owner markers after each
 round. Provider unavailability is a failure, not a skip. These focused checks
-do not replace the remaining migration/crash/recovery/privacy/full-gate proof.
+do not replace the complete named/full/CI gates.
 
 ## Prerequisites
 
@@ -88,12 +88,49 @@ dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --n
 KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*PostgresRegistrationContractTests' --minimum-expected-tests 4
 ```
 
-These four cases per provider are no-storage, same-ID retry, corrected
-declaration retry and occupied/unowned-target preservation. They are not the
-complete guide/privacy/recovery corpus. `all` remains a fail-closed acceptance
-target: it must execute every named case in
+These four cases per provider are no-storage, same-ID retry with immutable-need
+conflict, corrected privilege/outage retry and occupied/unowned-target
+preservation. Execute the complete `all` corpus through fresh owned fixtures:
+
+```bash
+dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*SqliteStorageGuideTests' --minimum-expected-tests 1
+KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*PostgresStorageGuideTests' --minimum-expected-tests 1
+```
+
+These invoke `Kofte.Storage.Consumer --provider sqlite --scenario all` and
+`Kofte.Storage.Consumer --provider postgres --scenario all` with privately
+injected owned configuration. Do not copy fixture credentials or targets into
+arguments. Each consumer supervises an admitted maintenance child, rejects
+nonzero exit/invalid output, and returns bounded JSON with measured per-scenario
+assertion counts. `all` requires all seven actual diagnostic outcomes and every
+named case in
 [storage-v1](contracts/storage-v1.md#required-public-examples), never skip
-unimplemented negative/recovery examples as optional.
+negative/recovery examples as optional. Missing configuration, Docker or
+provider availability is a failure, not a skip.
+
+Trusted composition uses the same installation instance for the registry and
+maintenance scope. The executable module examples under
+`tests/contract/Kofte.Storage.Consumer/Modules/` supply provider-specific
+contexts, assignment-aware migrations and bound snapshots. Their pattern is:
+
+```csharp
+var registry = new StorageRegistry(installation);
+var maintenance = new StorageMaintenance(installation);
+await using var scope = await maintenance.AcquireAsync(token);
+await maintenance.UpgradeAsync(scope, token);
+var registered = await registry.RegisterAsync(description, scope, token);
+if (registered is not StorageResult.Ready) throw new InvalidOperationException("storage_not_ready");
+await using var binding = await registry.BindAsync(description.Id, token);
+var migrated = await binding.MigrateAsync(AlphaStorage.Create, scope, cancellationToken: token);
+if (migrated is not StorageResult.Ready) throw new InvalidOperationException("storage_not_current");
+await using var context = await binding.CreateContextAsync(AlphaStorage.Create, token);
+```
+
+Use the existing sample's `AlphaStorage.Create` and description, not a copied
+assignment as a capability. Supported DDL is create-table/primary-key and
+add-column with int/text columns. Unrecognized operations, raw SQL migrations,
+transaction suppression and unbound/foreign snapshots are rejected before any
+pending migration SQL. Ordinary module transactions remain module-local.
 
 | Scenario | Expected observed result |
 | --- | --- |
@@ -112,16 +149,17 @@ Forced candidate and crash seams are test-only infrastructure controls.
 
 ## Named verification
 
-Extend the existing named suites and their fixture ownership; do not introduce
+Use the existing named suites and their fixture ownership; do not introduce
 a competing runner or manually point tests at a developer's database:
 
 ```bash
 python3 scripts/verify.py --suite unit
-python3 scripts/verify.py --suite integration --provider both
-python3 scripts/verify.py --suite contract --provider both
-python3 scripts/verify.py --suite recovery --provider both
-python3 scripts/verify.py --suite privacy --provider both
+python3 scripts/verify.py --suite integration --provider both --disposable-postgres
+python3 scripts/verify.py --suite contract --provider both --disposable-postgres
+python3 scripts/verify.py --suite recovery --provider both --disposable-postgres
+python3 scripts/verify.py --suite privacy --provider both --disposable-postgres
 python3 scripts/verify.py --suite quality
+python3 scripts/verify.py --suite all --disposable-postgres
 ```
 
 Expected: required new projects/cases execute locally and in CI with actual
@@ -135,7 +173,7 @@ CI; focused checks during implementation do not replace it.
 
 Use only stopped, owned fixtures and the procedure in
 [migrations-and-recovery](contracts/migrations-and-recovery.md#backuprestore-and-legacy-command-guard).
-The consumer's `stopped-restore` case must execute that actual procedure,
+The consumer's `stopped-restore` case executes that actual procedure,
 including provider backup/dump, a complete inventory/hash manifest, fresh-target
 restore, runtime privilege checks and subsequent reads. Handwritten manifest
 constants or restoring only a registry file do not prove it.
@@ -153,8 +191,34 @@ file alongside module stores cannot justify reset/reinitialization.
 For an interrupted migration, do not delete module data, a hot journal or
 arbitrary EF lock rows. Obtain exclusive installation maintenance, verify the
 same assignment/history, then exercise only the documented owner-bound abandoned
-lock recovery or forward repair/full-set restoration. Unknown/newer registry
-formats block startup use rather than downgrade themselves.
+lock recovery or forward repair/full-set restoration:
+
+```csharp
+await using var scope = await maintenance.AcquireAsync(token);
+var recovered = await ModuleMigrationRecovery.RecoverAsync(
+    registry, description.Id, AlphaStorage.Create, scope, token);
+if (recovered is not StorageResult.Ready) throw new InvalidOperationException("storage_recovery_blocked");
+```
+
+Run supported synchronous SQLite maintenance in an admitted owned child using
+`StorageMaintenanceProcess.RunAsync` and `AdmitAsync`, as the executable
+consumer does. The supervisor owns the child until completion or targeted
+kill/reap, within 120 seconds including two seconds reserved for cleanup.
+Host registry upgrade uses the same supervision with a 30-second total.
+Scope acquisition is bounded to two seconds; ordinary resolution/open has
+one shared three-second budget. Arbitrary trusted user code is not sandboxed.
+
+Recovery checks the original intent, known applied prefix, physical tables,
+columns/types/nullability/defaults, primary keys and unsupported objects before
+clearing a recognized assigned-store lock. Unknown history, lock shape/rows
+or partial effects are preserved and blocked. Read-only physical verification
+does not silently consume an ambiguous SQLite rollback journal.
+Unknown/newer registry
+formats block startup use rather than downgrade themselves. Restore is
+fresh-target-only: existing targets, stale/mixed manifests and registry-only
+legacy replacement are refused. An intentionally older complete recovery point
+is the operator's explicit data-loss responsibility; UUIDs/hashes cannot detect
+malicious forgery or an unknown newer lost backup.
 
 ## Evidence to retain
 
@@ -174,6 +238,6 @@ python3 -m unittest discover -s scripts/tests -v
 git diff --check
 ```
 
-At this planning checkpoint only the repository/documentation gates apply.
-No new provider, migration, runtime deadline, recovery or acceptance evidence
-is claimed merely because this guide describes it.
+The implementation report records actual results separately from these
+instructions. Passing examples are not convergence, human acceptance or
+production-readiness evidence.

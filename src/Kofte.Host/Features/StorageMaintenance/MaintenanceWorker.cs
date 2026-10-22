@@ -1,5 +1,3 @@
-using System.Security.Cryptography;
-using System.Text;
 using Kofte.Host.Bootstrap;
 using Kofte.Infrastructure.Storage;
 using Kofte.Platform.Modules.Storage;
@@ -8,7 +6,7 @@ namespace Kofte.Host.Features.StorageMaintenance;
 
 public static class MaintenanceWorker
 {
-    internal const string AdmissionKey = "KOFTE_MAINTENANCE_WORKER_TOKEN";
+    internal const string AdmissionKey = StorageMaintenanceProcess.AdmissionKey;
     internal const int BusyExit = 40, InvalidExit = 41, UnavailableExit = 42;
 
     public static async Task<int> ExecuteAsync(string[] args)
@@ -24,16 +22,8 @@ public static class MaintenanceWorker
     {
         if (args is not ["--registry-worker", "upgrade"])
             throw new BootstrapException(BootstrapError.CommandInvalid);
-        var expected = Environment.GetEnvironmentVariable(AdmissionKey);
-        Environment.SetEnvironmentVariable(AdmissionKey, null);
-        if (expected is null || expected.Length != 64 || !Console.IsInputRedirected)
-            throw new BootstrapException(BootstrapError.CommandInvalid);
-        using var admission = CancellationTokenSource.CreateLinkedTokenSource(token);
-        admission.CancelAfter(TimeSpan.FromSeconds(2));
-        var supplied = await Console.In.ReadLineAsync(admission.Token);
-        if (supplied is null || !CryptographicOperations.FixedTimeEquals(
-            Encoding.UTF8.GetBytes(expected), Encoding.UTF8.GetBytes(supplied)))
-            throw new BootstrapException(BootstrapError.CommandInvalid);
+        try { await StorageMaintenanceProcess.AdmitAsync(token); }
+        catch (StorageException) { throw new BootstrapException(BootstrapError.CommandInvalid); }
 
         var config = StorageMaintenanceConfiguration.FromEnvironment();
         var installation = config.CreateInstallation();

@@ -7,12 +7,13 @@ namespace Kofte.Infrastructure.Storage.Registry;
 public sealed partial class StorageRegistry
 {
     public Task<ModuleStorageBinding> BindAsync(ModuleId owner,
-        CancellationToken cancellationToken = default) => BindingFailures.RunAsync(async () =>
+        CancellationToken cancellationToken = default) => BindingFailures.RunAsync(
+            Installation.Provider, owner, async budget =>
         {
-            using var budget = new OperationBudget(OperationBudget.Resolve, cancellationToken);
             var (metadata, record) = await ReadBindingAsync(owner, budget);
-            return new ModuleStorageBinding(this, record.Assignment(metadata));
-        });
+            var assignment = record.Assignment(metadata);
+            return (new ModuleStorageBinding(this, assignment), assignment);
+        }, cancellationToken);
 
     internal async Task<(InstallationRecord Metadata, RegistrationRecord Record)> ReadBindingAsync(
         ModuleId owner, OperationBudget budget, bool migrating = false, bool verifyPhysical = true)
@@ -47,7 +48,9 @@ public sealed partial class StorageRegistry
             ("code", state == "recovery_required" ? "storage_reconciliation_required" : DBNull.Value),
             ("owner", assignment.Owner.Value), ("revision", assignment.Revision));
         await scope.VerifyAsync(Installation, budget);
+        StorageDiagnostics.Checkpoint("migration_" + state + "_before_commit", Installation.Provider, assignment.Owner);
         await transaction.CommitAsync(budget.Token);
+        StorageDiagnostics.Checkpoint("migration_" + state + "_committed", Installation.Provider, assignment.Owner);
         var updated = await database.FindAsync(connection, assignment.Owner, budget) ??
             throw new StorageException(StorageCode.Corrupt);
         if (updated.Revision != assignment.Revision + 1 || updated.MigrationState != state)

@@ -49,14 +49,18 @@ internal sealed class RegistryMigrationRunner(StorageInstallation installation)
             await InitializeAsync(connection, budget, transaction);
             await scope.VerifyAsync(installation, budget);
             budget.Check();
+            StorageDiagnostics.Checkpoint("registry_before_commit", installation.Provider);
             transaction.Commit();
+            StorageDiagnostics.Checkpoint("registry_committed", installation.Provider);
         }
         else
         {
             await using var transaction = await connection.BeginTransactionAsync(budget.Token);
             await InitializeAsync(connection, budget, transaction);
             await scope.VerifyAsync(installation, budget);
+            StorageDiagnostics.Checkpoint("registry_before_commit", installation.Provider);
             await transaction.CommitAsync(budget.Token);
+            StorageDiagnostics.Checkpoint("registry_committed", installation.Provider);
         }
         await ReadInstallationAsync(connection, budget);
     }

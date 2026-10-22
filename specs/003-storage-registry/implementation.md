@@ -1,351 +1,265 @@
 # Implementation: 003 - Storage Registry and Module Isolation
 
-**Stage:** Implement, incomplete and blocked on remaining obligations; not feature acceptance.
+**Stage:** Implement running; T001-T075 evidenced, complete local gate and CI in progress.
 **Branch / PR:** `feature/003-storage-registry` /
 [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 **Started:** 2026-10-22 (UTC).
+**Baseline revision:** `320d565d14698e1aac98ac25865bd414dfe7305a`;
+the resumed changes are not yet committed.
 
-## Entry gates and human decision
+## Entry gates and approval
 
-The preceding [analysis](analysis.md) passes. The author checklist remains
-16/16 and the reviewer-owned quality checklist remains 36/36, unchanged.
-No before/after implementation hooks are configured: `.specify/extensions.yml`
-is absent. The driver began this stage on its original clean feature branch.
+The preceding [analysis](analysis.md) passes. The author checklist is 16/16
+and the reviewer-owned quality checklist is 36/36, unchanged. No implementation
+hooks are configured: `.specify/extensions.yml` is absent. This resumes the
+original implement run, branch and draft PR, not another feature or stage.
 
-For T001 the human explicitly selected:
+The human explicitly selected:
 
 > Approve ADR 0005 for implementation
 
-This approves [ADR 0005](../../docs/adr/0005-module-storage-ownership.md)'s
-design for implementation, not dependency adoption, runtime correctness,
-feature acceptance or merge. No requirements or design scope changed.
+That authorizes [ADR 0005](../../docs/adr/0005-module-storage-ownership.md)'s
+design, not feature acceptance or merge. No additional human approval is
+needed to finish the engineering. Converge, independent final review and
+explicit numbered-feature acceptance remain separate later stages.
 
-## Dependency adoption and execution environment
+## Dependency review and observed environment
 
-T001-T006 have actual evidence. Later tasks remain open unless their complete
-acceptance obligations and prerequisites are evidenced, even where substantial
-code and passing focused checks already exist. This is an implementation
-checkpoint, not a claim that all 78 tasks or the implement stage are complete.
-
-The default shell's SDK selection failed: `dotnet --version` could not find
-the pinned SDK 10.0.402 (only system SDK 10.0.203 was selected). The official
-10.0.402 macOS arm64 archive was downloaded into ignored task-local tooling
-and its SHA-512 matched the already reviewed official release metadata:
-`ee0d379c144ebddef6efe851e1514883d1b695430d13b3fb13e8153f8476e1e5ac7abc42c08668471aaf4d738ff367cf53009845f94d224ba126febe74d00b75`.
-The explicit task-local `dotnet --version` reports 10.0.402.
-The existing pinned Node 24.22.0 installation was located; no product pin was
-changed to accommodate the shell.
-
-The nine additional NuGet identities were reviewed **before adoption**:
+Before adoption, the nine additional NuGet identities were reviewed:
 EF Core/Relational/Sqlite/Core/Abstractions/Analyzers 10.0.13,
 Microsoft.Extensions.Caching.Memory/Abstractions 10.0.13 and Npgsql EF 10.0.3.
-Microsoft archives identify source commit
-`4099f83977f4d29604a9aeb971fb0a7bc1d5f699` under MIT; Npgsql EF identifies
-`5e912bf071068a44e5abbdab497b313ba99d3ee1` under PostgreSQL License.
-Framework assets and EF dependency ranges admit the selected exact graph.
-No EF Design/global tool or additional native SQLite bundle was adopted.
-Existing SQLitePCLRaw 2.1.13 assets retain their reviewed provenance/notices.
+Microsoft archives identify MIT source commit
+`4099f83977f4d29604a9aeb971fb0a7bc1d5f699`; Npgsql EF identifies PostgreSQL
+License source commit `5e912bf071068a44e5abbdab497b313ba99d3ee1`.
+All nine official archives passed networked NuGet signature verification with
+the pinned supported Linux SDK, zero warnings/errors. An earlier offline
+revocation-warning run was not counted as passing. No EF Design/global tool
+or additional native SQLite bundle was adopted.
 
-All nine official signed archives passed the pinned supported Linux SDK's
-NuGet signature verification, **nine verified, zero warnings/errors**, with
-networked certificate/revocation access. An earlier offline run produced
-revocation warnings and was not counted as passing verification.
-The official NuGet vulnerability feed and subsequent locked graph audit found
-no vulnerable packages. The committed inventory reconciles **403 npm and
-78 NuGet identities**; locks, central pins and retained notices are updated.
-See [dependency adoption](../../docs/development/dependencies.md) and
+The locked inventory remains **403 npm / 78 NuGet identities**, including
+the previously reviewed SQLitePCLRaw 2.1.13 assets. See
+[dependency review](../../docs/development/dependencies.md) and
 [retained notices](../../docs/development/third-party-notices.md).
+The resumed increment adds no dependency.
 
-Observed workstation: **macOS 26.5 arm64, Apple M5 Pro, 64 GiB RAM**;
-.NET SDK 10.0.402/runtime 10.0.13, Node 24.22.0/npm 11.19.1,
-Docker server 29.8.2 and the existing pinned PostgreSQL 17 fixture image.
-SQLite does not require Docker. These are actual execution conditions, not
-new supported-target or benchmark claims. Tool archives, credentials, runtime
-roots and transient child output are not committed.
+Observed workstation: macOS 26.5 arm64, Apple M5 Pro, 64 GiB RAM,
+18 logical CPUs, Python 3.15.0 and Docker server 29.8.2.
+Executed tools: .NET SDK 10.0.402/runtime 10.0.13, Node 24.22.0/npm 11.19.1,
+EF Core 10.0.13 and Npgsql/Npgsql EF 10.0.3.
+PostgreSQL uses the existing owned image:
+`postgres:17@sha256:a63c1ea3f6a3a5a1621f97d2aba3b30faecfab4224c1b0000cc85ced57bb1939`.
+SQLite requires no Docker. These are actual available conditions, not a fixed
+benchmark machine or a new supported-platform claim.
 
-## Implemented checkpoint
+The default shell selected an older SDK. The ignored task-local official
+10.0.402 arm64 SDK archive matched its reviewed release-metadata SHA-512:
+`ee0d379c144ebddef6efe851e1514883d1b695430d13b3fb13e8153f8476e1e5ac7abc42c08668471aaf4d738ff367cf53009845f94d224ba126febe74d00b75`.
+Commands below explicitly selected that SDK and the existing pinned Node.
+PostgreSQL tests used `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true`, with inherited
+runtime/provisioning connection settings unset. Only validated test-owned
+resources were created, paused, terminated, restored or disposed.
 
-The pure platform project now owns versioned provider-neutral contracts,
-immutable assignments, seven disjoint outcomes and safe diagnostic metadata.
-Only ready carries an assignment. Infrastructure owns the provider/EF packages;
-test-owned contexts, migrations and samples remain inside dedicated `tests/`
-projects under normal SDK inclusion. Host safety facades delegate to shared
-Unix path and installation-lease mechanisms rather than copying them.
+## Implemented behavior and inventory
 
-The registry implements explicit table-free-v0 to format-1 local transactions,
-script SHA-256/history verification, SQLite pragma/integrity agreement,
-canonical keys and actual ID/key/allocation-token UNIQUE constraints.
-Installation registry revision is checked against the sum of registration
-revisions. Keys/tokens/storage need are immutable, and ready transition verifies
-the exact returned optimistic revision. Unknown platform tables/history,
-unaccounted PostgreSQL schemas at v0, empty/unowned SQLite headers and malformed
-persisted mappings are not silently adopted.
+The pure platform assembly defines version-1 contracts, immutable assignments
+and seven disjoint outcomes. Only ready carries a usable assignment.
+Infrastructure owns EF/provider dependencies; ordinary modules receive
+owner-bound access, not registry/maintenance authority or configurable targets.
+All sample contexts, migrations and .NET test source physically belong to
+dedicated projects under `tests/`, without linked production test source.
 
-Registration commits reservation before physical work, persists explicit
-no-storage, reuses valid stored allocations across metadata changes and verifies
-actual owner markers before ready. PostgreSQL uses a separate offline
-non-admin provisioner against the same owned database/run identity, creates
-runtime-owned schema/marker transactionally and removes PUBLIC schema access.
-The runtime keeps its no-database-CREATE posture. SQLite creates private
-module directories/files exclusively; ordinary ready access requires an
-existing validated file and never recreates a missing store.
+Format-1 platform inventory is `__kofte_installation`,
+`__kofte_module_registrations` and `__kofte_registry_migrations`, isolated
+inside `kofte_system` or `platform/platform.db`. Registry script hashes,
+versions, provider identity and revisions are checked before use. Actual
+database constraints enforce canonical identity/key/token uniqueness.
+Explicit table-free-v0 upgrade is transactional/idempotent; serving never
+initializes or upgrades it automatically.
 
-The shared acquisition/operation budgets are 2/3/30/120 seconds, with 25 ms
-lock probes and finite provider timeouts. PostgreSQL acquisition retains one
-non-pooled session across probes and checks that exact advisory lease at use;
-it does not reconnect/reacquire after lease loss. These source properties and
-focused checks are **not complete elapsed-deadline/crash-worker proof**.
+Each relational allocation has an immutable random token and exact
+`__kofte_storage_owner` marker. The two sample modules deliberately reuse
+`Records` and `__EFMigrationsHistory` inside separate schemas/files.
+Alpha's v2 adds a nullable column, preserves its original row and has two
+history entries; Beta keeps its independent row and one-entry history.
+No-storage has a registry record but zero allocation/schema/file.
+The registry stores no module payloads.
 
-The bounded assigned EF increment now issues owner-only bindings, internally
-chooses connections/history, separates provider/schema/context/design-time
-model-cache keys and binds public migration/snapshot services before evaluation.
-It preflights the entire pending set, not just the next migration. Actual tests
-reject late raw/suppressed SQL, foreign/reserved targets, foreign models/FKs,
-renames, provider annotations, unknown operations, unbound snapshots, factory
-connection/owner switches and stale/disposed bindings before forbidden writes.
-Current supported DDL is deliberately narrow: create-table/primary-key and
-add-column with int/text columns. Other operations/annotations fail closed.
-Physical post-verification covers tables, columns, types and nullability, not
-every provider metadata feature; broader approved obligations remain open.
+PostgreSQL's separate owned, non-admin offline provisioner creates a
+runtime-owned schema/marker transactionally and revokes PUBLIC access.
+The runtime never receives database CREATE. SQLite uses exclusive creation,
+0700 directories/0600 files, existing-file opens, verified ancestors/sidecars,
+DELETE/FULL/foreign-key posture and no pooling/shared cache/ATTACH.
+Missing ready targets are never recreated.
 
-Host wiring validates genuine v0 or consistent v1 at startup without migrating,
-rejects elevated serving configuration and strips the runtime connection from
-the serving configuration registered in DI. The explicit `--registry upgrade`
-uses an admitted owned child, not a public registration CLI. Legacy SQLite
-source/destination/init/reset and PostgreSQL archive guards preserve v1/module
-evidence. The recovery verifier checks complete manifest inventory, hashes,
-markers, revisions and migration checkpoints. Actual stopped SQLite backup API
-and full PostgreSQL custom-dump/fresh-owned-restore exercises retain real
-Alpha/Beta rows and EF histories. These test-owned exercises are not a complete
-recovery product or the still-unimplemented public recovery consumer scenarios.
-The supervisor reserves two seconds for owned-child cleanup within the original
-30-second total budget, bounds both reap and pipe drain, and sanitizes process
-start/kill failures. Unconfirmed cleanup fails unavailable rather than claiming
-success; the child independently retains its maintenance lease while alive.
+Assignments are revalidated at bind, open and command execution. Models,
+snapshots, history and the entire pending migration set are bound and
+preflighted before module SQL. Unsupported operations, raw migration SQL,
+transaction suppression, foreign/reserved objects and forged/stale/disposed
+bindings fail closed. Physical verification checks tables/columns/types,
+nullability/defaults, primary keys, indexes/constraints and unsupported
+objects; unsupported SQLite DDL clauses and PostgreSQL collations are refused.
 
-## Executed checks
+Registration and module migration use separate durable intent/physical/current
+commits, not cross-module or cross-file atomicity. Explicit recovery verifies
+the original installation/owner/token, complete known history prefix, recorded
+target/checkpoint and physical effects before acknowledging or retrying it.
+Only that deliberate action may clear a recognized abandoned SQLite EF lock.
+Unknown lock/history/schema evidence stays unchanged and blocked.
 
-Commands below used the explicitly selected pinned toolchain. PostgreSQL cases
-used `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true`, with inherited
-`KOFTE_POSTGRES_CONNECTION` and `KOFTE_POSTGRES_PROVISIONING_CONNECTION` unset
-so each test created and disposed only its own validated fixture. This report
-contains no connection strings, targets, row payloads or raw exception dumps.
+Budgets share monotonic remaining time: resolve/open 3 s, acquisition 2 s,
+registration/upgrade 30 s, migration/recovery 120 s, with 25 ms lease probes.
+Provider timeouts are finite and clamped; Npgsql cancellation adds no unbounded
+response grace. The admitted owned worker holds its lease until completion or
+targeted termination/reap; the supervisor reserves 2 s inside the original
+total for cleanup. Invalid output or observer failure kills/reaps promptly
+and exposes only a fixed safe failure, including synchronous observer errors.
 
-| Exact command or selector | Observed result |
+## Crash, restart, deadline and recovery evidence
+
+| Matrix | Actual behavior asserted |
 | --- | --- |
-| `dotnet restore Kofte.slnx --locked-mode` | Passed |
-| `dotnet list Kofte.slnx package --vulnerable --include-transitive --no-restore` | Passed; no vulnerable packages in all eleven projects |
-| `python3 scripts/check_dependencies.py` | Passed; 403 npm / 78 NuGet identities |
-| `dotnet build tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj --no-restore -c Release --verbosity quiet` | Passed; zero warnings/errors |
-| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --filter-class '*SqliteRegistrationTests' --filter-class '*PostgresRegistrationTests' --filter-class '*RegistryConstraintTests' --filter-class '*RegistryFormatTests' --minimum-expected-tests 1` | Passed; 16 tests, zero skipped, 19.607 s |
-| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --filter-class '*RegistrationConcurrencyTests' --minimum-expected-tests 8` | Passed; 8 cases, zero skipped, 106.014 s |
-| `dotnet build tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj --no-restore --verbosity quiet` | Passed; zero warnings/errors |
-| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore --filter-class '*RestartTests' --filter-class '*AllocationCollisionTests' --filter-class '*StorageTelemetryTests' --minimum-expected-tests 1` | Passed; 14 tests, zero skipped, 30.094 s |
-| `dotnet build tests/contract/Kofte.Platform.ContractTests/Kofte.Platform.ContractTests.csproj --no-restore --verbosity quiet` | Passed; zero warnings/errors |
-| `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore --filter-class '*StorageConsumerHarnessTests' --filter-class '*RegistrationContractTests' --minimum-expected-tests 26` | Passed; 26 tests, zero skipped, 31.245 s |
+| Concurrent registration | Each provider runs 20 rounds of ten same-ID and 20 rounds of ten distinct-ID callers, separately for independent connections and barrier-started processes: 1,600 attempts total. Every round inspects registry rows, actual object count and distinct ownership; final same-ID fixtures have 20 allocations and distinct-ID fixtures 200. Compatible busy retry converges. |
+| Restart | Three complete child-process restarts per provider retain assignment/token and sentinel data through display/release changes; missing ready targets do not become empty-data success. |
+| Provisioning kill | Six before/after reservation, physical and ready commit phases per provider, plus SQLite directory/file-before-marker: 14 killed boundaries. Matching verified state finishes the original allocation; ambiguous SQLite pre-marker files/journals remain byte-preserved and reconciliation-required. |
+| Migration kill | Six before/after intent, actual history-bearing migration and current commits per provider, plus SQLite's actual native SQL callback: 13 killed boundaries. Only committed current state resolves ready; verified recovery retries pending work or acknowledges committed history. |
+| Upgrade kill | Before/after registry commit on both providers: four killed boundaries; restart observes intact v0 or consistent v1, never half-upgraded state. |
+| Native hard deadlines | Actual 30 s upgrade and 120 s synchronous SQLite migration holds, not shortened substitutes. Worker death/reap, lease release and explicit incomplete state are checked before the total limit. |
+| Failure/correction | Real 3 s provider outage, 2 s lease contention, cancellation, denied/missing/mismatched offline authority and terminated PostgreSQL advisory session; original assignment/history/data are retained and no session is silently reacquired. |
+| Abandoned lock refusal | Actual killed SQLite migration followed by unknown lock shape, timestamp or history; recovery preserves file bytes, registry state and lock. Physical column/index/PK/default/view/check/collation mismatch is refused before mutation. |
+| Whole-set restore | Actual stopped SQLite provider backups of all three files, or full PostgreSQL custom dump into a fresh owned target; original Alpha/Beta ownership, rows and histories are read after restore. |
+| Recovery refusal | Missing/extra/unsafe/damaged members, digest/length/format/revision/marker/checkpoint/inventory/path mismatch, mixed ownership and existing replacement targets are refused without modifying original data. Legacy platform-only backup/restore/reset is refused for format-1/module evidence. |
+
+The migration commit barrier is attached to the transaction containing the
+actual EF history INSERT, not EF's earlier history-table initialization.
+Read-only SQLite ownership inspection does not recover/delete an ambiguous
+rollback journal merely while deciding whether recovery is safe.
+
+## Public examples and privacy
+
+Both independent public module implementations exercise the closed nine-case
+corpus: clean-install, no-storage, same-id-retry, collision, path-rejection,
+interrupted-provisioning, corrected-retry, isolated-upgrade and stopped-restore.
+The `all` guide requires every case, actual positive per-case assertion counts
+and every one of the seven observed outcomes. The parent validates an exact
+bounded eight-field result, names/counts/sum and child exit; missing/unknown
+scenario/provider, omitted case, zero assertions or malformed output fail.
+Recovery and corrected retry use real failures/provider backups, not fabricated
+success results. Guide execution is in `StorageGuideTests` and
+`RecoveryContractTests`, reusing that public corpus rather than duplicating a
+separate planned `RecoveryGuideTests` file.
+
+Both-provider privacy tests seed connection/path/payload/control canaries and
+capture actual results, structured logs, spans/events, metrics, stdout/stderr
+and worker output across all seven outcomes. They check retained data and
+distinct corrected-retry correlation. Codes/guidance are bounded ASCII,
+messages are fixed/bounded, result bytes are capped, and metric labels are
+only operation/provider/outcome. No raw provider exception, credential,
+private target or module payload belongs in committed evidence.
+
+## Executed verification
+
+Earlier checkpoint failures are historical, not successful final evidence:
+the unchanged resumed baseline passed 105/105 and the original PostgreSQL
+process-race cases passed 2/2 without a speculative race fix. A later
+131-case run passed 130 and exposed a negative fixture assuming EF history
+already existed at the native early barrier; the fixture was corrected.
+The public full run exposed omitted measured assertions in the older module
+examples; those now use the shared real assertion counter. Final results
+below must be populated only from actual reruns.
+
+| Exact command / selection | Result |
+| --- | --- |
 | `python3 scripts/check_repository.py` | Passed |
-| `python3 -m unittest discover -s scripts/tests -v` | Passed; 103 tests |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed, 107 tests |
+| `python3 scripts/check_dependencies.py` | Passed, 403 npm / 78 NuGet identities |
 | `git diff --check` | Passed |
-
-Subsequent integrated/current-source observations:
-
-| Exact command or selector | Observed result |
-| --- | --- |
-| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --filter-class '*SqliteRegistrationTests' --filter-class '*PostgresRegistrationTests' --filter-class '*RegistryConstraintTests' --filter-class '*RegistryFormatTests' --filter-class '*RestartTests' --filter-class '*AllocationCollisionTests' --filter-class '*StorageTelemetryTests' --filter-class '*RegistrationConcurrencyTests' --minimum-expected-tests 38` | Passed; 38 tests, zero skipped, 125.836 s |
-| `dotnet test --project tests/unit/Kofte.Host.Tests --no-build --no-restore --filter-class '*OperationBudgetTests' --filter-class '*MaintenanceScopeTests' --filter-class '*StorageAllocatorTests' --minimum-expected-tests 14` | Passed; 14 tests, zero skipped |
-| `dotnet test tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj --no-restore --filter 'FullyQualifiedName~ModuleMigrationTests\|FullyQualifiedName~AssignedModelTests\|FullyQualifiedName~StorageBoundaryTests' --nologo --verbosity quiet` | Passed; 39 tests, zero skipped, bounded EF increment |
-| `dotnet test tests/contract/Kofte.Platform.ContractTests/Kofte.Platform.ContractTests.csproj --no-restore --filter 'FullyQualifiedName~ModuleContractTests\|FullyQualifiedName~BindingContractTests' --nologo --verbosity quiet` | Passed; 7 tests, zero skipped |
-| `dotnet test tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj --no-restore --filter 'FullyQualifiedName~CancellationAfterCommittedIntent\|FullyQualifiedName~EntirePendingSetIsRejected\|FullyQualifiedName~ModuleMigrationTests' --nologo --verbosity quiet` | Passed; 22 tests, zero skipped, overlapping the prior EF selection |
-| `dotnet test tests/unit/Kofte.Host.Tests/Kofte.Host.Tests.csproj --no-restore --filter FullyQualifiedName~StorageConfigurationTests --verbosity quiet` | Passed; 6 tests |
-| `dotnet test tests/integration/Kofte.Host.IntegrationTests/Kofte.Host.IntegrationTests.csproj --no-restore --filter 'FullyQualifiedName~StorageCompatibilityTests\|FullyQualifiedName~StorageRecoveryCompatibilityTests\|FullyQualifiedName~StoreRecoveryTests\|FullyQualifiedName~PostgresRecoveryTests' --verbosity quiet` | Passed; 15 tests |
-| `dotnet test tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj --no-restore --filter 'FullyQualifiedName~RecoverySetTests\|FullyQualifiedName~PostgresRecoveryExercise\|FullyQualifiedName~OperationDeadlineTests' --verbosity quiet` | Passed; 18 tests |
-| `npm run format:check` | Passed after formatting the two generated contract lock files |
-| `dotnet build Kofte.slnx --no-restore -c Release -warnaserror --verbosity quiet` | Passed; zero warnings/errors |
-| `dotnet test --project tests/unit/Kofte.Host.Tests --no-build --no-restore -c Release --minimum-expected-tests 1` | Passed; 45 tests |
-| `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-build --no-restore -c Release --minimum-expected-tests 1` | Failed; 35/36 passed, one PostgreSQL Staging host exited during startup |
-| `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-build --no-restore -c Release --filter-class '*PostgresOpenApiTests' --minimum-expected-tests 1` | Passed; both Staging/Production cases in isolation; this does not erase the broader failure |
-
-Final integrated-source checks after all implementation edits and formatting:
-
-| Exact command | Observed result |
-| --- | --- |
 | `dotnet format Kofte.slnx --no-restore --verbosity quiet` | Passed |
-| `dotnet format Kofte.slnx --verify-no-changes --no-restore --verbosity quiet` | Passed |
-| `dotnet build Kofte.slnx --no-restore -c Release -warnaserror --verbosity quiet` | Passed; zero warnings/errors |
-| `dotnet test --project tests/unit/Kofte.Host.Tests --no-build --no-restore -c Release --minimum-expected-tests 45` | Passed; 45 tests, zero skipped |
-| `dotnet test --project tests/unit/Kofte.Platform.Tests --no-build --no-restore -c Release --minimum-expected-tests 129` | Passed; 129 tests, zero skipped |
-| `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-build --no-restore -c Release --minimum-expected-tests 39` | Failed with exit 9: all 37 discovered cases passed, but the guessed minimum was incorrect |
-| `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-build --no-restore -c Release --list-tests` | Passed; discovered the complete 37-case inventory, including both PostgreSQL OpenAPI cases and six supervisor/compatibility cases; source comparison confirms no test declarations were removed |
-| `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-build --no-restore -c Release --minimum-expected-tests 37` | Passed; all 37 cases, zero skipped, 21.506 s |
-| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --minimum-expected-tests 105` | Failed twice: first 103/105 passed with both PostgreSQL process-race cases failing on worker exit 1; diagnostic repeat 104/105 passed with the distinct-ID PostgreSQL process case failing during owned-fixture database cleanup with an Npgsql stream-read timeout. Zero skipped in both runs |
-| `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --minimum-expected-tests 48` | Passed separately after the broad storage failures; all 48 cases, zero skipped, 136.110 s |
-| `python3 scripts/check_repository.py` | Passed with blocked driver state |
-| `python3 -m unittest discover -s scripts/tests -v` | Passed; all 103 tests |
-| `python3 scripts/check_dependencies.py` | Passed; 403 npm / 78 NuGet identities |
-| `npm run format:check` | Passed |
-| `git diff --cached --check` | Passed |
+| `dotnet build Kofte.slnx --no-restore -c Release -warnaserror --nologo -v quiet` | Passed, zero warnings/errors |
+| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --filter-class '*MaintenanceObserverFailureTests' --filter-class '*CorrectedRetryTests' --filter-class '*AbandonedLockRefusalTests' --filter-class '*MigrationCrashTests' --minimum-expected-tests 11` | Passed, 11/11, zero skipped |
+| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --filter-class '*MigrationRecoveryRefusalTests' --filter-class '*AbandonedLockRefusalTests' --filter-class '*MigrationCrashTests' --minimum-expected-tests 19` | Passed, 19/19, zero skipped |
+| `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*ModuleContractTests' --filter-class '*StorageGuideTests' --minimum-expected-tests 8` | Passed, 8/8, zero skipped |
+| `python3 scripts/verify.py --suite unit` | Passed, 11 named steps |
+| `python3 scripts/verify.py --suite integration --provider both --disposable-postgres` | Passed, 7 SQLite and 9 PostgreSQL named steps |
+| `python3 scripts/verify.py --suite contract --provider both --disposable-postgres` | Passed, 37 named steps |
+| `python3 scripts/verify.py --suite recovery --provider both --disposable-postgres` | Passed, 38 named steps |
+| `python3 scripts/verify.py --suite privacy --provider both --disposable-postgres` | Passed, 36 named steps |
+| `python3 scripts/verify.py --suite quality` | Passed, 19 named steps, including locked restores/format/build/lint/types/dependencies |
+| `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*SqliteStorageGuideTests' --minimum-expected-tests 1` | Passed, 1/1 all-corpus guide, zero skipped |
+| `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*PostgresStorageGuideTests' --minimum-expected-tests 1` | Passed, 1/1 all-corpus guide, zero skipped |
+| `python3 scripts/verify.py --suite all --disposable-postgres` | Running |
+| Assessed-head CI | Pending publication; prior-head green contexts are not evidence for these changes |
 
-The earlier PostgreSQL Staging startup failure did not reproduce in either
-whole-project current-source run; its root cause is not established. The first
-repeat still failed its test-count policy and is not reported as a passing gate.
-Only after checking discovery and source inventory was the count corrected to 37.
+Existing named suites retain manifest, native host health/OpenAPI/HTTP,
+web/browser/axe, startup, valid-v0 recovery, privacy and failure-propagation
+steps alongside required storage inventory/provider/scenario checks.
+No missing provider or zero-test run is skipped into success.
 
-The **full storage integration gate is not passing**. The focused race-matrix
-passes above do not erase either later broad-run failure, and passing cases
-from separate runs must not be combined into a fabricated 105/105 result.
-The first broad run reported 314.348 s; the repeat's runner summary reported
-34m 15.728 s while its assembly execution reported 6m 18.120 s. That timing
-discrepancy and the underlying worker/cleanup failures are not explained.
-No timeout was relaxed, non-busy error retried or cleanup failure suppressed.
-The private registration worker now emits a structured allowlisted failure
-code, and its parent surfaces that code rather than only asserting exit 0.
+## Requirement, scenario, task and principle mapping
 
-The repeat's failed disposal retained one owned PostgreSQL fixture. Before
-targeted cleanup, its private ownership record was matched against the exact
-container/volume/network inventory, local Unix-socket engine, pinned image,
-run labels, database OID/owner/comment and both role OIDs/comments. Only that
-verified fixture was removed, and its recorded resources and ownership root
-were confirmed gone. This cleanup does not turn the failed test into success.
-No raw target, credential, run identity or transient provider output is published.
-
-Review found a migration-cleanup path that created a fresh three-second budget
-after the 120-second operation budget. It now reuses the original remaining
-budget; cancellation/expiry preserves committed `in_progress` and emits a fixed
-correlated secondary log/trace event if reconciliation cannot complete, while
-retaining the original failure/cancellation code. Both-provider real
-cancellation-after-intent tests verify the persisted row, correlation and
-secondary trace event. No new 123-second effective budget is accepted.
-
-The shared-fixture extraction separately passed 12 selected host integration,
-7 storage provider-bootstrap and 18 initial public-harness cases, all with zero
-skips. Targeted allocator/budget tests passed 13 cases; the held/disposed/foreign
-maintenance-scope test passed one case. These earlier observations are not a
-substitute for current-source final gates.
-
-### Publication-head regressions and follow-up
-
-`gh pr checks 6 --watch --interval 30` failed at initial checkpoint
-`e5ef54521b7630f27c5a33afc96992a2a04c8154`: **nine contexts passed; contract
-and startup failed** in
-[product run 39727804217](https://github.com/Stonefly-Labs/Kofte/actions/runs/39727804217).
-The [repository run](https://github.com/Stonefly-Labs/Kofte/actions/runs/39727804188)
-passed. These failed contexts were investigated, not treated as a completed gate.
-
-The public contract command had no selected-provider environment, so newly
-included PostgreSQL cases correctly refused absent disposable opt-in. It now
-uses the existing provider helper, guards PostgreSQL before spawning children,
-and excludes the other provider's trait for single-provider runs while retaining
-provider-neutral manifest/harness tests. A new Python regression and extended
-selector assertions cover those distinctions.
-
-The old warm-restart fixture put an arbitrary table in the otherwise
-table-free-v0 platform database, which the new strict startup check correctly
-refuses. Instead of weakening startup or special-casing an unknown table,
-the test now provisions real Alpha/Beta assigned stores/migrations through
-the independent public consumer before timed cycles. Its unpredictable sentinel
-lives in Alpha's existing `Records.Payload`. All ten restarts check its exact
-run/key/payload and released ports. The verifier explicitly builds that
-test-owned consumer; documentation and ordering assertions match.
-
-| Exact command | Observed result |
+| Requirement | Concrete evidence / tasks |
 | --- | --- |
-| `python3 -m unittest discover -s scripts/tests -v` | Passed; 104 tests after the CI-wiring regression |
-| `npm run format:check` | Passed |
-| `npm run lint --workspace tests/e2e` | Passed |
-| `npm run typecheck --workspace tests/e2e` | Passed |
-| `python3 scripts/verify.py --suite contract --provider both --disposable-postgres` | Failed locally after its public-contract/schema/native-SQLite/host-build steps passed: `runtime-web-build` reported `verification_input_invalid` despite child exit 0. The wrapper failure is unresolved and is not relabeled as passing |
-| `npm run build --workspace apps/web` | Passed independently |
-| `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-not-trait Provider=postgres --minimum-expected-tests 1` | Passed; 41 cases, zero skipped, with no PostgreSQL opt-in or target in the environment |
-| `BOOTSTRAP_WARM_STARTS=10 npm run test --workspace tests/e2e -- startup.spec.ts` | Passed; both tests and all ten actual warm cycles |
+| FR-001 | Versioned pure contracts, bound public consumers, denied foreign factory; T007/T014/T017/T024/T037/T045/T068 |
+| FR-002 | Actual no-storage/immutable registration and durable constraints; T010-T013/T016/T019/T030/T033 |
+| FR-003 | Allocator/candidate/direct UNIQUE tests and complete independent caller/process matrix; T011-T013/T018/T028-T034 |
+| FR-004 | Persisted keys/tokens, restart/metadata retry and original-reservation recovery; T015-T019/T022-T024/T033/T053 |
+| FR-005 | PostgreSQL object/role/marker/history inventory and Alpha/Beta isolation; T011/T018/T020/T022/T029/T036-T046 |
+| FR-006 | SQLite private existing files, alias/ancestor/sidecar negatives and complete backup; T009/T012/T021/T037/T044/T051/T058 |
+| FR-007 | Durable phase kill matrix, truthful uncertainty and explicit recovery; T007/T019-T023/T048/T052-T054/T061 |
+| FR-008 | Read-only ready validation, corrupt/missing-target refusal and no fallback; T013/T023/T030/T033/T037/T044/T048-T061 |
+| FR-009 | Assigned models/options/cache/snapshots/migrations and independent public modules; T024/T036-T047/T054/T068 |
+| FR-010 | Explicit v0/v1 upgrade, history preflight, killed migrations and legacy rollback protection; T010-T013/T025/T036-T043/T048-T063 |
+| FR-011 | Shared finite budgets, actual native deadline/lease-loss proof and data-preserving corrected retry; T008/T009/T019/T028-T035/T049/T052-T054/T064-T070 |
+| FR-012 | Separate durable registry/physical commits and module-local transactions; T019-T023/T036-T047/T048/T053/T054/T061/T062 |
+| FR-013 | Owned least-privilege fixture/configuration, actual provisioner/outage negatives and named gates; T002/T003/T006/T014/T020/T021/T025/T049/T055/T059/T071-T076 |
+| FR-014 | Public shape/bounds and captured seven-outcome safe diagnostic channels; T005/T007/T055/T064-T072 |
+| FR-015 | Actual complete backups/fresh restores, preserved refusals and recovery-point guidance; T050/T051/T054/T056-T063/T074-T077 |
+| FR-016 | Nine-case public corpus, zero-module compatibility and retained complete gates; T005/T006/T017/T025-T027/T035/T045-T047/T060/T063/T068/T071-T078 |
 
-The existing strict `startup_observations` reader validated the fresh absolute
-output directory: **10 cycles, all fixture comparisons true**, maximum readiness
-0.362503 s and maximum page duration 0.069949 s on this workstation. These are
-targeted observations, not a new full-stage or universal benchmark claim.
-The aborted local command chain did not execute its later named SQLite/startup
-wrappers; the direct commands above are reported as direct, not named-gate passes.
-Subsequent publication-head CI is recorded in the PR only after it actually runs.
-The broad storage failures, complete 003 verifier wiring and remaining
-implementation obligations still block this stage.
+| Acceptance scenarios / success criteria | Evidence |
+| --- | --- |
+| US1.1-4 / SC-003 | Registration/restart/no-storage/immutable conflict and missing-ready-target tests, public registration corpus; T015-T027/T044 |
+| US2.1-4 / SC-002 | All eight race cases, forced occupied/reserved/unowned candidates and direct invalid writes; T028-T035 |
+| US3.1-4 / SC-001 | Both independent Alpha/Beta implementations, clean/additive upgrade, model/history/cache and forbidden-target negatives; T036-T047 |
+| US4.1-4 / SC-004 | All 31 boundary kills (including the native callback), real budgets/lease loss, upgrade and whole-set restore/refusal; T048-T063 |
+| US5.1-2 / SC-005 | Seven-outcome captured-channel privacy, result bounds and retained-data correction; T064-T070, boundary negatives |
+| SC-006 | Executable public guides, existing host/manifest/browser gates and assessed-head CI; T071-T078, pending final execution |
 
-### What the observations actually prove
+These rows cover all 18 acceptance scenarios, 16 FRs and six SCs;
+coverage mapping is not a substitute for the pending passing gates.
 
-- The registration/format checks exercise both real providers, explicit
-  idempotent upgrades, unsupported/populated v0 preservation, bad PostgreSQL
-  history, direct duplicate IDs/keys/tokens and invalid IDs/states/nulls/
-  revisions/keys. Cancelled-before-mutation calls remain unchanged.
-- Each of the eight race cases executes **20 rounds of ten attempts**. Per
-  provider, same-ID and distinct-ID rounds run through independent connections
-  and separately launched barrier-started processes: **1,600 total attempts,
-  including 800 independent processes** across both providers. Every round
-  checks registry counts, physical schema/file inventory and ready markers.
-  Same-ID rounds leave exactly one owner per round; distinct-ID rounds leave
-  ten different allocations. Retries are bounded; no hash-probability argument
-  replaces forced collisions or direct constraint tests.
-- Three full child-process restarts on each provider preserve the exact Alpha
-  allocation/installation/key/revision and the distinct Alpha/Beta sentinel
-  rows after harmless display/release changes. Forced collisions preserve
-  original owner/sentinel/revision, with no suffix allocation.
-- The independent public consumer passes explicit no-storage, immutable
-  same-ID retry, corrected declaration retry and occupied/unowned-target
-  preservation on both providers. Bad selectors, missing owned configuration,
-  zero assertions, invalid exits and malformed/mismatched results fail closed.
-  Internal stderr is captured and structurally validated; it is not forwarded
-  as unexpected successful-consumer stderr.
-- Real stderr, result serialization, Activity spans and Meter measurements
-  are captured for successful registration/resolve, rejected conflict/path
-  and cancelled registration. Five matching generated correlations are
-  checked per provider; bounded metric labels exclude module IDs. Seeded
-  display/private-path/payload text and actual runtime credentials are absent
-  from these captured channels. This is **not** the complete migration,
-  worker, recovery and docs-channel privacy corpus.
+| Constitution | Evidence / applicability |
+| --- | --- |
+| I | Köfte prose, optional-module-free bootstrap, no Hoard dependency |
+| II | Minimal pure contracts, one adapter, owner-only binding, no loader |
+| III | Native DI, reviewed licenses, dedicated test projects; no MediatR/AutoMapper |
+| IV | Actual immutable UNIQUE registry, schema/file/history isolation and verified recovery |
+| V | Module-local transactions, separate durable phases; no cross-module ACID |
+| VI | Least privilege, path/ownership/preflight negatives and bounded safe diagnostics; no sandbox claim |
+| VII | No MCP surface; future actor/team/resource authorization is neither introduced nor bypassed |
+| VIII | Durable intent/reconciliation only; no job/event/audit runtime or exactly-once claim |
+| IX | No new UI journey; existing browser/axe regressions remain mandatory |
+| X | Existing supported macOS/Linux targets, explicit configuration/maintenance and fresh complete restore |
+| XI | Real providers, public consumers, negative/process/crash/deadline/privacy and full local/CI gates |
+| XII | Approved ADR, original feature branch/draft PR, one implement stage; no self-acceptance |
 
-An initial public-consumer run found reference `==` comparison of independently
-parsed `ModuleId` objects and overly broad intermediate directory creation.
-The consumer now uses `ModuleId.Equals` and explicitly creates the private
-module parent before its occupied-target fixture; all 26 selected cases pass.
-Earlier compilation attempts intersected in-progress EF source and did not
-count as verification. No failed check has been relabeled as passing.
+## Supported limits and handoff
 
-## Acceptance mapping and remaining obligations
+Supported module DDL is intentionally narrow: create-table/primary-key and
+add-column with int/text columns; unknown broader operations fail closed.
+Trusted in-process module/factory code is not sandboxed and must cooperate;
+owned-worker supervision provides the demonstrated synchronous maintenance
+deadline on supported local infrastructure, not a kernel-blocked-disk promise.
 
-| Scope | Actual checkpoint evidence | Still required before implementation completion |
-| --- | --- | --- |
-| FR-001/002/004/007; US1; SC-003 | Public typed results, no-storage, immutable retries, actual marker verification, three process restarts and retained sentinels | Complete owner-binding/host integration corpus and all declared mutation/refusal cases |
-| FR-003/005/006/011; US2; SC-002 | Real constraints, actual keys, forced/reserved collisions, full connection/process race matrix | Exhaustive corrupt-reopen/target-permission cases and measured failure/retry bounds |
-| FR-009/010/012; US3; SC-001/005 | Real assigned model/cache/history, complete-pending-set rejection, factory/alias/stale binding checks, Alpha-only additive upgrade and independent public module proof | Broader supported operation/provider metadata corpus, migration-worker/deadline integration and exhaustive boundary obligations |
-| FR-007/008/010/013/015; US4; SC-004 | Existing-only opens, explicit upgrade, bounded SQLite cancellation-or-provider-refusal, deterministic owned-process reap, stopped whole-set provider recovery and legacy/refusal checks | Every durable-boundary real-process kill phase, guaranteed kill-during-SQL, full deadline/outage/session-loss proofs, abandoned EF-lock recovery and executable public recovery/guide proof |
-| FR-014; US5; SC-005 | Direct registration result/log/span/metric capture and public sanitized consumer results | Full seeded provider/EF/worker/recovery/docs corpus and data-preserving corrected configuration retry |
-| FR-016; SC-006 | Public named selectors and existing bootstrap resource ownership retained | Named verifier/CI wiring, all documented examples, complete local gate and actual assessed-head CI |
-| Principles I-XII | Human design approval; reviewed graph; pure contracts/test ownership; shared safety; local transactions; honest evidence; no new endpoint/loader/MCP bypass or acceptance | Complete remaining story evidence and final constitutional/traceability review |
+Recovery is stopped, complete-set and fresh-target only. Ambiguous evidence
+is preserved and blocked, not adopted or deleted. There is no cross-provider
+conversion, automatic down-migration, destructive replacement, general lifecycle
+runner or automated global backup product. Choosing an older complete recovery
+point remains the operator's explicit data-loss responsibility; UUID/hash
+consistency does not authenticate malicious forgery or prove that no newer lost
+backup exists.
 
-Convergence, final evidence-based review and explicit human acceptance remain
-separate later stages. No feature acceptance, merge permission, production
-readiness, complete all-suite gate or assessed-head CI success is claimed.
-
-## Blocked handoff
-
-The ledger records **003 / implement / blocked** on the original branch/PR.
-T001-T006 are checked; T007-T078 remain open. Existing passing checks do not
-waive their full acceptance obligations or prerequisites. The next invocation
-resumes implement rather than starting converge or a new numbered feature.
-First resolve the two failed broad PostgreSQL process-race/fixture-cleanup
-runs and establish a passing complete storage gate without weakening its
-deadlines, provider selection, resource ownership or cleanup assertions.
-
-Owner binding currently creates nested fresh three-second resolve/open budgets;
-it still needs a genuinely shared end-to-end budget. Long SQLite EF migration
-work remains in-process, not in the supervised migration worker. A surviving
-EF migration-lock row is refused, but explicit abandoned-lock recovery is not
-implemented. Cancellation preserving committed intent is not equivalent to
-killing a worker during real SQL.
-
-Remaining work includes the complete durable crash/acknowledgement/upgrade
-boundary corpus, guaranteed kill-during-SQL, provider outage/privilege/lease-loss
-and elapsed-deadline evidence, broader assigned-EF and malformed-registry
-validation, and complete seeded privacy and corrected-configuration retry.
-The public `interrupted-provisioning` and `stopped-restore` scenarios deliberately
-fail as unimplemented. Finish those scenarios and executable guide proof, wire
-the named verifier and CI, and run complete required local/assessed-head gates
-before claiming implementation completion. No checklist was re-evaluated or
-feature acceptance requested.
+T001-T075 are evidenced. The complete local gate, assessed-head CI, final
+report/publication and driver completion transition remain open until their
+actual evidence exists.
+The only next stage after successful publication is **converge**.
+The PR stays draft: no feature acceptance or merge is requested here.

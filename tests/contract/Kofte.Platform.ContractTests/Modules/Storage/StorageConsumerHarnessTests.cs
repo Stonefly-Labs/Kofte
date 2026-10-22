@@ -63,7 +63,8 @@ public sealed class StorageConsumerHarnessTests
             provider,
             scenario,
             status,
-            assertions
+            assertions,
+            scenarios = new Dictionary<string, int> { ["clean-install"] = assertions }
         });
         Assert.Throws<InvalidOperationException>(() =>
             StorageConsumerHarness.RequireSuccess(new ProcessOutput(exit, json, stderr), "sqlite", "clean-install"));
@@ -77,4 +78,31 @@ public sealed class StorageConsumerHarnessTests
     public void MissingMalformedAndMultipleResultsCannotPass(string json) =>
         Assert.Throws<InvalidOperationException>(() =>
             StorageConsumerHarness.RequireSuccess(new ProcessOutput(0, json, ""), "sqlite", "clean-install"));
+
+    [Theory]
+    [InlineData("missing")]
+    [InlineData("zero")]
+    [InlineData("sum")]
+    [InlineData("duplicate")]
+    public void AllCannotOmitDuplicateOrInventPerScenarioAssertions(string fault)
+    {
+        var cases = StorageScenarioCatalog.Scenarios.ToDictionary(name => name, _ => 1, StringComparer.Ordinal);
+        if (fault == "missing") cases.Remove("no-storage");
+        if (fault == "zero") cases["no-storage"] = 0;
+        var json = JsonSerializer.Serialize(new
+        {
+            eventCode = "storage_scenario_passed",
+            component = "storage-consumer",
+            correlationId = new string('a', 32),
+            provider = "sqlite",
+            scenario = "all",
+            status = "passed",
+            assertions = StorageScenarioCatalog.Scenarios.Count + (fault == "sum" ? 1 : 0),
+            scenarios = cases
+        });
+        if (fault == "duplicate")
+            json = json.Replace("\"no-storage\":1", "\"clean-install\":1", StringComparison.Ordinal);
+        Assert.Throws<InvalidOperationException>(() =>
+            StorageConsumerHarness.RequireSuccess(new ProcessOutput(0, json, ""), "sqlite", "all"));
+    }
 }

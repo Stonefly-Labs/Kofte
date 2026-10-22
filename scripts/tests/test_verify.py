@@ -18,10 +18,12 @@ class VerifyTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory(dir=base)
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name).resolve()
-        for name in verify.PLATFORM_REQUIRED_FILES:
+        for name in (*verify.PLATFORM_REQUIRED_FILES, *verify.STORAGE_REQUIRED_FILES):
             path = self.root / name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text("required platform fixture")
+        (self.root / "tests/integration/Kofte.TestSupport/StorageScenarioCatalog.cs").write_text(
+            " ".join(json.dumps(name) for name in verify.STORAGE_SCENARIOS))
         for workspace, scripts in verify.REQUIRED_SCRIPTS.items():
             path = self.root / workspace / "package.json"
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -53,6 +55,37 @@ class VerifyTests(unittest.TestCase):
         (self.root / "package.json").write_text(json.dumps(root_manifest))
         with self.assertRaisesRegex(verify.VerificationError, "workspace_inventory_drift"):
             verify.workspace_inventory(self.root)
+
+    def test_missing_storage_project_or_public_scenario_fails_before_tool_invocation(self):
+        runner = verify.Runner(self.root, self.report("integration"), {})
+        project = self.root / verify.STORAGE_INTEGRATION / "Kofte.Storage.IntegrationTests.csproj"
+        project.unlink()
+        with patch.object(runner, "versions") as versions, \
+                self.assertRaisesRegex(verify.VerificationError, "storage_target_missing"):
+            verify.execute_suite(runner, "integration", "sqlite", Mock())
+        versions.assert_not_called()
+        project.write_text("restored required fixture")
+        catalog = self.root / "tests/integration/Kofte.TestSupport/StorageScenarioCatalog.cs"
+        catalog.write_text(catalog.read_text().replace('"stopped-restore"', '"omitted"'))
+        with self.assertRaisesRegex(verify.VerificationError, "storage_scenario_missing"):
+            verify.storage_inventory(self.root)
+
+    def test_storage_recovery_privacy_and_zero_case_child_failures_cannot_publish_green(self):
+        for name, exit_code in (("storage-recovery-sqlite", 2), ("storage-privacy-postgres", 2),
+                                ("storage-integration-sqlite", 8)):
+            runner = verify.Runner(self.root, self.report("integration"), {})
+            with self.subTest(name=name), self.assertRaisesRegex(verify.VerificationError, "command_failed"):
+                runner.command(name, ["python3", "-c", f"raise SystemExit({exit_code})"])
+            self.assertEqual("failed", runner.report.data["steps"][-1]["outcome"])
+
+    def test_storage_selectors_retain_provider_intersection_and_fail_on_zero_selected_cases(self):
+        for provider in ("sqlite", "postgres"):
+            for suite in ("recovery", "privacy"):
+                command = verify.integration_command(provider, suite, project=verify.STORAGE_INTEGRATION)
+                self.assertIn(verify.STORAGE_INTEGRATION, command)
+                self.assertIn(f"/[(Suite={suite})&(Provider={provider})]", command)
+                self.assertEqual(["--minimum-expected-tests", "1"], command[-2:])
+                self.assertEqual(command, verify.safe_command(command))
 
     def test_actual_child_failure_is_named_nonzero_and_output_is_not_saved(self):
         memory_bytes = verify.os.sysconf("SC_PHYS_PAGES") * verify.os.sysconf("SC_PAGE_SIZE")

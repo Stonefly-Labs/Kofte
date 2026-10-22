@@ -63,6 +63,7 @@ public sealed partial class StorageRegistry : IStorageRegistry
                         await new SqliteStorageProvisioner(Installation).ProvisionAsync(metadata, record, budget, mutation);
                     await owned.VerifyAsync(Installation, budget);
                     mutation.PossibleCommit();
+                    StorageDiagnostics.Checkpoint("ready_before_commit", Installation.Provider, module.Id);
                     await using var transition = RegistryMigrationRunner.Command(connection, $"""
                         UPDATE {database.Registrations} SET state='ready', revision=revision+1
                         WHERE module_id=@owner AND revision=@revision RETURNING revision
@@ -71,6 +72,7 @@ public sealed partial class StorageRegistry : IStorageRegistry
                         revision != checked(record.Revision + 1))
                         throw new StorageException(StorageCode.ReconciliationRequired);
                     mutation.Committed();
+                    StorageDiagnostics.Checkpoint("ready_committed", Installation.Provider, module.Id);
                     record = await database.FindAsync(connection, module.Id, budget) ??
                         throw new StorageException(StorageCode.Corrupt);
                     if (record.State != "ready") throw new StorageException(StorageCode.Incomplete);
@@ -100,8 +102,10 @@ public sealed partial class StorageRegistry : IStorageRegistry
                 ("owner", record.Owner.Value), ("relational", false), ("provider", record.Provider));
         await scope.VerifyAsync(Installation, budget);
         mutation.PossibleCommit();
+        StorageDiagnostics.Checkpoint("reservation_before_commit", Installation.Provider, record.Owner);
         await transaction.CommitAsync(budget.Token);
         mutation.Committed();
+        StorageDiagnostics.Checkpoint("reservation_committed", Installation.Provider, record.Owner);
     }
 
     public Task<StorageResult> ResolveAsync(ModuleId owner, CancellationToken cancellationToken = default) =>

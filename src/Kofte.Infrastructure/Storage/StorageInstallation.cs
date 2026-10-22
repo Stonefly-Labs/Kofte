@@ -38,6 +38,7 @@ public sealed class StorageInstallation
             provisioner.Pooling = false;
             provisioner.Timeout = 3;
             provisioner.CommandTimeout = 3;
+            provisioner.CancellationTimeout = -1;
             provisioner.IncludeErrorDetail = false;
             provisioningConnection = provisioner.ConnectionString;
         }
@@ -67,25 +68,29 @@ public sealed class StorageInstallation
         return OpenSqlite(PlatformPath, budget);
     }
 
-    internal static SqliteConnection OpenSqlite(string path, OperationBudget budget, bool allowOwnedEmpty = false)
+    internal static SqliteConnection OpenSqlite(string path, OperationBudget budget, bool allowOwnedEmpty = false,
+        bool readOnly = false)
     {
         budget.Check();
         UnixStorePaths.ValidateRoot(Path.GetDirectoryName(path)!, allowMissing: false);
         UnixStorePaths.ValidateFile(path);
         foreach (var suffix in new[] { "-journal", "-wal", "-shm" })
             UnixStorePaths.ValidateFile(path + suffix, allowMissing: true);
-        using (var file = File.OpenRead(path))
+        try
         {
+            using var file = File.OpenRead(path);
             Span<byte> header = stackalloc byte[16];
             if (!(allowOwnedEmpty && file.Length == 0) &&
                 (file.Length < 100 || file.Read(header) != header.Length ||
                  !header.SequenceEqual("SQLite format 3\0"u8)))
                 throw new StorageException(StorageCode.Corrupt);
         }
+        catch (IOException error) when (error.HResult is 11 or 35)
+        { throw new StorageException(StorageCode.Busy); }
         var connection = new SqliteConnection(new SqliteConnectionStringBuilder
         {
             DataSource = path,
-            Mode = SqliteOpenMode.ReadWrite,
+            Mode = readOnly ? SqliteOpenMode.ReadOnly : SqliteOpenMode.ReadWrite,
             Pooling = false,
             ForeignKeys = true,
             DefaultTimeout = budget.CommandSeconds(sqlite: true)

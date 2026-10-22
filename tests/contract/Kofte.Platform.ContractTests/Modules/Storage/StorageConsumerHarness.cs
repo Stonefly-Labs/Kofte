@@ -5,7 +5,8 @@ using Kofte.TestSupport;
 
 namespace Kofte.Platform.ContractTests.Modules.Storage;
 
-internal sealed record StorageConsumerResult(string Provider, string Scenario, int Assertions);
+internal sealed record StorageConsumerResult(string Provider, string Scenario, int Assertions,
+    IReadOnlyDictionary<string, int> Scenarios);
 
 internal static class StorageConsumerHarness
 {
@@ -53,8 +54,8 @@ internal static class StorageConsumerHarness
             using var document = JsonDocument.Parse(output.Stdout);
             var result = document.RootElement;
             var names = result.EnumerateObject().Select(p => p.Name).ToArray();
-            if (names.Length != 7 || names.Distinct(StringComparer.Ordinal).Count() != 7 ||
-                names.Except(["eventCode", "component", "correlationId", "provider", "scenario", "status", "assertions"]).Any() ||
+            if (names.Length != 8 || names.Distinct(StringComparer.Ordinal).Count() != 8 ||
+                names.Except(["eventCode", "component", "correlationId", "provider", "scenario", "status", "assertions", "scenarios"]).Any() ||
                 result.GetProperty("eventCode").GetString() != "storage_scenario_passed" ||
                 result.GetProperty("component").GetString() != "storage-consumer" ||
                 !Regex.IsMatch(result.GetProperty("correlationId").GetString() ?? "", @"\A[0-9a-f]{32}\z") ||
@@ -63,7 +64,14 @@ internal static class StorageConsumerHarness
                 result.GetProperty("status").GetString() != "passed" ||
                 !result.GetProperty("assertions").TryGetInt32(out var assertions) || assertions <= 0)
                 throw new InvalidOperationException("storage_consumer_result_invalid");
-            return new(provider, scenario, assertions);
+            var cases = result.GetProperty("scenarios").EnumerateObject().ToArray();
+            IEnumerable<string> expected = scenario == "all" ? StorageScenarioCatalog.Scenarios : [scenario];
+            if (!cases.Select(item => item.Name).SequenceEqual(expected) ||
+                cases.Any(item => !item.Value.TryGetInt32(out var count) || count <= 0) ||
+                cases.Sum(item => item.Value.GetInt64()) != assertions)
+                throw new InvalidOperationException("storage_consumer_result_invalid");
+            return new(provider, scenario, assertions,
+                cases.ToDictionary(item => item.Name, item => item.Value.GetInt32(), StringComparer.Ordinal));
         }
         catch (Exception error) when (error is JsonException or KeyNotFoundException or InvalidOperationException or FormatException)
         {

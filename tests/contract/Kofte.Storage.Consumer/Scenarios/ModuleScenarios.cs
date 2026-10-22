@@ -42,14 +42,14 @@ public static class ModuleScenarios
                     (options, _) => BetaStorage.Create(options, beta), token);
                 throw new InvalidOperationException("storage_boundary_not_rejected");
             }
-            catch (StorageException) { assertions++; }
+            catch (StorageException) { RegistrationScenarios.Require(true); assertions++; }
             try
             {
                 await using var forbidden = await alpha.CreateContextAsync(
                     (options, binding) => new ForeignContext(options, binding), token);
                 throw new InvalidOperationException("storage_boundary_not_rejected");
             }
-            catch (StorageException) { assertions++; }
+            catch (StorageException) { RegistrationScenarios.Require(true); assertions++; }
             Require(ReferenceEquals(before, context.Model));
             Require(await beta.ResolveAsync(token) is StorageResult.Ready);
             Require((await context.Records.SingleAsync(token)).Payload == "preserved-boundary");
@@ -132,7 +132,7 @@ public static class ModuleScenarios
     }
 
     private static void Require(bool condition)
-    { if (!condition) throw new InvalidOperationException("storage_module_assertion_failed"); }
+        => RegistrationScenarios.Require(condition);
 
     private sealed class ForeignContext(DbContextOptions options, ModuleStorageBinding binding) : AssignedDbContext(options, binding)
     {

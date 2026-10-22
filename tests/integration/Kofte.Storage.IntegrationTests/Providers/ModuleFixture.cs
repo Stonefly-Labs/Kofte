@@ -51,7 +51,7 @@ internal sealed class ModuleFixture(StorageProviderScope resources) : IAsyncDisp
         static string provisioningConnection(ModuleFixture value) => value.Resources.Postgres!.ProvisioningConnectionString;
     }
 
-    private StorageProviderScope Resources => resources;
+    internal StorageProviderScope Resources => resources;
     internal static ModuleDescription Module(string id)
     {
         var input = JsonSerializer.SerializeToUtf8Bytes(new

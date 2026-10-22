@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Data.Common;
 
 namespace Kofte.Infrastructure.Storage.Migrations;
 
@@ -7,6 +8,7 @@ public abstract class AssignedDbContext(DbContextOptions options, ModuleStorageB
 {
     public ModuleStorageBinding Storage { get; } = binding;
     internal bool IsMigrationContext { get; set; }
+    internal DbTransaction? AppliedMigrationTransaction { get; set; }
 
     protected sealed override void OnModelCreating(ModelBuilder modelBuilder)
     {

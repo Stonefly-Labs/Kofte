@@ -21,9 +21,9 @@
     "spec": "003",
     "step": "implement",
     "directory": "specs/003-storage-registry",
-    "status": "blocked",
+    "status": "running",
     "branch": "feature/003-storage-registry",
-    "reason": "Incomplete implementation: resolve failed broad PostgreSQL process-race/fixture-cleanup runs (103/105, then 104/105), share end-to-end binding budgets, finish durable crash/SQL-kill and migration-worker boundaries plus abandoned EF-lock recovery, complete boundary/privacy/public recovery/guide evidence, and wire/run named verifier/full CI gates. T007-T078 stay open. Resume implement on this same branch and draft PR, not converge or accept.",
+    "reason": "",
     "started_at": "2026-10-22T03:39:41+00:00"
   },
   "history": [

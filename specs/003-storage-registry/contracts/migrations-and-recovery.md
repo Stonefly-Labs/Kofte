@@ -6,11 +6,23 @@ Assigned contexts/migrations and stopped whole-set exercises have focused
 both-provider proof. Supported DDL is currently limited to assigned
 create-table/primary-key and add-column operations with int/text columns;
 raw SQL, transaction suppression, foreign/reserved/unknown targets and other
-operations/annotations fail closed before pending SQL. Killed-migration/
-abandoned-lock recovery, the durable crash matrix, complete worker/deadline
-proof and executable public recovery examples remain incomplete. Do not delete
-EF lock rows or fabricate history to bypass that block. Remaining sections
-define required behavior, not proof that every obligation has passed.
+operations/annotations fail closed before pending SQL. The resumed increment
+executes actual killed-migration/abandoned-lock recovery, durable crash matrices,
+30/120-second owned-worker cleanup, advisory-session loss and public recovery
+examples. Final complete-gate evidence is recorded separately. Never delete
+arbitrary EF locks or fabricate history. Remaining sections define the supported
+contract, not feature acceptance.
+
+Explicit recovery is `ModuleMigrationRecovery.RecoverAsync(registry, owner,
+factory, scope, cancellationToken)`. It accepts only a verified incomplete
+intent, checks the original checkpoint/known prefix/target and actual physical
+effects, then clears only a recognized assigned SQLite lock. A physically
+committed target is acknowledged; a verified unapplied target is retried within
+the same 120-second budget. Unknown lock schema/rows/history, defaults, missing
+primary keys or unsupported physical objects preserve evidence and block.
+Use the owned admitted worker pattern in the executable consumer for synchronous
+SQLite maintenance; retaining a token alone cannot preempt arbitrary native or
+trusted application code.
 
 ## Installation scope and host integration
 

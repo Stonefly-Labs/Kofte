@@ -3,6 +3,8 @@ using System.Text.Json;
 using Kofte.Infrastructure.Storage;
 using Kofte.Infrastructure.Storage.Registry;
 using Kofte.Platform.Modules.Storage;
+using Kofte.Storage.IntegrationTests.Providers;
+using Kofte.TestSupport;
 
 namespace Kofte.Storage.IntegrationTests.Registry;
 
@@ -10,6 +12,8 @@ public static class RegistrationWorker
 {
     public static async Task<int> Main(string[] args)
     {
+        if (args.FirstOrDefault() == "--storage-crash-worker")
+            return await StorageCrashWorker.RunAsync(args, ModuleFixture.AlphaFactory);
         if (args.FirstOrDefault() is "--registration-worker" or "--registration-probe")
             return await RunAsync(args);
         return args.Any(arg => arg is "--server" or "--internal-msbuild-node")
@@ -99,7 +103,8 @@ public static class RegistrationWorker
                 var result = await registry.RegisterAsync(module, scope, token);
                 if (result is StorageResult.Ready ready) return ready;
                 if (result.Outcome != StorageOutcome.Busy)
-                    throw new InvalidOperationException("storage_registration_failed");
+                    throw new StorageException(Enum.GetValues<StorageCode>().Single(code =>
+                        StorageDiagnostics.Diagnostic(code).Code == result.Diagnostics[0].Code));
             }
             catch (StorageException error) when (error.Code == StorageCode.Busy) { }
             await Task.Delay(TimeSpan.FromMilliseconds(25), token);

@@ -25,6 +25,7 @@ internal sealed class PostgresIdentity
         Database = builder.Database;
         builder.Timeout = 3;
         builder.CommandTimeout = 3;
+        builder.CancellationTimeout = -1;
         builder.Pooling = false;
         builder.IncludeErrorDetail = false;
         ConnectionString = builder.ConnectionString;

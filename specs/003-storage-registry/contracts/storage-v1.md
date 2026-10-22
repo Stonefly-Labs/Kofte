@@ -1,11 +1,19 @@
 # Storage Contract v1
 
-**Status**: Approved design; implementation is incomplete and the stage is blocked, not accepted.
+**Status**: Approved design; implementation has resumed and final verification is in progress, not accepted.
 The human explicitly approved [ADR 0005](../../../docs/adr/0005-module-storage-ownership.md).
 See [actual evidence and remaining obligations](../implementation.md).
 This document defines the target contract; it does not prove every requirement
 is implemented. No public registry endpoint, module loader or authorization
 role is introduced by this storage slice.
+
+The executable consumer now implements all nine required examples. Its `all`
+result includes actual per-scenario assertion counts, and it refuses a missing
+case or any missing outcome in captured diagnostics. The named suites retain
+the existing bootstrap/manifest checks and add actual storage integration,
+crash/recovery and captured privacy tests; unavailable providers fail explicitly.
+The [guide](../quickstart.md) runs both providers without exposing private
+configuration in command arguments.
 
 ## Authority and public shape
 

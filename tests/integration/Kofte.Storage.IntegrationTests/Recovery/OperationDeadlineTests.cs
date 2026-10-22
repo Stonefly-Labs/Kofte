@@ -1,7 +1,12 @@
 using System.Diagnostics;
+using System.Reflection;
+using System.Security.Cryptography;
+using System.Text.Json;
 using Kofte.Host.Bootstrap;
 using Kofte.Host.Features.StorageMaintenance;
 using Kofte.Infrastructure.Storage;
+using Kofte.Platform.Modules.Storage;
+using Kofte.Storage.IntegrationTests.Registry;
 using Kofte.TestSupport;
 using StoreLease = Kofte.Infrastructure.Storage.StoreLease;
 
@@ -15,6 +20,50 @@ public sealed class MaintenanceDeadlineCollection;
 [Collection("maintenance_deadlines")]
 public sealed class OperationDeadlineTests
 {
+    [Theory]
+    [InlineData("upgrade", "registry_before_commit", 30)]
+    [InlineData("migrate", "migration_sql_executing", 120)]
+    public async Task ActualThirtyAndHundredTwentySecondDeadlinesKillReapAndReleaseSynchronousWorkers(
+        string operation, string phase, int seconds)
+    {
+        var token = TestContext.Current.CancellationToken;
+        await using var fixture = await RegistryFixture.CreateAsync("sqlite", token, upgrade: operation != "upgrade");
+        var owner = RegistryFixture.Module("org.example.deadline");
+        if (operation == "migrate")
+        {
+            await using var scope = await fixture.Maintenance.AcquireAsync(token);
+            Assert.IsType<StorageResult.Ready>(await fixture.Registry.RegisterAsync(owner, scope, token));
+        }
+        var start = StorageCrashWorker.Start(Assembly.GetExecutingAssembly(), "sqlite", operation, phase,
+            owner.Id.Value, child => ProvisioningCrashTests.Configure(fixture, child));
+        start.Environment["KOFTE_STORAGE_WORKER_HOLD"] = "true";
+        var admission = Convert.ToHexStringLower(RandomNumberGenerator.GetBytes(32));
+        start.Environment[StorageMaintenanceProcess.AdmissionKey] = admission;
+        var observed = false;
+        var started = Stopwatch.GetTimestamp();
+        var error = await Assert.ThrowsAsync<StorageException>(() => StorageMaintenanceProcess.RunOwnedAsync(
+            start, admission, TimeSpan.FromSeconds(seconds), TimeSpan.FromSeconds(2), token,
+            async (reader, cancellation) =>
+            {
+                using var value = JsonDocument.Parse(await reader.ReadLineAsync(cancellation) ??
+                    throw new InvalidOperationException("storage_worker_phase_missing"));
+                Assert.Equal(phase, value.RootElement.GetProperty("phase").GetString());
+                observed = true;
+                using var probe = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+                Assert.Equal(StorageCode.Busy, (await Assert.ThrowsAsync<StorageException>(() =>
+                    fixture.Maintenance.AcquireAsync(probe.Token))).Code);
+                while (await reader.ReadLineAsync(cancellation) is not null) { }
+            }));
+        var elapsed = Stopwatch.GetElapsedTime(started);
+        Assert.True(observed);
+        Assert.Equal(StorageCode.DeadlineExceeded, error.Code);
+        Assert.True(elapsed >= TimeSpan.FromSeconds(seconds - 2));
+        Assert.True(elapsed < TimeSpan.FromSeconds(seconds));
+        await using var released = await fixture.Maintenance.AcquireAsync(token);
+        if (operation == "upgrade") await fixture.Maintenance.UpgradeAsync(released, token);
+        else Assert.Equal(StorageOutcome.ReconciliationRequired, (await fixture.Registry.ResolveAsync(owner.Id, token)).Outcome);
+    }
+
     [Fact]
     public async Task CancelledOrRefusedWorkerPreservesV0AndReleasesItsLease()
     {

@@ -50,8 +50,10 @@ internal sealed class PostgresStorageProvisioner(StorageInstallation installatio
             """, budget, transaction);
         await StorageOwnerMarker.CreateAsync(installation, connection, transaction, metadata, record, budget);
         mutation.PossibleCommit();
+        StorageDiagnostics.Checkpoint("physical_before_commit", installation.Provider, record.Owner);
         await transaction.CommitAsync(budget.Token);
         mutation.Committed();
+        StorageDiagnostics.Checkpoint("physical_committed", installation.Provider, record.Owner);
         await VerifyAsync(metadata, record, budget);
     }
 

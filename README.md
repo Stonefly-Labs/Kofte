@@ -68,7 +68,7 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**Spec 003 / implement is blocked on remaining implementation**, after completed specify through analyze
+**Spec 003 / implement is running on its original feature branch**, after completed specify through analyze
 and explicit human approval of [ADR 0005](docs/adr/0005-module-storage-ownership.md).
 The [specification](specs/003-storage-registry/spec.md), [plan](specs/003-storage-registry/plan.md)
 and [78-task list](specs/003-storage-registry/tasks.md) remain the approved scope;
@@ -76,20 +76,22 @@ the author and reviewer-owned quality checklists remain 16/16 and 36/36.
 Reviewed EF/provider dependencies, provider-neutral storage contracts and a
 platform-local registry now support immutable allocation, explicit no-storage,
 private SQLite files, offline PostgreSQL provisioning and marker verification.
-Actual both-provider registration/constraint checks and the complete
-20-by-ten same/distinct-ID connection/process race matrix pass. These are
-focused observations, not complete crash, recovery, EF or privacy acceptance.
-The final broad storage runs failed PostgreSQL process-race/fixture-cleanup
-cases; investigation remains an explicit blocker.
+Actual both-provider registration/constraint checks, assigned EF isolation,
+the complete 20-by-ten connection/process race matrix, killed-process recovery,
+30/120-second worker termination and all-seven-outcome privacy checks now have
+focused evidence. All nine public examples execute, including corrected retry,
+real interrupted provisioning and provider-backed complete-set restore.
+The original PostgreSQL failures did not reproduce in the unchanged 105-case
+baseline; no increased timeout, blanket serialization or non-busy retry hides them.
 Baseline provider selection and warm-restart fixtures now honor the new
 registry/module ownership boundary without weakening its checks.
 See the [implementation report](specs/003-storage-registry/implementation.md)
-for exact evidence and incomplete obligations, and the
+for exact evidence and remaining verification, and the
 [validation guide](specs/003-storage-registry/quickstart.md) for supported checks
 versus still-required proof. Normal serving remains module-free; storage is not
 a new endpoint, module loader or authorization bypass. Work stays on
 `feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
-The next invocation resumes this same implement stage; it does not converge.
+The active invocation completes implement only; it does not run convergence.
 Convergence, independent review and explicit numbered-feature acceptance remain
 separate later stages; no intermediate merge is requested.
 

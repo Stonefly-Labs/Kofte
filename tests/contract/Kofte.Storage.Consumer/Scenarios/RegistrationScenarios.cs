@@ -3,27 +3,30 @@ using Kofte.Infrastructure.Storage;
 using Kofte.Infrastructure.Storage.Registry;
 using Kofte.Platform.Modules.Manifest;
 using Kofte.Platform.Modules.Storage;
+using Kofte.TestSupport;
 
 namespace Kofte.Storage.Consumer.Scenarios;
 
 internal static class RegistrationScenarios
 {
+    internal static int Assertions { get; private set; }
     internal static async Task<int> RunAsync(StorageInstallation installation, IStorageMaintenanceScope scope,
         string scenario, CancellationToken token)
     {
         IStorageRegistry registry = new StorageRegistry(installation);
-        var owner = Module("org.example.public-registration", scenario != "no-storage");
+        var owner = Module("org.example.public-registration-" + scenario, scenario != "no-storage");
         if (scenario == "no-storage")
         {
-            Require(await registry.RegisterAsync(owner, scope, token) is StorageResult.NoStorage);
-            Require(await registry.ResolveAsync(owner.Id, token) is StorageResult.NoStorage);
+            Require(StorageResultChecks.Check(await registry.RegisterAsync(owner, scope, token)) is StorageResult.NoStorage);
+            Require(StorageResultChecks.Check(await registry.ResolveAsync(owner.Id, token)) is StorageResult.NoStorage);
             return 2;
         }
         var first = Ready(await registry.RegisterAsync(owner, scope, token)).Assignment;
         Require(first.Owner.Equals(owner.Id) && first.Provider == installation.Provider);
-        if (scenario == "corrected-retry")
+        if (scenario == "same-id-retry")
         {
-            var conflict = await registry.RegisterAsync(Module(owner.Id.Value, relational: false), scope, token);
+            var conflict = StorageResultChecks.Check(await registry.RegisterAsync(
+                Module(owner.Id.Value, relational: false), scope, token));
             Require(conflict.Outcome == StorageOutcome.Rejected &&
                 conflict.Diagnostics.Single().Code == "storage_conflict");
         }
@@ -33,7 +36,7 @@ internal static class RegistrationScenarios
         Require(first.AllocationId == retry.AllocationId && first.AllocationKey == retry.AllocationKey &&
             first.InstallationId == retry.InstallationId && first.Revision == retry.Revision);
         Require(first.AllocationId == resolved.AllocationId && first.AllocationKey == resolved.AllocationKey);
-        return scenario == "corrected-retry" ? 4 : 3;
+        return scenario == "same-id-retry" ? 4 : 3;
     }
 
     internal static ModuleDescription Module(string id, bool relational = true, string version = "1.0.0",
@@ -56,11 +59,17 @@ internal static class RegistrationScenarios
             throw new InvalidOperationException("storage_consumer_manifest_invalid");
     }
 
-    internal static StorageResult.Ready Ready(StorageResult result) =>
-        result as StorageResult.Ready ?? throw new InvalidOperationException("storage_consumer_not_ready");
+    internal static StorageResult.Ready Ready(StorageResult result)
+    {
+        var ready = StorageResultChecks.Check(result) as StorageResult.Ready ??
+            throw new InvalidOperationException("storage_consumer_not_ready");
+        Assertions++;
+        return ready;
+    }
 
     internal static void Require(bool condition)
     {
         if (!condition) throw new InvalidOperationException("storage_consumer_assertion_failed");
+        Assertions++;
     }
 }

@@ -35,16 +35,35 @@ steps. No new local all-suite run or bootstrap behavior change is asserted.
 is now recorded separately from review. The same
 [PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5) is human-merged;
 acceptance adds no bootstrap behavior or new product measurement.
-Spec 003's **implementation is incomplete and the stage is blocked**, with explicit human approval of
+Spec 003's **implementation has resumed**, with explicit human approval of
 [ADR 0005](../adr/0005-module-storage-ownership.md).
 The [implementation report](../../specs/003-storage-registry/implementation.md)
-records actual reviewed dependencies, registry/provider/constraint and complete
-connection/process race evidence, plus unfinished obligations.
+records actual registry/provider races, assigned EF boundaries, killed workers,
+explicit migration recovery, bounded cleanup and captured privacy evidence.
 The [validation guide](../../specs/003-storage-registry/quickstart.md)
-separates executable focused checks from still-required migration/crash/
-recovery/privacy proof. No acceptance or complete local/CI gate is inferred.
-The next invocation resumes implement on the original feature branch and draft PR.
+includes all nine executable public examples and actual stopped provider
+backup/restore, with safe legacy refusals. Named suites now include the storage
+projects. Final verification remains in progress; no feature acceptance is inferred.
+Implementation stays on the original feature branch and draft PR.
 The next paragraph preserves the pre-implementation design-stage history.
+
+For the implemented storage examples, follow the
+[003 executable guide](../../specs/003-storage-registry/quickstart.md).
+Only trusted composition receives `StorageRegistry`/`StorageMaintenance`;
+modules receive owner-only bindings. `ModuleMigrationRecovery.RecoverAsync`
+is an explicit stopped-maintenance operation, not an ordinary resolve repair.
+Run synchronous maintenance through the admitted owned-worker supervisor.
+Registry upgrade has a 30-second total, module maintenance 120 seconds,
+including cleanup; acquire/resolve limits are two/three seconds. Losing a
+PostgreSQL lock session cancels the scope rather than reacquiring it.
+Only ready carries an assignment; retry busy boundedly, correct rejected
+configuration, and inspect incomplete/reconciliation evidence without deleting
+files, locks or history. Complete-set restores require a fresh owned target.
+Choosing an older whole-set point requires accepting its data loss; hashes and
+UUIDs cannot reveal malicious forgery or an unknown newer lost backup.
+JSON logs, spans and bounded operation/provider/outcome metrics are observable
+audit-relevant records, not spec 009's durable audit runtime. Ownership is not a
+hostile-plugin sandbox or future actor/team/resource authorization.
 
 Spec 003 now has [draft storage requirements](../../specs/003-storage-registry/spec.md),
 a completed author checklist, zero-question clarification and a

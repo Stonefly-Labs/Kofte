@@ -13,11 +13,19 @@ internal static class StorageDiagnostics
     private static readonly Meter Meter = new("Kofte.Storage", "1.0.0");
     private static readonly Counter<long> Operations = Meter.CreateCounter<long>("kofte.storage.operations");
     private static readonly ActivitySource Traces = new("Kofte.Storage", "1.0.0");
+    private static readonly DiagnosticListener Phases = new("Kofte.Storage");
     private static readonly HashSet<string> FailureCodes = Enum.GetValues<StorageCode>()
         .Where(code => code is not (StorageCode.Ready or StorageCode.NoStorage))
         .Select(code => Diagnostic(code).Code).ToHashSet(StringComparer.Ordinal);
 
     internal static bool IsFailureCode(string? code) => code is null || FailureCodes.Contains(code);
+
+    internal static void Checkpoint(string phase, string provider, ModuleId? owner = null)
+    {
+        Activity.Current?.AddEvent(new ActivityEvent("storage." + phase));
+        if (Phases.IsEnabled("storage.phase"))
+            Phases.Write("storage.phase", new { phase, provider, moduleId = owner?.Value });
+    }
 
     internal static StorageDiagnostic Diagnostic(StorageCode code) => code switch
     {
@@ -103,6 +111,11 @@ internal static class StorageDiagnostics
                 _ => StorageCode.Unavailable
             };
             result = Failure(code, operation, provider, owner, correlation, mutation.Durability);
+        }
+        catch (NpgsqlException error) when (error.InnerException is TimeoutException)
+        {
+            result = Failure(StorageCode.DeadlineExceeded, operation, provider, owner, correlation,
+                mutation.Durability);
         }
         catch (Exception)
         {

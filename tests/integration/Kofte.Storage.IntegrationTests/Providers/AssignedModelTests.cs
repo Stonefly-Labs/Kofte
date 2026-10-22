@@ -1,5 +1,8 @@
+using System.Data;
+using System.Data.Common;
 using Kofte.Infrastructure.Storage;
 using Kofte.Infrastructure.Storage.Migrations;
+using Kofte.Platform.Modules.Storage;
 using Kofte.Storage.IntegrationTests.Modules.Alpha;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -9,6 +12,27 @@ namespace Kofte.Storage.IntegrationTests.Providers;
 public abstract class AssignedModelTests
 {
     protected abstract string Provider { get; }
+
+    [Fact]
+    public async Task ContextFactoryCannotRestartTheOpenBudgetOrLeaveAnExpiredConnectionOpen()
+    {
+        var token = TestContext.Current.CancellationToken;
+        await using var fixture = await ModuleFixture.CreateAsync(Provider, token);
+        DbConnection? connection = null;
+        var failure = await Assert.ThrowsAsync<StorageException>(() =>
+            fixture.Alpha.CreateContextAsync((options, binding) =>
+            {
+                var context = ModuleFixture.AlphaFactory(options, binding);
+                connection = context.Database.GetDbConnection();
+                Thread.Sleep(TimeSpan.FromMilliseconds(3100));
+                return context;
+            }, token));
+        Assert.Equal(StorageCode.DeadlineExceeded, failure.Code);
+        Assert.NotNull(connection);
+        Assert.Equal(ConnectionState.Closed, connection.State);
+        await using var corrected = await fixture.Alpha.CreateContextAsync(ModuleFixture.AlphaFactory, token);
+        Assert.Equal(ConnectionState.Open, corrected.Database.GetDbConnection().State);
+    }
 
     [Fact]
     public async Task SameContextTypeUsesDistinctAssignedModelsAndDesignTimeCacheKeys()

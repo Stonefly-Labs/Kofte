@@ -9,11 +9,12 @@ namespace Kofte.Infrastructure.Storage.Migrations;
 internal static class AssignedContextFactory
 {
     internal static async Task<TContext> CreateAsync<TContext>(ModuleStorageBinding binding,
-        Func<DbContextOptions, ModuleStorageBinding, TContext> factory, CancellationToken token)
+        Func<DbContextOptions, ModuleStorageBinding, TContext> factory, OperationBudget budget,
+        bool allowMigration = false)
         where TContext : AssignedDbContext
     {
         ArgumentNullException.ThrowIfNull(factory);
-        var connection = await binding.OpenAsync(token);
+        var connection = await binding.OpenAsync(budget, allowMigration);
         TContext? context = null;
         try
         {
@@ -27,7 +28,7 @@ internal static class AssignedContextFactory
                     configure.MigrationsHistoryTable("__EFMigrationsHistory").CommandTimeout(1));
             options.ReplaceService<IModelCacheKeyFactory, AssignedModelCacheKeyFactory>()
                 .ReplaceService<IMigrationsAssembly, AssignedMigrationsAssembly>()
-                .AddInterceptors(new AssignedCommandInterceptor(binding));
+                .AddInterceptors(new AssignedCommandInterceptor(binding), new AssignedTransactionInterceptor(binding));
             context = factory(options.Options, binding);
             if (!ReferenceEquals(context.Storage, binding) ||
                 !ReferenceEquals(context.Database.GetDbConnection(), connection) ||
@@ -35,6 +36,7 @@ internal static class AssignedContextFactory
                 context.GetService<IModelCacheKeyFactory>() is not AssignedModelCacheKeyFactory)
                 throw new StorageException(StorageCode.OwnerMismatch);
             MigrationBoundaryValidator.ValidateModel(context.GetService<IDesignTimeModel>().Model, binding);
+            budget.Check();
             return context;
         }
         catch

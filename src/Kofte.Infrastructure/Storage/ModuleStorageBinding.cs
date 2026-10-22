@@ -24,18 +24,19 @@ public sealed class ModuleStorageBinding : IModuleStorage
         (Registry, Assignment) = (registry, assignment);
 
     public Task<StorageResult> ResolveAsync(CancellationToken cancellationToken = default) =>
-        BindingFailures.RunAsync(async () =>
+        StorageDiagnostics.RunAsync(StorageOperation.Resolve, Provider, Owner, OperationBudget.Resolve,
+            cancellationToken, async (budget, _, correlation) =>
         {
-            await VerifyAsync(cancellationToken);
-            var result = await Registry.ResolveAsync(Owner, cancellationToken);
-            if (result is StorageResult.Ready ready) Match(Assignment, ready.Assignment);
-            return result;
+            await VerifyAsync(budget);
+            return new StorageResult.Ready(StorageOperation.Resolve, Assignment, correlation,
+                StorageDurability.Unchanged, StorageDiagnostics.Diagnostic(StorageCode.Ready));
         });
 
     public Task<TContext> CreateContextAsync<TContext>(
         Func<DbContextOptions, ModuleStorageBinding, TContext> factory,
         CancellationToken cancellationToken = default) where TContext : AssignedDbContext =>
-        BindingFailures.RunAsync(() => AssignedContextFactory.CreateAsync(this, factory, cancellationToken));
+        BindingFailures.RunAsync(Provider, Owner, async budget =>
+            (await AssignedContextFactory.CreateAsync(this, factory, budget), Assignment), cancellationToken);
 
     public Task<StorageResult> MigrateAsync<TContext>(
         Func<DbContextOptions, ModuleStorageBinding, TContext> factory,
@@ -46,19 +47,27 @@ public sealed class ModuleStorageBinding : IModuleStorage
     internal async Task VerifyAsync(CancellationToken token, bool verifyPhysical = true,
         bool allowMigration = false)
     {
-        if (disposed) throw new StorageException(StorageCode.RequestInvalid);
         using var budget = new OperationBudget(OperationBudget.Resolve, token);
+        await VerifyAsync(budget, verifyPhysical, allowMigration);
+    }
+
+    internal async Task VerifyAsync(OperationBudget budget, bool verifyPhysical = true,
+        bool allowMigration = false)
+    {
+        if (disposed) throw new StorageException(StorageCode.RequestInvalid);
+        budget.Check();
         if (allowMigration)
             await (MigrationScope ?? throw new StorageException(StorageCode.RequestInvalid))
                 .VerifyAsync(Registry.Installation, budget);
         var (metadata, record) = await Registry.ReadBindingAsync(Owner, budget, allowMigration, verifyPhysical);
         Match(Assignment, record.Assignment(metadata));
+        budget.Check();
         if (disposed) throw new StorageException(StorageCode.RequestInvalid);
     }
 
-    internal async Task VerifyCommandAsync(DbCommand pending, CancellationToken token, bool allowMigration)
+    internal async Task VerifyCommandAsync(DbCommand pending, OperationBudget budget, bool allowMigration)
     {
-        await VerifyAsync(token, verifyPhysical: false, allowMigration);
+        await VerifyAsync(budget, verifyPhysical: false, allowMigration);
         if (Provider == "sqlite")
         {
             var paths = new ModuleStorePaths(Registry.Installation, Assignment.AllocationKey);
@@ -68,16 +77,17 @@ public sealed class ModuleStorageBinding : IModuleStorage
 
         await using var command = pending.Connection!.CreateCommand();
         command.Transaction = pending.Transaction;
-        command.CommandTimeout = Provider == "sqlite" ? 1 : 3;
+        command.CommandTimeout = budget.CommandSeconds(Provider == "sqlite");
         var table = Provider == "postgresql" ? $"\"{Assignment.AllocationKey}\".__kofte_storage_owner"
             : "__kofte_storage_owner";
         command.CommandText = $"SELECT marker_version,installation_id,module_id,allocation_id,provider,allocation_key FROM {table}";
-        await using var reader = await command.ExecuteReaderAsync(token);
-        if (!await reader.ReadAsync(token) || reader.GetInt32(0) != 1 ||
+        await using var reader = await command.ExecuteReaderAsync(budget.Token);
+        if (!await reader.ReadAsync(budget.Token) || reader.GetInt32(0) != 1 ||
             reader.GetGuid(1) != Assignment.InstallationId || reader.GetString(2) != Owner.Value ||
             reader.GetGuid(3) != Assignment.AllocationId || reader.GetString(4) != Provider ||
-            reader.GetString(5) != Assignment.AllocationKey || await reader.ReadAsync(token))
+            reader.GetString(5) != Assignment.AllocationKey || await reader.ReadAsync(budget.Token))
             throw new StorageException(StorageCode.OwnerMismatch);
+        pending.CommandTimeout = budget.CommandSeconds(Provider == "sqlite");
     }
 
     internal bool TryBeginMigration() => Interlocked.CompareExchange(ref migrationActive, 1, 0) == 0;
@@ -102,13 +112,18 @@ public sealed class ModuleStorageBinding : IModuleStorage
         Assignment = assignment;
     }
 
-    internal async Task<DbConnection> OpenAsync(CancellationToken token)
+    internal async Task<DbConnection> OpenAsync(OperationBudget budget, bool allowMigration = false)
     {
-        await VerifyAsync(token);
-        using var budget = new OperationBudget(OperationBudget.Resolve, token);
+        await VerifyAsync(budget, allowMigration: allowMigration);
         if (Registry.Installation.Postgres is { } postgres)
         {
-            var connection = new NpgsqlConnection(postgres.ConnectionString);
+            var configuration = new NpgsqlConnectionStringBuilder(postgres.ConnectionString)
+            {
+                Timeout = budget.CommandSeconds(),
+                CommandTimeout = budget.CommandSeconds(),
+                CancellationTimeout = -1
+            };
+            var connection = new NpgsqlConnection(configuration.ConnectionString);
             try { await connection.OpenAsync(budget.Token); return connection; }
             catch { await connection.DisposeAsync(); throw; }
         }

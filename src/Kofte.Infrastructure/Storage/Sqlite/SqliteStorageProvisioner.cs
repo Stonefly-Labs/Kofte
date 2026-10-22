@@ -24,8 +24,10 @@ internal sealed class SqliteStorageProvisioner(StorageInstallation installation)
         using var transaction = connection.BeginTransaction(deferred: false);
         await StorageOwnerMarker.CreateAsync(installation, connection, transaction, metadata, record, budget);
         budget.Check();
+        StorageDiagnostics.Checkpoint("physical_before_commit", installation.Provider, record.Owner);
         transaction.Commit();
         mutation.Committed();
+        StorageDiagnostics.Checkpoint("physical_committed", installation.Provider, record.Owner);
         await VerifyAsync(metadata, record, budget);
     }
 
@@ -40,7 +42,7 @@ internal sealed class SqliteStorageProvisioner(StorageInstallation installation)
                 !header.AsSpan().SequenceEqual("SQLite format 3\0"u8))
                 throw new StorageException(StorageCode.ReconciliationRequired);
         }
-        using var connection = StorageInstallation.OpenSqlite(paths.DatabasePath, budget);
+        using var connection = StorageInstallation.OpenSqlite(paths.DatabasePath, budget, readOnly: true);
         if (await RegistryMigrationRunner.ScalarAsync(connection, "PRAGMA integrity_check", budget) is not "ok" ||
             await RegistryMigrationRunner.ScalarAsync(connection, "PRAGMA journal_mode", budget) is not "delete" ||
             await RegistryMigrationRunner.ScalarAsync(connection, "PRAGMA synchronous", budget) is not 2L ||

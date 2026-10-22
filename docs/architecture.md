@@ -145,9 +145,13 @@ human-approved for implementation. The
 adds reviewed EF/provider dependencies, a platform-local registry, immutable
 assignments, marker-verified module schemas/files and real both-provider
 registration/constraint/process-race evidence. Normal serving remains
-module-free. Implement is blocked on the remaining assigned migration,
-interruption/recovery, privacy and complete local/CI obligations; these are not
-inferred from this increment. The following paragraphs
+module-free. The resumed implementation adds assigned model/history preflight,
+actual killed-process recovery, explicit owner-bound abandoned-lock recovery,
+admitted maintenance supervision and captured privacy checks. Migration physical
+verification rejects unexpected tables/columns/defaults, missing primary keys,
+secondary constraints/indexes, generated columns and views/routines/triggers.
+The complete local/CI obligations remain a verification gate, not an inferred
+acceptance. The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.
 

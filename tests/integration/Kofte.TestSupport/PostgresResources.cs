@@ -196,6 +196,14 @@ public sealed partial class PostgresResources : IAsyncDisposable
     public async Task SetProvisionerOwnershipAsync(bool valid, CancellationToken token) =>
         _ = await AdminAsync($"COMMENT ON ROLE \"{provisioner}\" IS '{(valid ? ownership : "not-owned")}'", token);
 
+    public async Task SetProvisioningPrivilegeAsync(bool allowed, CancellationToken token)
+    {
+        await ValidateOwnershipAsync(token);
+        _ = await AdminAsync(allowed
+            ? $"GRANT CREATE ON DATABASE \"{database}\" TO \"{provisioner}\""
+            : $"REVOKE CREATE ON DATABASE \"{database}\" FROM \"{provisioner}\"", token);
+    }
+
     public async Task SetSchemaCreationAsync(bool allowed, CancellationToken token) =>
         _ = await AdminAsync(allowed
             ? $"GRANT CREATE ON SCHEMA kofte_system TO \"{role}\""
