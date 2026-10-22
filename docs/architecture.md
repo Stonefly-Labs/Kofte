@@ -189,8 +189,13 @@ owners and immutable no-storage declarations, with exact assignment/data/revisio
 inventory preservation. Controlled mutations demonstrate failure detection.
 All 81 tasks are evidenced; quality/unit/integration gates pass 46 targeted steps
 after an unchanged PostgreSQL rerun of two initial deadline failures. No runtime,
-API, dependency or architecture change is introduced. **Follow-up converge is
-next** on the same draft PR; historical reports and separate acceptance remain.
+API, dependency or architecture change is introduced.
+The [current convergence](../specs/003-storage-registry/convergence.md) now passes
+after checking all 40 requirements/outcomes/scenarios, fourteen plan decisions,
+81 tasks and twelve principles against actual source/assertions. R1/T081 and
+prior public F1/F2 are closed, with zero actionable gaps and no appended task.
+Tasks, product/test source, approved design and historical review remain
+unchanged. **Review is next** on the same draft PR; acceptance remains separate.
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.

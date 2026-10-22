@@ -82,8 +82,13 @@ controlled mutation failures and unchanged assignments/data/revisions/inventory.
 All 81 tasks are evidenced. Quality/unit/integration gates pass 46 targeted steps
 after an unchanged PostgreSQL rerun of two initial deadline failures. Exact
 focused commands and the initial failure are retained in the report. Production,
-APIs, dependencies and supported commands are unchanged. **Follow-up converge
-is next** on the same draft PR, not feature acceptance.
+APIs, dependencies and supported commands are unchanged.
+The [current convergence](../../specs/003-storage-registry/convergence.md) now
+passes across all 40 requirements/outcomes/scenarios, fourteen plan decisions,
+81 tasks and twelve principles. R1/T081 and prior public F1/F2 are closed, with
+zero actionable gaps and no appended task. Tasks, product/test code, approved
+intent and the historical review remain unchanged. **Review is next** on the
+same draft PR, not feature acceptance or a supported-command change.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).

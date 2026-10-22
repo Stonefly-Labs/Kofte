@@ -6,7 +6,20 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 003 / implement completes **T081** on the original
+**Current checkpoint:** 003 / converge **passes after T081** on the original
+`feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
+The [current assessment](../../specs/003-storage-registry/convergence.md)
+checks all 40 requirements/outcomes/scenarios, fourteen plan decisions, all
+81 tasks and twelve principles against actual source/assertions. The
+changed-allocator persisted-owner retry and no-storage-to-relational regressions
+close final-review R1; prior public F1/T079 and F2/T080 remain closed.
+There are zero actionable gaps and no appended task. The task file remains
+byte-for-byte unchanged; product/test code, approved intent, historical review,
+implementation evidence and reviewer-owned checklists are preserved.
+**Review is next**, in a separate invocation on the same draft PR.
+This stage does not perform review, accept 003, request merge or begin 004.
+
+**T081 implementation checkpoint (historical):** 003 / implement completes **T081** on the original
 `feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 The [implementation evidence](../../specs/003-storage-registry/implementation.md#final-review-remediation-t081)
 records two inherited facts/four real-provider cases for changed-allocator

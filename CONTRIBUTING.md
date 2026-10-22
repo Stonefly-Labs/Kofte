@@ -78,8 +78,13 @@ detecting controlled mutations while preserving assignments/data/revisions/
 inventory across reopening. All 81 tasks are evidenced. Fresh quality/unit/
 integration gates pass 46 targeted steps after an unchanged PostgreSQL rerun
 of two initial deadline failures. No production/API/dependency/design changes.
-**Follow-up converge is next** on the same draft PR; historical reports and
-reviewer-owned checklists are preserved. No acceptance or merge is inferred.
+The [current convergence](specs/003-storage-registry/convergence.md) now passes:
+all 40 requirements/outcomes/scenarios, fourteen plan decisions, 81 tasks and
+twelve principles were assessed against actual source/assertions. R1/T081 and
+prior public F1/F2 are closed, with zero actionable gaps and no appended task.
+Tasks, product/test code, approved intent, historical review and reviewer-owned
+checklists are unchanged. **Review is next** on the same draft PR.
+No acceptance or merge is inferred.
 The following paragraphs preserve the historical design-stage checkpoint.
 
 Spec **003 / specify and clarify** establish the

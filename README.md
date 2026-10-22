@@ -68,7 +68,7 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**Spec 003 / T081 implementation is complete; follow-up converge is next** on its
+**Spec 003 / follow-up converge passes after T081; review is next** on its
 original feature branch. The initial implementation checkpoint followed completed
 specify through analyze and explicit human approval of
 [ADR 0005](docs/adr/0005-module-storage-ownership.md).
@@ -137,9 +137,14 @@ detect controlled behavioral mutations. Exact assignments, sentinels, revisions
 and complete inventory remain unchanged after reopening. All 81 tasks are
 evidenced; fresh quality/unit/integration gates pass 46 targeted steps after
 an unchanged PostgreSQL rerun of two initial deadline failures. Production,
-APIs and dependencies are unchanged. **Follow-up converge is next** on the
-same draft PR; historical review/convergence reports are preserved, and
-feature acceptance remains separate.
+APIs and dependencies are unchanged.
+The [current convergence](specs/003-storage-registry/convergence.md) now assesses
+all 40 requirements/outcomes/scenarios, fourteen plan decisions, all 81 tasks
+and twelve principles against actual source/assertions. R1/T081 and prior public
+F1/F2 are closed, with zero actionable gaps and no appended task. Tasks,
+product/test code, approved intent and the historical review remain unchanged.
+**Review is next** on the same draft PR; explicit human feature acceptance
+remains separate.
 
 **Spec 002 is explicitly human-accepted and merged.**
 The [acceptance record](specs/002-platform-contracts/acceptance.md) preserves

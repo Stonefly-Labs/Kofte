@@ -3,6 +3,204 @@
 **Result:** pass
 
 **Date:** 2026-10-22 (UTC).
+**Stage:** Follow-up converge after T081; assessment only.
+**Assessed source:** `6f6af46f12383471dc241fd322a65f66b0ea297e`.
+**Branch / PR:** `feature/003-storage-registry` /
+[draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
+**Next stage:** Review, separately on this same branch/draft PR.
+
+## Current method and findings
+
+Executed the installed `speckit-converge` skill with
+`SPECIFY_FEATURE_DIRECTORY=specs/003-storage-registry`. Its single prerequisite
+invocation used `--json --require-spec --require-tasks --include-tasks` and
+resolved the recorded directory. The preceding implement ledger entry covers
+all 81 tasks. No before/after hooks are configured: `.specify/extensions.yml`
+is absent.
+
+The specification, plan and every task are the intent inventory, governed by
+constitution v2.0.1. Referenced contracts explain those obligations; historical
+reports, checked boxes and green CI do not substitute for actual implementation
+and assertion inspection. Assessment covers contracts, registry SQL/versioning,
+allocation/provisioning, owner binding/EF, maintenance supervision, recovery,
+diagnostics, host/legacy compatibility, owned fixtures/public consumers and
+verification wiring. No later-feature requirement or branch-diff-derived intent
+is introduced.
+
+| Findings | Missing | Partial | Contradicts | Unrequested |
+| --- | --- | --- | --- | --- |
+| Actionable | 0 | 0 | 0 | 0 |
+
+**Severity counts:** CRITICAL 0, HIGH 0, MEDIUM 0, LOW 0.
+Checked **40 requirements/outcomes/scenarios** (16 FRs, six buildable SCs,
+18 acceptance scenarios), **14 plan decisions**, **81 tasks** and **12
+constitutional principles**. No actionable gap, constitutional violation or
+unresolved within-scope design decision remains. The implementation satisfies
+the assessed spec, plan and tasks; this is not final review or human acceptance.
+
+## Final-review R1 / T081: closed
+
+Both new facts live in the dedicated
+`tests/integration/Kofte.Storage.IntegrationTests/Registry/RegistrationTests.cs`
+and are inherited by its SQLite and PostgreSQL classes. This is real-provider
+coverage, not two provider labels on a substitute.
+
+| Obligation | Actual assertions and supporting mechanism | Decision |
+| --- | --- | --- |
+| FR-004; T015/T016/T081; US1.2; SC-003 | `ChangedAllocatorIsNeverInvokedForPersistedOwnerAndPreservesInventoryAcrossReopen` persists Alpha/Beta and distinguishable sentinels, releases maintenance and reopens the same installation. A counted changed allocator returns a different valid candidate. Changed-metadata registration requires Ready/Unchanged and **zero allocator calls**. Registration/resolution snapshots compare all eight assignment fields; Beta and both original sentinels remain intact. Installation revision and the complete stopped inventory compare exactly. | Closed |
+| FR-002; T016/T081; US1.3/4 | `PersistedNoStorageCannotBecomeRelationalAndPreservesInventoryAcrossReopen` persists a no-storage owner and an unrelated relational owner/sentinel, releases maintenance and reopens. The relational repeat must be Rejected/Unchanged with `storage_conflict` / `correct_configuration`, zero allocator calls and continued NoStorage resolution. Inventory inspection verifies false/no_storage/null key/token/allocator fields, unchanged row/installation revisions and no extra module objects; unrelated assignment/data remain intact. | Closed |
+| Evidence quality; principles IV/XI | `StorageAssignmentSnapshot.From` copies contract/owner/provider/installation/allocation/key/allocator/revision. `RecoverySetVerifier.InspectStoppedAsync` requires the held installation scope, reads every sorted registry row, verifies physical ownership/history and exact schema/file inventory, and includes each row revision. Deterministic structural serialization compares the inventories, not collection references. Existing `RegistrySentinel` writes/reads actual original stores. | Sufficient preservation assertions |
+
+Production `StorageRegistry.RegisterAsync` reads the persisted record before
+considering allocation and rejects storage-need mismatches symmetrically.
+`RegistryRecords` and both SQL scripts retain immutable need/key/provider/token
+and revision rules. T081 proves these existing behaviors; no runtime change or
+public allocator override is needed. The implementation report's historical
+four-case mutation red/green evidence is retained, not rerun or relabeled here.
+A fresh execution below independently passes all four provider cases.
+
+Prior F1/T079 and F2/T080 remain closed. Actual public `RegistrationScenarios`
+writes Alpha/Beta through assigned contexts, releases maintenance and runs three
+fresh admitted/reaped processes; each compares exact assignments and reads
+original sentinels after changed metadata. `CollisionScenario` forces a distinct
+registered contender through fixture-only `StorageCollisionFixture`, requires
+the real UNIQUE rejection, unchanged assignment/sentinel/full inventory and no
+contender allocation, and retains separate unowned-target refusal.
+`StorageExampleEvidence`, standalone/`all` harnesses and their negative
+observation tests prevent positive assertion counts from hiding either omission.
+
+## Complete current coverage
+
+Infrastructure paths below are relative to `src/Kofte.Infrastructure/Storage/`;
+integration tests are in `tests/integration/Kofte.Storage.IntegrationTests/`.
+Public modules/scenarios and their harness are in `tests/contract/`.
+
+| Intent | Inspected implementation and assertion evidence |
+| --- | --- |
+| FR-001 | Pure versioned `StorageContracts`; trusted registry/maintenance versus issued owner-only binding; public construction/authority negatives and maintenance configuration tests. |
+| FR-002/004 | Stored-record-first registration, explicit no-storage and immutable SQL/record validation; both T081 regressions now complement exact restart, conflicting-need and public retry assertions. |
+| FR-003 | Real ID/key/token constraints and exclusive lease; direct invalid-write tests, twenty-by-ten same/distinct-ID independent connection/process races and public forced-collision preservation. |
+| FR-005 | ASCII byte-bounded allocator/actual-key checks, dedicated platform and runtime-owned module schemas, PUBLIC revocation, owner markers and assigned local migration history; actual role/object/model tests. |
+| FR-006 | Canonical private roots/ancestors, one-link regular files and sidecars, exclusive create and existing-file opens; actual-open traversal/alias/link/hard-link/nonregular/corruption negatives preserve the other store. |
+| FR-007/008 | Reservation/physical/ready commits, marker/version/provider/integrity validation and ready-only resolution; actual durable-boundary kills, verified original-allocation retry, ambiguous preserved blocks and missing-ready refusal. |
+| FR-009 | Assigned connection/model/cache/history/assembly/snapshot binding, complete pending-set preflight and physical verification; independent Alpha/Beta contexts plus foreign/stale/disposed/replaced-connection/unsupported-operation negatives. |
+| FR-010 | Explicit transactional v0/v1 migration runner with digest/history/version checks; real format/upgrade-kill tests and migration history/physical-effect/abandoned-lock recovery/refusal assertions. |
+| FR-011 | Monotonic 3/2/30/120-second limits, finite calls/probes, cancelled lost session and admitted worker cleanup; actual elapsed deadlines, live-host contention, cancellation and observer-failure tests. |
+| FR-012 | Separate registry/physical commits and module-local contexts/transactions; Alpha-only upgrade and recovery compare actual history/effects, without shared-owner connections or global rollback promises. |
+| FR-013 | Explicit provider/root/credential sources, distinct offline PostgreSQL provisioner and unchanged runtime no-CREATE posture; owned fixture identity, denied/missing/mismatched authority, outage and corrected-retry tests. |
+| FR-014 | Seven disjoint outcomes, fixed diagnostics/correlation, bounded records/spans/events/metric labels; captures assert all seven results and no seeded credential/path/payload disclosure across public and worker channels. |
+| FR-015 | Complete inventory/revision/marker/history/hash verifier, actual SQLite backup/PostgreSQL custom dump and fresh restore; mixed/stale/missing/extra/unsafe/legacy source/destination/reset refusals preserve originals. |
+| FR-016 | Nine executable both-provider public examples, semantic observations and retained module-free host/health/OpenAPI/HTTP/web/browser gates. No loader, new public endpoint or authorization bypass. |
+| SC-001; US3.1/2 | Independent module contexts, identical logical tables/history and real Alpha-only additive upgrade retain Beta data/model/history and reject concurrent maintenance. |
+| SC-002; US2.1-4 | Full twenty-round ten-caller/process matrix, direct database constraints and deterministic registered/reserved/unowned collision cases inspect actual ownership/inventory. |
+| SC-003; US1.1-4 | Distinct storage/no-storage, exact three-process restart/data proof, missing-ready refusal and the two now-executed T081 immutable-registration cases. |
+| SC-004; US4.1-3 | Provisioning/migration/upgrade commit kills, actual native SQLite deadline supervision, outage/contention/cancellation/session-loss cleanup and ownership-verified recovery or explicit preserved block. |
+| SC-005; US3.3/4, US5.1 | Forbidden owner/path/model/migration negatives preserve outside targets; all-seven-outcome captured privacy checks require no seeded disclosure. |
+| SC-006; US4.4, US5.2 | Public install/retry/upgrade/recovery corpus, actual full-set fresh-target restores, distinct corrected retry preserving unrelated data and fail-closed foundation verification. |
+
+| Plan decisions | Current implementation/evidence |
+| --- | --- |
+| D01 pure contracts/one adapter; D02 reviewed dependencies/test ownership | Provider-free platform contracts, justified infrastructure and native DI; reviewed exact pins/locks/notices and normally included dedicated tests. No EF Design/tool/mediator adoption. |
+| D03 immutable allocator; D04 real versioned registry | Allocator, immutable SQL, record/version/digest checks, direct constraints, stored retries and new allocator-evolution regression. |
+| D05 reused lease; D06 separate offline authority; D07 private SQLite boundary | Shared installation lease/scope, non-pooled verified PostgreSQL session and restricted roles; canonical paths/exclusive creation/actual-open negatives. |
+| D08 durable phases; D09 assigned EF; D10 migration checkpoint/recovery | Actual commit barriers/markers, assigned factory/cache/assembly/preflight and physical verifier, explicit history/effect/abandoned-lock recovery with refusal tests. |
+| D11 finite supervision; D12 explicit upgrade/unchanged serving | Monotonic budget/admitted worker supervisor and actual deadlines; strict host dispatch/configuration, no automatic migration, v0/v1 and legacy guards. |
+| D13 coherent recovery; D14 safe diagnostics/examples/existing gates | Actual provider backups/fresh restores, complete-set verification, captured telemetry, semantic public corpus and mandatory suite inventories/selectors. |
+
+| Every task assessed | Current evidence/disposition |
+| --- | --- |
+| T001-T006 | Explicit ADR approval, reviewed dependency graph, actual projects/solution, fail-closed selectors and shared owned provider/process fixtures. |
+| T007-T014 | Public contracts/results, budget/scope/path/lease mechanisms, real registry scripts/version runner, initialization/constraint and maintenance configuration tests. |
+| T015-T027 | Allocator boundaries and durable registration/restart/no-storage/binding/compatibility/public examples; T081 now supplies both missing T015/T016 assertions and qualifies the former T026 completeness claim. |
+| T028-T035 | Full connection/process race matrices, direct/forced constraints, bounded conflicts, actual stored mappings and public guidance; T080 retains the required public registered-owner proof. |
+| T036-T047 | Assigned model/cache/history/pending preflight, physical/actual-open verification, independent integration/public modules and Alpha-only upgrade. Narrow supported DDL is documented, not silently broadened. |
+| T048-T063 | Real killed processes/deadlines/lost leases, explicit upgrade/legacy refusal, verified migration recovery and actual complete provider backup/restore plus executable public guide cases. Shared support satisfies behavior without unused duplicate files. |
+| T064-T070 | Seven bounded results/captured channels, real corrected retry, complete nine-example corpus and honest operational/trust/retry documentation. |
+| T071-T078 | Required verifier/CI inventories/selectors and negative Python tests, reviewed locks/notices, directly related docs, historical full local gate and actual assessed-head CI. No new local all-suite claim. |
+| T079-T080 | Required public restart/data and forced registered-owner collision observations, strengthened standalone/`all` gates and retained negative harness tests. |
+| T081 | Both inherited facts inspected and all four real-provider cases freshly pass; exact preservation assertions close R1 without product/API/dependency changes. |
+
+All twelve principles were checked: I portable module-free Köfte/brand; II
+minimal versioned trusted contracts; III native DI, dedicated test ownership
+and reviewed licensing; IV immutable unique schema/file/history ownership; V
+honest local transactions/reconciliation; VI least privilege, boundary checks
+and private diagnostics; VII no new MCP surface or future authorization bypass;
+VIII durable storage intent, not a job/event/realtime runtime; IX no new visual
+journey and retained frontend regression gates; X portable configuration,
+upgrade/budgets/recovery; XI actual provider/consumer/failure evidence; XII
+approved 003 scope, append-only convergence and one-stage human-owned delivery.
+Later module/auth/MCP/job/deployment/reference-module requirements remain later
+work, not missing 003 implementation or waived MVP gates.
+
+## Current verification and limits
+
+Commands selected existing .NET SDK 10.0.402 and Node 24.22.0/npm 11.19.1,
+with inherited PostgreSQL runtime/provisioning connections unset:
+
+```bash
+export DOTNET_ROOT="$PWD/artifacts/toolchain/dotnet-10.0.402"
+export PATH="$DOTNET_ROOT:$(dirname "$(fnm exec --using=24.22.0 node -p 'process.execPath')"):$PATH"
+unset KOFTE_POSTGRES_CONNECTION KOFTE_POSTGRES_PROVISIONING_CONNECTION
+```
+
+| Exact command | Observed result |
+| --- | --- |
+| `dotnet build tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj --no-restore -c Release --nologo -v quiet` | Passed; zero warnings/errors. |
+| `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --filter-method '*ChangedAllocatorIsNeverInvokedForPersistedOwnerAndPreservesInventoryAcrossReopen' --filter-method '*PersistedNoStorageCannotBecomeRelationalAndPreservesInventoryAcrossReopen' --minimum-expected-tests 4` | Passed all four cases, zero skipped; 15.326 seconds. |
+| `python3 scripts/verify.py --suite unit` | Passed all 11 named steps; 6.070 seconds. |
+| `python3 scripts/verify.py --suite contract --provider both --disposable-postgres` | Passed all 37 named steps, including both-provider standalone and complete public storage examples, semantic harness regressions and retained manifest/HTTP/OpenAPI checks; 207.475 seconds. |
+| `python3 scripts/check_repository.py` | Passed. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed all 111 tests. |
+| `git diff --check` | Passed. |
+
+The two fresh safe reports identify assessed head
+`6f6af46f12383471dc241fd322a65f66b0ea297e`, Darwin 25.5.0 arm64,
+18 logical CPUs, 64 GiB RAM and Python 3.15.0. They pass **48 targeted named
+steps**, separately from the four focused provider cases, and retain
+`completeGate: false`. No new local full integration, recovery, privacy,
+browser, quality or `--suite all` run is claimed. Wider evidence below is
+actual assessed-head CI, not substituted local execution.
+
+Actual assessed-head [product CI run 39843780526](https://github.com/Stonefly-Labs/Kofte/actions/runs/39843780526)
+and [repository CI run 39843780395](https://github.com/Stonefly-Labs/Kofte/actions/runs/39843780395)
+are successful for `6f6af46f12383471dc241fd322a65f66b0ea297e`; all eleven
+contexts are SUCCESS. All ten actual safe product reports were downloaded and
+inspected: **200/200 steps pass** (quality 19, unit 11, integration SQLite
+7/PostgreSQL 9, recovery 38, contract 37, browser 16, privacy 36, startup 9,
+failure-propagation 18). Their exact synthetic merge is
+`54627cad96dc5ee62b2478abd36a8a825b50ea57`; GitHub commit provenance verifies
+parents main `66f0e4a950bc3590cdb3a25f1622afbd13a0c226` and assessed head
+`6f6af46f12383471dc241fd322a65f66b0ea297e`. Each report honestly remains
+`scope: targeted`, `completeGate: false`; their sum is not a new local all-suite.
+
+The initial PostgreSQL timing failures and unchanged passing reruns in the
+T081 implementation report remain historical and do not establish a root cause
+or eliminate timing sensitivity. No budget/assertion/gate is weakened here.
+Other limits remain: trusted code is not sandboxed; assigned DDL is deliberately
+narrow; ambiguous evidence stays blocked; recovery is stopped, complete-set
+and fresh-target; choosing an older point entails operator-owned data loss.
+No production readiness, human usability study or MVP completion is claimed.
+
+## Current disposition
+
+No task is appended and no empty convergence phase is created. `tasks.md`
+remains byte-for-byte unchanged at SHA-256
+`9d737096a2e927be6737eedbe8526460a7b8292a8cc377743b30a09aa115cec4`.
+Spec, plan, contracts, implementation report, historical review, checklists,
+product/test code, dependencies and approved design remain unchanged.
+Only this report, directly related progress docs and the helper ledger advance.
+**Review is next**, not executed here; 003 acceptance remains explicitly human
+and separate. Keep the original PR draft, without an intermediate merge request.
+
+## Previous follow-up convergence (historical, before final-review R1/T081)
+
+The following assessment is preserved verbatim as historical evidence. Its
+80-task completeness claims were subsequently qualified by final-review R1;
+the current assessment above checks all 81 tasks and closes that evidence gap.
+
+**Result:** pass
+
+**Date:** 2026-10-22 (UTC).
 **Stage:** Follow-up converge only; no product/test implementation, final review
 or feature acceptance.
 **Assessed source:** `151d75ff4223b760500e6392ae9cd8b555cc49bd`.

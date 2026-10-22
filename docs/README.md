@@ -186,8 +186,13 @@ now passes all four inherited real-provider cases and detects controlled
 behavioral mutations, preserving exact assignments/data/revisions/inventory.
 All 81 tasks are evidenced; quality/unit/integration gates pass 46 targeted steps
 after an unchanged PostgreSQL rerun of two initial deadline failures. Production,
-APIs and dependencies are unchanged. **Follow-up converge is next** on the same
-draft PR; historical reports/checklists are preserved and acceptance is separate.
+APIs and dependencies are unchanged.
+The [current convergence](../specs/003-storage-registry/convergence.md) now passes
+across all 40 requirements/outcomes/scenarios, fourteen plan decisions, all
+81 tasks and twelve principles. Actual assertions close R1/T081; prior public
+F1/F2 remain closed, with zero actionable gaps and no appended task.
+Tasks, product/test code, approved intent, historical review and checklists are
+unchanged. **Review is next** on the same draft PR; human acceptance is separate.
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 
