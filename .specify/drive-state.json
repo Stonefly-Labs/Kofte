@@ -14,7 +14,7 @@
     },
     "003": {
       "directory": "specs/003-storage-registry",
-      "next_step": "converge"
+      "next_step": "implement"
     }
   },
   "active": null,
@@ -515,6 +515,22 @@
         "specs/003-storage-registry/implementation.md": "bc020d12eee5fd9dbe19801d30fa9f77e14f75ef1684d34af3d66a97687c402d",
         "specs/003-storage-registry/checklists/quality.md": "fbb14e996cbcd6c19959ee5e76369a3377943f4ca485b92fe7ed54467a23a6c5",
         "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "converge",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-22T16:17:58+00:00",
+      "completed_at": "2026-10-22T16:32:22+00:00",
+      "outcome": "gaps",
+      "note": "Assessed 40 requirements/outcomes/scenarios, 14 plan decisions, all 78 original tasks and 12 principles at 85e566b. F1/F2 are HIGH partial public-example gaps; append-only T079/T080 preserve original tasks and all product/test/design inputs. Fresh unit, both-provider integration and contract checks pass 64 targeted steps; existing assessed-head CI reports pass 200 steps. Next invocation implement; no acceptance or product changes.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/tasks.md": "1bddb5d54928868a1ff9cb2061a3410c1f15608a834cb86501ea35b6394a26e5",
+        "specs/003-storage-registry/convergence.md": "0b94cf78ddafe3d085d977b3ece2563c6932d8998df2df1712709e4725c69dfa"
       }
     }
   ]

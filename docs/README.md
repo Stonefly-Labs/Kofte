@@ -147,9 +147,18 @@ The resumed implementation adds actual before/after-commit process death,
 explicit verified abandoned-lock recovery, bounded worker cleanup, all-nine-case
 public examples and captured seven-outcome privacy proof. The named verifier now
 includes storage integration/recovery/privacy and public consumers alongside
-the existing bootstrap gates. All 78 tasks, the complete local 200-step gate and
-eleven assessed-head CI contexts pass. **Converge is next**, not performed here;
-this is not feature acceptance. Keep this same branch and draft PR through later stages.
+the existing bootstrap gates. The implementation checkpoint marked all 78
+original tasks complete; its complete local 200-step gate and eleven assessed-head
+CI contexts pass.
+The subsequent [convergence](../specs/003-storage-registry/convergence.md)
+checks all 40 requirements/outcomes/scenarios, fourteen plan decisions, 78
+original tasks and twelve principles. It finds two HIGH partial public-example
+gaps: three process restarts with retained data in `same-id-retry`, and the
+forced distinct-registered-ID conflict in `collision`. Core integration proof
+exists; no storage-engine defect is demonstrated. Only T079-T080 are appended;
+all original tasks and product/test code are preserved. **Implement is next**
+on this same draft PR, then a separate follow-up convergence. This is not
+feature acceptance.
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 

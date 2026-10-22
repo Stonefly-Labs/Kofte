@@ -150,10 +150,16 @@ actual killed-process recovery, explicit owner-bound abandoned-lock recovery,
 admitted maintenance supervision and captured privacy checks. Migration physical
 verification rejects unexpected tables/columns/defaults, missing primary keys,
 secondary constraints/indexes, generated columns and views/routines/triggers.
-The implementation stage is complete: all 78 tasks, the complete local 200-step
-gate and eleven assessed-head CI contexts pass. Converge, final review and
-explicit human acceptance remain separate later stages, not inferred from
-these results. The following paragraphs
+The implementation checkpoint marked all 78 original tasks complete; its complete
+local 200-step gate and eleven assessed-head CI contexts pass.
+The subsequent [convergence](../specs/003-storage-registry/convergence.md)
+finds two HIGH partial public-example gaps, not a demonstrated storage-engine
+defect or changed architecture decision. T079-T080 require the promised public
+three-restart/data retry and distinct-registered-ID collision examples; separate
+integration tests already cover the core behavior. No product/test code or
+approved design changes during convergence. Implement is next on the same draft
+PR, then follow-up convergence, final review and explicit human acceptance.
+The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.
 

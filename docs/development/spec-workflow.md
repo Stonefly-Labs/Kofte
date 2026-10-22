@@ -6,14 +6,28 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 003 / implement is complete on the original
+**Current checkpoint:** 003 / converge completed with **gaps** on the original
 `feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
+The [assessment](../../specs/003-storage-registry/convergence.md) covers all
+40 requirements/outcomes/scenarios, fourteen plan decisions, all 78 original
+tasks and twelve principles. Two HIGH partial public-example gaps remain:
+`same-id-retry` does not execute the prescribed three process restarts with
+retained data, and `collision` tests an unowned target instead of the required
+forced distinct-registered-ID conflict. Separate integration tests cover both
+core behaviors; no storage-engine defect is demonstrated.
+Exactly T079-T080 are appended in Phase 8, preserving every original task byte
+and all product/test/design/checklist evidence. **Implement is next** on this
+same branch/draft PR; remediate those tasks before a separate follow-up converge.
+No final review, human acceptance or intermediate merge is performed here.
+
+**Implementation checkpoint (historical):** 003 / implement completed on this
+same branch/draft PR.
 The human explicitly selected **"Approve ADR 0005 for implementation"**.
 The [implementation report](../../specs/003-storage-registry/implementation.md)
 records actual dependency/provider, assigned-EF, crash, deadline, public recovery
 and privacy evidence, all 78 completed tasks, the complete local 200-step gate
-and eleven passing assessed-head CI contexts. **Converge is next**, on a separate
-invocation using this same branch and draft PR. This checkpoint does not perform
+and eleven passing assessed-head CI contexts. That checkpoint selected converge,
+whose subsequent gaps assessment is above. Implementation did not perform
 convergence, final review or explicit human acceptance. Do not request an
 intermediate merge or self-accept 003.
 

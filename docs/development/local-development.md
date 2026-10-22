@@ -43,9 +43,18 @@ explicit migration recovery, bounded cleanup and captured privacy evidence.
 The [validation guide](../../specs/003-storage-registry/quickstart.md)
 includes all nine executable public examples and actual stopped provider
 backup/restore, with safe legacy refusals. Named suites now include the storage
-projects. All 78 tasks, the complete local 200-step gate and eleven assessed-head
-CI contexts pass; no feature acceptance is inferred. **Converge is next**, as a
-separate invocation on the original feature branch and draft PR.
+projects. The implementation checkpoint marked all 78 original tasks complete;
+its complete local 200-step gate and eleven assessed-head CI contexts pass.
+No feature acceptance is inferred.
+The subsequent [convergence](../../specs/003-storage-registry/convergence.md)
+appends T079-T080 for two HIGH partial public-example gaps: the standalone/`all`
+`same-id-retry` case lacks its promised three process restarts and retained-data
+checks, and `collision` does not yet demonstrate a distinct-registered-ID
+candidate conflict. Existing integration tests cover the core behavior; current
+positive public-case counts do not prove these omitted observations.
+No product/test code or supported command changes in convergence.
+**Implement is next** on the same feature branch/draft PR, then a separate
+follow-up convergence.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).

@@ -44,9 +44,15 @@ approval of [ADR 0005](docs/adr/0005-module-storage-ownership.md).
 The [implementation report](specs/003-storage-registry/implementation.md)
 records actual provider, assigned-EF, crash, deadline, complete-set recovery
 and captured privacy evidence. All nine public examples execute in admitted,
-supervised maintenance children. All 78 tasks, the complete local 200-step gate
-and eleven assessed-head CI contexts pass. **Converge is next**, as a separate
-invocation on the original branch and draft PR.
+supervised maintenance children. The implementation checkpoint marked all 78
+original tasks complete; its complete local 200-step gate and eleven assessed-head
+CI contexts pass. The subsequent
+[convergence](specs/003-storage-registry/convergence.md) identifies two HIGH
+partial public-example gaps and appends T079-T080: real three-restart/data
+proof in `same-id-retry`, and a forced distinct-registered-ID conflict in
+`collision`. Separate integration tests cover the core behavior; no product
+code is changed. **Implement is next** on the original branch/draft PR, followed
+by another convergence invocation.
 This is not feature acceptance or permission to merge.
 The following paragraphs preserve the historical design-stage checkpoint.
 

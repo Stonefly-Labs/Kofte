@@ -68,10 +68,12 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**Spec 003 / implement is complete on its original feature branch**, after completed specify through analyze
-and explicit human approval of [ADR 0005](docs/adr/0005-module-storage-ownership.md).
+**Spec 003 / converge completed with gaps; implement is next** on its original
+feature branch. The preceding implementation checkpoint followed completed
+specify through analyze and explicit human approval of
+[ADR 0005](docs/adr/0005-module-storage-ownership.md).
 The [specification](specs/003-storage-registry/spec.md), [plan](specs/003-storage-registry/plan.md)
-and [78-task list](specs/003-storage-registry/tasks.md) remain the approved scope;
+and [task list](specs/003-storage-registry/tasks.md) retain the approved scope;
 the author and reviewer-owned quality checklists remain 16/16 and 36/36.
 Reviewed EF/provider dependencies, provider-neutral storage contracts and a
 platform-local registry now support immutable allocation, explicit no-storage,
@@ -88,7 +90,9 @@ and worker provider initialization completes before the ten-way race barrier.
 Budgets and Busy-only retry rules are unchanged. The corrected complete local
 gate passes all 200 steps. Assessed-head Linux CI also passes all ten product
 jobs / 200 steps and repository checks after the browser-prerequisite mirror
-correction documented in the local guide. All 78 implementation tasks are evidenced.
+correction documented in the local guide. The implementation checkpoint marked
+all 78 original tasks complete; convergence identifies two remaining public-example
+obligations below rather than inferring acceptance from those markers.
 Baseline provider selection and warm-restart fixtures now honor the new
 registry/module ownership boundary without weakening its checks.
 See the [implementation report](specs/003-storage-registry/implementation.md)
@@ -97,9 +101,15 @@ for exact revisions, commands, results and supported limits, and the
 and executable examples. Normal serving remains module-free; storage is not
 a new endpoint, module loader or authorization bypass. Work stays on
 `feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
-This invocation completes implement only; **converge is next**, not performed here.
-Convergence, independent review and explicit numbered-feature acceptance remain
-separate later stages; no intermediate merge is requested.
+The subsequent [convergence assessment](specs/003-storage-registry/convergence.md)
+finds **two HIGH partial public-example gaps**: `same-id-retry` does not execute
+its promised three process restarts with retained data, and `collision` covers
+an unowned occupied target rather than the prescribed distinct-registered-ID
+conflict. Integration tests cover the core restart/collision behavior; no
+storage-engine defect is demonstrated. Convergence appends **T079-T080** only,
+preserving all 78 original tasks and product/test code. **Implement is next**
+on this same branch/draft PR, then a separate follow-up convergence, final
+review and explicit numbered-feature acceptance. No intermediate merge is requested.
 
 **Spec 002 is explicitly human-accepted and merged.**
 The [acceptance record](specs/002-platform-contracts/acceptance.md) preserves
