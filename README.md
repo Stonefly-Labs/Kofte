@@ -68,7 +68,17 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**Spec 002 / follow-up converge passes; review is next.**
+**Spec 002 / final review passes; explicit human acceptance is next.**
+The [final review](specs/002-platform-contracts/review.md) independently traces
+all 15 functional requirements, six amended outcomes, 14 scenarios, twelve plan
+decisions, 49 tasks and twelve principles to actual source/tests. No acceptance
+defect or remediation remains. Fresh quality/unit/both-provider contract checks
+pass all 62 targeted steps; actual assessed-head CI passes all eleven contexts
+and 177 product steps. This is not a new local all-suite or human-usability
+claim. Review does not accept the feature; keep the same draft PR for the
+separate explicit human decision.
+
+The preceding convergence/remediation checkpoint follows.
 The [implementation increment](specs/002-platform-contracts/implementation.md#convergence-remediation-t049)
 adds the documented public boundary recipes, reversed range and ordered
 multi-error/truncation cases identified by the
@@ -80,7 +90,7 @@ production code or contract rule changed. The
 [follow-up convergence](specs/002-platform-contracts/convergence.md) now assesses
 all 35 requirements/outcomes/scenarios, twelve plan decisions, 49 tasks and
 twelve principles with zero actionable gaps. It leaves `tasks.md` byte-for-byte
-unchanged. Review and explicit human acceptance remain separate later gates.
+unchanged. The passing final review above is separate from human acceptance.
 
 The original completed implementation checkpoint follows.
 The [approved design](docs/adr/0004-module-manifest-contract.md) now has a pure
@@ -96,7 +106,7 @@ and 100 individually timed checks. The human also removed T045's manual timed
 exercise; actual automated guide/error/corrected-retry checks now satisfy it.
 No human study or elapsed-time attestation is claimed. All 49
 implementation tasks, including T049's corpus remediation, have recorded
-evidence. Follow-up convergence now passes; review and explicit feature acceptance remain.
+evidence. Follow-up convergence and final review now pass; explicit feature acceptance remains.
 The [task list, now including T049](specs/002-platform-contracts/tasks.md), passing
 [analysis](specs/002-platform-contracts/analysis.md), 16/16 author checklist and
 36/36 reviewer-authorized quality checklist preserve traceability, not acceptance.

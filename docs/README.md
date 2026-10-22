@@ -116,5 +116,13 @@ actual evidence. F1 is closed: the complete independent public corpus, including
 ordered multi-errors and truncation, runs 100 times per consumer per real
 culture. No actionable gap remains; no task or product code is changed.
 Fresh named unit and both-provider contract suites pass all 44 targeted steps.
-The original gaps assessment is preserved as history. **Review is next** on the
-same draft PR #5; explicit human feature acceptance remains later, not inferred.
+The original gaps assessment is preserved as history.
+
+**002 / final review now passes.** The independent
+[review](../specs/002-platform-contracts/review.md) maps all 35 requirements/
+outcomes/scenarios, twelve plan decisions, all 49 tasks and twelve principles
+to actual source/tests. No defect, remediation or unresolved design decision
+remains. Fresh quality/unit/both-provider contracts pass 62 targeted steps;
+actual assessed-head CI passes all eleven contexts and 177 product steps.
+No new local all-suite or human-usability claim is made. **Explicit human
+acceptance is next** on the same draft PR #5; review is not that decision.

@@ -125,9 +125,15 @@ was exposed, and no production code, schema or architecture decision changed.
 Follow-up [convergence](../specs/002-platform-contracts/convergence.md) now
 passes with zero actionable gaps after assessing all 35 requirements/outcomes/
 scenarios, twelve plan decisions, all 49 tasks and twelve principles. No task,
-product code or architecture decision changes in that stage. Review is next;
-explicit acceptance remains a separate human gate. No human-usability/time
-claim is made. The host only gains a library project reference; its startup,
+product code or architecture decision changes in that stage. The independent
+[final review](../specs/002-platform-contracts/review.md) now also passes with
+source/test evidence for all 35 requirements/outcomes/scenarios, twelve plan
+decisions, 49 tasks and twelve principles, and no acceptance defect.
+Fresh quality/unit/both-provider contracts pass 62 targeted steps; assessed-head
+CI passes all eleven contexts and 177 product steps. No architecture or product
+change is made by review. Explicit acceptance is next and remains a separate
+human gate; no new local all-suite or human-usability claim is made.
+The host only gains a library project reference; its startup,
 routes, stores and web console remain module-free.
 The broader stack/module/deployment proposals below remain future work, not
 installed features or proof of module isolation, production readiness or acceptance.

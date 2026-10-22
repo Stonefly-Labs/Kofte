@@ -6,8 +6,22 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 002 / follow-up converge passes on the original
-branch/draft PR #5. The
+**Current checkpoint:** 002 / final review passes on the original
+branch/draft PR #5. The independent
+[review](../../specs/002-platform-contracts/review.md) traces all 15 functional
+requirements, six amended outcomes, 14 acceptance scenarios, twelve plan
+decisions, all 49 tasks and twelve principles to actual source/tests. No
+acceptance defect, remediation or unresolved within-scope design decision
+remains. Fresh quality/unit/both-provider contract checks pass all 62 targeted
+steps; all eleven assessed-head CI contexts and all 177 product-report steps
+pass. The synthetic merge parents were verified against main and the assessed
+feature head. Review leaves product/tests/tasks/design/checklists unchanged
+and does not claim a new local all-suite run or human-usability study.
+**Accept is next**, requiring an explicit human feature decision; it is not
+performed by review. Keep the same feature branch/draft PR; do not mark ready,
+request merge or start 003.
+
+The preceding convergence/remediation checkpoint follows. The
 [remediation evidence](../../specs/002-platform-contracts/implementation.md#convergence-remediation-t049)
 records the documented public boundaries, reversed range, recursively reordered
 collected errors and exact 32/33-diagnostic truncation. Every corpus case runs
@@ -18,9 +32,10 @@ code, contract-rule or dependency change. The
 all 35 requirements/outcomes/scenarios, twelve plan decisions, all 49 tasks and
 twelve principles with zero actionable gaps. The task file is byte-for-byte
 unchanged, and fresh named unit/both-provider contract suites pass all 44
-targeted steps. **Review is next**; it and explicit human acceptance are not
-performed by convergence. The first convergence report is preserved below the
-current passing assessment as historical gap evidence. The original
+targeted steps. Review was selected next by convergence; neither review nor
+explicit human acceptance was performed by convergence. The first convergence
+report is preserved below the current passing assessment as historical gap
+evidence. The original
 implementation checkpoint remains in
 [implementation.md](../../specs/002-platform-contracts/implementation.md).
 The human-directed ADR 0004 amendment removed T044's fixed Ubuntu/CPU/RAM
@@ -30,9 +45,9 @@ exercise; actual automated guide/example/error/corrected-retry checks supply
 amended SC-001. All 48 original task markers were completed at that checkpoint,
 without claiming a human study; T049 now supplies F1's missing public proof.
 The first implementation selected converge; that assessment selected implement,
-and the remediation selected this fresh passing converge invocation, which now
-selects review. Do not infer feature acceptance or request an
-intermediate merge. Earlier stage descriptions below are historical.
+and the remediation selected the fresh passing converge invocation. It selected
+review, whose completed result is above. Do not infer feature acceptance or
+request an intermediate merge. Earlier stage descriptions below are historical.
 
 In Copilot, reload project skills with `/skills reload`, then ask:
 

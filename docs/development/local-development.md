@@ -25,8 +25,13 @@ Follow-up [convergence](../../specs/002-platform-contracts/convergence.md) now
 passes with zero actionable gaps and no task/product change. Fresh named unit
 and both-provider contract suites pass all 44 targeted steps, including the
 complete repeated corpus and actual SQLite/PostgreSQL HTTP/OpenAPI/adapter
-fixtures. Review is next; no final review, acceptance or bootstrap behavior
-change is asserted.
+fixtures. The [final review](../../specs/002-platform-contracts/review.md)
+now passes with no acceptance defect: actual source/tests cover all 35
+requirements/outcomes/scenarios, twelve plan decisions, 49 tasks and twelve
+principles. Fresh quality/unit/both-provider contract checks pass 62 targeted
+steps; actual assessed-head CI passes all eleven contexts and 177 product
+steps. No new local all-suite run or bootstrap behavior change is asserted.
+Explicit human acceptance is next on the same draft PR, not inferred from review.
 Spec 002 timing now uses an available supported workstation/CI runner with
 actual metadata, not a fixed Ubuntu/CPU/RAM profile, per the human's ADR amendment.
 The subsequent author-guide amendment removes the manual timed exercise and
