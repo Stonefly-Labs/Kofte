@@ -124,5 +124,13 @@ outcomes/scenarios, twelve plan decisions, all 49 tasks and twelve principles
 to actual source/tests. No defect, remediation or unresolved design decision
 remains. Fresh quality/unit/both-provider contracts pass 62 targeted steps;
 actual assessed-head CI passes all eleven contexts and 177 product steps.
-No new local all-suite or human-usability claim is made. **Explicit human
-acceptance is next** on the same draft PR #5; review is not that decision.
+No new local all-suite or human-usability claim is made. Review is not itself
+human acceptance.
+
+**002 / explicit human acceptance is now recorded.** The
+[acceptance record](../specs/002-platform-contracts/acceptance.md) quotes
+**"spec is fully human approved"** in response to the passing review and
+numbered-feature handoff. Scope and limitations remain unchanged; no new
+product or measurement is claimed. The same PR #5 is ready for human merge.
+That merge, with accepted ledger/evidence on main, is required before a later
+invocation may begin 003. Acceptance does not start it.

@@ -131,8 +131,12 @@ source/test evidence for all 35 requirements/outcomes/scenarios, twelve plan
 decisions, 49 tasks and twelve principles, and no acceptance defect.
 Fresh quality/unit/both-provider contracts pass 62 targeted steps; assessed-head
 CI passes all eleven contexts and 177 product steps. No architecture or product
-change is made by review. Explicit acceptance is next and remains a separate
-human gate; no new local all-suite or human-usability claim is made.
+change is made by review.
+[Explicit human acceptance](../specs/002-platform-contracts/acceptance.md)
+now separately records feature 002's approval with its existing scope and
+limitations. The original PR awaits human merge before any later start of
+003; no architecture change, new local all-suite or human-usability claim
+is made by acceptance.
 The host only gains a library project reference; its startup,
 routes, stores and web console remain module-free.
 The broader stack/module/deployment proposals below remain future work, not

@@ -6,8 +6,19 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 002 / final review passes on the original
-branch/draft PR #5. The independent
+**Current checkpoint:** 002 / explicitly human-accepted on the original branch
+and PR #5. After the passing review and numbered-feature acceptance handoff, the
+human stated **"spec is fully human approved"**. The
+[acceptance record](../../specs/002-platform-contracts/acceptance.md) preserves
+the exact decision, reviewed scope and limits. The driver records it through
+`complete --approval`; no approval is inferred from tasks, ADRs or CI.
+Acceptance leaves product/tests/tasks/design/checklists/review evidence unchanged.
+The same feature PR is ready for **human merge**; no assistant merge, close,
+auto-merge or branch deletion is permitted. Spec 003 requires that merge and
+accepted evidence on updated main before a later invocation may start it.
+Acceptance does not create a 003 branch, directory or active stage.
+
+The completed review checkpoint follows. The independent
 [review](../../specs/002-platform-contracts/review.md) traces all 15 functional
 requirements, six amended outcomes, 14 acceptance scenarios, twelve plan
 decisions, all 49 tasks and twelve principles to actual source/tests. No
@@ -17,9 +28,9 @@ steps; all eleven assessed-head CI contexts and all 177 product-report steps
 pass. The synthetic merge parents were verified against main and the assessed
 feature head. Review leaves product/tests/tasks/design/checklists unchanged
 and does not claim a new local all-suite run or human-usability study.
-**Accept is next**, requiring an explicit human feature decision; it is not
-performed by review. Keep the same feature branch/draft PR; do not mark ready,
-request merge or start 003.
+Review selected accept, requiring an explicit human feature decision; that
+decision was not performed by review. The separate completed acceptance is
+recorded above. No intermediate merge occurred.
 
 The preceding convergence/remediation checkpoint follows. The
 [remediation evidence](../../specs/002-platform-contracts/implementation.md#convergence-remediation-t049)

@@ -31,7 +31,10 @@ requirements/outcomes/scenarios, twelve plan decisions, 49 tasks and twelve
 principles. Fresh quality/unit/both-provider contract checks pass 62 targeted
 steps; actual assessed-head CI passes all eleven contexts and 177 product
 steps. No new local all-suite run or bootstrap behavior change is asserted.
-Explicit human acceptance is next on the same draft PR, not inferred from review.
+[Explicit human acceptance](../../specs/002-platform-contracts/acceptance.md)
+is now recorded separately from review. The same PR #5 awaits human merge;
+acceptance adds no bootstrap behavior or new product measurement. A later
+invocation may begin 003 only after that merge.
 Spec 002 timing now uses an available supported workstation/CI runner with
 actual metadata, not a fixed Ubuntu/CPU/RAM profile, per the human's ADR amendment.
 The subsequent author-guide amendment removes the manual timed exercise and
