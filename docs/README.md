@@ -249,7 +249,7 @@ measurement or usability study is claimed. The same
 The accepted ledger and all five acceptance hashes were verified on updated
 main before 004 began; acceptance itself did not start the next feature.
 
-**004 / specify, clarify and plan are complete** on `feature/004-module-lifecycle`.
+**004 / specify, clarify, plan and checklist are complete** on `feature/004-module-lifecycle`.
 The [draft specification](../specs/004-module-lifecycle/spec.md) and
 [16/16 author checklist](../specs/004-module-lifecycle/checklists/requirements.md)
 define five stories, 20 scenarios, 20 requirements and six outcomes for trusted
@@ -272,11 +272,13 @@ implementation**, recording **"yeah approved"** without changing its design,
 historical planning artifacts or ledger. Both constitutional design checks
 pass, not runtime tests or dependency adoption. The
 [quality checklist](../specs/004-module-lifecycle/checklists/quality.md) is now
-generated: **36 unchecked criteria**, with no evaluation or passing claim.
-**Checklist is blocked for reviewer completion** on the same branch and
+reviewed at the reviewer's explicit request: **36/36 criteria satisfied**
+with per-item evidence and no blocking requirements gap or new human decision.
+Spec, plan and 16/16 author checklist are unchanged; actual DI dependency
+adoption and provider/process/privacy proof remain future gates.
+**Tasks is next**, separately on the same branch and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
-Assisted evaluation requires an explicit reviewer request; tasks are a later
-stage after this gate. No module runtime or acceptance is claimed.
+No module runtime or feature acceptance is claimed.
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 

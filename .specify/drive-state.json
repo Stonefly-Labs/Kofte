@@ -18,18 +18,10 @@
     },
     "004": {
       "directory": "specs/004-module-lifecycle",
-      "next_step": "checklist"
+      "next_step": "tasks"
     }
   },
-  "active": {
-    "spec": "004",
-    "step": "checklist",
-    "directory": "specs/004-module-lifecycle",
-    "status": "blocked",
-    "branch": "feature/004-module-lifecycle",
-    "reason": "Generated specs/004-module-lifecycle/checklists/quality.md via speckit-checklist using the explicit recorded feature context and resolved checklist template: 36 reviewer-owned requirements-quality criteria (CHK001-CHK036), all unchecked. Standard-depth composition/lifecycle, immutable storage/recovery, installation authority, private diagnostics and retained aggregate status coverage; MCP/UX limited to scope exclusions and existing interfaces. No before/after checklist hooks configured. No criteria evaluated or marked and no requirements pass/defect inferred; built-in author checklist remains 16/16 and all earlier artifacts/history/evidence are unchanged. Blocked until reviewer evaluates criteria with evidence or explicitly requests assisted evaluation; ADR approval and driver invocation do not authorize marking. Resume this original branch/draft PR #7 after resolving the reviewer gate. Do not complete checklist, generate tasks, implement, accept or request merge in this invocation.",
-    "started_at": "2026-10-23T04:01:29+00:00"
-  },
+  "active": null,
   "history": [
     {
       "spec": null,
@@ -801,6 +793,22 @@
         "specs/004-module-lifecycle/plan.md": "fb30c0d493e87dfef4d8d697428914202c6f125524d4772dd3b655b796407939",
         "specs/004-module-lifecycle/research.md": "063d125c357ab42b8095b286436849b87283dd1f98dd3978070f7068652a3c19",
         "specs/004-module-lifecycle/quickstart.md": "af39664af78efb10b53c5fd329e131e8e224b3c4ea6308cadf9848234b3c05d9"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "checklist",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-23T04:01:29+00:00",
+      "completed_at": "2026-10-23T11:51:07+00:00",
+      "outcome": "pass",
+      "note": "Completed the existing 004 checklist stage after resuming its original branch/draft PR #7 under explicit reviewer authorization: \"bro, you review the checklist and lmk what I need eyes on\". Evaluated all 36 original requirements-quality criteria against spec, plan/research, model, versioned author/operator contracts, future guide, accepted 002/003 boundaries, approved ADR 0006 and constitution v2.0.1. All 36 criteria satisfy the written intent with separate per-item evidence; markers 0/36 to 36/36, no regressions/unchecked items, new criterion, blocking gap, constitutional conflict or new human decision. Historical generation notes preserved. Spec, plan/research/model/contracts/guide, 16/16 author checklist, approved ADR and prior ledger history/hashes unchanged. Human-attention section preserves actual DI dependency-edge lock/license/provenance review, real both-provider/three-cycle/termination/privacy evidence and later explicit human feature acceptance as future gates, not checklist achievements. No hooks, product/test source, dependency/lock changes, runtime proof, tasks, implementation, feature acceptance or merge. Tasks is next in a separate invocation on this same draft PR; not run here.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
+        "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
       }
     }
   ]

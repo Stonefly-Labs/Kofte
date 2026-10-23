@@ -144,7 +144,7 @@ decision-only stage. The same
 The accepted ledger and all five acceptance hashes were verified on updated
 main before 004 began; acceptance itself did not start the next feature.
 
-**004 / specify, clarify and plan are complete**, not a module loader implementation.
+**004 / specify, clarify, plan and checklist are complete**, not a module loader implementation.
 The [draft requirements](../../specs/004-module-lifecycle/spec.md) and
 [16/16 author checklist](../../specs/004-module-lifecycle/checklists/requirements.md)
 cover empty/public-test-module boot, preflight, dependency-ordered migrations,
@@ -163,10 +163,12 @@ unchanged. [ADR 0006](../adr/0006-module-composition-lifecycle.md) is now
 **human-approved for implementation** by **"yeah approved"**; dependency adoption
 and runtime evidence remain future gates. The
 [quality checklist](../../specs/004-module-lifecycle/checklists/quality.md)
-is now generated with **36 unchecked criteria** and no evaluation or marking.
-**Checklist is blocked for reviewer completion**; assisted evaluation requires
-an explicit reviewer request. No new command or product behavior is introduced.
-Tasks follow only after this gate in a later invocation, on `feature/004-module-lifecycle` and
+now satisfies **36/36 criteria** after explicit reviewer authorization for
+assisted evaluation, with per-item evidence and no blocking requirements gap
+or new human decision. Spec, plan and 16/16 author checklist remain unchanged;
+DI dependency adoption and actual runtime proof remain future gates.
+No new command or product behavior is introduced.
+**Tasks is next**, separately on `feature/004-module-lifecycle` and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
 
 For the implemented storage examples, follow the

@@ -68,7 +68,7 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**004 / specify, clarify and plan are complete** on `feature/004-module-lifecycle`, freshly based
+**004 / specify, clarify, plan and checklist are complete** on `feature/004-module-lifecycle`, freshly based
 on updated main after spec 003's human merge. The
 [draft specification](specs/004-module-lifecycle/spec.md) uses the exact inventory
 prompt and resolved project template. Five stories, 20 acceptance scenarios,
@@ -88,14 +88,15 @@ for implementation**, recording the explicit decision **"yeah approved"**.
 The earlier planning artifacts retain their historical Proposed status; this
 approval changes no design or Spec Kit stage. Both constitutional design gates
 pass; no runtime, dependency adoption or executed 004 behavior is claimed.
-**Checklist is generated and blocked for reviewer completion**:
+**Checklist review passes** under the reviewer's explicit request:
 the [requirements-quality checklist](specs/004-module-lifecycle/checklists/quality.md)
-contains 36 unchecked criteria for composition/lifecycle, storage/recovery,
-authority, privacy and retained interface boundaries. No items were evaluated
-or marked; assisted evaluation requires an explicit reviewer request.
-The active checklist stage remains on this same branch and
+now satisfies **36/36 criteria**, with per-item evidence for composition/lifecycle,
+storage/recovery, authority, privacy and retained interface boundaries.
+No blocking requirements gap or new human decision remains. Actual DI dependency
+adoption and provider/process/privacy proof remain future gates, not satisfied
+by checklist marking. The spec, plan and 16/16 author checklist are unchanged.
+**Tasks is next**, separately on this same branch and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
-Tasks follow only after this gate completes in a later invocation.
 No feature acceptance or intermediate merge is implied.
 
 **Spec 003 is explicitly human-accepted and human-merged.**

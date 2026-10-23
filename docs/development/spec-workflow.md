@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** **004 / specify, clarify and plan are complete** on
+**Current checkpoint:** **004 / specify, clarify, plan and checklist are complete** on
 `feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
 The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the
 exact fenced inventory input and resolved project template. Five independently
@@ -82,7 +82,7 @@ Recording that decision executed no stage: checklist remained next with no
 active stage. That historical approval checkpoint is distinct from the
 subsequent checklist invocation below.
 
-**Current checklist checkpoint:** The
+**Checklist generation checkpoint (historical):** The
 [requirements-quality checklist](../../specs/004-module-lifecycle/checklists/quality.md)
 is now generated as a new file with **36 unchecked criteria (CHK001-CHK036)**.
 Standard-depth reviewer/PR coverage addresses composition/lifecycle operability,
@@ -93,10 +93,10 @@ status/accessibility; no new MCP tool, lifecycle page or user operation is added
 The driver supplies the focus/audience and standard depth; no additional scope
 question or reviewer decision was needed or invented for generation.
 
-**004 / checklist is active and blocked for reviewer completion**, not
-complete. All 36 generated markers remain unchecked; no item was evaluated,
-no passing quality result or requirements defect is asserted, and the
-16/16 built-in author checklist is unchanged. A reviewer must either evaluate
+At generation, **004 / checklist was active and blocked for reviewer completion**,
+not complete. All 36 generated markers were unchecked; no item was evaluated,
+no passing quality result or requirements defect was asserted, and the
+16/16 built-in author checklist was unchanged. A reviewer must either evaluate
 the criteria with evidence or explicitly request assisted evaluation before
 the assistant marks any satisfied items. ADR 0006's approval does not authorize
 that marking. Resume the recorded stage on `feature/004-module-lifecycle` and
@@ -110,6 +110,33 @@ configured. Prerequisite/template resolution explicitly targeted
 future guide, approved ADR and historical ledger entries/evidence are unchanged.
 No product/test source, dependency/lock change, task generation, implementation,
 feature acceptance, PR readiness or intermediate merge is introduced.
+
+**Current assisted checklist review checkpoint:** On 2026-10-23, the reviewer
+explicitly requested **"bro, you review the checklist and lmk what I need eyes on"**.
+That authorizes agent-assisted evaluation/marking of this existing checklist,
+not generation of another one, dependency adoption or numbered-feature acceptance.
+The original blocked stage was resumed on its recorded branch/directory.
+
+The [quality assessment](../../specs/004-module-lifecycle/checklists/quality.md)
+now satisfies **36/36 criteria**, from 0/36 checked to 36/36 with no regression
+or remaining unchecked item. Each original question/ID/reference is preserved
+and has a separate evidence row grounded in the spec, plan, research, data
+model, versioned contracts, guide, approved ADR and constitution. All five
+stories, 20 scenarios, 20 requirements and six outcomes have compatible
+design/acceptance coverage. No requirements amendment, blocking quality gap,
+constitutional conflict or new human decision was identified.
+
+**004 / checklist is complete; tasks is next**, in a separate invocation on
+the same branch and [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
+The human-attention section separates resolved ADR 0006 approval from remaining
+implementation DI lock/license/provenance review, actual provider/process/
+privacy evidence and later explicit human feature acceptance. None requires a
+new decision to finish checklist review, and none is falsely satisfied by it.
+The spec, plan/research/model/contracts/guide, approved ADR, 16/16 built-in
+author checklist and historical ledger entries/hashes remain unchanged.
+No new criterion, product/test source, dependency/lock change, task artifact,
+runtime proof, feature acceptance, PR readiness or merge request is added.
+No before/after checklist hook is configured.
 
 **003 acceptance checkpoint:** 003 is **explicitly human-accepted and
 human-merged** on its original `feature/003-storage-registry` and

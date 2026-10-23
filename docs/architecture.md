@@ -256,7 +256,7 @@ production-readiness claim or later-scope waiver. The same
 Its accepted ledger and all five acceptance hashes were verified on updated
 main before 004 began; acceptance itself started no new feature.
 
-**004 / specify, clarify and plan are complete** on `feature/004-module-lifecycle`.
+**004 / specify, clarify, plan and checklist are complete** on `feature/004-module-lifecycle`.
 The [draft requirements](../specs/004-module-lifecycle/spec.md) and
 [16/16 author checklist](../specs/004-module-lifecycle/checklists/requirements.md)
 define trusted module composition, dependency/configuration/contribution
@@ -277,12 +277,13 @@ pass. The human's explicit **"yeah approved"** resolves ADR 0006's design gate;
 dependency-edge adoption and actual process/provider/privacy proof remain
 future gates. Historical planning artifacts and ledger evidence are unchanged.
 The [quality checklist](../specs/004-module-lifecycle/checklists/quality.md)
-is now generated with **36 unchecked requirements-quality criteria** covering
+now satisfies **36/36 requirements-quality criteria** covering
 composition/lifecycle, storage/recovery, authority, privacy and retained
-interfaces. **Checklist is blocked for reviewer completion**; no criteria
-were evaluated or marked and no design changed. Assisted evaluation requires
-an explicit reviewer request. Tasks follow only after this gate in a later
-invocation on this same branch and
+interfaces, evaluated with per-item evidence under the reviewer's explicit
+request. No blocking requirements gap, new human decision or design change
+was found. Spec, plan and 16/16 author checklist remain unchanged; DI adoption
+and actual provider/process/privacy proof remain future gates.
+**Tasks is next**, separately on this same branch and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), not implementation
 or acceptance.
 The following paragraphs

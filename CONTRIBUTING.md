@@ -137,7 +137,7 @@ runtime or human usability result is inferred. The same
 accepted ledger and all five acceptance hashes were verified on updated main
 before starting 004. Acceptance does not authorize assistant merge.
 
-**004 / specify, clarify and plan are complete** on `feature/004-module-lifecycle`.
+**004 / specify, clarify, plan and checklist are complete** on `feature/004-module-lifecycle`.
 The [draft specification](specs/004-module-lifecycle/spec.md) uses the exact
 inventory prompt and resolved template: five independent stories, 20 scenarios,
 20 requirements and six outcomes cover composition, lifecycle, disable/re-enable
@@ -156,10 +156,12 @@ planning artifacts and ledger evidence remain unchanged; no next stage was run.
 No product code/package was
 adopted and no future command was executed. The
 [quality checklist](specs/004-module-lifecycle/checklists/quality.md) is now
-generated with **36 unchecked criteria**. **Checklist is blocked for reviewer
-completion**; no criterion was evaluated or marked. Assisted evaluation needs
-an explicit reviewer request, not ADR approval or a generic driver invocation.
-Tasks follow only after this gate completes in a later invocation, on this same branch and
+reviewed under the explicit request **"bro, you review the checklist and lmk
+what I need eyes on"**. **All 36 requirements-quality criteria are satisfied**
+with per-item evidence; no blocking gap or new human decision remains.
+The spec, plan and 16/16 author checklist are unchanged. Actual DI adoption,
+runtime evidence and explicit later feature acceptance remain separate gates.
+**Tasks is next**, in a separate invocation on this same branch and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), not implementation,
 acceptance or a merge.
 The following paragraphs preserve the historical design-stage checkpoint.
