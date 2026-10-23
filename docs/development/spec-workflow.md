@@ -63,14 +63,11 @@ provenance review before adoption. Microsoft Learn/Context7 MCP are unavailable;
 the bounded research used verified official Microsoft web references instead.
 No `.specify/extensions.yml` exists; neither pre/post planning hook is configured.
 
-The spec and 16/16 author checklist remain byte-for-byte unchanged. No product
-code, dependency installation/lock change, tasks, reviewer-owned quality
-checklist, runtime proof or feature acceptance is introduced.
-**Checklist is next**, generated unchecked and presented for reviewer-owned
-evaluation in a separate invocation on this same feature branch and
-[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7). A reviewer must
-explicitly request assisted evaluation before the assistant marks any items.
-No intermediate merge or permission to chain stages is implied.
+At the planning checkpoint, the spec and 16/16 author checklist remained
+byte-for-byte unchanged. No product code, dependency installation/lock change,
+tasks, reviewer-owned quality checklist, runtime proof or feature acceptance
+was introduced; checklist was selected next. The subsequent generation
+checkpoint below is the current stage status.
 
 **Subsequent ADR 0006 approval:** On 2026-10-22, after the explanation of
 compiled trusted deployments/rebuilds, whole-set validation, separate stopped
@@ -81,8 +78,38 @@ contract artifacts and ledger notes retain historical Proposed/pending-review
 statements and their evidence hashes unchanged. Approval neither adopts the
 DI dependency edge nor evaluates/marks the reviewer-owned quality checklist,
 provides runtime proof, accepts feature 004 or authorizes merge.
-Recording the decision executes no stage: **checklist remains next**, with
-no active stage, on the same branch and draft PR #7.
+Recording that decision executed no stage: checklist remained next with no
+active stage. That historical approval checkpoint is distinct from the
+subsequent checklist invocation below.
+
+**Current checklist checkpoint:** The
+[requirements-quality checklist](../../specs/004-module-lifecycle/checklists/quality.md)
+is now generated as a new file with **36 unchecked criteria (CHK001-CHK036)**.
+Standard-depth reviewer/PR coverage addresses composition/lifecycle operability,
+immutable storage/recovery, installation authority, diagnostic privacy and
+retained aggregate status. MCP and UX requirements are limited to explicit
+scope exclusions, future shared authorization and preserved bootstrap
+status/accessibility; no new MCP tool, lifecycle page or user operation is added.
+The driver supplies the focus/audience and standard depth; no additional scope
+question or reviewer decision was needed or invented for generation.
+
+**004 / checklist is active and blocked for reviewer completion**, not
+complete. All 36 generated markers remain unchecked; no item was evaluated,
+no passing quality result or requirements defect is asserted, and the
+16/16 built-in author checklist is unchanged. A reviewer must either evaluate
+the criteria with evidence or explicitly request assisted evaluation before
+the assistant marks any satisfied items. ADR 0006's approval does not authorize
+that marking. Resume the recorded stage on `feature/004-module-lifecycle` and
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) only after the
+reviewer gate is resolved; **tasks is the later stage after completion**, not
+run here.
+
+There is no `.specify/extensions.yml`, so no before/after checklist hook is
+configured. Prerequisite/template resolution explicitly targeted
+`specs/004-module-lifecycle`. The spec, plan, research, data model, contracts,
+future guide, approved ADR and historical ledger entries/evidence are unchanged.
+No product/test source, dependency/lock change, task generation, implementation,
+feature acceptance, PR readiness or intermediate merge is introduced.
 
 **003 acceptance checkpoint:** 003 is **explicitly human-accepted and
 human-merged** on its original `feature/003-storage-registry` and

@@ -161,9 +161,12 @@ explicit stopped preparation and supervised serving/health.
 those artifacts **do not exist yet**. Existing commands/toolchain remain
 unchanged. [ADR 0006](../adr/0006-module-composition-lifecycle.md) is now
 **human-approved for implementation** by **"yeah approved"**; dependency adoption
-and runtime evidence remain future gates. No next stage was executed.
-**Checklist is next**, generated unchecked
-for reviewer-owned evaluation, on `feature/004-module-lifecycle` and
+and runtime evidence remain future gates. The
+[quality checklist](../../specs/004-module-lifecycle/checklists/quality.md)
+is now generated with **36 unchecked criteria** and no evaluation or marking.
+**Checklist is blocked for reviewer completion**; assisted evaluation requires
+an explicit reviewer request. No new command or product behavior is introduced.
+Tasks follow only after this gate in a later invocation, on `feature/004-module-lifecycle` and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
 
 For the implemented storage examples, follow the

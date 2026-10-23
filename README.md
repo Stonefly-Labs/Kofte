@@ -88,8 +88,14 @@ for implementation**, recording the explicit decision **"yeah approved"**.
 The earlier planning artifacts retain their historical Proposed status; this
 approval changes no design or Spec Kit stage. Both constitutional design gates
 pass; no runtime, dependency adoption or executed 004 behavior is claimed.
-**Checklist is next**, generated unchecked for reviewer-owned evaluation,
-separately on this same branch and [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
+**Checklist is generated and blocked for reviewer completion**:
+the [requirements-quality checklist](specs/004-module-lifecycle/checklists/quality.md)
+contains 36 unchecked criteria for composition/lifecycle, storage/recovery,
+authority, privacy and retained interface boundaries. No items were evaluated
+or marked; assisted evaluation requires an explicit reviewer request.
+The active checklist stage remains on this same branch and
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
+Tasks follow only after this gate completes in a later invocation.
 No feature acceptance or intermediate merge is implied.
 
 **Spec 003 is explicitly human-accepted and human-merged.**

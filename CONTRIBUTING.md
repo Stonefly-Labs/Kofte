@@ -154,8 +154,12 @@ supervised lifecycle and safe health within retained storage/startup limits.
 for implementation** by the explicit decision **"yeah approved"**. Historical
 planning artifacts and ledger evidence remain unchanged; no next stage was run.
 No product code/package was
-adopted and no future command was executed. **Checklist is next**, generated
-unchecked for explicit reviewer evaluation, on this same branch and
+adopted and no future command was executed. The
+[quality checklist](specs/004-module-lifecycle/checklists/quality.md) is now
+generated with **36 unchecked criteria**. **Checklist is blocked for reviewer
+completion**; no criterion was evaluated or marked. Assisted evaluation needs
+an explicit reviewer request, not ADR approval or a generic driver invocation.
+Tasks follow only after this gate completes in a later invocation, on this same branch and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), not implementation,
 acceptance or a merge.
 The following paragraphs preserve the historical design-stage checkpoint.

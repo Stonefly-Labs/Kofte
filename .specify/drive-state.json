@@ -21,7 +21,15 @@
       "next_step": "checklist"
     }
   },
-  "active": null,
+  "active": {
+    "spec": "004",
+    "step": "checklist",
+    "directory": "specs/004-module-lifecycle",
+    "status": "blocked",
+    "branch": "feature/004-module-lifecycle",
+    "reason": "Generated specs/004-module-lifecycle/checklists/quality.md via speckit-checklist using the explicit recorded feature context and resolved checklist template: 36 reviewer-owned requirements-quality criteria (CHK001-CHK036), all unchecked. Standard-depth composition/lifecycle, immutable storage/recovery, installation authority, private diagnostics and retained aggregate status coverage; MCP/UX limited to scope exclusions and existing interfaces. No before/after checklist hooks configured. No criteria evaluated or marked and no requirements pass/defect inferred; built-in author checklist remains 16/16 and all earlier artifacts/history/evidence are unchanged. Blocked until reviewer evaluates criteria with evidence or explicitly requests assisted evaluation; ADR approval and driver invocation do not authorize marking. Resume this original branch/draft PR #7 after resolving the reviewer gate. Do not complete checklist, generate tasks, implement, accept or request merge in this invocation.",
+    "started_at": "2026-10-23T04:01:29+00:00"
+  },
   "history": [
     {
       "spec": null,

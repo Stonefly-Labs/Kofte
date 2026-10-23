@@ -276,8 +276,13 @@ the existing aggregate readiness contract. Both constitutional design gates
 pass. The human's explicit **"yeah approved"** resolves ADR 0006's design gate;
 dependency-edge adoption and actual process/provider/privacy proof remain
 future gates. Historical planning artifacts and ledger evidence are unchanged.
-**Checklist is next**, generated unchecked
-for reviewer-owned evaluation, on this same branch and
+The [quality checklist](../specs/004-module-lifecycle/checklists/quality.md)
+is now generated with **36 unchecked requirements-quality criteria** covering
+composition/lifecycle, storage/recovery, authority, privacy and retained
+interfaces. **Checklist is blocked for reviewer completion**; no criteria
+were evaluated or marked and no design changed. Assisted evaluation requires
+an explicit reviewer request. Tasks follow only after this gate in a later
+invocation on this same branch and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), not implementation
 or acceptance.
 The following paragraphs

@@ -270,10 +270,13 @@ preparation, supervised lifecycle and private current-attempt health.
 [ADR 0006](adr/0006-module-composition-lifecycle.md) is now **human-approved for
 implementation**, recording **"yeah approved"** without changing its design,
 historical planning artifacts or ledger. Both constitutional design checks
-pass, not runtime tests or dependency adoption. **Checklist is next** on the
-same branch and [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7),
-generated unchecked for reviewer-owned evaluation. No module runtime or
-acceptance is claimed.
+pass, not runtime tests or dependency adoption. The
+[quality checklist](../specs/004-module-lifecycle/checklists/quality.md) is now
+generated: **36 unchecked criteria**, with no evaluation or passing claim.
+**Checklist is blocked for reviewer completion** on the same branch and
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
+Assisted evaluation requires an explicit reviewer request; tasks are a later
+stage after this gate. No module runtime or acceptance is claimed.
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 
