@@ -240,6 +240,14 @@ and the complete prior review remains verbatim.
 **Explicit human acceptance of numbered feature 003 is next**, separately
 on the same draft PR. No feature acceptance, readiness, merge request or
 004 work is implied by review.
+The [explicit human acceptance](../specs/003-storage-registry/acceptance.md)
+now records **"this human accesspts 003"** for numbered feature 003, with the
+passing review's scope and limits retained. Product/test code, tasks,
+reviewed checklists and prior evidence remain unchanged; no new product
+measurement or usability study is claimed. The same
+[PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6) is ready for human merge
+after publication. **004 waits for that human merge** and accepted evidence
+on updated main; acceptance does not start it.
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 

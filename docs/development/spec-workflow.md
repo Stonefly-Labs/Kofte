@@ -6,7 +6,19 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 003 / final review **passes after T083** on the original
+**Current checkpoint:** 003 is **explicitly human-accepted**, with human merge
+pending on the original `feature/003-storage-registry` and
+[PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
+The [acceptance record](../../specs/003-storage-registry/acceptance.md)
+quotes **"this human accesspts 003"** in response to the passing review and
+numbered-feature handoff, retaining the review's scope and limitations.
+Tasks, reviewed checklists, product/test source, dependencies and prior evidence
+remain unchanged. No new runtime measurement or human usability result is
+inferred. This decision authorizes readiness and a human merge request after
+publication, not assistant merge. **004 waits for that human merge** and the
+accepted ledger/evidence on updated main. No next feature is begun here.
+
+**Final review checkpoint (historical):** 003 / final review **passes after T083** on the original
 `feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 The [review](../../specs/003-storage-registry/review.md) assesses all 40
 requirements/outcomes/scenarios, fourteen plan decisions, all 83 tasks and

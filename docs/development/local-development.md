@@ -134,6 +134,15 @@ and supported commands are untouched. Historical review remains verbatim.
 **Explicit human acceptance of numbered feature 003 is next**, separately
 on the same draft PR. Review does not accept 003, mark ready, request merge
 or begin 004.
+The [explicit human acceptance](../../specs/003-storage-registry/acceptance.md)
+now records **"this human accesspts 003"** for numbered feature 003 with its
+existing review scope and limits. Supported commands, product/test code,
+tasks, reviewed checklists and prior evidence are unchanged. No new local
+product suite, usability study or runtime measurement is claimed by this
+decision-only stage. The same
+[PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6) is ready for human merge
+after publication; **004 waits for that human merge** and accepted evidence
+on updated main. Acceptance does not start it.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).

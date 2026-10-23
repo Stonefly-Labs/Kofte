@@ -247,6 +247,14 @@ architecture and reviewer-owned checklists are unchanged; previous review
 evidence is preserved verbatim. **Explicit human acceptance of numbered
 feature 003 is next**, separately on the same draft PR. Review neither
 accepts the feature nor requests merge or starts 004.
+The [explicit human acceptance](../specs/003-storage-registry/acceptance.md)
+now records **"this human accesspts 003"** for feature 003 and its documented
+scope/limits. No architecture, product/test source, dependency, task, reviewed
+checklist or prior evidence changes. Acceptance adds no product measurement,
+production-readiness claim or later-scope waiver. The same
+[PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6) is ready for human merge
+after publication. **004 waits for that human merge** and accepted evidence
+on updated main; no new feature is started by acceptance.
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.

@@ -14,7 +14,7 @@
     },
     "003": {
       "directory": "specs/003-storage-registry",
-      "next_step": "accept"
+      "next_step": "accepted"
     }
   },
   "active": null,
@@ -722,6 +722,26 @@
         "specs/003-storage-registry/checklists/quality.md": "fbb14e996cbcd6c19959ee5e76369a3377943f4ca485b92fe7ed54467a23a6c5",
         "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
       }
+    },
+    {
+      "spec": "003",
+      "step": "accept",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-23T02:17:06+00:00",
+      "completed_at": "2026-10-23T02:18:47+00:00",
+      "outcome": "pass",
+      "note": "Explicit human acceptance of numbered feature 003 in direct response to the passing final review and numbered-feature handoff: exact affirmative decision recorded in acceptance.md and human_approval. Verified passing-review tasks/review/checklist hashes unchanged at aba9b94a084ef86ea3dc83c1b87fa6433af20d3c and all eleven actual publication PR contexts successful. Accepted scope retains all review limitations and later-spec exclusions; review maps 16 functional requirements, six success criteria, 18 scenarios, fourteen plan decisions, 83 completed tasks and twelve principles, with T079-T083 findings closed. Review's 157 fresh targeted steps and 200 assessed-head CI product steps remain existing evidence, not a new acceptance-stage product run. Only acceptance record, helper ledger and six progress docs change; product/test source, dependencies, approved intent, all tasks, reviewed checklists and prior implementation/convergence/review evidence are unchanged. This completes accept only, authorizes marking the same PR ready and requesting human merge, never assistant merge/close/auto-merge/branch deletion. Do not begin 004 until a later invocation verifies the human merge and accepted ledger/evidence on updated origin/main.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/tasks.md": "24ccee5d439a193496a3bba592433d2cc4bb33395654356ec17fd5c50350ae99",
+        "specs/003-storage-registry/review.md": "89a261c21435d5b91de0f467b2fafb39cbe6a016cf8356ee68888ae42099f1f2",
+        "specs/003-storage-registry/acceptance.md": "8eb003029ce81ba343b12bebd870461d6866ed21b318ad7feb196dc59aaf547a",
+        "specs/003-storage-registry/checklists/quality.md": "fbb14e996cbcd6c19959ee5e76369a3377943f4ca485b92fe7ed54467a23a6c5",
+        "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
+      },
+      "human_approval": "this human accesspts 003"
     }
   ]
 }
