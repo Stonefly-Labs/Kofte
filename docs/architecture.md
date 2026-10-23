@@ -230,7 +230,14 @@ bounded `unknown`. Manifest durability reflects actual exclusive creation,
 completed serialization/flush/close and possible partial writes. Existing
 authority, exception contracts, recovery rules and dependencies are unchanged.
 All 83 tasks are evidenced with real-provider capture regressions.
-**Follow-up converge is next** on the same draft PR, not acceptance.
+That implementation checkpoint selected follow-up converge.
+The [convergence after T083](../specs/003-storage-registry/convergence.md) now
+**passes** across all 40 requirements/outcomes/scenarios, fourteen plan decisions,
+83 tasks and twelve principles. Actual recovery records/captures close F3;
+prior T079-T082 remain closed, with zero actionable gaps and no appended task.
+Tasks, product/test source, approved architecture, historical review and reviewer
+checklists remain unchanged. **Review is next** on the same draft PR, followed
+separately by explicit human acceptance; no intermediate merge is requested.
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.

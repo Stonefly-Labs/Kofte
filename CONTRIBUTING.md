@@ -111,8 +111,14 @@ now supplies correlated recovery boundary/mutation records, explicit bounded
 committed manifest durability. Twelve inherited real-provider cases capture
 scope/format/path/hash/inventory/owner/physical refusals and cancellation.
 All 83 tasks are evidenced; historical convergence/review and reviewer checklists
-are preserved. **Follow-up converge is next** on the same draft PR, not feature
-acceptance or an intermediate merge.
+are preserved. That implementation checkpoint selected follow-up converge.
+The [convergence after T083](specs/003-storage-registry/convergence.md) now
+**passes** across all 40 requirements/outcomes/scenarios, fourteen plan decisions,
+83 tasks and twelve principles. F3/T083 and prior T079-T082 are closed with
+zero actionable gaps. Tasks remain byte-for-byte unchanged; product/test code,
+approved intent, historical review and reviewer checklists are untouched.
+**Review is next** on the same draft PR, before explicit human acceptance;
+no intermediate merge is requested.
 The following paragraphs preserve the historical design-stage checkpoint.
 
 Spec **003 / specify and clarify** establish the

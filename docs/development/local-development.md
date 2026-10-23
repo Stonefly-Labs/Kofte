@@ -116,7 +116,15 @@ The [T083 increment](../../specs/003-storage-registry/implementation.md#converge
 now records public recovery inspection/verification/manifest-write boundaries,
 with real-provider private captures and unchanged exception contracts.
 All 83 tasks are evidenced. Historical convergence/review and reviewer-owned
-checklists are preserved; **follow-up converge is next** on the same draft PR.
+checklists are preserved; that implementation checkpoint selected converge.
+The [convergence after T083](../../specs/003-storage-registry/convergence.md)
+now **passes** after checking all 40 requirements/outcomes/scenarios, fourteen
+plan decisions, 83 tasks and twelve principles against actual source/assertions.
+F3/T083 and prior T079-T082 are closed, with zero actionable gaps and no appended
+task. Tasks are byte-for-byte unchanged; product/test code, supported commands,
+approved intent, historical review and reviewer checklists remain untouched.
+**Review is next** on the same draft PR, before explicit human acceptance;
+this checkpoint neither accepts the feature nor requests an intermediate merge.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).

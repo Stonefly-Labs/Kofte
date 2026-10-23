@@ -68,17 +68,16 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**Spec 003 / implement completes T083** on its original
+**Spec 003 / converge passes after T083** on its original
 feature branch and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
-The [implementation evidence](specs/003-storage-registry/implementation.md#convergence-remediation-t083)
-records correlated recovery inspection/verification/manifest-write diagnostics,
-private pre-metadata failures and truthful manifest durability. Twelve inherited
-real-provider capture cases cover scope, format, path, digest, inventory,
-ownership, physical corruption and cancellation without changing API/exception
-contracts or original data. All 83 tasks are evidenced; historical
-[convergence](specs/003-storage-registry/convergence.md) and review remain unchanged.
-**Follow-up converge is next**, separately on this same draft PR, before review
-and explicit human acceptance. No intermediate merge or acceptance is implied.
+The [assessment](specs/003-storage-registry/convergence.md) checks all 40
+requirements/outcomes/scenarios, fourteen plan decisions, 83 tasks and twelve
+principles against actual source/assertions, with zero actionable gaps.
+T083 closes F3's recovery-boundary diagnostics; earlier T079-T082 fixes remain
+covered. The task file is byte-for-byte unchanged, and no product/test code,
+approved intent, historical review or reviewer checklist is edited.
+**Review is next**, separately on this same draft PR, followed by explicit
+human acceptance. No intermediate merge or feature acceptance is implied.
 
 The following paragraphs preserve the implementation and earlier stage history.
 The initial implementation checkpoint followed completed

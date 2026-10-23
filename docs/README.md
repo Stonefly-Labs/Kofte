@@ -223,8 +223,14 @@ the shared private emitter, preserving return/exception contracts and authority.
 Validated provider context, explicit bounded pre-metadata `unknown` and truthful
 manifest durability have twelve inherited real-provider capture regressions.
 All 83 tasks are evidenced; historical convergence/review and checklists remain
-unchanged. **Follow-up converge is next** on the same draft PR; no acceptance or
-intermediate merge is implied.
+unchanged. That implementation checkpoint selected follow-up converge.
+The [convergence after T083](../specs/003-storage-registry/convergence.md) now
+**passes**: actual source/assertions cover all 40 requirements/outcomes/scenarios,
+fourteen plan decisions, 83 tasks and twelve principles with zero actionable
+gaps. F3/T083 and earlier T079-T082 are closed. Tasks are byte-for-byte unchanged;
+product/test code, approved intent, historical review and reviewer checklists
+remain untouched. **Review is next** on the same draft PR, before explicit
+human acceptance, not an intermediate merge.
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 

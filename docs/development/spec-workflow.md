@@ -6,7 +6,19 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 003 / implement completes **T083** on the original
+**Current checkpoint:** 003 / converge **passes after T083** on the original
+`feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
+The [assessment](../../specs/003-storage-registry/convergence.md) checks all
+40 requirements/outcomes/scenarios, fourteen plan decisions, all 83 tasks and
+twelve principles against actual source/assertions, with zero actionable gaps.
+Recovery-boundary diagnostics and real-provider captures close F3/T083; earlier
+T079-T082 fixes remain covered. The task file is byte-for-byte unchanged;
+product/test code, approved intent, historical review, implementation evidence
+and reviewer-owned checklists remain untouched. **Review is next**, separately
+on this same draft PR, followed by explicit human acceptance. No intermediate
+merge, self-acceptance or 004 work is implied.
+
+**T083 implementation checkpoint (historical):** 003 / implement completes **T083** on the original
 `feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 The [implementation evidence](../../specs/003-storage-registry/implementation.md#convergence-remediation-t083)
 records private correlated recovery inspection/verification/manifest-write
