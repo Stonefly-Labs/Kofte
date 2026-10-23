@@ -18,7 +18,7 @@
     },
     "004": {
       "directory": "specs/004-module-lifecycle",
-      "next_step": "tasks"
+      "next_step": "analyze"
     }
   },
   "active": null,
@@ -809,6 +809,21 @@
       "evidence_sha256": {
         "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
         "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "tasks",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-23T12:06:49+00:00",
+      "completed_at": "2026-10-23T12:14:32+00:00",
+      "outcome": "pass",
+      "note": "Executed speckit-tasks on the recorded explicit directory and resolved project task-template override. Generated 80 sequential unchecked path-specific tasks: setup5, foundations9, US2 preflight12, US1 startup10, US3 preparation13, US4 preservation8, US5 health/failure15, cross-cutting8; 22 genuine parallel markers with explicit earlier-task dependencies and an acyclic graph. US2 precedes US1 within shared P1 because whole-set safety is a startup prerequisite. Semantic coverage includes all five stories,20 scenarios,20FRs,sixSCs,R1-R12 and twelve principles: verbatim entity constraints, strict bounded config/graph/claims, audited native DI/phase barriers, read-only complete inventory/recipe preflight, stopped assigned migrations and unprivileged serving, exact three fresh-process preservation cycles/provider, actual owned termination, safe failed-boundary/telemetry captures, eleven mandatory public guide cases and retained full baseline/local/CI gates. Existing ADR0006 approval and reviewer gates are preserved, not repeated; actual DI graph/lock/license adoption and runtime evidence remain implementation tasks. Original spec/plan/research/model/contracts/guide/ADR/checklists and prior ledger history/hashes unchanged; no before/after tasks hooks. README/related progress docs updated; no product/test source, dependency adoption, task execution, analysis report or acceptance. Analyze is next separately on original feature branch/draftPR7; no intermediate merge/readiness.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "17d64c09b71ef68ff7c77caaba7cabe2494ddf1f300f0b4853cca2745a5044c9"
       }
     }
   ]

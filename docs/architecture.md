@@ -256,7 +256,7 @@ production-readiness claim or later-scope waiver. The same
 Its accepted ledger and all five acceptance hashes were verified on updated
 main before 004 began; acceptance itself started no new feature.
 
-**004 / specify, clarify, plan and checklist are complete** on `feature/004-module-lifecycle`.
+**004 / specify, clarify, plan, checklist and tasks are complete** on `feature/004-module-lifecycle`.
 The [draft requirements](../specs/004-module-lifecycle/spec.md) and
 [16/16 author checklist](../specs/004-module-lifecycle/checklists/requirements.md)
 define trusted module composition, dependency/configuration/contribution
@@ -283,7 +283,14 @@ interfaces, evaluated with per-item evidence under the reviewer's explicit
 request. No blocking requirements gap, new human decision or design change
 was found. Spec, plan and 16/16 author checklist remain unchanged; DI adoption
 and actual provider/process/privacy proof remain future gates.
-**Tasks is next**, separately on this same branch and
+The [80 unchecked tasks](../specs/004-module-lifecycle/tasks.md) now order
+US2 whole-set preflight before US1 startup, then US3 stopped preparation,
+US4 exact preservation and US5 current health/safe failure evidence.
+They trace all 20 scenarios, 20 requirements, six outcomes and R1-R12
+decisions to concrete paths/prerequisites, real provider/process/public
+assertions and retained full gates. No architecture decision, approved
+design, reviewer marker, dependency or product source changes.
+**Analyze is next**, separately on this same branch and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), not implementation
 or acceptance.
 The following paragraphs

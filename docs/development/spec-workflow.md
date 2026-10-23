@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** **004 / specify, clarify, plan and checklist are complete** on
+**Current checkpoint:** **004 / specify, clarify, plan, checklist and tasks are complete** on
 `feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
 The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the
 exact fenced inventory input and resolved project template. Five independently
@@ -111,7 +111,7 @@ future guide, approved ADR and historical ledger entries/evidence are unchanged.
 No product/test source, dependency/lock change, task generation, implementation,
 feature acceptance, PR readiness or intermediate merge is introduced.
 
-**Current assisted checklist review checkpoint:** On 2026-10-23, the reviewer
+**Assisted checklist review checkpoint (historical):** On 2026-10-23, the reviewer
 explicitly requested **"bro, you review the checklist and lmk what I need eyes on"**.
 That authorizes agent-assisted evaluation/marking of this existing checklist,
 not generation of another one, dependency adoption or numbered-feature acceptance.
@@ -137,6 +137,39 @@ author checklist and historical ledger entries/hashes remain unchanged.
 No new criterion, product/test source, dependency/lock change, task artifact,
 runtime proof, feature acceptance, PR readiness or merge request is added.
 No before/after checklist hook is configured.
+
+**Current tasks checkpoint:** The
+[implementation list](../../specs/004-module-lifecycle/tasks.md) now contains
+**80 sequential unchecked tasks**: five setup, nine foundational, twelve US2,
+ten US1, thirteen US3, eight US4, fifteen US5 and eight cross-cutting.
+Each has exact implementation/test paths, explicit earlier-task prerequisites
+and requirement/scenario/principle traceability. US2 safely precedes US1 within
+their shared P1 priority; validation is a real startup prerequisite, not a
+temporary permissive implementation. US1 is the smallest usable no-storage
+startup increment after that preflight, not full feature/MVP completion.
+
+Coverage includes all five stories, 20 scenarios, 20 functional requirements,
+six outcomes, twelve R1-R12 plan decisions and twelve constitutional principles.
+The tasks preserve verbatim entity constraints, fixed bounds and phase/authority
+barriers. Independent public graph expectations, 100-by-ten-by-culture
+decisions, all eleven guide scenarios, actual provider migrations and three
+fresh-process preservation cycles, current health, owned exit evidence,
+private channel captures and retained baseline/full local/CI gates remain
+mandatory evidence. Twenty-two `[P]` markers identify different-file windows
+only after their explicit prerequisites; mutable fixtures/capture listeners
+must not be shared concurrently.
+
+Task setup explicitly targeted `specs/004-module-lifecycle` and resolved the
+project task-template override. There is no `.specify/extensions.yml`, so
+no before/after tasks hook is configured. Spec, plan/research/model/contracts/
+guide, approved ADR, both reviewed checklists and historical ledger evidence
+remain unchanged; no product/test source, dependency adoption, task execution,
+runtime measurement, analysis report or feature acceptance is introduced.
+**004 / tasks is complete; analyze is next**, in a separate invocation on
+`feature/004-module-lifecycle` and
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
+Passing analysis remains a prerequisite to implementation. No PR readiness
+or intermediate merge is requested.
 
 **003 acceptance checkpoint:** 003 is **explicitly human-accepted and
 human-merged** on its original `feature/003-storage-registry` and

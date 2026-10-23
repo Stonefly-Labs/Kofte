@@ -249,7 +249,7 @@ measurement or usability study is claimed. The same
 The accepted ledger and all five acceptance hashes were verified on updated
 main before 004 began; acceptance itself did not start the next feature.
 
-**004 / specify, clarify, plan and checklist are complete** on `feature/004-module-lifecycle`.
+**004 / specify, clarify, plan, checklist and tasks are complete** on `feature/004-module-lifecycle`.
 The [draft specification](../specs/004-module-lifecycle/spec.md) and
 [16/16 author checklist](../specs/004-module-lifecycle/checklists/requirements.md)
 define five stories, 20 scenarios, 20 requirements and six outcomes for trusted
@@ -276,9 +276,16 @@ reviewed at the reviewer's explicit request: **36/36 criteria satisfied**
 with per-item evidence and no blocking requirements gap or new human decision.
 Spec, plan and 16/16 author checklist are unchanged; actual DI dependency
 adoption and provider/process/privacy proof remain future gates.
-**Tasks is next**, separately on the same branch and
+The [80-task list](../specs/004-module-lifecycle/tasks.md) now maps all five
+stories, 20 scenarios, 20 requirements, six outcomes and twelve plan decisions
+to explicit dependencies and path-specific implementation/validation.
+Safe preflight precedes startup within P1; real provider migration/preservation,
+process termination, privacy, all public examples and retained baseline/full
+gates remain mandatory. All tasks are unstarted; design/checklist artifacts
+are unchanged and no dependency or runtime was adopted.
+**Analyze is next**, separately on the same branch and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
-No module runtime or feature acceptance is claimed.
+No analysis result, module runtime or feature acceptance is claimed.
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 
