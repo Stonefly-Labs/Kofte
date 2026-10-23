@@ -125,6 +125,15 @@ task. Tasks are byte-for-byte unchanged; product/test code, supported commands,
 approved intent, historical review and reviewer checklists remain untouched.
 **Review is next** on the same draft PR, before explicit human acceptance;
 this checkpoint neither accepts the feature nor requests an intermediate merge.
+The [final review after T083](../../specs/003-storage-registry/review.md) now
+**passes** across all 40 requirements/outcomes/scenarios, fourteen plan
+decisions, 83 tasks and twelve principles. F1/F2, R1/R2 and F3 are closed,
+with no remaining finding or remediation task. Tasks and reviewer-owned
+checklists remain byte-for-byte unchanged; product/test code, approved intent
+and supported commands are untouched. Historical review remains verbatim.
+**Explicit human acceptance of numbered feature 003 is next**, separately
+on the same draft PR. Review does not accept 003, mark ready, request merge
+or begin 004.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).

@@ -6,7 +6,19 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 003 / converge **passes after T083** on the original
+**Current checkpoint:** 003 / final review **passes after T083** on the original
+`feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
+The [review](../../specs/003-storage-registry/review.md) assesses all 40
+requirements/outcomes/scenarios, fourteen plan decisions, all 83 tasks and
+twelve principles against actual source/assertions, with no remaining finding
+or remediation task. F1/F2, R1/R2 and F3 are closed by T079-T083.
+Tasks, product/test source, approved intent and reviewer-owned checklists
+remain unchanged; the complete prior review is preserved verbatim.
+**Explicit human acceptance of numbered feature 003 is next**, in a separate
+invocation on this same draft PR. Passing review is not acceptance, PR
+readiness, an intermediate merge request or permission to begin 004.
+
+**Convergence checkpoint (historical):** 003 / converge **passes after T083** on the original
 `feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 The [assessment](../../specs/003-storage-registry/convergence.md) checks all
 40 requirements/outcomes/scenarios, fourteen plan decisions, all 83 tasks and

@@ -14,7 +14,7 @@
     },
     "003": {
       "directory": "specs/003-storage-registry",
-      "next_step": "review"
+      "next_step": "accept"
     }
   },
   "active": null,
@@ -703,6 +703,24 @@
       "evidence_sha256": {
         "specs/003-storage-registry/tasks.md": "24ccee5d439a193496a3bba592433d2cc4bb33395654356ec17fd5c50350ae99",
         "specs/003-storage-registry/convergence.md": "c7ebb4503bd0bd51762a79824ac7e38fce37cdf50e773b48f076557ad6345c3e"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "review",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-23T01:34:00+00:00",
+      "completed_at": "2026-10-23T01:59:51+00:00",
+      "outcome": "pass",
+      "note": "Read-only spec-review assessed actual implementation/assertions for all 16 functional requirements, six success criteria, 18 scenarios, fourteen plan decisions, all 83 tasks and twelve principles at 61e1984b72b48008448d4ede3038a4162942cfb8. Review passes with no remaining high-confidence defect, remediation task or within-scope design dispute. Public F1/F2, R1/R2 and recovery F3 are closed by T079-T083. Fresh quality/unit/both-provider integration/recovery/contract/privacy gates pass all 157 targeted named steps; actual assessed-head CI passes eleven contexts and 200 product steps, with all ten downloaded reports and synthetic-merge parents verified. No new local all-suite, controlled mutation or human exercise is claimed. Tasks and both reviewer-owned checklists remain byte-for-byte unchanged; complete prior review is preserved verbatim. Product/test code, dependencies, approved intent and implementation/convergence evidence are unchanged. Only review, ledger and six progress documents change. No review hook or workflow is invoked. Explicit human acceptance of numbered feature 003 is next on the same draft PR; this stage does not accept, mark ready, request merge or begin 004.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/tasks.md": "24ccee5d439a193496a3bba592433d2cc4bb33395654356ec17fd5c50350ae99",
+        "specs/003-storage-registry/review.md": "89a261c21435d5b91de0f467b2fafb39cbe6a016cf8356ee68888ae42099f1f2",
+        "specs/003-storage-registry/checklists/quality.md": "fbb14e996cbcd6c19959ee5e76369a3377943f4ca485b92fe7ed54467a23a6c5",
+        "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
       }
     }
   ]

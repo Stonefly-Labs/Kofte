@@ -238,6 +238,15 @@ prior T079-T082 remain closed, with zero actionable gaps and no appended task.
 Tasks, product/test source, approved architecture, historical review and reviewer
 checklists remain unchanged. **Review is next** on the same draft PR, followed
 separately by explicit human acceptance; no intermediate merge is requested.
+The [final review after T083](../specs/003-storage-registry/review.md) now
+**passes** with source/assertion coverage of all 40 requirements/outcomes/
+scenarios, fourteen plan decisions, 83 tasks and twelve principles.
+F1/F2, R1/R2 and F3 are closed; no defect, remediation task or unresolved
+within-scope design decision remains. Tasks, product/test source, approved
+architecture and reviewer-owned checklists are unchanged; previous review
+evidence is preserved verbatim. **Explicit human acceptance of numbered
+feature 003 is next**, separately on the same draft PR. Review neither
+accepts the feature nor requests merge or starts 004.
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.

@@ -119,6 +119,15 @@ zero actionable gaps. Tasks remain byte-for-byte unchanged; product/test code,
 approved intent, historical review and reviewer checklists are untouched.
 **Review is next** on the same draft PR, before explicit human acceptance;
 no intermediate merge is requested.
+The [final review after T083](specs/003-storage-registry/review.md) now
+**passes** across all 40 requirements/outcomes/scenarios, fourteen plan
+decisions, 83 tasks and twelve principles. All earlier F1/F2, R1/R2 and F3
+findings are closed; no new finding or remediation task remains.
+Tasks, product/test code, approved intent and reviewer-owned checklists are
+unchanged, and prior review evidence is preserved verbatim.
+**Explicit human acceptance of numbered feature 003 is next**, separately
+on the same draft PR. Review does not accept the feature, mark ready, request
+merge or begin 004.
 The following paragraphs preserve the historical design-stage checkpoint.
 
 Spec **003 / specify and clarify** establish the

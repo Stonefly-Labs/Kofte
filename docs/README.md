@@ -231,6 +231,15 @@ gaps. F3/T083 and earlier T079-T082 are closed. Tasks are byte-for-byte unchange
 product/test code, approved intent, historical review and reviewer checklists
 remain untouched. **Review is next** on the same draft PR, before explicit
 human acceptance, not an intermediate merge.
+The [final review after T083](../specs/003-storage-registry/review.md) now
+**passes** across all 40 requirements/outcomes/scenarios, fourteen plan
+decisions, 83 tasks and twelve principles. F1/F2, R1/R2 and F3 are closed;
+no finding or remediation task remains. Tasks and reviewer-owned checklists
+are byte-for-byte unchanged, no product/test source or approved intent changes,
+and the complete prior review remains verbatim.
+**Explicit human acceptance of numbered feature 003 is next**, separately
+on the same draft PR. No feature acceptance, readiness, merge request or
+004 work is implied by review.
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 
