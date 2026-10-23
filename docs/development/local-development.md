@@ -109,9 +109,14 @@ partial finding F3 reproduces a rejected public recovery inspection with zero
 correlated records/spans/counters. T083 is appended for recovery-set boundary/
 mutation diagnostics and real-provider captures, preserving all original task
 bytes, product/test code, supported commands and historical evidence.
-**Implement T083 is next** on the same draft PR, not acceptance or a new
+That checkpoint selected implement on the same draft PR, not acceptance or a new
 design/merge prerequisite. Recovery refusals still preserve data; this finding
 does not demonstrate a storage-isolation or recovery-corruption failure.
+The [T083 increment](../../specs/003-storage-registry/implementation.md#convergence-remediation-t083)
+now records public recovery inspection/verification/manifest-write boundaries,
+with real-provider private captures and unchanged exception contracts.
+All 83 tasks are evidenced. Historical convergence/review and reviewer-owned
+checklists are preserved; **follow-up converge is next** on the same draft PR.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).
@@ -129,6 +134,16 @@ worker stdout/stderr and projects only allowlisted exit identities. Its durabili
 is conservatively `uncertain` once a child may write, even for success; direct
 API records distinguish actual `committed` upgrades and `unchanged` v1 retries.
 No failure summary proves rollback, and no upgrade result contains a module assignment.
+`RecoverySetVerifier` records use `operation: recover` and null module identity.
+Provider context is trusted installation metadata or a fully validated manifest;
+before either is available, diagnostics explicitly use the bounded `unknown`
+label instead of copying untrusted provider text. Inspection/verification and
+pre-write refusals are `unchanged`; a created but interrupted manifest is
+`uncertain`; completed serialization/flush/close is `committed`. This describes
+the manifest write, not an installation-wide recovery transaction. Pure digest
+and comparison helpers do not independently log. Preserve partial files on
+failure; existing `StorageException`, cancellation and exclusive-create
+`IOException` behavior remains, with no raw exception attached to telemetry.
 Only ready carries an assignment; retry busy boundedly, correct rejected
 configuration, and inspect incomplete/reconciliation evidence without deleting
 files, locks or history. Complete-set restores require a fresh owned target.

@@ -6,7 +6,20 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 003 / converge records **gaps after T082** on the original
+**Current checkpoint:** 003 / implement completes **T083** on the original
+`feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
+The [implementation evidence](../../specs/003-storage-registry/implementation.md#convergence-remediation-t083)
+records private correlated recovery inspection/verification/manifest-write
+boundaries, trusted/validated provider context with explicit pre-metadata
+`unknown`, and truthful unchanged/uncertain/committed manifest durability.
+Twelve inherited cases on actual SQLite/PostgreSQL capture scope, format,
+path, hash, inventory, owner, physical-corruption and cancellation evidence.
+All 83 tasks are evidenced; historical convergence/review, approved intent and
+reviewer-owned checklists remain unchanged. **Follow-up converge is next**,
+separately on this same draft PR, before review and explicit human acceptance.
+No intermediate merge, self-acceptance, new design or 004 work is implied.
+
+**Convergence checkpoint (historical):** 003 / converge records **gaps after T082** on the original
 `feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 The [assessment](../../specs/003-storage-registry/convergence.md) covers all
 40 requirements/outcomes/scenarios, fourteen plan decisions, all 82 existing

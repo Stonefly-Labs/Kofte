@@ -1,17 +1,129 @@
 # Implementation: 003 - Storage Registry and Module Isolation
 
-**Stage:** Implement remediation T082 complete; all 82 tasks evidenced.
+**Stage:** Implement remediation T083 complete; all 83 tasks evidenced.
 The earlier implementation checkpoints and their local/CI evidence are preserved below.
 **Branch / PR:** `feature/003-storage-registry` /
 [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 **Started:** 2026-10-22 (UTC).
-**Completed:** 2026-10-22 (UTC).
+**Completed:** 2026-10-23 (UTC).
 **Original verified product revision:** `4eb236a9cfb4196fb385ee7fbff1cf8ffc6017ee`.
 **Original assessed CI head:** `92e942efcc1e9033f17c7e24f7b20c53c940f9da`.
 The latter changes only CI mirror setup and documentation, not product, test or
 verification-script source. The final publication adds stage documentation,
 task completion and the driver transition; its checks are recorded in the PR
 without a self-referential bookkeeping commit.
+
+## Convergence remediation T083
+
+**Date:** 2026-10-23 (UTC). **Stage:** Implement only, on the original branch
+and draft PR. The [preceding convergence](convergence.md) recorded F3 and appended
+T083. That report, final review, earlier implementation evidence and reviewer
+checklists remain unchanged. Follow-up converge, review and explicit human
+acceptance are separate later stages.
+
+The tested worktree is based on `5dd540179ebaccd817bd81f3e73b8359c2b32e84`.
+Publication-head CI is tracked separately in the PR; the base revision does not
+itself contain this increment.
+
+### Implementation and acceptance mapping
+
+- `StorageDiagnostics.ObserveRecoveryAsync` reuses existing safe classification,
+  fixed guidance, outcome mapping and record/span/counter emission. It observes
+  and rethrows rather than replacing public return values or exception contracts.
+  No module result, assignment or independent durable audit runtime is created.
+- Public `InspectStoppedAsync`, `VerifyAsync` and `WriteManifestAsync` now enter
+  that correlated `recover` boundary. Null module identity is retained.
+  Inspection verifies the original held installation scope before and after
+  inventory reading; verification retains all existing manifest, artifact,
+  path, physical-owner and inventory checks and sanitized exception mappings.
+  Pure digest/comparison/internal inventory helpers do not independently log.
+- Provider labels come only from a trusted installation or a fully validated
+  manifest. Earlier failures use explicit bounded `unknown`, including poisoned
+  provider text and malformed metadata. Raw inputs, exception payloads, paths,
+  credentials and module rows are never attached to telemetry. The diagnostic-only
+  fallback does not expand module-result provider tags.
+- Recovery operations use one 120-second budget. Manifest serialization/flush
+  receives its token; cancellation before creation is unchanged, exclusive
+  creation marks possible partial mutation, and completed serialization/flush/
+  close marks committed. Pre-write refusal remains unchanged. Partial files
+  stay preserved. This describes a manifest write, not a successful whole-set
+  restore, power-loss guarantee or installation-wide transaction.
+- Existing `Task`/inventory/manifest shapes, `StorageException` codes, cancellation,
+  exclusive-create `IOException`, stopped authority and original source data
+  remain intact. No provider privilege, package, public command, dependency,
+  approved design or later-feature surface changes.
+
+This closes the scoped T083 evidence for FR-014/015, US4.4/US5.1, plan D13/D14
+and principles VI/X/XI; it does not claim a new convergence result.
+
+### Actual regression assertions
+
+`RecoveryDiagnosticsTests` lives inside the existing integration test project,
+using its telemetry-isolation collection and both privacy/recovery suite traits.
+There are **six inherited cases per real provider / twelve total**:
+
+| Case | Actual assertions |
+| --- | --- |
+| `InspectionScopeRefusalsEmitCorrelatedRecordsAndPreserveTheInstallation` (3/provider) | Non-infrastructure, foreign-instance and disposed scopes reject with the existing safe request code, unchanged inventory/revisions and zero module objects. |
+| `CompleteRealRecoverySetsAndRefusedBoundariesEmitPrivateCorrelatedRecords` | Actual SQLite provider backups and PostgreSQL custom dump/fresh-target restore; successful verification plus twelve refusal variants: format, version, provider, malformed JSON, path, hash, revision, extra file, allocation token, actual physical owner marker, physical corruption and scope. Source/target inventories and seeded data survive; refused artifact sets retain identical bytes. |
+| `ManifestWritesReportCommittedRefusedAndInterruptedDurabilityWithoutDisclosingInput` | Actual complete manifest write, exclusive-create refusal preserving bytes, poisoned-provider refusal and deterministic cancellation immediately after exclusive creation. Records distinguish committed, unchanged and uncertain; the partial file remains present and original data survives. |
+| `InvalidPathsBeforeMetadataAndCancelledInspectionHaveBoundedPrivateRecords` | Invalid private path emits explicit unknown-provider rejection without echo; pre-cancelled inspection emits known-provider cancellation and changes no allocation. |
+
+The reused capture helper checks each actual nine-field record, its generated
+32-hex correlation against the corresponding span, exact code/outcome/guidance/
+durability, null module identity and exactly operation/provider/outcome metric
+labels. It checks bounded record size and empty stdout, scans span events as
+well as log/span/metric payloads, and rejects actual runtime/provisioning/target
+credentials and paths plus seeded private payload/control-character/exception
+text. New source is mandatory in `scripts/verify.py`; the existing fail-closed
+inventory regression now also rejects its removal before tool execution.
+
+### Executed checks and limits
+
+Selected the already installed pinned SDK rather than the default shell's
+older SDK. No toolchain/dependency adoption was needed. Environment is Darwin
+25.5.0 arm64, 18 logical CPUs, 64 GiB, Python 3.15.0, .NET SDK 10.0.402/runtime
+10.0.13 and Node 24.22.0/npm 11.19.1. Real SQLite and existing explicitly owned
+disposable PostgreSQL 17 resources retain all ownership/privilege guards.
+
+```bash
+export DOTNET_ROOT="$PWD/artifacts/toolchain/dotnet-10.0.402"
+export PATH="$DOTNET_ROOT:$PATH"
+unset KOFTE_POSTGRES_CONNECTION KOFTE_POSTGRES_PROVISIONING_CONNECTION
+```
+
+| Exact command | Observed result |
+| --- | --- |
+| `dotnet build tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --nologo -v quiet -warnaserror` | Passed before and after implementation; zero warnings/errors. |
+| `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --filter-method '*InspectionScopeRefusalsEmitCorrelatedRecordsAndPreserveTheInstallation' --minimum-expected-tests 6` | Before implementation, all six real-provider cases fail for expected one record versus actual zero; 20.384 seconds, zero skipped. This is the reproduced F3 regression, not passing evidence. |
+| `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --filter-class '*RecoveryDiagnosticsTests' --minimum-expected-tests 12` | First post-change pass: 12/12, zero skipped, 45.213 seconds. Subsequent expanded refusal coverage is included in the next selector and named gates. |
+| `dotnet build Kofte.slnx --no-restore -c Release --nologo -v quiet -warnaserror` | Passed, zero warnings/errors. |
+| `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --filter-class '*RecoveryDiagnosticsTests' --filter-class '*StorageMaintenanceDiagnosticsTests' --filter-class '*StoragePrivacyTests' --minimum-expected-tests 32` | Passed 32/32, zero skipped, 100.473 seconds: twelve expanded recovery cases, eighteen upgrade/acquisition cases and both existing seven-outcome captures. |
+| `python3 -m unittest scripts.tests.test_verify -q` | Passed all 41 verifier regressions. |
+| `python3 scripts/verify.py --suite privacy --provider both --disposable-postgres` | Passed all 36 named steps, 159.577 seconds. |
+| `python3 scripts/verify.py --suite contract --provider both --disposable-postgres` | Passed all 37 named steps, 204.173 seconds; includes both standalone and complete public examples and existing bootstrap contracts. |
+| `python3 scripts/verify.py --suite recovery --provider both --disposable-postgres` | Passed all 38 named steps, 463.320 seconds, including new captures and existing actual crashes, deadlines, cleanup and public stopped restore. |
+| `python3 scripts/verify.py --suite quality` | Passed all 19 named steps, 67.762 seconds; full formatting/build, exact locked restores, TypeScript/lint, dependency and repository checks. |
+| `python3 scripts/verify.py --suite unit` | Passed all 11 named steps, 7.245 seconds; includes all 111 Python tests and existing host/platform/web unit tests. |
+
+Safe targeted reports under ignored `artifacts/verification/`:
+`privacy-both-f87fbe83e95a45cfb33752b7681527db.json`,
+`contract-both-d967bd4ada35419784b94eba20738a2b.json`,
+`recovery-both-e187778f28144b269fc385d0f19a0117.json`,
+`quality-none-5958eed65b1c43949c4f14750264d1ce.json` and
+`unit-none-f8f165b3bf2c4e31a4870574434ebb28.json`.
+All **141 targeted steps pass**; each retains actual base revision/environment,
+`scope: targeted` and `completeGate: false`. Required final repository/whitespace
+publication checks and exact outcomes are also recorded in the PR.
+
+All 83 task markers are complete; the preceding 82 task descriptions/markers,
+author/quality checklists (16/16 and 36/36), approved intent, historical
+convergence/review and previous evidence are preserved. No implementation hooks
+are configured. **Follow-up converge is next** on the same draft PR, without an
+intermediate merge. Focused checks are not a new local all-suite gate, final
+review, human acceptance, production readiness or MVP completion. Existing
+trusted-code, narrow-DDL, preserved ambiguity, stopped complete-set/fresh-target
+and operator-owned older-recovery-point limits remain.
 
 ## Final review remediation T082
 

@@ -21,16 +21,16 @@ public static class RecoverySetVerifier
         AllowDuplicateProperties = false
     };
 
-    public static async Task<RecoveryInventory> InspectStoppedAsync(StorageInstallation installation,
-        IStorageMaintenanceScope scope, CancellationToken cancellationToken = default)
-    {
-        using var budget = new OperationBudget(OperationBudget.Migration, cancellationToken);
-        if (scope is not MaintenanceScope owned) throw new StorageException(StorageCode.RequestInvalid);
-        await owned.VerifyAsync(installation, budget);
-        var inventory = await ReadInventoryAsync(installation, budget);
-        await owned.VerifyAsync(installation, budget);
-        return inventory;
-    }
+    public static Task<RecoveryInventory> InspectStoppedAsync(StorageInstallation installation,
+        IStorageMaintenanceScope scope, CancellationToken cancellationToken = default) =>
+        StorageDiagnostics.ObserveRecoveryAsync(installation.Provider, cancellationToken, async (budget, _, _) =>
+        {
+            if (scope is not MaintenanceScope owned) throw new StorageException(StorageCode.RequestInvalid);
+            await owned.VerifyAsync(installation, budget);
+            var inventory = await ReadInventoryAsync(installation, budget);
+            await owned.VerifyAsync(installation, budget);
+            return inventory;
+        });
 
     public static async Task<RecoveryArtifact> DescribeArtifactAsync(string directory, string name,
         CancellationToken cancellationToken = default)
@@ -41,38 +41,49 @@ public static class RecoverySetVerifier
             Convert.ToHexStringLower(await SHA256.HashDataAsync(file, cancellationToken)));
     }
 
-    public static async Task WriteManifestAsync(string directory, RecoveryManifest manifest,
-        CancellationToken cancellationToken = default)
-    {
-        ValidateManifest(manifest);
-        UnixStorePaths.ValidateRoot(directory, allowMissing: false);
-        if (OperatingSystem.IsWindows()) throw new StorageException(StorageCode.PathRejected);
-        await using var file = new FileStream(Path.Combine(directory, RecoveryManifest.FileName), new FileStreamOptions
+    public static Task WriteManifestAsync(string directory, RecoveryManifest manifest,
+        CancellationToken cancellationToken = default) =>
+        StorageDiagnostics.ObserveRecoveryAsync<object?>(null, cancellationToken, async (budget, mutation, setProvider) =>
         {
-            Mode = FileMode.CreateNew,
-            Access = FileAccess.Write,
-            Share = FileShare.None,
-            UnixCreateMode = UnixStorePaths.FileMode
+            ValidateManifest(manifest);
+            setProvider(manifest.Provider);
+            UnixStorePaths.ValidateRoot(directory, allowMissing: false);
+            if (OperatingSystem.IsWindows()) throw new StorageException(StorageCode.PathRejected);
+            budget.Check();
+            await using (var file = new FileStream(Path.Combine(directory, RecoveryManifest.FileName), new FileStreamOptions
+            {
+                Mode = FileMode.CreateNew,
+                Access = FileAccess.Write,
+                Share = FileShare.None,
+                UnixCreateMode = UnixStorePaths.FileMode
+            }))
+            {
+                mutation.PossibleCommit();
+                StorageDiagnostics.Checkpoint("recovery_manifest_created", manifest.Provider);
+                await JsonSerializer.SerializeAsync(file, manifest, Options, budget.Token);
+                await file.FlushAsync(budget.Token);
+            }
+            mutation.Committed();
+            StorageDiagnostics.Checkpoint("recovery_manifest_committed", manifest.Provider);
+            return null;
         });
-        await JsonSerializer.SerializeAsync(file, manifest, Options, cancellationToken);
-    }
 
-    public static async Task<RecoveryManifest> VerifyAsync(string directory,
+    public static Task<RecoveryManifest> VerifyAsync(string directory,
         StorageInstallation? restoredPostgres = null, IStorageMaintenanceScope? scope = null,
-        CancellationToken cancellationToken = default)
-    {
-        try { return await VerifyCoreAsync(directory, restoredPostgres, scope, cancellationToken); }
-        catch (StorePathException) { throw new StorageException(StorageCode.PathRejected); }
-        catch (Exception error) when (error is SqliteException or Npgsql.NpgsqlException or IOException or
-            InvalidOperationException or UnauthorizedAccessException)
-        { throw new StorageException(StorageCode.Corrupt); }
-    }
+        CancellationToken cancellationToken = default) =>
+        StorageDiagnostics.ObserveRecoveryAsync(restoredPostgres?.Provider, cancellationToken, async (budget, _, setProvider) =>
+        {
+            try { return await VerifyCoreAsync(directory, restoredPostgres, scope, budget, setProvider); }
+            catch (StorePathException) { throw new StorageException(StorageCode.PathRejected); }
+            catch (Exception error) when (error is SqliteException or Npgsql.NpgsqlException or IOException or
+                InvalidOperationException or UnauthorizedAccessException)
+            { throw new StorageException(StorageCode.Corrupt); }
+        });
 
     private static async Task<RecoveryManifest> VerifyCoreAsync(string directory,
         StorageInstallation? restoredPostgres, IStorageMaintenanceScope? scope,
-        CancellationToken cancellationToken)
+        OperationBudget budget, Action<string> setProvider)
     {
-        using var budget = new OperationBudget(OperationBudget.Migration, cancellationToken);
         UnixStorePaths.ValidateRoot(directory, allowMissing: false);
         var metadata = Path.Combine(directory, RecoveryManifest.FileName);
         UnixStorePaths.ValidateFile(metadata);
@@ -87,6 +98,7 @@ public static class RecoverySetVerifier
         }
         catch (JsonException) { throw new StorageException(StorageCode.Corrupt); }
         ValidateManifest(manifest);
+        if (restoredPostgres is null) setProvider(manifest.Provider);
         foreach (var artifact in manifest.Artifacts)
         {
             budget.Check();

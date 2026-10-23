@@ -172,13 +172,14 @@ public abstract class StorageMaintenanceDiagnosticsTests
         public void Dispose() => subscription?.Dispose();
     }
 
-    private sealed class Capture : IDisposable
+    internal sealed class Capture : IDisposable
     {
         private readonly TextWriter previous = Console.Error;
         private readonly TextWriter previousOutput = Console.Out;
         private readonly StringWriter output = new();
         private readonly StringWriter stdout = new();
         private readonly ConcurrentQueue<(string Correlation, Dictionary<string, object?> Tags)> spans = new();
+        private readonly ConcurrentQueue<string> events = new();
         private readonly ConcurrentQueue<Dictionary<string, object?>> measurements = new();
         private readonly ActivityListener activities;
         private readonly MeterListener meter;
@@ -189,8 +190,13 @@ public abstract class StorageMaintenanceDiagnosticsTests
             {
                 ShouldListenTo = source => source.Name == "Kofte.Storage",
                 Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded,
-                ActivityStopped = activity => spans.Enqueue((activity.TraceId.ToHexString(),
-                    activity.TagObjects.ToDictionary(pair => pair.Key, pair => pair.Value)))
+                ActivityStopped = activity =>
+                {
+                    spans.Enqueue((activity.TraceId.ToHexString(),
+                        activity.TagObjects.ToDictionary(pair => pair.Key, pair => pair.Value)));
+                    events.Enqueue(JsonSerializer.Serialize(activity.Events.Select(item =>
+                        new { item.Name, tags = item.Tags.ToArray() })));
+                }
             };
             ActivitySource.AddActivityListener(activities);
             meter = new MeterListener
@@ -214,6 +220,19 @@ public abstract class StorageMaintenanceDiagnosticsTests
         internal void AssertRecords(RegistryFixture fixture, string operation,
             params (string Code, string Outcome, string Guidance, string Durability)[] expected)
         {
+            var forbidden = new List<string>();
+            if (fixture.Root is { } root) forbidden.Add(root);
+            if (fixture.RuntimeConnection is { } runtime)
+            {
+                forbidden.Add(runtime);
+                forbidden.Add(new NpgsqlConnectionStringBuilder(runtime).Password!);
+            }
+            AssertRecords(fixture.Installation.Provider, operation, forbidden, expected);
+        }
+
+        internal void AssertRecords(string provider, string operation, IEnumerable<string> privateValues,
+            params (string Code, string Outcome, string Guidance, string Durability)[] expected)
+        {
             var lines = output.ToString().Split('\n', StringSplitOptions.RemoveEmptyEntries);
             Assert.Equal(expected.Length, lines.Length);
             Assert.Equal(expected.Length, spans.Count);
@@ -226,7 +245,7 @@ public abstract class StorageMaintenanceDiagnosticsTests
                 Assert.Equal(9, record.EnumerateObject().Count());
                 Assert.Equal("storage", record.GetProperty("component").GetString());
                 Assert.Equal(operation, record.GetProperty("operation").GetString());
-                Assert.Equal(fixture.Installation.Provider, record.GetProperty("provider").GetString());
+                Assert.Equal(provider, record.GetProperty("provider").GetString());
                 Assert.Equal(JsonValueKind.Null, record.GetProperty("moduleId").ValueKind);
                 Assert.Equal(expected[index].Code, record.GetProperty("eventCode").GetString());
                 Assert.Equal(expected[index].Outcome, record.GetProperty("outcome").GetString());
@@ -238,7 +257,7 @@ public abstract class StorageMaintenanceDiagnosticsTests
                 var span = Assert.Single(spans, item => item.Correlation == correlation);
                 Assert.Equal(expected[index].Code, span.Tags["storage.code"]);
                 Assert.Equal(operation, span.Tags["storage.operation"]);
-                Assert.Equal(fixture.Installation.Provider, span.Tags["storage.provider"]);
+                Assert.Equal(provider, span.Tags["storage.provider"]);
                 Assert.Equal(expected[index].Outcome, span.Tags["storage.outcome"]);
                 Assert.False(span.Tags.ContainsKey("storage.module_id"));
                 Assert.Equal(expected[index].Guidance, span.Tags["storage.guidance"]);
@@ -249,21 +268,14 @@ public abstract class StorageMaintenanceDiagnosticsTests
             {
                 Assert.Equal(["operation", "outcome", "provider"], tags.Keys.Order(StringComparer.Ordinal));
                 Assert.Equal(operation, tags["operation"]);
-                Assert.Equal(fixture.Installation.Provider, tags["provider"]);
+                Assert.Equal(provider, tags["provider"]);
                 Assert.Contains(tags["outcome"], expected.Select(item => item.Outcome));
             }
             Assert.Empty(stdout.ToString());
             var channels = output + stdout.ToString() +
                 JsonSerializer.Serialize(spans.Select(span => new { span.Correlation, span.Tags })) +
-                JsonSerializer.Serialize(measurements);
-            var forbidden = new List<string> { Canary, "maintenance-credential", "Exception", "SELECT ", "CREATE TABLE" };
-            if (fixture.Root is { } root) forbidden.Add(root);
-            if (fixture.RuntimeConnection is { } runtime)
-            {
-                forbidden.Add(runtime);
-                forbidden.Add(new NpgsqlConnectionStringBuilder(runtime).Password!);
-            }
-            foreach (var text in forbidden)
+                JsonSerializer.Serialize(measurements) + string.Join("", events);
+            foreach (var text in privateValues.Concat([Canary, "maintenance-credential", "Exception", "SELECT ", "CREATE TABLE"]))
                 Assert.False(channels.Contains(text, StringComparison.Ordinal), "maintenance_telemetry_contains_sensitive_input");
         }
 

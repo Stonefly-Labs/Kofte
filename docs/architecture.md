@@ -219,9 +219,18 @@ recovery-set inspection/verification/manifest-write entry points bypass correlat
 operation records. A rejected inspection reproduces zero records/spans/counters.
 One MEDIUM partial finding F3 appends T083 for the existing FR-014 diagnostic
 obligation and capture regressions, not a new durable audit service or design.
-**Implement T083 is next** on the same draft PR. All prior task bytes,
+That checkpoint selected implement on the same draft PR. All prior task bytes,
 product/test code, approved architecture, dependencies and historical reports
 remain unchanged; no feature acceptance or intermediate merge is requested.
+The [T083 increment](../specs/003-storage-registry/implementation.md#convergence-remediation-t083)
+now observes recovery boundaries through the shared emitter without a fabricated
+module result, assignment or durable audit runtime. Provider labels come from
+trusted installations or fully validated metadata; failures before either use
+bounded `unknown`. Manifest durability reflects actual exclusive creation,
+completed serialization/flush/close and possible partial writes. Existing
+authority, exception contracts, recovery rules and dependencies are unchanged.
+All 83 tasks are evidenced with real-provider capture regressions.
+**Follow-up converge is next** on the same draft PR, not acceptance.
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.

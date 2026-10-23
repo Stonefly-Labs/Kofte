@@ -215,8 +215,16 @@ closed; one MEDIUM partial finding F3 reproduces a rejected public recovery
 inspection with zero correlated records/spans/counters. T083 is appended for
 recovery-set boundary/mutation diagnostics and real-provider captures.
 All prior task bytes, product/test code, approved intent and historical reports
-are preserved. **Implement T083 is next** on the same draft PR, with review and
-explicit human feature acceptance still separate.
+are preserved. That checkpoint selected implement on the same draft PR, with
+review and explicit human feature acceptance still separate.
+The [T083 increment](../specs/003-storage-registry/implementation.md#convergence-remediation-t083)
+now instruments public recovery inspection/verification/manifest writes through
+the shared private emitter, preserving return/exception contracts and authority.
+Validated provider context, explicit bounded pre-metadata `unknown` and truthful
+manifest durability have twelve inherited real-provider capture regressions.
+All 83 tasks are evidenced; historical convergence/review and checklists remain
+unchanged. **Follow-up converge is next** on the same draft PR; no acceptance or
+intermediate merge is implied.
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 

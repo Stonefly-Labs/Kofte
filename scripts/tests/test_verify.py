@@ -65,11 +65,12 @@ class VerifyTests(unittest.TestCase):
             verify.execute_suite(runner, "integration", "sqlite", Mock())
         versions.assert_not_called()
         project.write_text("restored required fixture")
-        diagnostics = self.root / verify.STORAGE_INTEGRATION / "Providers/StorageMaintenanceDiagnosticsTests.cs"
-        diagnostics.unlink()
-        with self.assertRaisesRegex(verify.VerificationError, "storage_target_missing"):
-            verify.storage_inventory(self.root)
-        diagnostics.write_text("restored required capture regressions")
+        for name in ("Providers/StorageMaintenanceDiagnosticsTests.cs", "Recovery/RecoveryDiagnosticsTests.cs"):
+            diagnostics = self.root / verify.STORAGE_INTEGRATION / name
+            diagnostics.unlink()
+            with self.assertRaisesRegex(verify.VerificationError, "storage_target_missing"):
+                verify.storage_inventory(self.root)
+            diagnostics.write_text("restored required capture regressions")
         catalog = self.root / "tests/integration/Kofte.TestSupport/StorageScenarioCatalog.cs"
         catalog.write_text(catalog.read_text().replace('"stopped-restore"', '"omitted"'))
         with self.assertRaisesRegex(verify.VerificationError, "storage_scenario_missing"):

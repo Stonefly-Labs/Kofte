@@ -173,6 +173,17 @@ conservatively records uncertain durability once the child may write, because
 its exit identity does not carry commit evidence. Its generated correlation
 identifies the parent record, not a forwarded child record or durable audit entry.
 
+Public recovery-set inspection, verification and manifest writes emit the same
+bounded `recover` operation records, with null module identity and no synthetic
+module result. Provider context comes from the trusted installation or a fully
+validated manifest; absent either, the diagnostic-only provider label is
+`unknown`, never raw manifest input. This does not expand module-result provider
+tags. Existing return/exception contracts and stopped authority are preserved.
+Read-only verification and pre-write refusals are unchanged. Manifest creation
+starts uncertain durability; successful serialization, flush and close records
+committed. This is only manifest-write evidence, not proof of complete recovery
+or cross-store atomicity. Pure digest/comparison helpers do not log separately.
+
 ## Deadlines, retries and cancellation
 
 | Operation | Total budget | Nested limits |

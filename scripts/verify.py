@@ -96,7 +96,7 @@ STORAGE_REQUIRED_FILES = (
         "Recovery/ProvisioningCrashTests",
         "Recovery/MigrationCrashTests", "Recovery/MigrationRecoveryRefusalTests", "Recovery/OperationDeadlineTests",
         "Recovery/PostgresLeaseLossTests", "Recovery/RegistryUpgradeTests", "Recovery/RecoverySetTests",
-        "Recovery/AbandonedLockRefusalTests",
+        "Recovery/AbandonedLockRefusalTests", "Recovery/RecoveryDiagnosticsTests",
         "Recovery/MaintenanceObserverFailureTests",
         "Recovery/CorrectedRetryTests",
     )),

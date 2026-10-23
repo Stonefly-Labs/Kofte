@@ -7,14 +7,13 @@ and reviewer-authorized requirements-quality checklist.
 quality criteria. Passing analyze and explicit human approval of Proposed
 ADR 0005 are required **before implementation**, not inferred from this list.
 **Constitution**: Adopted v2.0.1, principles I-XII.
-**Status**: All 82 tasks are evidenced. T082 adds correlated private upgrade
-and failed-acquisition records, fixed guidance/truthful durability and safe CLI
-projection without changing maintenance return types or forwarding raw child
-output. Eighteen inherited real-provider capture cases, both-provider command
-checks and the affected named gates pass; exact commands, initial failures,
-corrections and limits are in `implementation.md`. The original complete
-local/CI gates, T079-T080 public examples and T081 regressions remain historical
-evidence.
+**Status**: All 83 tasks are evidenced. T083 adds correlated recovery-set
+inspection/verification/manifest-write diagnostics, explicit private pre-metadata
+provider context and truthful manifest durability while preserving existing
+return/exception contracts, authority and data. Twelve inherited real-provider
+capture cases and the affected gates pass; exact commands, the reproduced
+missing-record failure and limits are in `implementation.md`. The original
+complete local/CI gates and T079-T082 increments remain historical evidence.
 Implement is complete; follow-up converge is next, not performed here.
 This is not feature acceptance.
 
@@ -343,11 +342,11 @@ gate is neither performed nor waived by this internal slice.
 
 ## Completion and Human Handoff
 
-This task list contains **82 tasks**, all evidenced:
+This task list contains **83 tasks**, all evidenced:
 six setup, eight foundational,
 13 US1, eight US2, twelve US3, sixteen US4, seven US5 and eight final evidence
 tasks, plus two convergence remediation tasks, one final-review regression task
-and one maintenance-diagnostics remediation task. All 18 acceptance scenarios, 16 functional requirements, six outcomes and
+and two maintenance/recovery-diagnostics remediation tasks. All 18 acceptance scenarios, 16 functional requirements, six outcomes and
 twelve principles have explicit task/evidence coverage. Parallel markers do
 not change dependencies or authorize concurrent Spec Kit stages.
 
@@ -392,4 +391,4 @@ evidenced in `implementation.md`; follow-up converge is next on the same draft P
 
 ## Phase 11: Convergence
 
-- [ ] T083 Complete correlated diagnostics at the public recovery-set operation boundaries in `src/Kofte.Infrastructure/Storage/Recovery/RecoverySetVerifier.cs`, reusing `src/Kofte.Infrastructure/Storage/StorageDiagnostics.cs` rather than fabricating a module result or assignment. `InspectStoppedAsync` and `VerifyAsync` must emit bounded operator-visible records for rejected scope/installation, manifest/version/path/hash/inventory/ownership boundaries and sanitized terminal failures; `WriteManifestAsync` must likewise record its recovery-manifest mutation or refusal with truthful durability. Preserve existing return/exception contracts, stopped-maintenance authority, finite budgets, original data and private output. Use the existing recovery operation/code/outcome/guidance vocabulary and generated correlation; derive provider context only from trusted installation or validated allowlisted metadata and handle failures before provider validation explicitly without echoing raw manifest input or paths. Do not add independent logging to pure comparison/digest helpers or a durable audit runtime. Add focused capture regressions inside `tests/integration/Kofte.Storage.IntegrationTests/` under its existing telemetry-isolation collection: non-owned/foreign/disposed inspection scopes, real SQLite/PostgreSQL recovery verification/refusal and manifest-write success/failure. Assert actual record/span/counter correlation, fixed guidance, bounded labels/output, unchanged source/target state on pre-write refusals and zero seeded credential/path/payload/exception disclosure. Wire any new test source into the existing mandatory verifier inventory and execute the affected real-provider privacy/recovery/public-contract gates with fail-closed counts; retain exact selectors, results and limits in `specs/003-storage-registry/implementation.md`. Depends: T057, T058, T059, T064, T065, T066, T071, T082. Trace: FR-014/015, US4.4, US5.1; plan D13/D14; convergence F3 (MEDIUM, partial).
+- [X] T083 Complete correlated diagnostics at the public recovery-set operation boundaries in `src/Kofte.Infrastructure/Storage/Recovery/RecoverySetVerifier.cs`, reusing `src/Kofte.Infrastructure/Storage/StorageDiagnostics.cs` rather than fabricating a module result or assignment. `InspectStoppedAsync` and `VerifyAsync` must emit bounded operator-visible records for rejected scope/installation, manifest/version/path/hash/inventory/ownership boundaries and sanitized terminal failures; `WriteManifestAsync` must likewise record its recovery-manifest mutation or refusal with truthful durability. Preserve existing return/exception contracts, stopped-maintenance authority, finite budgets, original data and private output. Use the existing recovery operation/code/outcome/guidance vocabulary and generated correlation; derive provider context only from trusted installation or validated allowlisted metadata and handle failures before provider validation explicitly without echoing raw manifest input or paths. Do not add independent logging to pure comparison/digest helpers or a durable audit runtime. Add focused capture regressions inside `tests/integration/Kofte.Storage.IntegrationTests/` under its existing telemetry-isolation collection: non-owned/foreign/disposed inspection scopes, real SQLite/PostgreSQL recovery verification/refusal and manifest-write success/failure. Assert actual record/span/counter correlation, fixed guidance, bounded labels/output, unchanged source/target state on pre-write refusals and zero seeded credential/path/payload/exception disclosure. Wire any new test source into the existing mandatory verifier inventory and execute the affected real-provider privacy/recovery/public-contract gates with fail-closed counts; retain exact selectors, results and limits in `specs/003-storage-registry/implementation.md`. Depends: T057, T058, T059, T064, T065, T066, T071, T082. Trace: FR-014/015, US4.4, US5.1; plan D13/D14; convergence F3 (MEDIUM, partial).

@@ -14,7 +14,7 @@
     },
     "003": {
       "directory": "specs/003-storage-registry",
-      "next_step": "implement"
+      "next_step": "converge"
     }
   },
   "active": null,
@@ -669,6 +669,24 @@
       "evidence_sha256": {
         "specs/003-storage-registry/tasks.md": "2c39825d032b3439dac6769a8d3bba82898d5383f38cb25e3f3ac8447f2d3c7b",
         "specs/003-storage-registry/convergence.md": "3ce776261dda7710ff14603f84e07404ffe2ccd7871f4174aab34385d09a0d27"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "implement",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-23T00:25:51+00:00",
+      "completed_at": "2026-10-23T00:52:34+00:00",
+      "outcome": "pass",
+      "note": "Implemented only T083 under existing FR014/015, US4.4/US5.1 and planD13/D14. Public recovery inspection/verification/manifest-write boundaries now reuse safe correlated recover records/spans/bounded counters without fabricating assignments/results or changing return/exception contracts. Provider context is trusted installation or fully validated manifest; earlier failures explicitly record bounded unknown, never raw metadata. Actual exclusive create marks uncertainty; completed serialization/flush/close marks manifest committed; read-only/pre-write refusal remains unchanged and partial files are preserved. Existing stopped authority,120s budget, source data, provider privileges and dependencies remain. Twelve inherited real-provider cases cover nonowned/foreign/disposed scopes, complete SQLite backups and PostgreSQL dump/fresh restore,12 refusal variants including actual owner/physical failures, write success/refusal and cancellation; shared capture scans records/spans/events/metrics/stdout and private canaries. Mandatory inventory regression rejects missing new source. Before fix all6 scope cases reproduced zero records; after fix combined32 capture cases pass with zero skipped. Fresh privacy36/contract37/recovery38/quality19/unit11 all pass141 targeted steps; build/format/verifier41/Python111/repository/diff checks pass. Reports retain actual5dd5401 base and environment; publication-head CI is tracked separately in PR. All83 tasks checked, preceding82 task lines and approved intent/historical convergence/review/checklists16of16+36of36 unchanged; no hooks. Complete implement only; next converge on original draftPR6, no acceptance/readiness/merge/004.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/tasks.md": "24ccee5d439a193496a3bba592433d2cc4bb33395654356ec17fd5c50350ae99",
+        "specs/003-storage-registry/implementation.md": "48416e4801746cd3c50d15f8a4377b1153512fda58f55b076d5e9ea26fdc40f8",
+        "specs/003-storage-registry/checklists/quality.md": "fbb14e996cbcd6c19959ee5e76369a3377943f4ca485b92fe7ed54467a23a6c5",
+        "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
       }
     }
   ]

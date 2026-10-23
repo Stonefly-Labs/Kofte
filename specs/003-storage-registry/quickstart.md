@@ -192,6 +192,16 @@ CI; focused checks during implementation do not replace it.
 
 ## Recovery exercise
 
+Public inspection, verification and manifest writes emit correlated `recover`
+records with fixed guidance and truthful durability. Provider context comes
+from the trusted installation or fully validated manifest; earlier failures use
+the explicit bounded `unknown` label, never untrusted metadata. Read-only checks
+and pre-write refusals are unchanged; a partial created manifest is uncertain;
+a completely serialized/flushed/closed manifest is committed. Existing return/
+exception behavior and stopped-maintenance authority remain unchanged. See the
+[diagnostic contract](contracts/storage-v1.md#outcomes-and-diagnostics);
+these records are not a durable audit runtime or a cross-store transaction.
+
 Use only stopped, owned fixtures and the procedure in
 [migrations-and-recovery](contracts/migrations-and-recovery.md#backuprestore-and-legacy-command-guard).
 The consumer's `stopped-restore` case executes that actual procedure,

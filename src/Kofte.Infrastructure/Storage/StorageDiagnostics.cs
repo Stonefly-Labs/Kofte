@@ -130,6 +130,34 @@ internal static class StorageDiagnostics
         }
     }
 
+    internal static async Task<T> ObserveRecoveryAsync<T>(string? provider, CancellationToken cancellation,
+        Func<OperationBudget, MutationEvidence, Action<string>, Task<T>> action)
+    {
+        var safeProvider = Provider(provider);
+        using var trace = Traces.StartActivity("storage.recover");
+        var correlation = trace?.TraceId.ToHexString() ?? ActivityTraceId.CreateRandom().ToHexString();
+        using var budget = new OperationBudget(OperationBudget.Migration, cancellation);
+        var mutation = new MutationEvidence();
+        var code = StorageCode.Ready;
+        try
+        {
+            budget.Check();
+            return await action(budget, mutation, value => safeProvider = Provider(value));
+        }
+        catch (Exception error)
+        {
+            code = FailureCode(error, budget.CallerCancelled);
+            throw;
+        }
+        finally
+        {
+            Record(StorageOperation.Recover, safeProvider, null, correlation, Outcome(code), Diagnostic(code),
+                mutation.Durability, trace);
+        }
+
+        static string Provider(string? value) => value is "sqlite" or "postgresql" ? value : "unknown";
+    }
+
     internal static async Task<StorageResult> RunAsync(StorageOperation operation, string provider,
         ModuleId? owner, TimeSpan duration, CancellationToken cancellation,
         Func<OperationBudget, MutationEvidence, string, Task<StorageResult>> action)

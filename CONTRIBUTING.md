@@ -103,7 +103,16 @@ finding F3 reproduces absent correlated records for a rejected public recovery
 inspection. Exactly T083 is appended for recovery-set boundary/mutation
 diagnostics and real-provider captures, preserving every prior task byte,
 product/test source and historical reports. **Implement T083 is next** on the
-same draft PR; no new design approval, intermediate merge or acceptance is implied.
+same draft PR; no new design approval, intermediate merge or acceptance is implied
+by that historical checkpoint.
+The [T083 implementation](specs/003-storage-registry/implementation.md#convergence-remediation-t083)
+now supplies correlated recovery boundary/mutation records, explicit bounded
+`unknown` provider context before validated metadata, and unchanged/uncertain/
+committed manifest durability. Twelve inherited real-provider cases capture
+scope/format/path/hash/inventory/owner/physical refusals and cancellation.
+All 83 tasks are evidenced; historical convergence/review and reviewer checklists
+are preserved. **Follow-up converge is next** on the same draft PR, not feature
+acceptance or an intermediate merge.
 The following paragraphs preserve the historical design-stage checkpoint.
 
 Spec **003 / specify and clarify** establish the

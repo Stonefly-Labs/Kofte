@@ -68,15 +68,17 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**Spec 003 / converge reports one remaining gap after T082** on its original
+**Spec 003 / implement completes T083** on its original
 feature branch and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
-The [current assessment](specs/003-storage-registry/convergence.md) closes R2/T082
-and retains the prior T079-T081 closures, but reproduces missing correlated
-records for a rejected public recovery inspection. One MEDIUM partial finding
-F3 appends **T083** for recovery-set boundary/mutation diagnostics and capture
-regressions. All 82 prior task bytes and historical reports are preserved;
-product/test code is unchanged. **Implement T083 is next**, separately on this
-same draft PR, before converge, review and explicit human acceptance.
+The [implementation evidence](specs/003-storage-registry/implementation.md#convergence-remediation-t083)
+records correlated recovery inspection/verification/manifest-write diagnostics,
+private pre-metadata failures and truthful manifest durability. Twelve inherited
+real-provider capture cases cover scope, format, path, digest, inventory,
+ownership, physical corruption and cancellation without changing API/exception
+contracts or original data. All 83 tasks are evidenced; historical
+[convergence](specs/003-storage-registry/convergence.md) and review remain unchanged.
+**Follow-up converge is next**, separately on this same draft PR, before review
+and explicit human acceptance. No intermediate merge or acceptance is implied.
 
 The following paragraphs preserve the implementation and earlier stage history.
 The initial implementation checkpoint followed completed
@@ -172,8 +174,9 @@ allowlisted worker outcomes while continuing to discard raw child output.
 Both-provider captures cover commit, idempotent retry, rejected scopes,
 unsupported/corrupt registries and sanitized commit-boundary failures.
 All 82 tasks were evidenced at that implementation checkpoint, which selected
-follow-up converge. The current assessment above appends T083 without rewriting
-those historical markers; feature acceptance remains separate.
+follow-up converge. That assessment appended T083 without rewriting
+those historical markers; the implementation increment above completes it,
+while feature acceptance remains separate.
 
 **Spec 002 is explicitly human-accepted and merged.**
 The [acceptance record](specs/002-platform-contracts/acceptance.md) preserves
