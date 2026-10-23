@@ -15,6 +15,10 @@
     "003": {
       "directory": "specs/003-storage-registry",
       "next_step": "accepted"
+    },
+    "004": {
+      "directory": "specs/004-module-lifecycle",
+      "next_step": "clarify"
     }
   },
   "active": null,
@@ -742,6 +746,22 @@
         "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
       },
       "human_approval": "this human accesspts 003"
+    },
+    {
+      "spec": "004",
+      "step": "specify",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-23T02:36:40+00:00",
+      "completed_at": "2026-10-23T02:43:14+00:00",
+      "outcome": "pass",
+      "note": "004 specify authored from the exact fenced inventory prompt and resolved project template after verifying human-merged PR #6 and accepted 003 evidence on updated main. Five independently testable stories, 20 Given/When/Then scenarios, 20 functional requirements and six measurable outcomes cover module-free/trusted-test-module boot, bounded deterministic manifest/dependency/configuration/contribution preflight, dependency-ordered lifecycle and admitted owner-local migrations, data-preserving controlled-restart disable/re-enable, honest health/failure/recovery and safe operator diagnostics. Accepted 002/003 contracts, installation authority, provider isolation and future interface/runtime exclusions remain explicit. All 16 built-in author requirements criteria satisfy the reviewed spec; no unresolved clarification marker, pre/post hook, reviewer-owned quality checklist, plan, task artifact, runtime change or self-acceptance. Local feature context explicitly targets specs/004-module-lifecycle. Clarify is next on the same feature branch/draft PR, not executed here.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/spec.md": "f1a4b1ccec8dc0a0f606a6ec1724cb5f52861a31334f9c866eed213cff16a0f5",
+        "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
+      }
     }
   ]
 }

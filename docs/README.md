@@ -245,9 +245,18 @@ now records **"this human accesspts 003"** for numbered feature 003, with the
 passing review's scope and limits retained. Product/test code, tasks,
 reviewed checklists and prior evidence remain unchanged; no new product
 measurement or usability study is claimed. The same
-[PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6) is ready for human merge
-after publication. **004 waits for that human merge** and accepted evidence
-on updated main; acceptance does not start it.
+[PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6) was human-merged.
+The accepted ledger and all five acceptance hashes were verified on updated
+main before 004 began; acceptance itself did not start the next feature.
+
+**004 / specify is complete** on the fresh `feature/004-module-lifecycle`.
+The [draft specification](../specs/004-module-lifecycle/spec.md) and
+[16/16 author checklist](../specs/004-module-lifecycle/checklists/requirements.md)
+define five stories, 20 scenarios, 20 requirements and six outcomes for trusted
+composition/lifecycle, safe preflight/migrations, data-preserving disable and
+health/recovery diagnostics. The exact inventory input and project template
+remain authoritative. **Clarify is next**, separately on the same branch/draft
+PR; no module runtime, reviewer-owned quality checklist or acceptance is claimed.
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 

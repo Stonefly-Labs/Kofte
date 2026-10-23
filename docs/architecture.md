@@ -252,9 +252,20 @@ now records **"this human accesspts 003"** for feature 003 and its documented
 scope/limits. No architecture, product/test source, dependency, task, reviewed
 checklist or prior evidence changes. Acceptance adds no product measurement,
 production-readiness claim or later-scope waiver. The same
-[PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6) is ready for human merge
-after publication. **004 waits for that human merge** and accepted evidence
-on updated main; no new feature is started by acceptance.
+[PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6) was human-merged.
+Its accepted ledger and all five acceptance hashes were verified on updated
+main before 004 began; acceptance itself started no new feature.
+
+**004 / specify is complete** on `feature/004-module-lifecycle`.
+The [draft requirements](../specs/004-module-lifecycle/spec.md) and
+[16/16 author checklist](../specs/004-module-lifecycle/checklists/requirements.md)
+define trusted module composition, dependency/configuration/contribution
+preflight, ordered initialization/migrations, data-preserving restart-controlled
+disable/re-enable and honest health/failure observations. They preserve accepted
+002/003 contracts and exclude public lifecycle administration, hostile-code
+isolation, hot-unload and later extension runtimes. Exact public contracts,
+packaging and budgets remain planning/ADR choices. **Clarify is next**,
+separately on this same feature branch/draft PR, not implementation or acceptance.
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.

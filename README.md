@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-34d399?style=flat-square"></a>
-  <img alt="Status: storage isolation accepted" src="https://img.shields.io/badge/status-storage_isolation_accepted-34d399?style=flat-square">
+  <img alt="Status: module lifecycle specified" src="https://img.shields.io/badge/status-module_lifecycle_specified-a78bfa?style=flat-square">
   <a href="docs/master-spec-inventory.md"><img alt="Built with Spec Kit" src="https://img.shields.io/badge/workflow-Spec_Kit-a78bfa?style=flat-square"></a>
 </p>
 
@@ -35,7 +35,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 | 🔐 Explicit boundaries | Team-scoped authorization, audited actions and module-owned storage |
 
 > [!IMPORTANT]
-> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are now [explicitly human-accepted](specs/003-storage-registry/acceptance.md), with human merge pending. Nothing here claims production readiness or MVP completion.
+> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. [004 / specify](specs/004-module-lifecycle/spec.md) now defines module composition and lifecycle; it adds no runtime. Nothing here claims production readiness or MVP completion.
 
 ## 🧭 The shape of things to come
 
@@ -68,16 +68,28 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**Spec 003 is explicitly human-accepted; human merge is pending.**
+**004 / specify is complete** on `feature/004-module-lifecycle`, freshly based
+on updated main after spec 003's human merge. The
+[draft specification](specs/004-module-lifecycle/spec.md) uses the exact inventory
+prompt and resolved project template. Five stories, 20 acceptance scenarios,
+20 functional requirements and six outcomes cover empty/valid module boot,
+dependency/configuration/contribution preflight, ordered lifecycle/migrations,
+data-preserving disable/re-enable and safe health/failure diagnostics.
+The [built-in author checklist](specs/004-module-lifecycle/checklists/requirements.md)
+satisfies 16/16 criteria. **Clarify is next**, separately on this same feature
+branch/draft PR; no implementation, reviewer-owned quality checklist, feature
+acceptance or intermediate merge is implied.
+
+**Spec 003 is explicitly human-accepted and human-merged.**
 The [acceptance record](specs/003-storage-registry/acceptance.md) preserves the
 exact decision, **"this human accesspts 003"**, and the passing review's scope
 and limits. The [review](specs/003-storage-registry/review.md) covers all 40
 requirements/outcomes/scenarios, fourteen plan decisions, 83 tasks and twelve
 principles with no remaining finding. Acceptance changes no product/test code,
 tasks, reviewed checklists or prior evidence and adds no runtime measurement.
-The same [PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6) is ready for
-human merge after publication. **004 must wait for that human merge** and
-accepted evidence on updated main; it is not started here.
+The same [PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6) was human-merged.
+Before starting 004, the accepted ledger and all five acceptance evidence hashes
+were verified on updated `origin/main`; acceptance itself did not start 004.
 
 The following paragraphs preserve the implementation and earlier stage history.
 The initial implementation checkpoint followed completed

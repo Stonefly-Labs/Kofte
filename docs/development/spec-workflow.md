@@ -6,17 +6,31 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 003 is **explicitly human-accepted**, with human merge
-pending on the original `feature/003-storage-registry` and
+**Current checkpoint:** **004 / specify is complete** on the fresh
+`feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
+The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the
+exact fenced inventory input and resolved project template. Five independently
+testable stories, 20 scenarios, 20 functional requirements and six outcomes
+cover trusted composition, safe preflight, dependency-ordered lifecycle/
+migrations, data-preserving disable/re-enable and health/failure diagnostics.
+The [built-in author checklist](../../specs/004-module-lifecycle/checklists/requirements.md)
+satisfies 16/16 criteria. No before/after specify hooks are configured.
+No product code, dependency, design/task artifact, reviewer-owned quality
+checklist or feature acceptance is introduced. **Clarify is next**, in a
+separate invocation on this same feature branch/draft PR. No intermediate merge
+or permission to chain stages is implied.
+
+**003 acceptance checkpoint:** 003 is **explicitly human-accepted and
+human-merged** on its original `feature/003-storage-registry` and
 [PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 The [acceptance record](../../specs/003-storage-registry/acceptance.md)
 quotes **"this human accesspts 003"** in response to the passing review and
 numbered-feature handoff, retaining the review's scope and limitations.
 Tasks, reviewed checklists, product/test source, dependencies and prior evidence
 remain unchanged. No new runtime measurement or human usability result is
-inferred. This decision authorizes readiness and a human merge request after
-publication, not assistant merge. **004 waits for that human merge** and the
-accepted ledger/evidence on updated main. No next feature is begun here.
+inferred. That decision authorized readiness and a human merge request, not
+assistant merge. Before starting 004, the accepted ledger and all five acceptance
+hashes were verified on updated `origin/main`; the human merge gate is satisfied.
 
 **Final review checkpoint (historical):** 003 / final review **passes after T083** on the original
 `feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
