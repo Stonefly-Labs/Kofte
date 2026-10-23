@@ -150,8 +150,10 @@ not missing product decisions. The [plan](specs/004-module-lifecycle/plan.md),
 research, data model, versioned author/operator contracts and future guide now
 define explicit compiled discovery, whole-set preflight, stopped preparation,
 supervised lifecycle and safe health within retained storage/startup limits.
-[ADR 0006](docs/adr/0006-module-composition-lifecycle.md) remains **Proposed**,
-requiring human approval before implementation. No product code/package was
+[ADR 0006](docs/adr/0006-module-composition-lifecycle.md) is now **human-approved
+for implementation** by the explicit decision **"yeah approved"**. Historical
+planning artifacts and ledger evidence remain unchanged; no next stage was run.
+No product code/package was
 adopted and no future command was executed. **Checklist is next**, generated
 unchecked for explicit reviewer evaluation, on this same branch and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), not implementation,

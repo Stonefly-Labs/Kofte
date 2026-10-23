@@ -159,8 +159,10 @@ propose a compiled trusted catalog, private selection, whole-set preflight,
 explicit stopped preparation and supervised serving/health.
 `KOFTE_MODULES_FILE`, `--modules` commands and composition test projects in
 those artifacts **do not exist yet**. Existing commands/toolchain remain
-unchanged. [ADR 0006](../adr/0006-module-composition-lifecycle.md) needs human
-approval before implementation. **Checklist is next**, generated unchecked
+unchanged. [ADR 0006](../adr/0006-module-composition-lifecycle.md) is now
+**human-approved for implementation** by **"yeah approved"**; dependency adoption
+and runtime evidence remain future gates. No next stage was executed.
+**Checklist is next**, generated unchecked
 for reviewer-owned evaluation, on `feature/004-module-lifecycle` and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
 

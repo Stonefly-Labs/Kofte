@@ -267,8 +267,9 @@ distinguishes requirements from the then-open planning choices. The
 [future guide](../specs/004-module-lifecycle/quickstart.md) now resolve those
 choices: explicit trusted composition, bounded whole-set preflight, offline
 preparation, supervised lifecycle and private current-attempt health.
-[ADR 0006](adr/0006-module-composition-lifecycle.md) is **Proposed**; human
-approval is required before implementation. Both constitutional design checks
+[ADR 0006](adr/0006-module-composition-lifecycle.md) is now **human-approved for
+implementation**, recording **"yeah approved"** without changing its design,
+historical planning artifacts or ledger. Both constitutional design checks
 pass, not runtime tests or dependency adoption. **Checklist is next** on the
 same branch and [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7),
 generated unchecked for reviewer-owned evaluation. No module runtime or

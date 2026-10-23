@@ -83,8 +83,10 @@ records the clarification evidence. The [implementation plan](specs/004-module-l
 research, data model, versioned author/operator contracts and future validation
 guide now propose a compiled trusted catalog, whole-set preflight, explicit
 offline preparation, supervised ordered lifecycle and safe aggregate health.
-[ADR 0006](docs/adr/0006-module-composition-lifecycle.md) is **Proposed** and
-requires human approval before implementation. Both constitutional design gates
+[ADR 0006](docs/adr/0006-module-composition-lifecycle.md) is now **human-approved
+for implementation**, recording the explicit decision **"yeah approved"**.
+The earlier planning artifacts retain their historical Proposed status; this
+approval changes no design or Spec Kit stage. Both constitutional design gates
 pass; no runtime, dependency adoption or executed 004 behavior is claimed.
 **Checklist is next**, generated unchecked for reviewer-owned evaluation,
 separately on this same branch and [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).

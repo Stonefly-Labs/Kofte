@@ -267,14 +267,16 @@ isolation, hot-unload and later extension runtimes. Clarification found all ten
 requirements categories clear, with zero questions and no spec/checklist changes;
 no design choice or human answer was invented. The
 [plan](../specs/004-module-lifecycle/plan.md) and
-[Proposed ADR 0006](adr/0006-module-composition-lifecycle.md) now define explicit
+[Accepted ADR 0006](adr/0006-module-composition-lifecycle.md) now define explicit
 compiled discovery, stable bounded whole-set preflight, native DI and separate
 stopped preparation versus supervised serving. Assigned migrations/privilege
 separation and exact stores remain accepted 003; no anonymous module route or
 later capability runtime is added. Current-attempt private health drives only
 the existing aggregate readiness contract. Both constitutional design gates
-pass, but ADR approval, dependency-edge adoption and actual process/provider/
-privacy proof remain future gates. **Checklist is next**, generated unchecked
+pass. The human's explicit **"yeah approved"** resolves ADR 0006's design gate;
+dependency-edge adoption and actual process/provider/privacy proof remain
+future gates. Historical planning artifacts and ledger evidence are unchanged.
+**Checklist is next**, generated unchecked
 for reviewer-owned evaluation, on this same branch and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), not implementation
 or acceptance.

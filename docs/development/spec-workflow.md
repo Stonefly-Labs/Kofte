@@ -54,8 +54,8 @@ termination; fresh private own/dependency health and safe aggregate status;
 bounded correlated diagnostics and independent public/real-provider evidence.
 No future executable capability or anonymous lifecycle-control route is added.
 
-[ADR 0006](../adr/0006-module-composition-lifecycle.md) is **Proposed** and
-requires explicit human approval before implementation. Before-research and
+[ADR 0006](../adr/0006-module-composition-lifecycle.md) was **Proposed** at the
+planning checkpoint. Before-research and
 after-design checks cover all twelve principles and pass at design level;
 accepted 002/003 grammar/storage/privilege/deadline rules are unchanged.
 The planned DI-abstractions project edge still requires actual lock/license/
@@ -71,6 +71,18 @@ evaluation in a separate invocation on this same feature branch and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7). A reviewer must
 explicitly request assisted evaluation before the assistant marks any items.
 No intermediate merge or permission to chain stages is implied.
+
+**Subsequent ADR 0006 approval:** On 2026-10-22, after the explanation of
+compiled trusted deployments/rebuilds, whole-set validation, separate stopped
+preparation and supervised lifecycle/health, the human explicitly replied
+**"yeah approved"**. ADR 0006 is now **Accepted for implementation**. This later
+decision is the current authority for ADR status; earlier plan/research/
+contract artifacts and ledger notes retain historical Proposed/pending-review
+statements and their evidence hashes unchanged. Approval neither adopts the
+DI dependency edge nor evaluates/marks the reviewer-owned quality checklist,
+provides runtime proof, accepts feature 004 or authorizes merge.
+Recording the decision executes no stage: **checklist remains next**, with
+no active stage, on the same branch and draft PR #7.
 
 **003 acceptance checkpoint:** 003 is **explicitly human-accepted and
 human-merged** on its original `feature/003-storage-registry` and

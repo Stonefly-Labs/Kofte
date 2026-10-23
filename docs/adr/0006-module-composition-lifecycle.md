@@ -1,6 +1,6 @@
 # 0006: Explicit trusted composition and supervised module lifecycle
 
-**Status:** Proposed
+**Status:** Accepted for implementation
 **Date:** 2026-10-22
 **Spec:** [004 - Module composition and lifecycle](../../specs/004-module-lifecycle/spec.md)
 
@@ -103,8 +103,16 @@ no auto-down, delete/uninstall or cross-module transaction guarantee.
 
 ## Approval
 
-**Pending explicit human review and approval before implementation.**
-Planning on [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) does
-not approve this ADR, evaluate the reviewer-owned quality checklist or accept
-numbered feature 004. Continue separate Spec Kit stages on the same branch/PR;
-no intermediate merge is requested.
+On 2026-10-22, after the explanation of this ADR's compiled deployment/rebuild
+tradeoff, whole-set validation, separate stopped preparation and supervised
+lifecycle/health, the human explicitly replied **"yeah approved"**. This
+approves ADR 0006's design choices for implementation on the existing
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
+
+This decision does not adopt an unreviewed dependency, evaluate or mark the
+reviewer-owned quality checklist, accept numbered feature 004 or authorize
+merge. Earlier plan/research/contract artifacts and ledger notes retain their
+historical Proposed/pending-approval statements; this later explicit decision
+is the current authority for ADR status. Those artifacts and evidence hashes
+remain unchanged. **Checklist remains the next separate stage** on this same
+branch/PR; recording approval does not execute it or begin implementation.
