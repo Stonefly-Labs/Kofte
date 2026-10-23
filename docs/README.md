@@ -249,7 +249,7 @@ measurement or usability study is claimed. The same
 The accepted ledger and all five acceptance hashes were verified on updated
 main before 004 began; acceptance itself did not start the next feature.
 
-**004 / specify and clarify are complete** on `feature/004-module-lifecycle`.
+**004 / specify, clarify and plan are complete** on `feature/004-module-lifecycle`.
 The [draft specification](../specs/004-module-lifecycle/spec.md) and
 [16/16 author checklist](../specs/004-module-lifecycle/checklists/requirements.md)
 define five stories, 20 scenarios, 20 requirements and six outcomes for trusted
@@ -258,10 +258,21 @@ health/recovery diagnostics. The exact inventory input and project template
 remain authoritative. Clarification found all ten requirements categories clear,
 with zero questions; the spec and 16/16 author checklist remain unchanged.
 The [coverage assessment](development/spec-workflow.md#invocation-and-current-progress)
-distinguishes requirements from the remaining planning/ADR choices.
-**Plan is next**, separately on the same branch and
-[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7);
-no module runtime, reviewer-owned quality checklist or acceptance is claimed.
+distinguishes requirements from the then-open planning choices. The
+[plan](../specs/004-module-lifecycle/plan.md),
+[research](../specs/004-module-lifecycle/research.md),
+[data model](../specs/004-module-lifecycle/data-model.md),
+[author contract](../specs/004-module-lifecycle/contracts/composition-v1.md),
+[operator contract](../specs/004-module-lifecycle/contracts/operator-v1.md) and
+[future guide](../specs/004-module-lifecycle/quickstart.md) now resolve those
+choices: explicit trusted composition, bounded whole-set preflight, offline
+preparation, supervised lifecycle and private current-attempt health.
+[ADR 0006](adr/0006-module-composition-lifecycle.md) is **Proposed**; human
+approval is required before implementation. Both constitutional design checks
+pass, not runtime tests or dependency adoption. **Checklist is next** on the
+same branch and [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7),
+generated unchecked for reviewer-owned evaluation. No module runtime or
+acceptance is claimed.
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 

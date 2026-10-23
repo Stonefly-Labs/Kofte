@@ -18,7 +18,7 @@
     },
     "004": {
       "directory": "specs/004-module-lifecycle",
-      "next_step": "plan"
+      "next_step": "checklist"
     }
   },
   "active": null,
@@ -776,6 +776,23 @@
       "note": "Executed speckit-clarify using the explicitly recorded specs/004-module-lifecycle path and adopted constitution v2.0.1. No critical ambiguities detected worth formal clarification; 0 questions asked or answered, no invented human decisions, and spec.md remains byte-for-byte unchanged. All ten requirements-level taxonomy categories are Clear: scope/behavior (Scope, US1-5, FR-001-003/011-013/019/020); domain/data (Key Entities, FR-008-015, immutable IDs/assignments and desired-versus-observed state); interaction/UX (US1-5, operational states and no new visual surface); nonfunctional quality (FR-004/014/016-018, SC-001-006 and retained startup/maintenance envelopes); integration/dependencies (accepted 002/003, explicit interfaces and later-runtime exclusions); edge cases/failures (US2-5, FR-005/010/013/015/016, contention, uncertain effects, cleanup and corrected retry); constraints/tradeoffs (trusted code, controlled restart, fail-closed composition, no implicit cascade/global rollback); terminology (Key Entities and consistent naming); completion signals (Required Validation maps all 20 scenarios, 20 requirements and six outcomes); miscellaneous/placeholders (no unresolved material marker). Revalidated built-in author checklist: 16/16 to 16/16, no newly passing items, regressions or unchecked criteria; its bytes remain unchanged. Exact discovery/packaging, public signatures, state representation, deterministic tie rule, finite admitted bounds, per-stage budgets, health freshness and cleanup supervision remain explicitly assigned to plan/ADR, not unanswered product intent. Coverage evidence is in docs/development/spec-workflow.md. No before/after clarification hooks configured. No product/design/task changes, reviewer-owned checklist marking, implementation or human acceptance. Plan is next on the same feature branch/draft PR #7, not executed here; no intermediate merge.",
       "evidence_sha256": {
         "specs/004-module-lifecycle/spec.md": "f1a4b1ccec8dc0a0f606a6ec1724cb5f52861a31334f9c866eed213cff16a0f5"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "plan",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-23T03:15:09+00:00",
+      "completed_at": "2026-10-23T03:29:52+00:00",
+      "outcome": "pass",
+      "note": "Executed speckit-plan on the original feature/004-module-lifecycle and draft PR #7 with explicit specs/004-module-lifecycle context and resolved project template. Produced plan, source-backed twelve-decision research, data model, versioned composition/author and operator contracts, future executable validation guide and Proposed ADR 0006. Both constitutional design gates pass across all twelve principles; mappings cover all 20 requirements, 20 scenarios and six outcomes. Design selects compiled trusted deployments, private persistent desired selection, bounded deterministic whole-set preflight, native DI with per-owner scopes, separate admitted stopped preparation and unprivileged serving, owner-bound 003 migrations/history, three-cycle data preservation, honest supervised exit/cleanup, current-attempt dependency health and safe aggregate/diagnostic projection. Accepted 002 grammar/ranges/category metadata and 003 mappings/privileges/format/deadlines/recovery are unchanged. Official Microsoft references resolve DI/cancellation/process constraints; Microsoft Learn/Context7 MCP unavailable, not fabricated. No before/after plan hooks. Spec and 16/16 author checklist remain byte-for-byte unchanged; no product/test source, package installation/lock change, tasks, reviewer-owned quality marking or feature acceptance. ADR 0006 requires human approval and DI dependency-edge adoption review before implementation. Checklist is next, generated unchecked for reviewer-owned evaluation on this same branch/draft PR; not executed here and no intermediate merge.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/plan.md": "fb30c0d493e87dfef4d8d697428914202c6f125524d4772dd3b655b796407939",
+        "specs/004-module-lifecycle/research.md": "063d125c357ab42b8095b286436849b87283dd1f98dd3978070f7068652a3c19",
+        "specs/004-module-lifecycle/quickstart.md": "af39664af78efb10b53c5fd329e131e8e224b3c4ea6308cadf9848234b3c05d9"
       }
     }
   ]

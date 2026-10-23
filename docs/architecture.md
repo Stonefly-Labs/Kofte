@@ -256,19 +256,28 @@ production-readiness claim or later-scope waiver. The same
 Its accepted ledger and all five acceptance hashes were verified on updated
 main before 004 began; acceptance itself started no new feature.
 
-**004 / specify and clarify are complete** on `feature/004-module-lifecycle`.
+**004 / specify, clarify and plan are complete** on `feature/004-module-lifecycle`.
 The [draft requirements](../specs/004-module-lifecycle/spec.md) and
 [16/16 author checklist](../specs/004-module-lifecycle/checklists/requirements.md)
 define trusted module composition, dependency/configuration/contribution
 preflight, ordered initialization/migrations, data-preserving restart-controlled
 disable/re-enable and honest health/failure observations. They preserve accepted
 002/003 contracts and exclude public lifecycle administration, hostile-code
-isolation, hot-unload and later extension runtimes. Exact public contracts,
-packaging and budgets remain planning/ADR choices. Clarification found all ten
+isolation, hot-unload and later extension runtimes. Clarification found all ten
 requirements categories clear, with zero questions and no spec/checklist changes;
-no design choice or human answer was invented. **Plan is next**, separately on
-this same feature branch and [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7),
-not implementation or acceptance.
+no design choice or human answer was invented. The
+[plan](../specs/004-module-lifecycle/plan.md) and
+[Proposed ADR 0006](adr/0006-module-composition-lifecycle.md) now define explicit
+compiled discovery, stable bounded whole-set preflight, native DI and separate
+stopped preparation versus supervised serving. Assigned migrations/privilege
+separation and exact stores remain accepted 003; no anonymous module route or
+later capability runtime is added. Current-attempt private health drives only
+the existing aggregate readiness contract. Both constitutional design gates
+pass, but ADR approval, dependency-edge adoption and actual process/provider/
+privacy proof remain future gates. **Checklist is next**, generated unchecked
+for reviewer-owned evaluation, on this same branch and
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), not implementation
+or acceptance.
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.

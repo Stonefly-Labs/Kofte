@@ -137,7 +137,7 @@ runtime or human usability result is inferred. The same
 accepted ledger and all five acceptance hashes were verified on updated main
 before starting 004. Acceptance does not authorize assistant merge.
 
-**004 / specify and clarify are complete** on `feature/004-module-lifecycle`.
+**004 / specify, clarify and plan are complete** on `feature/004-module-lifecycle`.
 The [draft specification](specs/004-module-lifecycle/spec.md) uses the exact
 inventory prompt and resolved template: five independent stories, 20 scenarios,
 20 requirements and six outcomes cover composition, lifecycle, disable/re-enable
@@ -145,10 +145,17 @@ and health/failure behavior. Its
 [built-in author checklist](specs/004-module-lifecycle/checklists/requirements.md)
 satisfies 16/16 criteria. Clarification found all ten requirements categories
 clear, with zero questions and no specification/checklist changes. Exact
-packaging/contracts, ordering and finite budgets remain planning/ADR choices,
-not missing product decisions. **Plan is next** on this same branch and
+packaging/contracts, ordering and finite budgets were assigned to planning,
+not missing product decisions. The [plan](specs/004-module-lifecycle/plan.md),
+research, data model, versioned author/operator contracts and future guide now
+define explicit compiled discovery, whole-set preflight, stopped preparation,
+supervised lifecycle and safe health within retained storage/startup limits.
+[ADR 0006](docs/adr/0006-module-composition-lifecycle.md) remains **Proposed**,
+requiring human approval before implementation. No product code/package was
+adopted and no future command was executed. **Checklist is next**, generated
+unchecked for explicit reviewer evaluation, on this same branch and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), not implementation,
-reviewer-owned checklist review, acceptance or a merge.
+acceptance or a merge.
 The following paragraphs preserve the historical design-stage checkpoint.
 
 Spec **003 / specify and clarify** establish the

@@ -144,7 +144,7 @@ decision-only stage. The same
 The accepted ledger and all five acceptance hashes were verified on updated
 main before 004 began; acceptance itself did not start the next feature.
 
-**004 / specify and clarify are complete**, not a module loader implementation.
+**004 / specify, clarify and plan are complete**, not a module loader implementation.
 The [draft requirements](../../specs/004-module-lifecycle/spec.md) and
 [16/16 author checklist](../../specs/004-module-lifecycle/checklists/requirements.md)
 cover empty/public-test-module boot, preflight, dependency-ordered migrations,
@@ -152,9 +152,17 @@ data-preserving disable/re-enable and safe health/failure diagnostics.
 Supported commands, product code and dependencies remain unchanged; future
 validation is not an executed product check. Clarification found no material
 requirements ambiguity, asked zero questions and left the spec and 16/16 author
-checklist unchanged. Exact contracts, packaging and finite budgets remain
-planning/ADR choices. **Plan is next**, separately on
-`feature/004-module-lifecycle` and [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
+checklist unchanged. The [plan](../../specs/004-module-lifecycle/plan.md),
+versioned author/operator contracts and
+[future validation guide](../../specs/004-module-lifecycle/quickstart.md) now
+propose a compiled trusted catalog, private selection, whole-set preflight,
+explicit stopped preparation and supervised serving/health.
+`KOFTE_MODULES_FILE`, `--modules` commands and composition test projects in
+those artifacts **do not exist yet**. Existing commands/toolchain remain
+unchanged. [ADR 0006](../adr/0006-module-composition-lifecycle.md) needs human
+approval before implementation. **Checklist is next**, generated unchecked
+for reviewer-owned evaluation, on `feature/004-module-lifecycle` and
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).

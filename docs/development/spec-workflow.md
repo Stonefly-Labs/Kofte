@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** **004 / specify and clarify are complete** on
+**Current checkpoint:** **004 / specify, clarify and plan are complete** on
 `feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
 The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the
 exact fenced inventory input and resolved project template. Five independently
@@ -36,18 +36,40 @@ coverage is:
 | Completion signals | Clear | Required Validation maps all 20 scenarios, 20 functional requirements and six measurable outcomes to meaningful public/process/provider/privacy and retained foundation evidence. |
 | Miscellaneous and placeholders | Clear | No unresolved clarification markers; Planning choices explicitly assigns design details without leaving an unanswered product decision. |
 
-Discovery/packaging, exact versioned signatures, state representation, stable
-ordering tie rule, admitted graph/diagnostic limits, per-stage time budgets,
-health freshness and cleanup supervision remain **planning/ADR choices**, not
-unanswered requirements questions or designs selected by clarification. Plan
-must demonstrate these choices fit the accepted startup/maintenance envelopes.
-No `.specify/extensions.yml` exists, so neither before nor after clarification
-hooks are configured.
+Discovery/packaging, signatures, state representation, ordering, admitted
+limits, budgets, health freshness and cleanup were planning/ADR choices, not
+unanswered requirements or designs selected by clarification.
 
-No product code, dependency, design/task artifact, reviewer-owned quality
-checklist or feature acceptance is introduced. **Plan is next**, in a separate
-invocation on this same feature branch and
-[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
+**Plan checkpoint:** The [plan](../../specs/004-module-lifecycle/plan.md),
+[research](../../specs/004-module-lifecycle/research.md),
+[data model](../../specs/004-module-lifecycle/data-model.md),
+[author/composition contract](../../specs/004-module-lifecycle/contracts/composition-v1.md),
+[operator contract](../../specs/004-module-lifecycle/contracts/operator-v1.md) and
+[future validation guide](../../specs/004-module-lifecycle/quickstart.md)
+resolve twelve traced choices: explicit compiled catalog/private desired file;
+bounded deterministic whole-set preflight; native DI and ordered phase barriers;
+accepted owner-bound storage with separate stopped preparation and read-only
+serving verification; data-preserving disable/re-enable; supervised actual
+termination; fresh private own/dependency health and safe aggregate status;
+bounded correlated diagnostics and independent public/real-provider evidence.
+No future executable capability or anonymous lifecycle-control route is added.
+
+[ADR 0006](../adr/0006-module-composition-lifecycle.md) is **Proposed** and
+requires explicit human approval before implementation. Before-research and
+after-design checks cover all twelve principles and pass at design level;
+accepted 002/003 grammar/storage/privilege/deadline rules are unchanged.
+The planned DI-abstractions project edge still requires actual lock/license/
+provenance review before adoption. Microsoft Learn/Context7 MCP are unavailable;
+the bounded research used verified official Microsoft web references instead.
+No `.specify/extensions.yml` exists; neither pre/post planning hook is configured.
+
+The spec and 16/16 author checklist remain byte-for-byte unchanged. No product
+code, dependency installation/lock change, tasks, reviewer-owned quality
+checklist, runtime proof or feature acceptance is introduced.
+**Checklist is next**, generated unchecked and presented for reviewer-owned
+evaluation in a separate invocation on this same feature branch and
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7). A reviewer must
+explicitly request assisted evaluation before the assistant marks any items.
 No intermediate merge or permission to chain stages is implied.
 
 **003 acceptance checkpoint:** 003 is **explicitly human-accepted and
