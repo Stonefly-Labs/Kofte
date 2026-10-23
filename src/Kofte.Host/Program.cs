@@ -1,6 +1,9 @@
 using System.Net;
 using Kofte.Host.Bootstrap;
 using Kofte.Host.Features.Bootstrap;
+using Kofte.Host.Features.StorageMaintenance;
+using Kofte.Infrastructure.Storage;
+using Kofte.Infrastructure.Storage.Registry;
 using Microsoft.Data.Sqlite;
 using Npgsql;
 
@@ -14,6 +17,15 @@ public static class BootstrapProgram
     {
         try
         {
+            if (args.FirstOrDefault() == "--registry-worker")
+            {
+                return await MaintenanceWorker.ExecuteAsync(args);
+            }
+            if (args.FirstOrDefault() == "--registry")
+            {
+                await RegistryCommand.RunAsync(args);
+                return 0;
+            }
             var config = BootstrapConfiguration.FromEnvironment();
             if (args.Length != 0)
             {
@@ -24,11 +36,14 @@ public static class BootstrapProgram
                 ? new SqlitePlatformStore(config.DataRoot)
                 : new PostgresPlatformStore(config.PostgresConnection ??
                     throw new BootstrapException(BootstrapError.ConfigurationInvalid));
-            using var lease = store is SqlitePlatformStore sqlite ? StoreLease.Acquire(sqlite.Root) : null;
+            using var lease = store is SqlitePlatformStore sqlite
+                ? Kofte.Host.Bootstrap.StoreLease.Acquire(sqlite.Root) : null;
             using var startupBudget = new CancellationTokenSource(TimeSpan.FromSeconds(3));
             await using var postgresLease = store is PostgresPlatformStore postgres
                 ? await postgres.AcquireHostLeaseAsync(startupBudget.Token) : null;
             await store.ProbeAsync(startupBudget.Token);
+            var installation = StorageServices.Installation(config);
+            await StorageReconciliation.ValidateStartupAsync(installation, startupBudget.Token);
             var builder = WebApplication.CreateSlimBuilder();
             builder.Configuration.Sources.Clear();
             builder.Configuration.AddInMemoryCollection();
@@ -40,7 +55,8 @@ public static class BootstrapProgram
                 bindings.Add(config.BackendOrigin.AbsoluteUri);
             builder.WebHost.UseUrls([.. bindings])
                 .UseKestrel(options => options.AddServerHeader = false);
-            builder.Services.AddSingleton(config);
+            builder.Services.AddSingleton(config with { PostgresConnection = null });
+            builder.Services.AddStorageServices(installation);
             builder.Services.AddSingleton<IPlatformStore>(store);
             builder.Services.AddSingleton<HealthHandler>();
             if (builder.Environment.IsDevelopment()) builder.Services.AddBootstrapOpenApi();
@@ -57,6 +73,16 @@ public static class BootstrapProgram
         catch (BootstrapException error)
         {
             BootstrapDiagnostics.Failure(error.Code);
+            return 1;
+        }
+        catch (StorageException)
+        {
+            BootstrapDiagnostics.Failure(BootstrapError.StorageInvalid);
+            return 1;
+        }
+        catch (StorePathException)
+        {
+            BootstrapDiagnostics.Failure(BootstrapError.StorageInvalid);
             return 1;
         }
         catch (Exception error) when (error is IOException or UnauthorizedAccessException or

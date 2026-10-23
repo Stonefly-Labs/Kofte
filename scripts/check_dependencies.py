@@ -49,7 +49,7 @@ nuget_manifest_lock_drift nuget_metadata_invalid nuget_package_evidence_missing
 nuget_project_reference_drift nuget_projects_missing nuget_provenance_drift nuget_restore_evidence_drift
 nuget_source_unreviewed postgres_image_pin_invalid workflow_failure_policy_invalid workflow_image_unreviewed
 """.split())
-ADOPTED_SOURCE_NOTICE = "582fe8e5fa28d4c52e052338d461217417e5f6a1327d06c7a157b3b5f728da75"
+ADOPTED_SOURCE_NOTICE = "86441543a24d144484dea2b78b5eb4dce857099a3dfe1df816c5664c6497d34a"
 
 
 class DependencyError(Exception):

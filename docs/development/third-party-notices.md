@@ -31,3 +31,20 @@ SOFTWARE.
 
 Lucide icons are used under their packaged ISC and icon-specific notices;
 retain `lucide-react`'s original license files in redistributed output.
+
+## Spec 003 storage dependencies
+
+EF Core, Relational, Sqlite, Sqlite.Core, Abstractions and Analyzers 10.0.13,
+and Microsoft.Extensions.Caching.Memory/Abstractions 10.0.13, are MIT-licensed
+Microsoft components. Retain their original copyright/license attribution and
+the caching packages' `THIRD-PARTY-NOTICES.TXT` on redistribution.
+The exact-source license is
+[dotnet/dotnet, commit 4099f83977f4d29604a9aeb971fb0a7bc1d5f699](https://github.com/dotnet/dotnet/blob/4099f83977f4d29604a9aeb971fb0a7bc1d5f699/src/efcore/LICENSE.txt).
+
+Npgsql.EntityFrameworkCore.PostgreSQL 10.0.3 uses the permissive PostgreSQL
+license. Retain its copyright, license and disclaimer from
+[npgsql/efcore.pg, commit 5e912bf071068a44e5abbdab497b313ba99d3ee1](https://github.com/npgsql/efcore.pg/blob/5e912bf071068a44e5abbdab497b313ba99d3ee1/LICENSE).
+No covered upstream source is modified. SQLite and its native bundle retain
+the existing reviewed graph and notices; this does not approve stripping
+native-library notices or imply all dependencies have the application's MIT
+license. The complete inventory and compliance decisions remain authoritative.

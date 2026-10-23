@@ -74,6 +74,41 @@ PLATFORM_REQUIRED_FILES = (
 )
 HOST = "src/Kofte.Host/bin/Release/net10.0/Kofte.Host.dll"
 INTEGRATION = "tests/integration/Kofte.Host.IntegrationTests"
+STORAGE_INTEGRATION = "tests/integration/Kofte.Storage.IntegrationTests"
+STORAGE_SCENARIOS = (
+    "clean-install", "no-storage", "same-id-retry", "collision", "path-rejection",
+    "interrupted-provisioning", "corrected-retry", "isolated-upgrade", "stopped-restore",
+)
+STORAGE_REQUIRED_FILES = (
+    "src/Kofte.Infrastructure/Kofte.Infrastructure.csproj",
+    "src/Kofte.Platform/Modules/Storage/StorageContracts.cs",
+    f"{STORAGE_INTEGRATION}/Kofte.Storage.IntegrationTests.csproj",
+    "tests/integration/Kofte.TestSupport/StorageScenarioCatalog.cs",
+    "tests/integration/Kofte.TestSupport/StorageCrashWorker.cs",
+    "tests/integration/Kofte.TestSupport/StorageResultChecks.cs",
+    "tests/contract/Kofte.Storage.Consumer/Kofte.Storage.Consumer.csproj",
+    "tests/contract/Kofte.Storage.Consumer/Program.cs",
+    *(f"{STORAGE_INTEGRATION}/{name}.cs" for name in (
+        "Registry/RegistrationTests", "Registry/RestartTests", "Registry/RegistrationConcurrencyTests",
+        "Registry/AllocationCollisionTests", "Registry/RegistryConstraintTests", "Registry/RegistryFormatTests",
+        "Registry/PostgresRegistryFormatTests", "Providers/ModuleMigrationTests", "Providers/AssignedModelTests",
+        "Providers/StorageBoundaryTests", "Providers/StoragePrivacyTests", "Providers/StorageMaintenanceDiagnosticsTests",
+        "Recovery/ProvisioningCrashTests",
+        "Recovery/MigrationCrashTests", "Recovery/MigrationRecoveryRefusalTests", "Recovery/OperationDeadlineTests",
+        "Recovery/PostgresLeaseLossTests", "Recovery/RegistryUpgradeTests", "Recovery/RecoverySetTests",
+        "Recovery/AbandonedLockRefusalTests", "Recovery/RecoveryDiagnosticsTests",
+        "Recovery/MaintenanceObserverFailureTests",
+        "Recovery/CorrectedRetryTests",
+    )),
+    *(f"tests/contract/Kofte.Platform.ContractTests/Modules/Storage/{name}.cs" for name in (
+        "StorageConsumerHarness", "StorageConsumerHarnessTests", "RegistrationContractTests",
+        "BindingContractTests", "ModuleContractTests", "RecoveryContractTests",
+        "StorageGuideTests", "StorageDiagnosticsTests",
+    )),
+    *(f"tests/contract/Kofte.Storage.Consumer/Scenarios/{name}.cs" for name in (
+        "RegistrationScenarios", "CollisionScenario", "ModuleScenarios", "RecoveryScenarios", "CorrectedRetryScenario",
+    )),
+)
 FIXTURE = f"{INTEGRATION}/bin/Release/net10.0/Kofte.Host.IntegrationTests.dll"
 QUALITY_COMMANDS = (
     ("repository", ("python3", "scripts/check_repository.py")),
@@ -119,6 +154,13 @@ def workspace_inventory(root):
         if any(not isinstance(scripts.get(name), str) or not scripts[name].strip() for name in required):
             raise VerificationError("required_workspace_script_missing")
 
+def storage_inventory(root):
+    if any(not (root / path).is_file() for path in STORAGE_REQUIRED_FILES):
+        raise VerificationError("storage_target_missing")
+    catalog = (root / "tests/integration/Kofte.TestSupport/StorageScenarioCatalog.cs").read_text()
+    if not set(STORAGE_SCENARIOS).issubset(set(re.findall(r'"([a-z-]+)"', catalog))):
+        raise VerificationError("storage_scenario_missing")
+
 
 def groups(suite, provider=None):
     if suite == "all":
@@ -140,7 +182,7 @@ def safe_command(command):
     """Only repository-relative arguments and plain options may enter reports."""
     result = []
     for item in map(str, command):
-        query = re.fullmatch(r"/\[\(Suite=recovery\)&\(Provider=(sqlite|postgres)\)\]", item)
+        query = re.fullmatch(r"/\[\(Suite=(recovery|privacy)\)&\(Provider=(sqlite|postgres)\)\]", item)
         if (item.startswith("/") and not query or ".." in Path(item).parts or len(item) > 180
                 or not re.fullmatch(r"[-a-zA-Z0-9_./:=*]+", item)
                 and not query
@@ -183,6 +225,26 @@ def command_diagnostics(command):
         ["npm", "run", "dependencies:check"], ["python3", "scripts/check_dependencies.py"],
     ):
         return runtime_support.CommandDiagnostics("dependency", check_dependencies.FAILURE_CODES)
+    if list(command[:4]) == ["dotnet", "test", "--project", STORAGE_INTEGRATION]:
+        tests = set()
+        for path in (ROOT / STORAGE_INTEGRATION).rglob("*.cs"):
+            if {"bin", "obj"}.intersection(path.relative_to(ROOT).parts):
+                continue
+            source = path.read_text()
+            namespace = re.search(r"^namespace (Kofte\.Storage\.IntegrationTests(?:\.[A-Za-z0-9_]+)*);",
+                                  source, re.MULTILINE)
+            if namespace:
+                classes = re.findall(r"public (?:(?:abstract|sealed|partial|static) )*class ([A-Za-z0-9_]+)", source)
+                methods = re.findall(r"public (?:async )?(?:Task(?:<[^<>]+>)?|void) ([A-Za-z0-9_]+)\(", source)
+                tests.update(f"{namespace[1]}.{owner}.{method}" for owner in classes for method in methods)
+        codes = (
+            "Busy", "Conflict", "TargetReserved", "PathRejected", "OwnerMismatch", "Missing", "Corrupt",
+            "Incomplete", "ReconciliationRequired", "VersionUnsupported", "PrivilegeDenied",
+            "Unavailable", "DeadlineExceeded", "Cancelled", "RequestInvalid",
+        )
+        return runtime_support.CommandDiagnostics("storage", (
+            *codes, *("storage_" + re.sub(r"(?<!^)(?=[A-Z])", "_", code).lower() for code in codes),
+        ), tests)
     return None
 
 
@@ -349,11 +411,10 @@ class Runner:
 
     def command(self, name, command, *, environment=None, timeout=900, health_check=None, capture=None,
                 diagnostics=None):
-        def execute(step):
-            diagnostic = diagnostics or command_diagnostics(command)
+        def run(step, diagnostic, actual_command, storage_report=None):
             processes = OwnedProcesses(self.root, environment or self.environment, capture=capture or diagnostic)
             try:
-                child = processes.start(command, stdin=subprocess.DEVNULL)
+                child = processes.start(actual_command, stdin=subprocess.DEVNULL)
                 try:
                     if health_check is None:
                         step["exitCode"] = child.wait(timeout=timeout)
@@ -380,10 +441,29 @@ class Runner:
                 finally:
                     if diagnostic:
                         if step["exitCode"] not in (None, 0):
+                            if storage_report is not None:
+                                diagnostic.read_storage_report(storage_report)
                             step.update(diagnostic.safe_fields())
                         diagnostic.clear()
             if diagnostic:
                 diagnostic.failures.check()
+
+        def execute(step):
+            diagnostic = diagnostics or command_diagnostics(command)
+            if diagnostic and diagnostic.kind == "storage":
+                with private_root(self.root) as directory:
+                    step["command"] = safe_command([
+                        *command, "--report-xunit-xml",
+                        "--report-xunit-xml-filename", "storage.xml",
+                        "--results-directory", "<private-results>",
+                    ])
+                    run(step, diagnostic, [
+                        *command, "--report-xunit-xml",
+                        "--report-xunit-xml-filename", "storage.xml",
+                        "--results-directory", str(directory),
+                    ], directory / "storage.xml")
+            else:
+                run(step, diagnostic, command)
         self.operation(name, execute, command)
 
     def versions(self):
@@ -790,19 +870,21 @@ def provider_environment(runner, arguments, provider):
     return environment
 
 
-def integration_command(provider, suite=None):
+def integration_command(provider, suite=None, project=INTEGRATION):
     selector = (
         ["--filter-query", f"/[(Suite={suite})&(Provider={provider})]"] if suite
         else ["--filter-trait", f"Provider={provider}"]
     )
     return [
-        "dotnet", "test", "--project", INTEGRATION, "--no-restore", "-c", "Release",
+        "dotnet", "test", "--project", project, "--no-restore", "-c", "Release",
         *selector, "--minimum-expected-tests", "1",
     ]
 
 
 def execute_suite(runner, suite, provider, arguments):
     runner.operation("workspace-inventory", lambda _: workspace_inventory(runner.root))
+    if suite in ("quality", "unit", "integration", "recovery", "contract", "privacy"):
+        runner.operation("storage-inventory", lambda _: storage_inventory(runner.root))
     if suite in ("quality", "unit", "contract"):
         def platform_inventory(_):
             if any(not (runner.root / path).is_file() for path in PLATFORM_REQUIRED_FILES):
@@ -837,16 +919,31 @@ def execute_suite(runner, suite, provider, arguments):
             f"integration-{provider}", integration_command(provider),
             environment=provider_environment(runner, arguments, provider),
         )
+        runner.command(
+            f"storage-integration-{provider}", integration_command(provider, project=STORAGE_INTEGRATION),
+            environment=provider_environment(runner, arguments, provider),
+        )
     elif suite in ("recovery", "contract", "privacy"):
         if suite == "contract":
+            public_environment = provider_environment(
+                runner, arguments, "postgres" if provider in ("postgres", "both") else "sqlite",
+            )
+            public_selector = [] if provider == "both" else [
+                "--filter-not-trait", f"Provider={'postgres' if provider == 'sqlite' else 'sqlite'}",
+            ]
             runner.command("manifest-author-build", [
                 "dotnet", "build", "tests/contract/Kofte.Manifest.Consumer",
                 "--no-restore", "-c", "Release", "-warnaserror",
             ])
+            runner.command("storage-author-build", [
+                "dotnet", "build", "tests/contract/Kofte.Storage.Consumer",
+                "--no-restore", "-c", "Release", "-warnaserror",
+            ])
             runner.command("platform-public-contracts", [
                 "dotnet", "test", "--project", "tests/contract/Kofte.Platform.ContractTests",
-                "--no-restore", "-c", "Release", "--minimum-expected-tests", "1",
-            ])
+                "--no-restore", "-c", "Release", *public_selector,
+                "--minimum-expected-tests", "1",
+            ], environment=public_environment)
             runner.command("module-manifest-schema", [
                 "npm", "run", "test", "--workspace", "tests/contract", "--", "module-manifest.test.ts",
             ])
@@ -865,6 +962,17 @@ def execute_suite(runner, suite, provider, arguments):
                     f"recovery-{selected}-native", integration_command(selected, "recovery"),
                     environment=provider_environment(runner, arguments, selected),
                 )
+            if suite in ("recovery", "privacy"):
+                environment = provider_environment(runner, arguments, selected)
+                runner.command(
+                    f"storage-{suite}-{selected}",
+                    integration_command(selected, suite, project=STORAGE_INTEGRATION), environment=environment,
+                )
+                runner.command(f"storage-public-{suite}-{selected}", [
+                    "dotnet", "test", "--project", "tests/contract/Kofte.Platform.ContractTests",
+                    "--no-restore", "-c", "Release", "--filter-query",
+                    f"/[(Suite={suite})&(Provider={selected})]", "--minimum-expected-tests", "1",
+                ], environment=environment)
             canary = f"bootstrap-privacy-canary-{uuid.uuid4().hex}" if suite == "privacy" else None
             with runtime(
                 runner, selected, arguments.disposable_postgres,
@@ -901,6 +1009,10 @@ def execute_suite(runner, suite, provider, arguments):
             ], environment=session.environment, health_check=session.check)
     elif suite == "startup":
         runner.build_runtime()
+        runner.command("startup-storage-fixture-build", [
+            "dotnet", "build", "tests/contract/Kofte.Storage.Consumer",
+            "--no-restore", "-c", "Release", "-warnaserror",
+        ])
         output_root = owned_directory(runner.root, "tests/e2e/test-results")
         directory = output_root / f"verify-startup-{uuid.uuid4().hex}"
         directory.mkdir(mode=0o700)

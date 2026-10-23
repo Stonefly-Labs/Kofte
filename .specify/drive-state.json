@@ -11,6 +11,10 @@
     "002": {
       "directory": "specs/002-platform-contracts",
       "next_step": "accepted"
+    },
+    "003": {
+      "directory": "specs/003-storage-registry",
+      "next_step": "accepted"
     }
   },
   "active": null,
@@ -398,6 +402,346 @@
         "specs/002-platform-contracts/checklists/requirements.md": "415f42bcdffc301c930b0bfb6af2dc9a4796f8a604a8540810d910763087a71b"
       },
       "human_approval": "spec is fully human approved"
+    },
+    {
+      "spec": "003",
+      "step": "specify",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-22T01:59:17+00:00",
+      "completed_at": "2026-10-22T02:03:38+00:00",
+      "outcome": "pass",
+      "note": "Executed speckit-specify with the exact inventory003 fenced prompt and resolved project spec override on fresh feature/003-storage-registry from updated origin/main66f0e4a. Verified prerequisite002 explicit human acceptance, merged PR5 and all five acceptance evidence hashes on main. spec.md and built-in author checklist define five independently testable stories,18 Given/When/Then scenarios,16 functional requirements,six measurable outcomes and all twelve principles: immutable allocation, durable UNIQUE/concurrency protection, protected PostgreSQL schemas/history and SQLite files/paths, owner-bound module integration, bounded interruption/retry, registry/bootstrap migration, consistent recovery and private diagnostics. All16 author criteria satisfied; no material unresolved requirements question or before/after hooks. Allocator/hash,contract/status,budget,privilege/lock,migration and recovery mechanisms remain plan/ADR decisions, including explicit reconciliation of bootstrap PostgreSQL CREATE restrictions. No product code, plan, reviewer-owned quality checklist, later stage or human acceptance. Clarify is next on this branch and one draft PR; no intermediate merge.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/spec.md": "39db5abdb6d52662dc30f3b82918d4c1d5e945401e46666a3ca9a7a3ee0defef",
+        "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "clarify",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-22T02:11:58+00:00",
+      "completed_at": "2026-10-22T02:12:56+00:00",
+      "outcome": "pass",
+      "note": "Executed speckit-clarify using the explicit recorded directory and existing draft PR6. No critical ambiguities detected worth formal clarification; zero questions asked or answered and no invented human decisions. All ten taxonomy categories are Clear at requirements level: functional scope/behavior (Scope, US1-5, FR-001-016); domain/data (Key Entities, FR-002-010, one installation/provider assumption and SC-001-003 concurrency/restart matrix); interaction/UX (US1-5, Interfaces, Experience, explicit no-new-UI applicability); nonfunctional quality (FR-011/013/014, SC-002/004/005 finite planned budgets, available-environment evidence, least privilege/privacy); integration/dependencies (accepted002 contract, both real providers, FR-001/009/010/013/016 and named later-feature exclusions); edge cases/failures (Edge Cases, US2-4, FR-003/006-008/010/011/015); constraints/tradeoffs (Locked versus undecided, constitutional mapping, no sandbox/distributed ACID/automatic adoption); terminology (Key Entities, consistent module identity/allocation/assignment and Kofte technical identifiers); completion signals (18 scenarios, FR-001-016, SC-001-006, Required Validation mapping); miscellaneous/placeholders (no material unresolved markers or unsupported claims). Allocator/hash, exact fields/status/contracts, budgets, privilege separation, locking, migration and recovery verification are explicitly plan/ADR choices, including reconciliation of bootstrap PostgreSQL CREATE restrictions without weakening safety. Revalidated every author-checklist criterion: 16/16 to 16/16, no newly passing items, regressions or unchecked criteria. spec.md and requirements.md remain byte-for-byte unchanged. No before/after clarification hooks configured. README and related progress docs updated; no product changes, plan, reviewer-owned quality marking, implementation proof or feature acceptance. Plan is next on the same feature branch/draft PR, without intermediate merge.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/spec.md": "39db5abdb6d52662dc30f3b82918d4c1d5e945401e46666a3ca9a7a3ee0defef"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "plan",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-22T02:21:51+00:00",
+      "completed_at": "2026-10-22T02:37:27+00:00",
+      "outcome": "pass",
+      "note": "Executed speckit-plan with the recorded explicit feature directory and resolved project plan override. Produced plan.md, authoritative-source research.md, constrained registry data-model.md, versioned storage-v1 and migrations-and-recovery contracts, future-only quickstart.md and Proposed ADR 0005. Pre-research and post-design checks cover all twelve constitutional principles; mapping covers all 16 functional requirements, six outcomes and 18 acceptance scenarios. Design persists allocator-v1 outputs with durable UNIQUE constraints/exclusive installation maintenance, schema/file ownership markers, bounded diagnostics/deadlines, explicit crash-phase reconciliation, assigned EF model/cache/history/migration/snapshot binding, versioned transactional SQL registry upgrade and stopped complete recovery sets. Separate offline PostgreSQL provisioning reconciles schema creation with unchanged runtime no-database-CREATE and fixture safety; SQLite keeps private per-module files, existing stopped-host lease and explicit ambiguous-pre-marker blocks. Proposed EF package versions were researched, not installed/adopted; full graph/license/provenance review and explicit human ADR approval remain implementation gates. Microsoft Learn/Context7 MCP unavailable; official documentation/metadata fallback used. No before/after planning hooks configured. Spec and 16/16 author checklist unchanged; no product code, quality checklist, tasks, runtime proof or acceptance. Repository checker passed, all 103 Python tests passed, whitespace and seven-artifact local-link/placeholder checks passed. Same feature branch/draft PR 6; checklist is next and remains reviewer-owned, no intermediate merge.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/plan.md": "4bd71c5b4d243ac46ff0296f39b37446f135e4009ad57ce4f2dd613ec3cb3c46",
+        "specs/003-storage-registry/research.md": "3c0b79e07c89891881ba703608d07941febbc5f583f56c357057b5d252bd636e",
+        "specs/003-storage-registry/quickstart.md": "73c1642f59a9bc6ea570bb65694490100b7c92dd60d6f3a3d6a57230138e330a"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "checklist",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-22T02:49:16+00:00",
+      "completed_at": "2026-10-22T03:01:45+00:00",
+      "outcome": "pass",
+      "note": "Executed speckit-checklist against the recorded explicit feature directory and resolved template. Generated 36 unchecked requirements-quality criteria across storage/authority, migration/recovery, operability/privacy, measurable real-provider acceptance and explicit MCP/UI applicability. The reviewer explicitly selected \"assisted\" when asked to authorize assessment and marking with per-item evidence and human-attention findings. Assessed all 36 against spec, plan, research, data model, storage/migration/recovery contracts, future guide and constitution: 36/36 satisfied, all spec-traceable, with no blocking requirements-quality gap or constitutional conflict. Proposed ADR 0005 still needs explicit human approval before implementation: allocator ownership, separate offline PostgreSQL provisioner, assigned/restricted migration binding, finite budgets and stopped complete-set recovery. Actual dependency graph/license/provenance/native-asset/lock review and real-provider isolation/concurrency/crash/deadline/privacy/recovery proof remain implementation gates, not completed by checklist review. No material scope question or before/after checklist hooks. Spec/design/author checklist unchanged; no tasks, product code, runtime proof, ADR approval or feature acceptance. Tasks is next on the same branch/draft PR without intermediate merge.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/checklists/quality.md": "fbb14e996cbcd6c19959ee5e76369a3377943f4ca485b92fe7ed54467a23a6c5",
+        "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "tasks",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-22T03:12:47+00:00",
+      "completed_at": "2026-10-22T03:19:16+00:00",
+      "outcome": "pass",
+      "note": "Executed installed speckit-tasks with recorded explicit directory and resolved project tasks override; no before/after tasks hooks configured. Generated 78 sequential unchecked path-specific tasks:6 setup,8 foundational,13 US1,8 US2,12 US3,16 US4,7 US5,8 final evidence;24 parallel markers and130 explicit prerequisite edges, no forward edges/cycles. All16 FRs,six SCs,18 scenarios and principles I-XII map to concrete implementation/validation:real UNIQUE/CHECK and independent-process20x10 race matrices,immutable/no-storage/three restarts,assigned EF model/cache/history/migration preflight,all durable crash/deadline/cancellation/recovery states,stopped complete-set restore and legacy refusal,private diagnostic captures,independent public examples and existing full bootstrap/manifest/CI regressions. Data-model constraints retained;tests remain in dedicated projects,fixture/path/lease safety reused,normal runtime PostgreSQL CREATE still denied. US1 is first internal increment,not full feature/MVP completion. Passing analyze and explicit human ADR0005 approval gate all implementation/dependency adoption. Reviewed design/checklists and all prior003 evidence hashes unchanged;README and related progress docs updated. Repository checker,all103 Python tests,whitespace and inline task/graph/evidence audit passed. No product code,package install,runtime proof,analysis report,task/checklist marking,ADR approval or feature acceptance. Complete tasks only;analyze is next on the same feature branch/draft PR6 without intermediate merge.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/tasks.md": "a6298c5fb9e3ea11c5c1b004f7866cee2aeb68642a08198069d2787af6243047"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "analyze",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-22T03:28:08+00:00",
+      "completed_at": "2026-10-22T03:30:14+00:00",
+      "outcome": "pass",
+      "note": "Executed installed speckit-analyze with explicit recorded directory and verified prerequisites on the original feature branch/draft PR6. Persisted analysis.md with Result pass after six read-only detection passes across spec, plan, all78 tasks, supporting contracts/data/research/guide/checklists, Proposed ADR0005 and constitution v2.0.1. All16 FRs,six buildable SCs and18 scenarios have concrete implementation/validation coverage; all78 tasks mapped,24 parallel markers and130 valid earlier-ID prerequisite edges with no cycle. No actionable duplication,ambiguity,underspecification,coverage,inconsistency or constitutional finding. Inline structural audit confirmed sequential unchecked tasks,story counts13/8/12/16/7,reviewed checklists16/16 and36/36,no unresolved markers,and all nine prior003 historical artifact-hash references unchanged. No before/after analysis hooks. Analyzed inputs,ADR and task/checklist markers remain unchanged; wrapper publishes report,ledger and progress docs only. Implement is next on the same branch/draft PR; explicit human ADR0005 approval at T001 still gates all implementation/dependency adoption. Real-provider,crash/deadline/privacy,recovery/public guide and full local/CI proof remain unstarted. No product code,package adoption,runtime result,task completion,ADR approval,acceptance or later stage performed.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/analysis.md": "1f06511442821bf776d06743d6f19efbff8d91dee1b27144fc44507021da6420",
+        "specs/003-storage-registry/checklists/quality.md": "fbb14e996cbcd6c19959ee5e76369a3377943f4ca485b92fe7ed54467a23a6c5",
+        "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "implement",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-22T03:39:41+00:00",
+      "completed_at": "2026-10-22T16:02:44+00:00",
+      "outcome": "pass",
+      "note": "All 78 implementation tasks evidenced. Corrected product revision 4eb236a passes the complete local all gate: ten reports/200 steps, each completeGate true. Assessed head 92e942e passes product run 39808405984 (ten reports/200 steps) and repository run 39808405951, eleven contexts; merge 36d84a5 has verified main66f0e4a/head92e942e parents. Python111, repository/dependency/format/build/whitespace and focused actual-provider/process/guide gates pass. ADR 0005 explicitly human-approved; checklists remain 16/16 and 36/36. Final report, tasks and status docs reconciled; publish together on original branch/draft PR6. Converge next, not performed; no feature acceptance or merge.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/tasks.md": "0d87be6dc62362fcd52134cbcb3d327fd4d2510fb1bb3c002d43dca42f624d4c",
+        "specs/003-storage-registry/implementation.md": "bc020d12eee5fd9dbe19801d30fa9f77e14f75ef1684d34af3d66a97687c402d",
+        "specs/003-storage-registry/checklists/quality.md": "fbb14e996cbcd6c19959ee5e76369a3377943f4ca485b92fe7ed54467a23a6c5",
+        "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "converge",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-22T16:17:58+00:00",
+      "completed_at": "2026-10-22T16:32:22+00:00",
+      "outcome": "gaps",
+      "note": "Assessed 40 requirements/outcomes/scenarios, 14 plan decisions, all 78 original tasks and 12 principles at 85e566b. F1/F2 are HIGH partial public-example gaps; append-only T079/T080 preserve original tasks and all product/test/design inputs. Fresh unit, both-provider integration and contract checks pass 64 targeted steps; existing assessed-head CI reports pass 200 steps. Next invocation implement; no acceptance or product changes.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/tasks.md": "1bddb5d54928868a1ff9cb2061a3410c1f15608a834cb86501ea35b6394a26e5",
+        "specs/003-storage-registry/convergence.md": "0b94cf78ddafe3d085d977b3ece2563c6932d8998df2df1712709e4725c69dfa"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "implement",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-22T16:48:24+00:00",
+      "completed_at": "2026-10-22T17:01:38+00:00",
+      "outcome": "pass",
+      "note": "Implemented convergence remediation T079-T080 only. Public same-id-retry writes independent Alpha/Beta sentinels through assigned contexts, releases maintenance, and launches/reaps three distinct admitted processes; changed display/release re-registration and resolve preserve all assignment fields and both records (3 process restarts, 6 exact assignments, 6 retained sentinels). Public collision forces a distinct contender through fixture-only access to the existing allocator seam; the real UNIQUE reservation rejects within 30 seconds with storage_conflict/correct_configuration and unchanged durability, exact original assignment/data/complete physical+registry inventory, no contender allocation, and separate unowned-target preservation. Standalone/all supervisors and contract harness require semantic observations; focused omission/decrement regressions cannot pass on positive totals. All 80 tasks evidenced; checklists remain 16/16 and 36/36; no hooks or runtime rule/dependency/approved-intent changes. Passed focused 35 tests, all four exact published both-provider standalone/all guide selectors (4+4+1+1), full named both-provider contract suite (37 steps), dotnet format, warnings-as-errors solution build, repository check, 111 Python tests and diff check. Original full local/CI evidence is historical, not a new local full-gate claim; pushed-head CI is recorded in PR. Follow-up converge is next on the same branch/draft PR; no convergence assessment, review, acceptance, readiness or merge performed.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/tasks.md": "ba34dada5adbc45b979dfa3210f2ba1c0df76362983c83817d9b9fc163092fdd",
+        "specs/003-storage-registry/implementation.md": "cc2972468bd851bfbb279adad9ba9f86521253a11e2c37b577737ef5ba8fa9c8",
+        "specs/003-storage-registry/checklists/quality.md": "fbb14e996cbcd6c19959ee5e76369a3377943f4ca485b92fe7ed54467a23a6c5",
+        "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "converge",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-22T17:21:10+00:00",
+      "completed_at": "2026-10-22T17:27:41+00:00",
+      "outcome": "pass",
+      "note": "Executed follow-up speckit-converge at assessed head 151d75f against all 16 FRs, six SCs, 18 scenarios, fourteen plan decisions, all 80 tasks and twelve principles. Zero actionable missing/partial/contradicts/unrequested gaps; no constitutional violation. F1/T079 has three genuine admitted/reaped public process restarts, six exact assignment comparisons and six retained sentinel reads. F2/T080 forces the real distinct-ID registered-owner UNIQUE conflict with unchanged assignment/data/complete inventory and no contender allocation; separate unowned-target refusal remains. Standalone/all supervisors and harnesses require measured observations and reject omissions/decrements. tasks.md remains byte-for-byte unchanged at ba34dada; no product/test/design/checklist/dependency change or hooks. Fresh named unit and both-provider contract checks pass 48 steps; repository checker, 111 Python tests and diff check pass. Actual assessed-head eleven CI contexts and all ten downloaded product reports/200 steps pass; synthetic merge 3bb5894 parents match main66f0e4a/head151d75f. Historical original full-local evidence is not claimed as a new local full run. Preserved prior gaps report as history; updated progress docs. Review next on the same branch/draft PR6; no final review, acceptance, readiness or merge.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/tasks.md": "ba34dada5adbc45b979dfa3210f2ba1c0df76362983c83817d9b9fc163092fdd",
+        "specs/003-storage-registry/convergence.md": "dae58562234facaf235d9e75ddc9ee3d4a3c8a9ea9c83e59152448a8db556acb"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "review",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-22T18:56:22+00:00",
+      "completed_at": "2026-10-22T19:17:42+00:00",
+      "outcome": "changes",
+      "note": "Executed final spec-review rubric against assessed head 2d65cd0: all16FRs/sixSCs/18scenarios, fourteen plan decisions, T001-T080 and twelve principles inspected. Prior F1/T079 and F2/T080 closed by actual public process-restart/data and registered-owner UNIQUE preservation assertions. One MEDIUM evidence finding R1 remains: required changed-allocator persisted-owner retry and persisted no-storage-to-relational refusal regressions absent; bounded cross-source follow-up confirms neither is superseded. Production register code appears correct, with no demonstrated storage-engine defect or unresolved design decision. Appended exactly unchecked T081 for two inherited facts/four real-provider cases using existing fixture/internal seam and exact assignment/sentinel/revision/full-inventory preservation. Original80 task bytes/markers, implementation/convergence, requirements/design/ADR/checklists/product/test/dependency files remain preserved. Fresh quality19/unit11/integrationSQLite7+Postgres9/recovery38/contract37/privacy36 all pass:157 targeted steps, no new full-local claim. Actual assessed-head product39823017354/repository39823017532 CI all eleven contexts and ten downloaded targeted reports/200 steps pass; merge7f4d09e parents main66f0e4a/head2d65cd0 verified. Review/progress docs qualify historical completeness, no hooks. Next invocation implement T081 on original branch/draftPR6; no new approval, credential or merge prerequisite. No implementation, self-acceptance, readiness, merge or004 in this review stage.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/tasks.md": "1abd459afeb96bba10fdc4abbf5c02a110ac12d159a3766c88e81924b698dd00",
+        "specs/003-storage-registry/review.md": "3d0637b5239c1e5d898e66663a9617b3795e0cee0c7ed362d2d6c0d9288ac321",
+        "specs/003-storage-registry/checklists/quality.md": "fbb14e996cbcd6c19959ee5e76369a3377943f4ca485b92fe7ed54467a23a6c5",
+        "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "implement",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-22T19:34:19+00:00",
+      "completed_at": "2026-10-22T19:51:01+00:00",
+      "outcome": "pass",
+      "note": "T081 implemented: two inherited facts/four real-provider cases prove persisted-owner retry never calls a changed allocator and persisted no-storage cannot become relational; exact assignments/data/revisions/full inventory preserved. Baseline and restored focused4/4 pass; controlled behavior mutations fail4/4 as intended; production restored byte-for-byte. Quality19/unit11/SQLite integration7 pass; initial PostgreSQL model/boundary DeadlineExceeded in two existing cases did not reproduce in unchanged focused2/2 or full PostgreSQL9-step rerun. 46 targeted steps pass, no new all-suite claim. Exact commands, tested base607d281/blob357898be and limitations in implementation.md; all81 tasks checked, reviewer-owned checklists unchanged16/16 and36/36, no hooks. Historical review/convergence untouched; next converge only, no acceptance/merge.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/tasks.md": "9d737096a2e927be6737eedbe8526460a7b8292a8cc377743b30a09aa115cec4",
+        "specs/003-storage-registry/implementation.md": "a0ff7c5590c9d124d56c239992f7f65fb2ffde543a4823b42260622ba831a8cf",
+        "specs/003-storage-registry/checklists/quality.md": "fbb14e996cbcd6c19959ee5e76369a3377943f4ca485b92fe7ed54467a23a6c5",
+        "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "converge",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-22T20:11:23+00:00",
+      "completed_at": "2026-10-22T20:18:25+00:00",
+      "outcome": "pass",
+      "note": "Follow-up converge after T081: inspected all40 FR/SC/scenarios,14 plan decisions,81 tasks,12 principles against actual source/assertions. R1 closed by zero-allocator-call persisted-owner retry and no-storage-to-relational rejection with exact assignments/data/revisions/full inventory; fresh both-provider facts4/4 pass. Prior public F1/T079 and F2/T080 remain closed. Zero missing/partial/contradictory/unrequested findings; tasks byte-for-byte unchanged SHA256 9d737096a2e927be6737eedbe8526460a7b8292a8cc377743b30a09aa115cec4. Fresh unit11/contract37 steps pass, build clean; required repository/Python111/diff checks pass. Actual assessed-head6f6af46 CI:11 contexts/200 steps, ten downloaded reports and merge54627cad parents verified. No new all-suite claim; historical timing limits retained. Intent/product/test/dependencies/review/checklists unchanged; historical convergence preserved. Next review only on original draft PR; no acceptance/merge.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/tasks.md": "9d737096a2e927be6737eedbe8526460a7b8292a8cc377743b30a09aa115cec4",
+        "specs/003-storage-registry/convergence.md": "de95c76e8e3be47ee0675b15c98b92f423dd003b82122f0438871db3ab807bf4"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "review",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-22T20:39:35+00:00",
+      "completed_at": "2026-10-22T21:00:11+00:00",
+      "outcome": "changes",
+      "note": "Follow-up final spec-review at assessed head72d45756: all40 FR/SC/scenarios,14 plan decisions,81 existing tasks,12 principles inspected. R1/T081 and prior F1/T079,F2/T080 closed by actual assertions. One MEDIUM implementation finding R2 remains: explicit registry-upgrade commits and rejected scope/installation/version/consistency boundaries bypass required correlated storage records (FR014/T066). Bounded follow-up reconciles Task/exception semantics, existing Upgrade vocabulary and CLI correlated success/generic failure summaries; independent successful acquisition/disposal logging and full acquisition matrix are not new requirements. Appended only unchecked T082 for safe direct-API emitter/CLI projection and real both-provider capture regressions; preserved all81 prior task bytes/markers and entire historical review verbatim. No storage-isolation failure/new design decision; no product/test/dependency/intent/implementation/convergence/checklist changes. Fresh quality19/unit11/SQLite integration7/Postgres9/recovery38/contract37/privacy36 all pass157 targeted steps; repository/Python111/format/diff checks pass. Actual assessed-head product39847794129/repository39847793832 CI all11 contexts and10 downloaded reports/200 steps pass; merge1425e692 parents main66f0e4a/head72d45756 verified. No new local all-suite or mutation/human-study claim; historical timing limits retained. Next invocation implement T082 on original draft PR6; no acceptance/readiness/merge/004.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/tasks.md": "e3cc6e3abdd8ba117d386affb7417a24226389d653bbd59dca6f19d3564eb2b0",
+        "specs/003-storage-registry/review.md": "2e11019acba0babec5991c89a9f01a985040c3ffcfb22cbae15b25244d95fa96",
+        "specs/003-storage-registry/checklists/quality.md": "fbb14e996cbcd6c19959ee5e76369a3377943f4ca485b92fe7ed54467a23a6c5",
+        "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "implement",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-22T21:45:41+00:00",
+      "completed_at": "2026-10-22T22:19:41+00:00",
+      "outcome": "pass",
+      "note": "Implemented T082 under approved FR010/014: assignment-independent shared diagnostic classification/emission for actual registry upgrades and failed acquisition; null module identity, fixed guidance and truthful unchanged/uncertain/committed evidence around real commits. IStorageMaintenance Task/safe exception semantics and budgets remain; no fabricated assignment/result, public API, dependency or design change. Supervisor projects allowlisted worker failure identities while draining raw output; original success summary retained and parent durability conservatively uncertain. Eighteen inherited both-provider captures plus existing seven-outcome captures pass20/20; both-provider host compatibility11/11, registry format/crash-upgrade11/11 and public all-guides2/2 pass. Strict public consumer now requires nine bounded diagnostic fields and allowlisted guidance/durability; initial schema failure, corrected fixture-only corrupt-version injection and missing-opt-in attempt are explicitly recorded in implementation.md. Fresh privacy36/contract37/recovery38/quality19/unit11 all pass141 targeted steps; repository checks, Python111, full format/build and diff checks pass. All82 tasks checked; prior81 task descriptions/markers, approved intent, historical review/convergence and checklists16/16+36/36 preserved; no hooks. Tested worktree based on2fc6638, publication CI tracked separately in PR. Complete implement only; next converge on original draftPR6, no review, acceptance, readiness, merge or004.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/tasks.md": "cc237a7cf30ede1256c1ed201428ed92682ff7e150d739821ddd50c448f10288",
+        "specs/003-storage-registry/implementation.md": "a378fc4a9dd5c6f798dfede63408c522e078b0b2f4e1f932ae3c17f5098ebaa8",
+        "specs/003-storage-registry/checklists/quality.md": "fbb14e996cbcd6c19959ee5e76369a3377943f4ca485b92fe7ed54467a23a6c5",
+        "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "converge",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-22T23:05:25+00:00",
+      "completed_at": "2026-10-22T23:13:45+00:00",
+      "outcome": "gaps",
+      "note": "Executed installed speckit-converge against current spec/plan/all 82 tasks and actual source/assertions under constitution v2.0.1. Assessed 40 requirements/outcomes/scenarios, fourteen plan decisions and twelve principles. R2/T082 and prior R1/T081/public F1/F2 are closed. One MEDIUM partial F3 remains: public recovery-set inspection/verification/manifest-write operations bypass required correlated diagnostics. A public-API probe reproduces RequestInvalid with zero records/spans/counters and unchanged installation. Appended only T083 in Phase 11, preserving every original task byte/marker; product/test code, approved intent, implementation, historical review and checklists are unchanged. Fresh privacy/contract/unit gates pass all 84 targeted steps; actual assessed-head CI has eleven successful contexts and 200 verified steps, with downloaded reports and merge parents checked. Green existing tests do not prove absent records; no new full local gate or feature acceptance is claimed. No hooks. Complete converge with gaps only; implement T083 is next on the same original branch/draft PR without a new approval or intermediate merge.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/tasks.md": "2c39825d032b3439dac6769a8d3bba82898d5383f38cb25e3f3ac8447f2d3c7b",
+        "specs/003-storage-registry/convergence.md": "3ce776261dda7710ff14603f84e07404ffe2ccd7871f4174aab34385d09a0d27"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "implement",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-23T00:25:51+00:00",
+      "completed_at": "2026-10-23T00:52:34+00:00",
+      "outcome": "pass",
+      "note": "Implemented only T083 under existing FR014/015, US4.4/US5.1 and planD13/D14. Public recovery inspection/verification/manifest-write boundaries now reuse safe correlated recover records/spans/bounded counters without fabricating assignments/results or changing return/exception contracts. Provider context is trusted installation or fully validated manifest; earlier failures explicitly record bounded unknown, never raw metadata. Actual exclusive create marks uncertainty; completed serialization/flush/close marks manifest committed; read-only/pre-write refusal remains unchanged and partial files are preserved. Existing stopped authority,120s budget, source data, provider privileges and dependencies remain. Twelve inherited real-provider cases cover nonowned/foreign/disposed scopes, complete SQLite backups and PostgreSQL dump/fresh restore,12 refusal variants including actual owner/physical failures, write success/refusal and cancellation; shared capture scans records/spans/events/metrics/stdout and private canaries. Mandatory inventory regression rejects missing new source. Before fix all6 scope cases reproduced zero records; after fix combined32 capture cases pass with zero skipped. Fresh privacy36/contract37/recovery38/quality19/unit11 all pass141 targeted steps; build/format/verifier41/Python111/repository/diff checks pass. Reports retain actual5dd5401 base and environment; publication-head CI is tracked separately in PR. All83 tasks checked, preceding82 task lines and approved intent/historical convergence/review/checklists16of16+36of36 unchanged; no hooks. Complete implement only; next converge on original draftPR6, no acceptance/readiness/merge/004.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/tasks.md": "24ccee5d439a193496a3bba592433d2cc4bb33395654356ec17fd5c50350ae99",
+        "specs/003-storage-registry/implementation.md": "48416e4801746cd3c50d15f8a4377b1153512fda58f55b076d5e9ea26fdc40f8",
+        "specs/003-storage-registry/checklists/quality.md": "fbb14e996cbcd6c19959ee5e76369a3377943f4ca485b92fe7ed54467a23a6c5",
+        "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "converge",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-23T01:06:32+00:00",
+      "completed_at": "2026-10-23T01:15:12+00:00",
+      "outcome": "pass",
+      "note": "Executed speckit-converge after T083 with the recorded explicit directory and one prerequisite invocation; no hooks. Assessed actual source/assertions for all40 requirements/outcomes/scenarios,14 plan decisions,all83 existing tasks and12 principles. F3/T083 closed: recovery inspection/verification/manifest writes enter shared correlated private records with trusted/validated or explicit unknown provider, null module identity, fixed guidance and truthful unchanged/uncertain/committed durability; twelve inherited real-provider captures plus mandatory source inventory prove refusals, preserved data/artifacts and privacy. Prior F1/F2,T079-T082 remain closed. Zero missing/partial/contradictory/unrequested findings, no severity findings and no appended task; tasks SHA25624ccee5d439a193496a3bba592433d2cc4bb33395654356ec17fd5c50350ae99 unchanged. Spec/plan/contracts/implementation/historical review/checklists/product/test/dependencies unchanged; previous convergence preserved verbatim. Fresh privacy36,contract37,unit11 pass84 targeted steps on actual804b9bc; dependency inventory passes403npm/78NuGet. Selected existing pinned SDK after default selection failed before tests; no installation. Actual assessed-head CI11contexts/10jobs succeeds; downloaded reports200of200 pass with merge parents verified. No new local all-suite claim. Complete converge only; next review on same original draftPR6, not acceptance/readiness/merge/004.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/tasks.md": "24ccee5d439a193496a3bba592433d2cc4bb33395654356ec17fd5c50350ae99",
+        "specs/003-storage-registry/convergence.md": "c7ebb4503bd0bd51762a79824ac7e38fce37cdf50e773b48f076557ad6345c3e"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "review",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-23T01:34:00+00:00",
+      "completed_at": "2026-10-23T01:59:51+00:00",
+      "outcome": "pass",
+      "note": "Read-only spec-review assessed actual implementation/assertions for all 16 functional requirements, six success criteria, 18 scenarios, fourteen plan decisions, all 83 tasks and twelve principles at 61e1984b72b48008448d4ede3038a4162942cfb8. Review passes with no remaining high-confidence defect, remediation task or within-scope design dispute. Public F1/F2, R1/R2 and recovery F3 are closed by T079-T083. Fresh quality/unit/both-provider integration/recovery/contract/privacy gates pass all 157 targeted named steps; actual assessed-head CI passes eleven contexts and 200 product steps, with all ten downloaded reports and synthetic-merge parents verified. No new local all-suite, controlled mutation or human exercise is claimed. Tasks and both reviewer-owned checklists remain byte-for-byte unchanged; complete prior review is preserved verbatim. Product/test code, dependencies, approved intent and implementation/convergence evidence are unchanged. Only review, ledger and six progress documents change. No review hook or workflow is invoked. Explicit human acceptance of numbered feature 003 is next on the same draft PR; this stage does not accept, mark ready, request merge or begin 004.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/tasks.md": "24ccee5d439a193496a3bba592433d2cc4bb33395654356ec17fd5c50350ae99",
+        "specs/003-storage-registry/review.md": "89a261c21435d5b91de0f467b2fafb39cbe6a016cf8356ee68888ae42099f1f2",
+        "specs/003-storage-registry/checklists/quality.md": "fbb14e996cbcd6c19959ee5e76369a3377943f4ca485b92fe7ed54467a23a6c5",
+        "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
+      }
+    },
+    {
+      "spec": "003",
+      "step": "accept",
+      "directory": "specs/003-storage-registry",
+      "status": "complete",
+      "branch": "feature/003-storage-registry",
+      "reason": "",
+      "started_at": "2026-10-23T02:17:06+00:00",
+      "completed_at": "2026-10-23T02:18:47+00:00",
+      "outcome": "pass",
+      "note": "Explicit human acceptance of numbered feature 003 in direct response to the passing final review and numbered-feature handoff: exact affirmative decision recorded in acceptance.md and human_approval. Verified passing-review tasks/review/checklist hashes unchanged at aba9b94a084ef86ea3dc83c1b87fa6433af20d3c and all eleven actual publication PR contexts successful. Accepted scope retains all review limitations and later-spec exclusions; review maps 16 functional requirements, six success criteria, 18 scenarios, fourteen plan decisions, 83 completed tasks and twelve principles, with T079-T083 findings closed. Review's 157 fresh targeted steps and 200 assessed-head CI product steps remain existing evidence, not a new acceptance-stage product run. Only acceptance record, helper ledger and six progress docs change; product/test source, dependencies, approved intent, all tasks, reviewed checklists and prior implementation/convergence/review evidence are unchanged. This completes accept only, authorizes marking the same PR ready and requesting human merge, never assistant merge/close/auto-merge/branch deletion. Do not begin 004 until a later invocation verifies the human merge and accepted ledger/evidence on updated origin/main.",
+      "evidence_sha256": {
+        "specs/003-storage-registry/tasks.md": "24ccee5d439a193496a3bba592433d2cc4bb33395654356ec17fd5c50350ae99",
+        "specs/003-storage-registry/review.md": "89a261c21435d5b91de0f467b2fafb39cbe6a016cf8356ee68888ae42099f1f2",
+        "specs/003-storage-registry/acceptance.md": "8eb003029ce81ba343b12bebd870461d6866ed21b318ad7feb196dc59aaf547a",
+        "specs/003-storage-registry/checklists/quality.md": "fbb14e996cbcd6c19959ee5e76369a3377943f4ca485b92fe7ed54467a23a6c5",
+        "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
+      },
+      "human_approval": "this human accesspts 003"
     }
   ]
 }

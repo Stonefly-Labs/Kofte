@@ -19,6 +19,46 @@ archives, integrity, provenance, licenses and retained notices below.
 passed after these project changes. No pin, source, license decision, production
 test dependency or new NuGet identity was added; existing Ajv 8.20.0 is reused.
 
+## Spec 003 candidate review
+
+**Review date:** 2026-10-22 (UTC). Explicit human ADR 0005 approval authorizes
+the design, not arbitrary packages. Before adoption, the official NuGet archive
+closure was inspected for EF Core/Relational/Sqlite **10.0.13** and Npgsql EF
+**10.0.3**. Nine new identities are required: those four, EF Abstractions,
+Analyzers and Sqlite.Core 10.0.13, plus Microsoft.Extensions.Caching.Memory
+and Caching.Abstractions 10.0.13. Their remaining dependencies reuse the
+reviewed baseline. EF Design, global tools and another SQLite bundle are
+unnecessary and are not approved.
+
+All eight new Microsoft identities declare MIT and exact source commit
+`4099f83977f4d29604a9aeb971fb0a7bc1d5f699` in `dotnet/dotnet`; Npgsql EF
+declares PostgreSQL and source commit
+`5e912bf071068a44e5abbdab497b313ba99d3ee1` in `npgsql/efcore.pg`.
+The exact-commit upstream licenses were retrieved. Both caching packages'
+retained `THIRD-PARTY-NOTICES.TXT` match SHA-256
+`6d15e10a101c6bfff2ab4429ed061bf76c456fc4b23ad6b03e0d0f8377148a21`.
+The original notice/attribution retention rules below apply to all nine.
+
+Every new runtime assembly has `net10.0` assets (Analyzers is analyzer-only).
+Npgsql EF's `[10.0.4,11.0.0)` EF range admits the exact 10.0.13 pins.
+The SQLite adapter retains Microsoft.Data.Sqlite 10.0.13 and the same reviewed
+SQLitePCLRaw 2.1.13 native graph for macOS arm64/Ubuntu x64; no new native
+library or target claim is introduced. Actual restore/build/provider evidence
+must still confirm the adopted graph.
+
+The two official NuGet vulnerability-feed pages contained no applicable range
+for these nine versions; the caching-memory entries affect only older 6/8/9
+versions. All nine signed archives passed `dotnet nuget verify --all` in the
+already reviewed immutable Linux SDK image
+`mcr.microsoft.com/dotnet/sdk@sha256:0d99ebf1ccad15037b5c98c9fe8979d6b8dbac23812feae2277a0b277b5c5ffa`,
+with **zero warnings/errors** and online revocation available. An initial
+network-disabled attempt returned revocation warnings and is not counted as
+clean verification; no verification/trust setting was weakened.
+
+This review approves only this exact closure for adoption. Final project
+locks, inventory reconciliation, locked restore, advisory audit and actual
+both-provider tests remain required before their tasks can complete.
+
 ## Adopted baseline and compatibility
 
 Use .NET SDK **10.0.402**, runtime **10.0.13**, Node **24.22.0** and bundled npm

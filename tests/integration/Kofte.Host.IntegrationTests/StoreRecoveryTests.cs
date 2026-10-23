@@ -104,7 +104,9 @@ public sealed class PostgresRecoveryTests
         var token = TestContext.Current.CancellationToken;
         var disposable = Environment.GetEnvironmentVariable("KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE") == "true";
         await using var source = await PostgresFixture.CreateAsync(disposable, token: token);
-        await using var target = await PostgresFixture.CreateAsync(disposable, token: token);
+        await using var target = await source.CreateRecoveryTargetAsync(token);
+        Assert.NotEqual(source.RunId, target.RunId);
+        Assert.NotEqual(source.ConnectionString, target.ConnectionString);
         using var backups = new TempRoot();
         var key = Guid.NewGuid().ToString("N");
         var payload = Guid.NewGuid().ToString("N");
@@ -126,6 +128,8 @@ public sealed class PostgresRecoveryTests
         var backup = Path.Combine(backups.Path, "platform.dump");
         await source.BackupAsync(backup, token);
         await target.RestoreAsync(backup, token);
+        Assert.True(await source.DatabaseExistsAsync(token));
+        await source.ValidateOwnershipAsync(token);
         await new PostgresPlatformStore(target.ConnectionString).ProbeAsync(token);
         Assert.Equal("postgres_restore_target_not_empty",
             (await Assert.ThrowsAsync<InvalidOperationException>(() => target.RestoreAsync(backup, token))).Message);
@@ -142,6 +146,9 @@ public sealed class PostgresRecoveryTests
             (await Assert.ThrowsAsync<InvalidOperationException>(() => target.RestoreAsync(backup, token))).Message);
         await using var reopened = new NpgsqlConnection(target.ConnectionString);
         await reopened.OpenAsync(token);
+        await using (var privileges = new NpgsqlCommand(
+            "SELECT has_database_privilege(current_user,current_database(),'CREATE')", reopened))
+            Assert.Equal(false, await privileges.ExecuteScalarAsync(token));
         await using var read = new NpgsqlCommand(
             "SELECT run_id,payload FROM kofte_system.bootstrap_fixture WHERE fixture_key=$1", reopened);
         read.Parameters.AddWithValue(key);

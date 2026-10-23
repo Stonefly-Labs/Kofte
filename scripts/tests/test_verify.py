@@ -18,10 +18,12 @@ class VerifyTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory(dir=base)
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name).resolve()
-        for name in verify.PLATFORM_REQUIRED_FILES:
+        for name in (*verify.PLATFORM_REQUIRED_FILES, *verify.STORAGE_REQUIRED_FILES):
             path = self.root / name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text("required platform fixture")
+        (self.root / "tests/integration/Kofte.TestSupport/StorageScenarioCatalog.cs").write_text(
+            " ".join(json.dumps(name) for name in verify.STORAGE_SCENARIOS))
         for workspace, scripts in verify.REQUIRED_SCRIPTS.items():
             path = self.root / workspace / "package.json"
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -53,6 +55,43 @@ class VerifyTests(unittest.TestCase):
         (self.root / "package.json").write_text(json.dumps(root_manifest))
         with self.assertRaisesRegex(verify.VerificationError, "workspace_inventory_drift"):
             verify.workspace_inventory(self.root)
+
+    def test_missing_storage_project_or_public_scenario_fails_before_tool_invocation(self):
+        runner = verify.Runner(self.root, self.report("integration"), {})
+        project = self.root / verify.STORAGE_INTEGRATION / "Kofte.Storage.IntegrationTests.csproj"
+        project.unlink()
+        with patch.object(runner, "versions") as versions, \
+                self.assertRaisesRegex(verify.VerificationError, "storage_target_missing"):
+            verify.execute_suite(runner, "integration", "sqlite", Mock())
+        versions.assert_not_called()
+        project.write_text("restored required fixture")
+        for name in ("Providers/StorageMaintenanceDiagnosticsTests.cs", "Recovery/RecoveryDiagnosticsTests.cs"):
+            diagnostics = self.root / verify.STORAGE_INTEGRATION / name
+            diagnostics.unlink()
+            with self.assertRaisesRegex(verify.VerificationError, "storage_target_missing"):
+                verify.storage_inventory(self.root)
+            diagnostics.write_text("restored required capture regressions")
+        catalog = self.root / "tests/integration/Kofte.TestSupport/StorageScenarioCatalog.cs"
+        catalog.write_text(catalog.read_text().replace('"stopped-restore"', '"omitted"'))
+        with self.assertRaisesRegex(verify.VerificationError, "storage_scenario_missing"):
+            verify.storage_inventory(self.root)
+
+    def test_storage_recovery_privacy_and_zero_case_child_failures_cannot_publish_green(self):
+        for name, exit_code in (("storage-recovery-sqlite", 2), ("storage-privacy-postgres", 2),
+                                ("storage-integration-sqlite", 8)):
+            runner = verify.Runner(self.root, self.report("integration"), {})
+            with self.subTest(name=name), self.assertRaisesRegex(verify.VerificationError, "command_failed"):
+                runner.command(name, ["python3", "-c", f"raise SystemExit({exit_code})"])
+            self.assertEqual("failed", runner.report.data["steps"][-1]["outcome"])
+
+    def test_storage_selectors_retain_provider_intersection_and_fail_on_zero_selected_cases(self):
+        for provider in ("sqlite", "postgres"):
+            for suite in ("recovery", "privacy"):
+                command = verify.integration_command(provider, suite, project=verify.STORAGE_INTEGRATION)
+                self.assertIn(verify.STORAGE_INTEGRATION, command)
+                self.assertIn(f"/[(Suite={suite})&(Provider={provider})]", command)
+                self.assertEqual(["--minimum-expected-tests", "1"], command[-2:])
+                self.assertEqual(command, verify.safe_command(command))
 
     def test_actual_child_failure_is_named_nonzero_and_output_is_not_saved(self):
         memory_bytes = verify.os.sysconf("SC_PHYS_PAGES") * verify.os.sysconf("SC_PAGE_SIZE")
@@ -137,6 +176,38 @@ class VerifyTests(unittest.TestCase):
         self.assertNotIn("/private/layout", report.path.read_text())
         self.assertEqual(set(), diagnostic.dependency_codes)
 
+    def test_failed_storage_command_retains_only_source_known_symbols_and_fixed_codes(self):
+        runner = verify.Runner(self.root, self.report("integration"), {})
+        diagnostic = verify.command_diagnostics([
+            "dotnet", "test", "--project", verify.STORAGE_INTEGRATION,
+        ])
+        name = ("Kofte.Storage.IntegrationTests.Registry.PostgresRegistrationConcurrencyTests."
+                "TwentyRoundsOfTenSeparateProcessesKeepActualOwnershipUnique")
+        owner, method = name.rsplit(".", 1)
+        xml = (f'<assemblies><test type="{owner}" method="{method}" result="Fail" '
+               'name="credential-canary"><failure><message>StorageException : DeadlineExceeded '
+               '/private/credential-canary operation=acquire</message></failure></test>'
+               '<test type="credential-canary" method="unknown" result="Fail"/></assemblies>')
+        script = (
+            "import sys; from pathlib import Path; "
+            "directory=Path(sys.argv[sys.argv.index('--results-directory')+1]); "
+            f"(directory/'storage.xml').write_text({xml!r}); "
+            "print('/private/credential-canary'); sys.exit(2)"
+        )
+        with self.assertRaisesRegex(verify.VerificationError, "command_failed"):
+            runner.command("storage-integration-postgres", [
+                "python3", "-c", script,
+            ], diagnostics=diagnostic)
+        step = runner.report.data["steps"][-1]
+        self.assertEqual([name], step["failedStorageTests"])
+        self.assertEqual(["DeadlineExceeded"], step["storageFailureCodes"])
+        self.assertEqual(["acquire"], step["storageFailureOperations"])
+        self.assertEqual(["--results-directory", "<private-argument>"], step["command"][-2:])
+        self.assertFalse(list((self.root / "artifacts/verification/.private").rglob("storage.xml")))
+        self.assertNotIn("credential", runner.report.path.read_text())
+        self.assertEqual(set(), diagnostic.failed_tests)
+        self.assertEqual(set(), diagnostic.storage_codes)
+
     def test_successful_browser_command_never_publishes_failure_diagnostics(self):
         report = self.report("browser")
         runner = verify.Runner(self.root, report, {})
@@ -220,6 +291,19 @@ class VerifyTests(unittest.TestCase):
         with patch.object(runner, "versions"), patch.object(runner, "command") as command, \
                 self.assertRaisesRegex(verify.VerificationError, "disposable_postgres_opt_in_required"):
             verify.execute_suite(runner, "integration", "postgres", arguments)
+        command.assert_not_called()
+
+    def test_postgres_public_contract_requires_opt_in_before_any_child(self):
+        for name in verify.REQUIRED_SUITE_FILES["contract"]:
+            path = self.root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("isolated selector fixture")
+        runner = verify.Runner(self.root, self.report("contract"), {})
+        with patch.object(runner, "versions"), patch.object(runner, "command") as command, \
+                self.assertRaisesRegex(verify.VerificationError, "disposable_postgres_opt_in_required"):
+            verify.execute_suite(runner, "contract", "both", Mock(
+                disposable_postgres=False, postgres_connection=None,
+            ))
         command.assert_not_called()
 
     def test_missing_platform_target_fails_unit_quality_and_contract_before_tools(self):
@@ -420,6 +504,7 @@ class VerifyTests(unittest.TestCase):
                 public = next(call for call in command.call_args_list
                               if call.args[0] == "platform-public-contracts")
                 self.assertEqual(["--minimum-expected-tests", "1"], public.args[1][-2:])
+                self.assertEqual("true", public.kwargs["environment"]["KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE"])
                 author = next(i for i, call in enumerate(command.call_args_list)
                               if call.args[0] == "manifest-author-build")
                 contracts = next(i for i, call in enumerate(command.call_args_list)
@@ -465,6 +550,10 @@ class VerifyTests(unittest.TestCase):
         self.assertIn("Provider=sqlite", native[0].args[1])
         self.assertNotIn("Provider=postgres", native[0].args[1])
         self.assertNotIn("KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE", native[0].kwargs["environment"])
+        public = next(call for call in command.call_args_list if call.args[0] == "platform-public-contracts")
+        self.assertIn("--filter-not-trait", public.args[1])
+        self.assertIn("Provider=postgres", public.args[1])
+        self.assertNotIn("KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE", public.kwargs["environment"])
 
     def test_normal_browser_does_not_run_privacy_without_its_seeded_capture_session(self):
         directory = self.root / "tests/e2e"
@@ -595,8 +684,14 @@ class VerifyTests(unittest.TestCase):
         stale.write_text("credential-canary /private/old-results")
         runner = verify.Runner(self.root, self.report("startup"), {})
         outputs = []
+        commands = []
 
         def child(name, command, **kwargs):
+            commands.append(name)
+            if name == "startup-storage-fixture-build":
+                self.assertIn("tests/contract/Kofte.Storage.Consumer", command)
+                runner.operation(name, lambda _: None, command)
+                return
             def produce(_):
                 directory = Path(command[command.index("--output") + 1])
                 outputs.append(directory)
@@ -620,6 +715,7 @@ class VerifyTests(unittest.TestCase):
         self.assertNotIn(str(self.root), runner.report.path.read_text())
         self.assertTrue((outputs[0] / "actual-startup-test/startup-observations.json").is_file())
         self.assertEqual("credential-canary /private/old-results", stale.read_text())
+        self.assertLess(commands.index("startup-storage-fixture-build"), commands.index("startup-warm-restarts"))
 
     def test_startup_requires_exact_sample_count_sequence_fields_and_fixture_matches(self):
         directory = self.root / "observations"
@@ -697,6 +793,8 @@ class VerifyTests(unittest.TestCase):
                 runner = verify.Runner(self.root, self.report("startup"), {})
 
                 def child(_name, command, **_kwargs):
+                    if _name != "startup-warm-restarts":
+                        return
                     if payload is not None:
                         directory = Path(command[command.index("--output") + 1])
                         (directory / "startup-observations.json").write_text(json.dumps(payload))
@@ -717,6 +815,9 @@ class VerifyTests(unittest.TestCase):
         runner = verify.Runner(self.root, self.report("startup"), {})
 
         def child(name, command, **_kwargs):
+            if name == "startup-storage-fixture-build":
+                runner.operation(name, lambda _: None, command)
+                return
             def fail(_):
                 directory = Path(command[command.index("--output") + 1])
                 (directory / "startup-observations.json").write_text(json.dumps(self.startup_samples()))

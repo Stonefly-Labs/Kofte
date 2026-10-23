@@ -32,9 +32,175 @@ principles. Fresh quality/unit/both-provider contract checks pass 62 targeted
 steps; actual assessed-head CI passes all eleven contexts and 177 product
 steps. No new local all-suite run or bootstrap behavior change is asserted.
 [Explicit human acceptance](../../specs/002-platform-contracts/acceptance.md)
-is now recorded separately from review. The same PR #5 awaits human merge;
-acceptance adds no bootstrap behavior or new product measurement. A later
-invocation may begin 003 only after that merge.
+is now recorded separately from review. The same
+[PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5) is human-merged;
+acceptance adds no bootstrap behavior or new product measurement.
+Spec 003's **implementation stage is complete**, with explicit human approval of
+[ADR 0005](../adr/0005-module-storage-ownership.md).
+The [implementation report](../../specs/003-storage-registry/implementation.md)
+records actual registry/provider races, assigned EF boundaries, killed workers,
+explicit migration recovery, bounded cleanup and captured privacy evidence.
+The [validation guide](../../specs/003-storage-registry/quickstart.md)
+includes all nine executable public examples and actual stopped provider
+backup/restore, with safe legacy refusals. Named suites now include the storage
+projects. The implementation checkpoint marked all 78 original tasks complete;
+its complete local 200-step gate and eleven assessed-head CI contexts pass.
+No feature acceptance is inferred.
+The subsequent [convergence](../../specs/003-storage-registry/convergence.md)
+appends T079-T080 for two HIGH partial public-example gaps: the standalone/`all`
+`same-id-retry` case lacks its promised three process restarts and retained-data
+checks, and `collision` does not yet demonstrate a distinct-registered-ID
+candidate conflict. Existing integration tests cover the core behavior; current
+positive public-case counts do not prove these omitted observations.
+No product/test code or supported command changed in convergence.
+The [T079-T080 implementation increment](../../specs/003-storage-registry/implementation.md#convergence-remediation-t079-t080)
+now executes three fresh processes after releasing maintenance, verifying both
+exact assignments and original sentinels after every restart. The collision
+example now includes a fixture-forced real registered-owner UNIQUE conflict,
+unchanged assignment/data/inventory and no contender allocation, while retaining
+unowned-target refusal. Standalone and `all` result validation requires those
+observations, not only assertion totals. All 80 tasks are evidenced.
+The [follow-up convergence](../../specs/003-storage-registry/convergence.md)
+now passes: all 40 requirements/outcomes/scenarios, fourteen plan decisions,
+80 tasks and twelve principles were assessed with zero actionable gaps.
+Both prior public-example findings are closed; tasks and product/test source
+remain unchanged. Actual assessed-head CI passes eleven contexts and 200
+product steps. **Review is next** on this same feature branch/draft PR; no
+final review, feature acceptance or changed supported command is inferred.
+The subsequent [final review](../../specs/003-storage-registry/review.md) records
+**changes** for one MEDIUM evidence gap: absent changed-allocator persisted-owner
+retry and no-storage-to-relational refusal regressions. Production code appears
+correct; no storage-engine failure or supported-command change is demonstrated.
+Exactly T081 is appended, preserving all 80 historical markers and earlier
+reports; prior public F1/F2 remain closed. Fresh quality/unit/both-provider
+integration/recovery/contract/privacy gates pass 157 targeted steps and actual
+assessed-head CI passes eleven contexts/200 product steps.
+That review selected implement without a credential, new approval or merge.
+The [T081 evidence](../../specs/003-storage-registry/implementation.md#final-review-remediation-t081)
+now records both inherited regressions: four passing real-provider cases,
+controlled mutation failures and unchanged assignments/data/revisions/inventory.
+All 81 tasks are evidenced. Quality/unit/integration gates pass 46 targeted steps
+after an unchanged PostgreSQL rerun of two initial deadline failures. Exact
+focused commands and the initial failure are retained in the report. Production,
+APIs, dependencies and supported commands are unchanged.
+The [current convergence](../../specs/003-storage-registry/convergence.md) now
+passes across all 40 requirements/outcomes/scenarios, fourteen plan decisions,
+81 tasks and twelve principles. R1/T081 and prior public F1/F2 are closed, with
+zero actionable gaps and no appended task. Tasks, product/test code, approved
+intent and the historical review remain unchanged. That convergence selected
+review on the same draft PR.
+The [follow-up final review](../../specs/003-storage-registry/review.md) now records
+**changes** for one MEDIUM finding R2: explicit registry-upgrade mutations and
+rejected boundaries bypass required correlated storage records. Existing CLI
+success/generic failure summaries are present but do not supply complete direct
+API evidence. R1/T081 and public F1/F2 are closed. Exactly T082 is appended
+unchecked for safe direct-API/CLI projection and real both-provider captures;
+all 81 historical task bytes/markers, code, supported commands and previous
+reports remain unchanged at that review checkpoint.
+The [T082 increment](../../specs/003-storage-registry/implementation.md#final-review-remediation-t082)
+now emits correlated upgrade/failed-acquisition records and safely projects
+worker outcomes in the CLI. Both-provider capture/host regressions cover commits,
+unchanged retries, rejected scopes, unsupported/corrupt formats and sanitized
+commit-boundary failures. All 82 tasks were evidenced at that implementation
+checkpoint, which selected follow-up converge.
+The [current convergence](../../specs/003-storage-registry/convergence.md)
+now records **gaps**: R2/T082 and prior T079-T081 are closed, but one MEDIUM
+partial finding F3 reproduces a rejected public recovery inspection with zero
+correlated records/spans/counters. T083 is appended for recovery-set boundary/
+mutation diagnostics and real-provider captures, preserving all original task
+bytes, product/test code, supported commands and historical evidence.
+That checkpoint selected implement on the same draft PR, not acceptance or a new
+design/merge prerequisite. Recovery refusals still preserve data; this finding
+does not demonstrate a storage-isolation or recovery-corruption failure.
+The [T083 increment](../../specs/003-storage-registry/implementation.md#convergence-remediation-t083)
+now records public recovery inspection/verification/manifest-write boundaries,
+with real-provider private captures and unchanged exception contracts.
+All 83 tasks are evidenced. Historical convergence/review and reviewer-owned
+checklists are preserved; that implementation checkpoint selected converge.
+The [convergence after T083](../../specs/003-storage-registry/convergence.md)
+now **passes** after checking all 40 requirements/outcomes/scenarios, fourteen
+plan decisions, 83 tasks and twelve principles against actual source/assertions.
+F3/T083 and prior T079-T082 are closed, with zero actionable gaps and no appended
+task. Tasks are byte-for-byte unchanged; product/test code, supported commands,
+approved intent, historical review and reviewer checklists remain untouched.
+**Review is next** on the same draft PR, before explicit human acceptance;
+this checkpoint neither accepts the feature nor requests an intermediate merge.
+The [final review after T083](../../specs/003-storage-registry/review.md) now
+**passes** across all 40 requirements/outcomes/scenarios, fourteen plan
+decisions, 83 tasks and twelve principles. F1/F2, R1/R2 and F3 are closed,
+with no remaining finding or remediation task. Tasks and reviewer-owned
+checklists remain byte-for-byte unchanged; product/test code, approved intent
+and supported commands are untouched. Historical review remains verbatim.
+**Explicit human acceptance of numbered feature 003 is next**, separately
+on the same draft PR. Review does not accept 003, mark ready, request merge
+or begin 004.
+The [explicit human acceptance](../../specs/003-storage-registry/acceptance.md)
+now records **"this human accesspts 003"** for numbered feature 003 with its
+existing review scope and limits. Supported commands, product/test code,
+tasks, reviewed checklists and prior evidence are unchanged. No new local
+product suite, usability study or runtime measurement is claimed by this
+decision-only stage. The same
+[PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6) is ready for human merge
+after publication; **004 waits for that human merge** and accepted evidence
+on updated main. Acceptance does not start it.
+
+For the implemented storage examples, follow the
+[003 executable guide](../../specs/003-storage-registry/quickstart.md).
+Only trusted composition receives `StorageRegistry`/`StorageMaintenance`;
+modules receive owner-only bindings. `ModuleMigrationRecovery.RecoverAsync`
+is an explicit stopped-maintenance operation, not an ordinary resolve repair.
+Run synchronous maintenance through the admitted owned-worker supervisor.
+Registry upgrade has a 30-second total, module maintenance 120 seconds,
+including cleanup; acquire/resolve limits are two/three seconds. Losing a
+PostgreSQL lock session cancels the scope rather than reacquiring it.
+`--registry upgrade` retains its `registry_upgraded` success summary and emits
+a separate safe `operation: upgrade` record with provider, stable code/outcome,
+generated correlation, fixed guidance and durability. The supervisor drains raw
+worker stdout/stderr and projects only allowlisted exit identities. Its durability
+is conservatively `uncertain` once a child may write, even for success; direct
+API records distinguish actual `committed` upgrades and `unchanged` v1 retries.
+No failure summary proves rollback, and no upgrade result contains a module assignment.
+`RecoverySetVerifier` records use `operation: recover` and null module identity.
+Provider context is trusted installation metadata or a fully validated manifest;
+before either is available, diagnostics explicitly use the bounded `unknown`
+label instead of copying untrusted provider text. Inspection/verification and
+pre-write refusals are `unchanged`; a created but interrupted manifest is
+`uncertain`; completed serialization/flush/close is `committed`. This describes
+the manifest write, not an installation-wide recovery transaction. Pure digest
+and comparison helpers do not independently log. Preserve partial files on
+failure; existing `StorageException`, cancellation and exclusive-create
+`IOException` behavior remains, with no raw exception attached to telemetry.
+Only ready carries an assignment; retry busy boundedly, correct rejected
+configuration, and inspect incomplete/reconciliation evidence without deleting
+files, locks or history. Complete-set restores require a fresh owned target.
+Choosing an older whole-set point requires accepting its data loss; hashes and
+UUIDs cannot reveal malicious forgery or an unknown newer lost backup.
+JSON logs, spans and bounded operation/provider/outcome metrics are observable
+audit-relevant records, not spec 009's durable audit runtime. Ownership is not a
+hostile-plugin sandbox or future actor/team/resource authorization.
+
+The following paragraph preserves the pre-implementation design-stage history.
+Spec 003 now has [draft storage requirements](../../specs/003-storage-registry/spec.md),
+a completed author checklist, zero-question clarification and a
+[proposed plan](../../specs/003-storage-registry/plan.md). Its
+[future validation guide](../../specs/003-storage-registry/quickstart.md)
+describes commands/cases that are **not implemented yet**.
+[ADR 0005](../adr/0005-module-storage-ownership.md) proposes offline provisioning,
+explicit bootstrap upgrade, assigned EF migrations and stopped full-set recovery;
+it is not human-approved. The
+[quality checklist](../../specs/003-storage-registry/checklists/quality.md) now
+satisfies all 36 requirements-quality criteria after explicit reviewer
+authorization, with no blocking gap. The
+[78-task list](../../specs/003-storage-registry/tasks.md) now defines the
+unstarted work and actual evidence obligations for all five stories.
+The read-only [analysis](../../specs/003-storage-registry/analysis.md) now passes
+with 22/22 requirements/outcomes and 18/18 scenarios covered, all 78 tasks mapped
+and no actionable or constitutional finding. All analyzed inputs and markers
+remain unchanged. Implement is next on the same draft PR, but explicit human
+ADR 0005 approval is required before implementation.
+ADR approval, dependency adoption and actual provider proof remain later gates.
+No registry/module storage, new command or changed startup/recovery behavior
+is implemented by this analysis stage.
 Spec 002 timing now uses an available supported workstation/CI runner with
 actual metadata, not a fixed Ubuntu/CPU/RAM profile, per the human's ADR amendment.
 The subsequent author-guide amendment removes the manual timed exercise and
@@ -50,6 +216,10 @@ tests and offline schema tests before retaining all real-provider HTTP checks.
 `quality` builds/formats the expanded solution and checks structural TypeScript.
 Missing required platform files/projects or zero selected .NET tests fail closed.
 CI invokes these same commands; there is no separate CI-only validator.
+Browser-enabled Ubuntu CI jobs use the official HTTPS Ubuntu archive in place
+of the runner's slow Azure HTTP mirror. They still install the same Playwright
+OS prerequisites and pinned Chromium; package signatures and browser checks
+are not bypassed.
 
 ## Prerequisites and explicit restore
 
@@ -110,11 +280,27 @@ occupants are never killed. Repeat `python3 scripts/dev.py` to restart.
 Persistent SQLite data is `data/platform/platform.db`; directories are private
 to the current owner and the database is owner read/write only. Normal startup
 opens an existing store, never creates missing data, switches providers or resets
-it. Stop/retry/restart do not delete data. No application/fixture table, migration
-history or registry is shipped. A host-held exclusive operation lock prevents
+it. Stop/retry/restart do not delete data. Fresh format-0 initialization has no
+application/fixture table, migration history or registry. A host-held exclusive operation lock prevents
 concurrent initialization; the lock file remains in place after clean shutdown.
 
+On the 003 feature branch, initialization still creates genuine table-free
+format 0. The separate `--registry upgrade` maintenance command establishes
+format 1; normal serving never initializes or migrates it automatically.
+The host remains module-free, and no public registration command is provided.
+Do not put `KOFTE_POSTGRES_PROVISIONING_CONNECTION` in serving configuration:
+the elevated connection is accepted only by owned offline maintenance.
+
 ## Stopped-host SQLite recovery
+
+The following legacy procedures apply **only to genuine table-free format 0**.
+Once registry/history/module evidence exists, including leftover module stores
+beside a missing platform file, init/platform-only backup/restore/reset must
+refuse rather than orphan data. Restore inspects source and destination; even
+confirmed reset does not waive the storage guard. Preserve the original
+installation and use the complete-set procedure only after its remaining
+[implementation evidence](../../specs/003-storage-registry/implementation.md)
+is complete; the new verifier is not an automatic backup product.
 
 Stop the supervisor/host before any backup, restore or reset. These operations
 take the same exclusive store lease as the host and refuse an active owner.
@@ -270,6 +456,7 @@ npm run contract:check
 npm run test:unit --workspace packages/bootstrap-contract
 npm run test:unit --workspace apps/web
 npm run build --workspace apps/web
+dotnet build tests/contract/Kofte.Storage.Consumer --no-restore -c Release -warnaserror
 npm run test --workspace tests/e2e -- startup.spec.ts
 ```
 
@@ -280,7 +467,10 @@ generation is explicit:
 `npm run generate --workspace packages/bootstrap-contract`.
 
 The startup test owns two private built-asset host/web cycles, unpredictable
-test-only fixture values, free ports and process groups. It verifies exact
+test-only fixture values, free ports and process groups. Before timing starts,
+the public storage consumer provisions assigned Alpha/Beta stores and real
+migrations; the restart sentinel lives in Alpha's `Records`, not an unknown
+table in the table-free-v0 platform database. It verifies exact
 fixture persistence and released ports after each stop. Individual readiness/
 navigation durations and boolean fixture comparisons are retained in ignored
 `tests/e2e/test-results/` JSON, without fixture values or local paths.
@@ -317,6 +507,12 @@ runs every ordered child command in the spec's
 including repository/Python/whitespace, locked restores, .NET format/build,
 Prettier/ESLint/TypeScript, generated contract, workspace builds and dependency
 inventory. The remaining exact test selectors are:
+
+Contract verification first runs the public C# contract project with the
+selected provider environment. PostgreSQL requires explicit disposable opt-in
+before any child; single-provider runs exclude the other provider's trait
+without excluding provider-neutral manifest/harness tests. Startup verification
+also builds `Kofte.Storage.Consumer` before its timed browser exercise.
 
 | Suite | Underlying runner |
 | --- | --- |

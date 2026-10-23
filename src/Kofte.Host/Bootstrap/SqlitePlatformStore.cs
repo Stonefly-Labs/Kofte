@@ -15,6 +15,7 @@ public sealed partial class SqlitePlatformStore(string root) : IPlatformStore
         Directory.CreateDirectory(Root, UnixStorePaths.DirectoryMode);
         UnixStorePaths.ValidateRoot(Root, allowMissing: false);
         using var lease = StoreLease.Acquire(Root);
+        RejectModuleEvidence(Root);
         var directory = Path.GetDirectoryName(DatabasePath)!;
         UnixStorePaths.ValidateRoot(directory, allowMissing: true);
         Directory.CreateDirectory(directory, UnixStorePaths.DirectoryMode);

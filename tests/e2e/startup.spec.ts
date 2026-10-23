@@ -177,15 +177,50 @@ test("built runtime preserves a private fixture through warm restarts", async ({
     });
     if (initialized.error || initialized.status !== 0)
       throw new Error("startup_store_initialization_failed");
-    const databasePath = join(root, "platform/platform.db");
+    const seeded = spawnSync(
+      "dotnet",
+      [
+        join(
+          repository,
+          "tests/contract/Kofte.Storage.Consumer/bin/Release/net10.0/Kofte.Storage.Consumer.dll",
+        ),
+        "--provider",
+        "sqlite",
+        "--scenario",
+        "clean-install",
+      ],
+      { cwd: repository, env: environment, timeout: 120000, stdio: "pipe" },
+    );
+    if (seeded.error || seeded.status !== 0 || seeded.stderr.length !== 0)
+      throw new Error("startup_storage_fixture_failed");
+    const registry = new DatabaseSync(join(root, "platform/platform.db"), {
+      readOnly: true,
+    });
+    let allocationKey: string;
+    try {
+      const owner = registry
+        .prepare(
+          "SELECT allocation_key FROM __kofte_module_registrations WHERE module_id = ? AND state = 'ready' AND migration_state = 'current'",
+        )
+        .get("org.example.consumer-alpha-clean-install");
+      if (
+        typeof owner?.allocation_key !== "string" ||
+        !/^m_[a-z0-9_]{1,24}_[0-9a-f]{32}$/.test(owner.allocation_key)
+      )
+        throw new Error("startup_storage_assignment_invalid");
+      allocationKey = owner.allocation_key;
+    } finally {
+      registry.close();
+    }
+    const databasePath = join(root, "modules", allocationKey, "module.db");
+    const fixturePayload = JSON.stringify({ runId, fixtureKey, payload });
     const database = new DatabaseSync(databasePath);
     try {
-      database.exec(
-        "CREATE TABLE bootstrap_fixture (run_id TEXT NOT NULL, fixture_key TEXT PRIMARY KEY, payload TEXT NOT NULL)",
-      );
-      database
-        .prepare("INSERT INTO bootstrap_fixture VALUES (?, ?, ?)")
-        .run(runId, fixtureKey, payload);
+      expect(
+        database
+          .prepare('UPDATE "Records" SET "Payload" = ? WHERE "Id" = 1')
+          .run(fixturePayload).changes,
+      ).toBe(1);
     } finally {
       database.close();
     }
@@ -257,11 +292,9 @@ test("built runtime preserves a private fixture through warm restarts", async ({
       const persisted = new DatabaseSync(databasePath, { readOnly: true });
       try {
         const row = persisted
-          .prepare(
-            "SELECT run_id, payload FROM bootstrap_fixture WHERE fixture_key = ?",
-          )
-          .get(fixtureKey);
-        const matches = row?.run_id === runId && row.payload === payload;
+          .prepare('SELECT "Payload" FROM "Records" WHERE "Id" = 1')
+          .get();
+        const matches = row?.Payload === fixturePayload;
         expect(matches, "exact run-owned fixture survives restart").toBe(true);
         observations[observations.length - 1].fixtureMatches = matches;
       } finally {

@@ -32,12 +32,143 @@ Fresh quality/unit/both-provider contracts pass 62 targeted steps; assessed-head
 CI passes all eleven contexts and 177 product steps.
 [Explicit human acceptance](specs/002-platform-contracts/acceptance.md) now
 records **"spec is fully human approved"** for feature 002 and its documented
-limits. Human merge of the same PR #5 is next; only then may a later invocation
-start 003. No new local all-suite run, human usability study or permission to
-chain stages is inferred.
-The author/quality checklists remain 16/16 and 36/36, and
-[analysis](specs/002-platform-contracts/analysis.md) passes. Continue on the same
-feature branch and PR #5 for human merge; module runtimes remain future work.
+limits. The same [PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5) is now
+human-merged with accepted evidence on main. No new local all-suite run, human
+usability study or permission to chain stages is inferred.
+The author/quality checklists remain 16/16 and 36/36, and the passing
+[analysis](specs/002-platform-contracts/analysis.md) preserves the feature's
+design-stage evidence; module runtimes remain future work.
+Spec **003 / implement is complete** on `feature/003-storage-registry` and
+[draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6), with explicit human
+approval of [ADR 0005](docs/adr/0005-module-storage-ownership.md).
+The [implementation report](specs/003-storage-registry/implementation.md)
+records actual provider, assigned-EF, crash, deadline, complete-set recovery
+and captured privacy evidence. All nine public examples execute in admitted,
+supervised maintenance children. The implementation checkpoint marked all 78
+original tasks complete; its complete local 200-step gate and eleven assessed-head
+CI contexts pass. The subsequent
+[first convergence](specs/003-storage-registry/convergence.md) identifies two HIGH
+partial public-example gaps and appends T079-T080: real three-restart/data
+proof in `same-id-retry`, and a forced distinct-registered-ID conflict in
+`collision`. Separate integration tests cover the core behavior; no product
+code was changed by convergence. The
+[T079-T080 implementation increment](specs/003-storage-registry/implementation.md#convergence-remediation-t079-t080)
+now executes three fresh processes with exact Alpha/Beta assignments and retained
+data, plus a fixture-forced registered-owner UNIQUE collision with unchanged
+assignment/data/inventory and no contender allocation. The unowned-target
+refusal remains separate. Both standalone and `all` public harnesses require
+measured observations; all 80 tasks are evidenced.
+The [follow-up convergence](specs/003-storage-registry/convergence.md) now passes:
+all 40 requirements/outcomes/scenarios, fourteen plan decisions, 80 tasks and
+twelve principles were assessed against source/tests with zero actionable gaps.
+Both public findings are closed; the task file and product/test code remain
+unchanged. Actual assessed-head CI passes eleven contexts and 200 product steps.
+The subsequent [final review](specs/003-storage-registry/review.md) records
+**changes** for one MEDIUM evidence gap: the required changed-allocator retry
+of a persisted mapping and no-storage-to-relational refusal lack regressions.
+Existing production behavior appears correct; no storage-engine failure is
+demonstrated. Exactly T081 is appended, preserving all 80 original markers and
+historical reports; prior public F1/F2 remain closed.
+Fresh quality/unit/both-provider integration/recovery/contract/privacy gates
+pass 157 targeted steps; actual assessed-head CI passes eleven contexts and
+200 product steps. That review selected implement on the original branch/draft PR.
+The [T081 increment](specs/003-storage-registry/implementation.md#final-review-remediation-t081)
+now adds both inherited regressions, passing all four real-provider cases and
+detecting controlled mutations while preserving assignments/data/revisions/
+inventory across reopening. All 81 tasks are evidenced. Fresh quality/unit/
+integration gates pass 46 targeted steps after an unchanged PostgreSQL rerun
+of two initial deadline failures. No production/API/dependency/design changes.
+The [current convergence](specs/003-storage-registry/convergence.md) now passes:
+all 40 requirements/outcomes/scenarios, fourteen plan decisions, 81 tasks and
+twelve principles were assessed against actual source/assertions. R1/T081 and
+prior public F1/F2 are closed, with zero actionable gaps and no appended task.
+Tasks, product/test code, approved intent, historical review and reviewer-owned
+checklists are unchanged. That convergence selected review on the same draft PR.
+The [follow-up final review](specs/003-storage-registry/review.md) now records
+**changes**: R1/T081 and prior public F1/F2 are closed, but one MEDIUM finding R2
+requires correlated records for explicit registry-upgrade mutations and rejected
+boundaries. Existing CLI summaries do not replace direct-API operation evidence.
+Exactly T082 is appended unchecked for bounded private telemetry/CLI projection
+and real both-provider capture regressions; all 81 historical task bytes/markers,
+product/test code and previous reports remain unchanged. No storage-isolation
+failure or new design decision is demonstrated. That review selected implement.
+The [T082 increment](specs/003-storage-registry/implementation.md#final-review-remediation-t082)
+now supplies assignment-independent correlated upgrade records, failed-acquisition
+records, fixed guidance/durability and safe supervised CLI projection. Both real
+providers capture successful/idempotent upgrades, rejected scopes, unsupported/
+corrupt formats and sanitized commit-boundary failures. All 82 tasks were evidenced at that implementation checkpoint, which selected
+follow-up converge. The [current convergence](specs/003-storage-registry/convergence.md)
+now records **gaps**: R2/T082 and prior T079-T081 are closed, but one MEDIUM
+finding F3 reproduces absent correlated records for a rejected public recovery
+inspection. Exactly T083 is appended for recovery-set boundary/mutation
+diagnostics and real-provider captures, preserving every prior task byte,
+product/test source and historical reports. **Implement T083 is next** on the
+same draft PR; no new design approval, intermediate merge or acceptance is implied
+by that historical checkpoint.
+The [T083 implementation](specs/003-storage-registry/implementation.md#convergence-remediation-t083)
+now supplies correlated recovery boundary/mutation records, explicit bounded
+`unknown` provider context before validated metadata, and unchanged/uncertain/
+committed manifest durability. Twelve inherited real-provider cases capture
+scope/format/path/hash/inventory/owner/physical refusals and cancellation.
+All 83 tasks are evidenced; historical convergence/review and reviewer checklists
+are preserved. That implementation checkpoint selected follow-up converge.
+The [convergence after T083](specs/003-storage-registry/convergence.md) now
+**passes** across all 40 requirements/outcomes/scenarios, fourteen plan decisions,
+83 tasks and twelve principles. F3/T083 and prior T079-T082 are closed with
+zero actionable gaps. Tasks remain byte-for-byte unchanged; product/test code,
+approved intent, historical review and reviewer checklists are untouched.
+**Review is next** on the same draft PR, before explicit human acceptance;
+no intermediate merge is requested.
+The [final review after T083](specs/003-storage-registry/review.md) now
+**passes** across all 40 requirements/outcomes/scenarios, fourteen plan
+decisions, 83 tasks and twelve principles. All earlier F1/F2, R1/R2 and F3
+findings are closed; no new finding or remediation task remains.
+Tasks, product/test code, approved intent and reviewer-owned checklists are
+unchanged, and prior review evidence is preserved verbatim.
+**Explicit human acceptance of numbered feature 003 is next**, separately
+on the same draft PR. Review does not accept the feature, mark ready, request
+merge or begin 004.
+The [explicit human acceptance](specs/003-storage-registry/acceptance.md) now
+records **"this human accesspts 003"** for numbered feature 003, retaining
+the passing review's scope and limitations. Tasks, reviewed checklists and
+all implementation/convergence/review evidence remain unchanged; no new
+runtime or human usability result is inferred. The same
+[PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6) is ready for human merge
+after publication. **004 waits for that human merge** and accepted evidence
+on updated main. Acceptance does not start it or authorize assistant merge.
+The following paragraphs preserve the historical design-stage checkpoint.
+
+Spec **003 / specify and clarify** establish the
+[storage registry and isolation requirements](specs/003-storage-registry/spec.md)
+and [16/16 author checklist](specs/003-storage-registry/checklists/requirements.md).
+Clarification found all ten ambiguity categories clear, with zero questions;
+the specification and 16/16 author checklist remain unchanged.
+The [completed plan](specs/003-storage-registry/plan.md), research, data model,
+storage/migration/recovery contracts and future guide now define the proposed
+allocation, offline privilege separation, assigned EF binding and stopped
+recovery design. [ADR 0005](docs/adr/0005-module-storage-ownership.md) remains
+Proposed and needs human approval before implementation. Both constitutional
+design gates pass; no dependency adoption or runtime proof is claimed.
+The [quality checklist](specs/003-storage-registry/checklists/quality.md) now
+satisfies 36/36 requirements-quality criteria after explicit reviewer
+authorization, with per-item evidence and no blocking gap. ADR 0005 still needs
+human approval before implementation; dependency adoption and actual provider
+proof are not completed by checklist review.
+The [78-task implementation list](specs/003-storage-registry/tasks.md) now
+maps all five stories, 16 requirements, six outcomes and 18 scenarios to
+explicit dependencies and path-specific implementation/validation. Real
+provider constraints/process races, assigned EF boundaries, interruption,
+deadlines/privacy, executable recovery and bootstrap regressions remain
+mandatory evidence. All tasks are unstarted; US1 is an internal increment,
+not full feature acceptance. The read-only
+[analysis](specs/003-storage-registry/analysis.md) now passes with all 22
+requirements/outcomes and 18 scenarios covered, all 78 tasks mapped and no
+actionable or constitutional finding. Inputs and all markers remain unchanged.
+Implement is next on `feature/003-storage-registry` and
+[draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
+Explicit human ADR 0005 approval remains a prerequisite to implementation.
+No module storage, dependency adoption, runtime evidence or feature acceptance
+is introduced by this analysis checkpoint.
 See the [current local guide](docs/development/local-development.md).
 
 ## Prerequisites

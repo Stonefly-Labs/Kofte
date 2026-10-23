@@ -132,6 +132,45 @@ class FailurePropagationTests(unittest.TestCase):
         with self.assertRaisesRegex(verify.VerificationError, "failure_baseline_not_green"):
             exercises.checked_evidence(self.evidence(), "quality", None, None, None, 1, verify)
 
+    def test_native_failure_evidence_is_allowlisted_again_inside_isolated_baselines(self):
+        evidence = self.evidence()
+        command = ["dotnet", "test", "--project", verify.STORAGE_INTEGRATION]
+        name = sorted(verify.command_diagnostics(command).tests)[0]
+        evidence["steps"][0].update(
+            command=command, failedStorageTests=[name], storageFailureCodes=["Busy"],
+            storageDiagnosticCode="unavailable",
+            storageFailureOperations=["acquire"],
+        )
+
+        def checked():
+            return exercises.checked_evidence(
+                evidence, "quality", None, "python-tests", command, 1, verify,
+            )
+
+        result = checked()
+        self.assertEqual([name], result["steps"][0]["failedStorageTests"])
+        self.assertEqual(["Busy"], result["steps"][0]["storageFailureCodes"])
+        self.assertEqual("unavailable", result["steps"][0]["storageDiagnosticCode"])
+        self.assertEqual(["acquire"], result["steps"][0]["storageFailureOperations"])
+        self.assertNotIn("credential-canary", json.dumps(result))
+        for key, value in (
+            ("failedStorageTests", ["credential-canary"]),
+            ("failedStorageTests", [name + "(credential-canary)"]),
+            ("failedStorageTests", [name, name]),
+            ("storageFailureCodes", ["credential-canary"]),
+            ("storageFailureCodes", []),
+            ("storageDiagnosticCode", "credential-canary"),
+            ("storageFailureOperations", ["credential-canary"]),
+        ):
+            with self.subTest(key=key, value=value):
+                evidence["steps"][0][key] = value
+                with self.assertRaisesRegex(verify.VerificationError, "failure_child_report_unsafe"):
+                    checked()
+                evidence["steps"][0][key] = result["steps"][0][key]
+        evidence["steps"][0]["command"] = ["echo", "untrusted"]
+        with self.assertRaisesRegex(verify.VerificationError, "failure_child_report_unsafe"):
+            checked()
+
     def test_checkout_environment_uses_private_config_and_only_explicit_shared_caches(self):
         environment = exercises.isolated_environment({
             "HOME": "/operator-home", "PATH": "",

@@ -7,6 +7,7 @@ import re
 import stat
 import threading
 import time
+import xml.etree.ElementTree as ET
 
 
 class RuntimeFailure(Exception):
@@ -33,6 +34,8 @@ class Failures:
 
 
 class CommandDiagnostics:
+    storage_report_codes = frozenset(("unavailable", "invalid", "too_large", "no_known_failure"))
+    storage_operations = frozenset(("acquire", "register", "setup"))
     locations = re.compile(
         rb"(?<![A-Za-z0-9_.-])("
         rb"accessibility\.spec\.ts|bootstrap\.spec\.ts|recovery\.spec\.ts|"
@@ -40,10 +43,17 @@ class CommandDiagnostics:
         rb"([1-9][0-9]{0,8}):([1-9][0-9]{0,8})(?![0-9])",
     )
 
-    def __init__(self, kind, codes=()):
+    storage_test = re.compile(rb"^\s*failed (Kofte\.Storage\.IntegrationTests\.[A-Za-z0-9_.]{1,240})(?=[( ])")
+    storage_code = re.compile(rb"\b(?:StorageException|XunitException)\s*:\s*([A-Za-z_]{1,64})\b")
+
+    def __init__(self, kind, codes=(), tests=()):
         self.kind, self.codes = kind, frozenset(codes)
+        self.tests = frozenset(tests)
         self.failures = Failures()
         self.sources, self.dependency_codes = set(), set()
+        self.failed_tests, self.storage_codes = set(), set()
+        self.failed_operations = set()
+        self.storage_report_code = None
         self.lock = threading.Lock()
         self.closed = False
 
@@ -66,6 +76,16 @@ class CommandDiagnostics:
                 with self.lock:
                     if not self.closed and len(self.dependency_codes) < 2:
                         self.dependency_codes.add(event["eventCode"])
+        elif self.kind == "storage":
+            test = self.storage_test.match(line)
+            code = self.storage_code.search(line)
+            with self.lock:
+                if self.closed:
+                    return
+                if test and test[1].decode("ascii") in self.tests and len(self.failed_tests) < 32:
+                    self.failed_tests.add(test[1].decode("ascii"))
+                if code and code[1].decode("ascii") in self.codes:
+                    self.storage_codes.add(code[1].decode("ascii"))
 
     def read(self, stream):
         pending = b""
@@ -86,12 +106,53 @@ class CommandDiagnostics:
             except Exception:
                 self.failures.fail("command_diagnostic_capture_failed")
 
+    def read_storage_report(self, path):
+        try:
+            with path.open("rb") as stream:
+                content = stream.read(16 * 1024 * 1024 + 1)
+            if len(content) > 16 * 1024 * 1024:
+                self.storage_report_code = "too_large"
+                return
+            report = ET.fromstring(content)
+        except OSError:
+            self.storage_report_code = "unavailable"
+            return
+        except ET.ParseError:
+            self.storage_report_code = "invalid"
+            return
+        for test in report.iter("test"):
+            name = test.get("type", "") + "." + test.get("method", "")
+            if test.get("result") != "Fail" or name not in self.tests:
+                continue
+            if len(self.failed_tests) < 32:
+                self.failed_tests.add(name)
+            for message in test.findall("failure/message"):
+                text = message.text or ""
+                if text.strip() in self.codes:
+                    self.storage_codes.add(text.strip())
+                self.storage_codes.update(
+                    code for code in re.findall(r"\bstorage_[a-z_]{1,60}\b", text) if code in self.codes
+                )
+                self.failed_operations.update(
+                    re.findall(r"\boperation=(acquire|register|setup)\b", text)
+                )
+                self.inspect(text.encode())
+        if not self.failed_tests:
+            self.storage_report_code = "no_known_failure"
+
     def safe_fields(self):
         with self.lock:
             if self.kind == "browser" and self.sources:
                 return {"sourceLocations": sorted(self.sources)}
             if self.kind == "dependency" and len(self.dependency_codes) == 1:
                 return {"dependencyFailureCode": next(iter(self.dependency_codes))}
+            if self.kind == "storage":
+                return {
+                    **({"failedStorageTests": sorted(self.failed_tests)} if self.failed_tests else {}),
+                    **({"storageFailureCodes": sorted(self.storage_codes)} if self.storage_codes else {}),
+                    **({"storageFailureOperations": sorted(self.failed_operations)} if self.failed_operations else {}),
+                    **({"storageDiagnosticCode": self.storage_report_code} if self.storage_report_code else {}),
+                }
             return {}
 
     def clear(self):
@@ -99,6 +160,10 @@ class CommandDiagnostics:
             self.closed = True
             self.sources.clear()
             self.dependency_codes.clear()
+            self.failed_tests.clear()
+            self.storage_codes.clear()
+            self.failed_operations.clear()
+            self.storage_report_code = None
 
 
 class OutputCapture:

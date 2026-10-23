@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-34d399?style=flat-square"></a>
-  <img alt="Status: platform contracts accepted" src="https://img.shields.io/badge/status-platform_contracts_accepted-34d399?style=flat-square">
+  <img alt="Status: storage isolation accepted" src="https://img.shields.io/badge/status-storage_isolation_accepted-34d399?style=flat-square">
   <a href="docs/master-spec-inventory.md"><img alt="Built with Spec Kit" src="https://img.shields.io/badge/workflow-Spec_Kit-a78bfa?style=flat-square"></a>
 </p>
 
@@ -35,7 +35,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 | 🔐 Explicit boundaries | Team-scoped authorization, audited actions and module-owned storage |
 
 > [!IMPORTANT]
-> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are now [explicitly human-accepted](specs/002-platform-contracts/acceptance.md), awaiting human merge. Nothing here claims production readiness or MVP completion.
+> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are now [explicitly human-accepted](specs/003-storage-registry/acceptance.md), with human merge pending. Nothing here claims production readiness or MVP completion.
 
 ## 🧭 The shape of things to come
 
@@ -68,14 +68,124 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**Spec 002 is explicitly human-accepted; human merge is next.**
+**Spec 003 is explicitly human-accepted; human merge is pending.**
+The [acceptance record](specs/003-storage-registry/acceptance.md) preserves the
+exact decision, **"this human accesspts 003"**, and the passing review's scope
+and limits. The [review](specs/003-storage-registry/review.md) covers all 40
+requirements/outcomes/scenarios, fourteen plan decisions, 83 tasks and twelve
+principles with no remaining finding. Acceptance changes no product/test code,
+tasks, reviewed checklists or prior evidence and adds no runtime measurement.
+The same [PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6) is ready for
+human merge after publication. **004 must wait for that human merge** and
+accepted evidence on updated main; it is not started here.
+
+The following paragraphs preserve the implementation and earlier stage history.
+The initial implementation checkpoint followed completed
+specify through analyze and explicit human approval of
+[ADR 0005](docs/adr/0005-module-storage-ownership.md).
+The [specification](specs/003-storage-registry/spec.md), [plan](specs/003-storage-registry/plan.md)
+and [task list](specs/003-storage-registry/tasks.md) retain the approved scope;
+the author and reviewer-owned quality checklists remain 16/16 and 36/36.
+Reviewed EF/provider dependencies, provider-neutral storage contracts and a
+platform-local registry now support immutable allocation, explicit no-storage,
+private SQLite files, offline PostgreSQL provisioning and marker verification.
+Actual both-provider registration/constraint checks, assigned EF isolation,
+the complete 20-by-ten connection/process race matrix, killed-process recovery,
+30/120-second worker termination and all-seven-outcome privacy checks now have
+focused evidence. All nine public examples execute, including corrected retry,
+real interrupted provisioning and provider-backed complete-set restore.
+The original PostgreSQL failures did not reproduce in the unchanged 105-case
+baseline. Later Linux CI identified a process-worker acquisition deadline:
+ownership verification and the first lease probe now share one guarded query,
+and worker provider initialization completes before the ten-way race barrier.
+Budgets and Busy-only retry rules are unchanged. The corrected complete local
+gate passes all 200 steps. Assessed-head Linux CI also passes all ten product
+jobs / 200 steps and repository checks after the browser-prerequisite mirror
+correction documented in the local guide. The implementation checkpoint marked
+all 78 original tasks complete; convergence identifies two remaining public-example
+obligations below rather than inferring acceptance from those markers.
+Baseline provider selection and warm-restart fixtures now honor the new
+registry/module ownership boundary without weakening its checks.
+See the [implementation report](specs/003-storage-registry/implementation.md)
+for exact revisions, commands, results and supported limits, and the
+[validation guide](specs/003-storage-registry/quickstart.md) for supported checks
+and executable examples. Normal serving remains module-free; storage is not
+a new endpoint, module loader or authorization bypass. Work stays on
+`feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
+The first [convergence assessment](specs/003-storage-registry/convergence.md)
+identified two HIGH partial public-example gaps and appended **T079-T080**.
+The [remediation increment](specs/003-storage-registry/implementation.md#convergence-remediation-t079-t080)
+now makes `same-id-retry` release maintenance and launch three fresh processes,
+each re-registering changed metadata and verifying two exact assignments and
+retained sentinels. `collision` now forces a second distinct ID against a
+registered owner's candidate, verifies the real UNIQUE rejection and unchanged
+assignment/data/inventory, and retains the separate unowned-target refusal.
+Standalone and `all` harnesses require these observations, not positive counts
+alone. All 80 tasks are evidenced; no runtime storage rule or dependency changes.
+The [follow-up convergence](specs/003-storage-registry/convergence.md) now
+assesses all 40 requirements/outcomes/scenarios, fourteen plan decisions,
+80 tasks and twelve principles against current source/tests, with zero actionable
+gaps. Both public-example findings are closed; `tasks.md` is byte-for-byte
+unchanged and no product/test code is edited by convergence. Actual assessed-head
+CI passes all eleven contexts and 200 product steps. **Review is next** on this
+same draft PR, followed separately by explicit numbered-feature acceptance.
+The earlier gaps assessment is preserved as history; convergence does not
+perform final review, accept the feature or request a merge.
+
+The subsequent [final review](specs/003-storage-registry/review.md) records
+**changes** for one MEDIUM evidence finding: the prescribed changed-allocator
+retry of an existing mapping and persisted no-storage-to-relational refusal
+lack regression assertions. Production code appears correct; no storage-engine
+failure is demonstrated. Prior public F1/F2 are closed. Exactly **T081** is
+appended, preserving all 80 historical task markers and earlier reports.
+Fresh quality/unit/both-provider integration/recovery/contract/privacy gates
+pass 157 targeted steps; actual assessed-head CI passes eleven contexts and
+200 product steps. Passing existing tests does not supply the absent cases.
+That review selected implement without a new approval or merge prerequisite.
+The [T081 implementation](specs/003-storage-registry/implementation.md#final-review-remediation-t081)
+now adds both inherited regressions: all four real-provider cases pass and
+detect controlled behavioral mutations. Exact assignments, sentinels, revisions
+and complete inventory remain unchanged after reopening. All 81 tasks are
+evidenced; fresh quality/unit/integration gates pass 46 targeted steps after
+an unchanged PostgreSQL rerun of two initial deadline failures. Production,
+APIs and dependencies are unchanged.
+The [current convergence](specs/003-storage-registry/convergence.md) now assesses
+all 40 requirements/outcomes/scenarios, fourteen plan decisions, all 81 tasks
+and twelve principles against actual source/assertions. R1/T081 and prior public
+F1/F2 are closed, with zero actionable gaps and no appended task. Tasks,
+product/test code, approved intent and the historical review remain unchanged.
+That convergence selected review on the same draft PR. The subsequent
+[follow-up final review](specs/003-storage-registry/review.md) confirms R1/T081
+and public F1/F2 are closed, but identifies one MEDIUM implementation finding
+R2: explicit registry-upgrade mutations and rejected boundaries bypass required
+correlated storage records. Existing CLI success/generic failure summaries do
+not supply the direct API's complete operation evidence. Exactly **T082** is
+appended unchecked for safe direct-API/CLI telemetry and both-provider captures;
+all 81 historical task bytes/markers, code, design and earlier reports remain
+unchanged. No storage-isolation failure or new design decision is demonstrated.
+Fresh relevant gates pass 157 targeted steps; actual assessed-head CI passes
+eleven contexts and 200 product steps, not the absent upgrade-record assertions.
+That review selected implement without accepting the feature or requesting merge.
+The [T082 increment](specs/003-storage-registry/implementation.md#final-review-remediation-t082)
+now emits correlated upgrade and failed-acquisition records with fixed guidance
+and truthful durability, without manufacturing a module result. The CLI projects
+allowlisted worker outcomes while continuing to discard raw child output.
+Both-provider captures cover commit, idempotent retry, rejected scopes,
+unsupported/corrupt registries and sanitized commit-boundary failures.
+All 82 tasks were evidenced at that implementation checkpoint, which selected
+follow-up converge. That assessment appended T083 without rewriting
+those historical markers; the implementation increment above completes it,
+while feature acceptance remains separate.
+
+**Spec 002 is explicitly human-accepted and merged.**
 The [acceptance record](specs/002-platform-contracts/acceptance.md) preserves
 the exact decision, **"spec is fully human approved"**, in response to the
 passing final review and explicit numbered-feature acceptance handoff.
 Acceptance retains the approved scope and review limits; it adds no product
 capability or new measurement. The same [PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5)
-is ready for human merge. Spec 003 waits for that merge and a later invocation;
-acceptance does not begin it.
+was human-merged. Before starting 003, all five acceptance evidence hashes and
+the accepted ledger were verified on updated `origin/main`; acceptance itself
+did not begin the next feature.
 
 The completed review checkpoint follows.
 The [final review](specs/002-platform-contracts/review.md) independently traces
@@ -120,9 +230,9 @@ record above now completes the feature's human decision.
 The [task list, now including T049](specs/002-platform-contracts/tasks.md), passing
 [analysis](specs/002-platform-contracts/analysis.md), 16/16 author checklist and
 36/36 reviewer-authorized quality checklist preserve traceability, not acceptance.
-Keep `feature/002-platform-contracts` and
-[PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5) for human merge;
-there was no intermediate merge or inferred acceptance.
+All 002 stages stayed on `feature/002-platform-contracts` and
+[PR #5](https://github.com/Stonefly-Labs/Kofte/pull/5) through human acceptance
+and merge; there was no intermediate merge or inferred acceptance.
 **Installing a skill does not execute it.**
 
 ```mermaid

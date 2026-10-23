@@ -194,6 +194,29 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
                 if not isinstance(code, str) or code not in api.check_dependencies.FAILURE_CODES:
                     raise error("failure_child_report_unsafe")
                 selected["dependencyFailureCode"] = code
+            if any(key in step for key in (
+                "failedStorageTests", "storageFailureCodes", "storageFailureOperations", "storageDiagnosticCode",
+            )):
+                diagnostic = api.command_diagnostics(step["command"])
+                if diagnostic is None or diagnostic.kind != "storage":
+                    raise error("failure_child_report_unsafe")
+                for key, allowed in (
+                    ("failedStorageTests", diagnostic.tests), ("storageFailureCodes", diagnostic.codes),
+                    ("storageFailureOperations", diagnostic.storage_operations),
+                ):
+                    if key not in step:
+                        continue
+                    values = step[key]
+                    if (not isinstance(values, list) or not 1 <= len(values) <= 32
+                            or any(not isinstance(value, str) or value not in allowed for value in values)
+                            or len(set(values)) != len(values)):
+                        raise error("failure_child_report_unsafe")
+                    selected[key] = values
+                if "storageDiagnosticCode" in step:
+                    code = step["storageDiagnosticCode"]
+                    if not isinstance(code, str) or code not in diagnostic.storage_report_codes:
+                        raise error("failure_child_report_unsafe")
+                    selected["storageDiagnosticCode"] = code
         result["steps"].append(selected)
     failed = [step for step in steps if step["outcome"] == "failed"]
     code = None
