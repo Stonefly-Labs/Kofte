@@ -249,14 +249,19 @@ measurement or usability study is claimed. The same
 The accepted ledger and all five acceptance hashes were verified on updated
 main before 004 began; acceptance itself did not start the next feature.
 
-**004 / specify is complete** on the fresh `feature/004-module-lifecycle`.
+**004 / specify and clarify are complete** on `feature/004-module-lifecycle`.
 The [draft specification](../specs/004-module-lifecycle/spec.md) and
 [16/16 author checklist](../specs/004-module-lifecycle/checklists/requirements.md)
 define five stories, 20 scenarios, 20 requirements and six outcomes for trusted
 composition/lifecycle, safe preflight/migrations, data-preserving disable and
 health/recovery diagnostics. The exact inventory input and project template
-remain authoritative. **Clarify is next**, separately on the same branch/draft
-PR; no module runtime, reviewer-owned quality checklist or acceptance is claimed.
+remain authoritative. Clarification found all ten requirements categories clear,
+with zero questions; the spec and 16/16 author checklist remain unchanged.
+The [coverage assessment](development/spec-workflow.md#invocation-and-current-progress)
+distinguishes requirements from the remaining planning/ADR choices.
+**Plan is next**, separately on the same branch and
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7);
+no module runtime, reviewer-owned quality checklist or acceptance is claimed.
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 

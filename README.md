@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-34d399?style=flat-square"></a>
-  <img alt="Status: module lifecycle specified" src="https://img.shields.io/badge/status-module_lifecycle_specified-a78bfa?style=flat-square">
+  <img alt="Status: module lifecycle clarified" src="https://img.shields.io/badge/status-module_lifecycle_clarified-a78bfa?style=flat-square">
   <a href="docs/master-spec-inventory.md"><img alt="Built with Spec Kit" src="https://img.shields.io/badge/workflow-Spec_Kit-a78bfa?style=flat-square"></a>
 </p>
 
@@ -68,7 +68,7 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**004 / specify is complete** on `feature/004-module-lifecycle`, freshly based
+**004 / specify and clarify are complete** on `feature/004-module-lifecycle`, freshly based
 on updated main after spec 003's human merge. The
 [draft specification](specs/004-module-lifecycle/spec.md) uses the exact inventory
 prompt and resolved project template. Five stories, 20 acceptance scenarios,
@@ -76,9 +76,13 @@ prompt and resolved project template. Five stories, 20 acceptance scenarios,
 dependency/configuration/contribution preflight, ordered lifecycle/migrations,
 data-preserving disable/re-enable and safe health/failure diagnostics.
 The [built-in author checklist](specs/004-module-lifecycle/checklists/requirements.md)
-satisfies 16/16 criteria. **Clarify is next**, separately on this same feature
-branch/draft PR; no implementation, reviewer-owned quality checklist, feature
-acceptance or intermediate merge is implied.
+satisfies 16/16 criteria. Clarification found all ten requirements categories
+clear, with zero questions and no spec/checklist changes; the
+[coverage assessment](docs/development/spec-workflow.md#invocation-and-current-progress)
+records the evidence and remaining planning choices. **Plan is next**, separately
+on this same feature branch and [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7);
+no implementation, reviewer-owned quality checklist, feature acceptance or
+intermediate merge is implied.
 
 **Spec 003 is explicitly human-accepted and human-merged.**
 The [acceptance record](specs/003-storage-registry/acceptance.md) preserves the

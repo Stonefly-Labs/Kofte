@@ -144,14 +144,17 @@ decision-only stage. The same
 The accepted ledger and all five acceptance hashes were verified on updated
 main before 004 began; acceptance itself did not start the next feature.
 
-**004 / specify is complete**, not a module loader implementation.
+**004 / specify and clarify are complete**, not a module loader implementation.
 The [draft requirements](../../specs/004-module-lifecycle/spec.md) and
 [16/16 author checklist](../../specs/004-module-lifecycle/checklists/requirements.md)
 cover empty/public-test-module boot, preflight, dependency-ordered migrations,
 data-preserving disable/re-enable and safe health/failure diagnostics.
 Supported commands, product code and dependencies remain unchanged; future
-validation is not an executed product check. **Clarify is next**, separately
-on `feature/004-module-lifecycle` and its one draft PR.
+validation is not an executed product check. Clarification found no material
+requirements ambiguity, asked zero questions and left the spec and 16/16 author
+checklist unchanged. Exact contracts, packaging and finite budgets remain
+planning/ADR choices. **Plan is next**, separately on
+`feature/004-module-lifecycle` and [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).

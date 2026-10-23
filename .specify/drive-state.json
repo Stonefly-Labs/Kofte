@@ -18,7 +18,7 @@
     },
     "004": {
       "directory": "specs/004-module-lifecycle",
-      "next_step": "clarify"
+      "next_step": "plan"
     }
   },
   "active": null,
@@ -761,6 +761,21 @@
       "evidence_sha256": {
         "specs/004-module-lifecycle/spec.md": "f1a4b1ccec8dc0a0f606a6ec1724cb5f52861a31334f9c866eed213cff16a0f5",
         "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "clarify",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-23T03:00:49+00:00",
+      "completed_at": "2026-10-23T03:01:44+00:00",
+      "outcome": "pass",
+      "note": "Executed speckit-clarify using the explicitly recorded specs/004-module-lifecycle path and adopted constitution v2.0.1. No critical ambiguities detected worth formal clarification; 0 questions asked or answered, no invented human decisions, and spec.md remains byte-for-byte unchanged. All ten requirements-level taxonomy categories are Clear: scope/behavior (Scope, US1-5, FR-001-003/011-013/019/020); domain/data (Key Entities, FR-008-015, immutable IDs/assignments and desired-versus-observed state); interaction/UX (US1-5, operational states and no new visual surface); nonfunctional quality (FR-004/014/016-018, SC-001-006 and retained startup/maintenance envelopes); integration/dependencies (accepted 002/003, explicit interfaces and later-runtime exclusions); edge cases/failures (US2-5, FR-005/010/013/015/016, contention, uncertain effects, cleanup and corrected retry); constraints/tradeoffs (trusted code, controlled restart, fail-closed composition, no implicit cascade/global rollback); terminology (Key Entities and consistent naming); completion signals (Required Validation maps all 20 scenarios, 20 requirements and six outcomes); miscellaneous/placeholders (no unresolved material marker). Revalidated built-in author checklist: 16/16 to 16/16, no newly passing items, regressions or unchecked criteria; its bytes remain unchanged. Exact discovery/packaging, public signatures, state representation, deterministic tie rule, finite admitted bounds, per-stage budgets, health freshness and cleanup supervision remain explicitly assigned to plan/ADR, not unanswered product intent. Coverage evidence is in docs/development/spec-workflow.md. No before/after clarification hooks configured. No product/design/task changes, reviewer-owned checklist marking, implementation or human acceptance. Plan is next on the same feature branch/draft PR #7, not executed here; no intermediate merge.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/spec.md": "f1a4b1ccec8dc0a0f606a6ec1724cb5f52861a31334f9c866eed213cff16a0f5"
       }
     }
   ]

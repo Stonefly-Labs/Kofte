@@ -137,14 +137,18 @@ runtime or human usability result is inferred. The same
 accepted ledger and all five acceptance hashes were verified on updated main
 before starting 004. Acceptance does not authorize assistant merge.
 
-**004 / specify is complete** on the fresh `feature/004-module-lifecycle`.
+**004 / specify and clarify are complete** on `feature/004-module-lifecycle`.
 The [draft specification](specs/004-module-lifecycle/spec.md) uses the exact
 inventory prompt and resolved template: five independent stories, 20 scenarios,
 20 requirements and six outcomes cover composition, lifecycle, disable/re-enable
 and health/failure behavior. Its
 [built-in author checklist](specs/004-module-lifecycle/checklists/requirements.md)
-satisfies 16/16 criteria. **Clarify is next** on this same branch/draft PR,
-not implementation, reviewer-owned checklist review, acceptance or a merge.
+satisfies 16/16 criteria. Clarification found all ten requirements categories
+clear, with zero questions and no specification/checklist changes. Exact
+packaging/contracts, ordering and finite budgets remain planning/ADR choices,
+not missing product decisions. **Plan is next** on this same branch and
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), not implementation,
+reviewer-owned checklist review, acceptance or a merge.
 The following paragraphs preserve the historical design-stage checkpoint.
 
 Spec **003 / specify and clarify** establish the

@@ -256,7 +256,7 @@ production-readiness claim or later-scope waiver. The same
 Its accepted ledger and all five acceptance hashes were verified on updated
 main before 004 began; acceptance itself started no new feature.
 
-**004 / specify is complete** on `feature/004-module-lifecycle`.
+**004 / specify and clarify are complete** on `feature/004-module-lifecycle`.
 The [draft requirements](../specs/004-module-lifecycle/spec.md) and
 [16/16 author checklist](../specs/004-module-lifecycle/checklists/requirements.md)
 define trusted module composition, dependency/configuration/contribution
@@ -264,8 +264,11 @@ preflight, ordered initialization/migrations, data-preserving restart-controlled
 disable/re-enable and honest health/failure observations. They preserve accepted
 002/003 contracts and exclude public lifecycle administration, hostile-code
 isolation, hot-unload and later extension runtimes. Exact public contracts,
-packaging and budgets remain planning/ADR choices. **Clarify is next**,
-separately on this same feature branch/draft PR, not implementation or acceptance.
+packaging and budgets remain planning/ADR choices. Clarification found all ten
+requirements categories clear, with zero questions and no spec/checklist changes;
+no design choice or human answer was invented. **Plan is next**, separately on
+this same feature branch and [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7),
+not implementation or acceptance.
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.

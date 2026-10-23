@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** **004 / specify is complete** on the fresh
+**Current checkpoint:** **004 / specify and clarify are complete** on
 `feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
 The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the
 exact fenced inventory input and resolved project template. Five independently
@@ -14,11 +14,41 @@ testable stories, 20 scenarios, 20 functional requirements and six outcomes
 cover trusted composition, safe preflight, dependency-ordered lifecycle/
 migrations, data-preserving disable/re-enable and health/failure diagnostics.
 The [built-in author checklist](../../specs/004-module-lifecycle/checklists/requirements.md)
-satisfies 16/16 criteria. No before/after specify hooks are configured.
+satisfies 16/16 criteria.
+
+**Clarification assessment:** No critical ambiguities detected worth formal
+clarification. Zero questions were asked or answered; no human decision was
+invented. `specs/004-module-lifecycle/spec.md` and its author checklist remain
+byte-for-byte unchanged: **16/16 to 16/16**, with no newly passing items,
+regressions or unchecked criteria. No spec section was touched. Requirements-level
+coverage is:
+
+| Category | Status | Existing specification evidence |
+| --- | --- | --- |
+| Functional scope and behavior | Clear | Scope/actors/exclusions, US1-5, FR-001-003/011-013/019/020. |
+| Domain and data model | Clear | Key Entities, desired versus observed state, immutable IDs/assignments, FR-008-015; finite admitted limits belong to plan. |
+| Interaction and UX flow | Clear | US1-5 and Experience/Security/Operations distinguish empty, disabled, blocked, in-progress and failed states; no new visual surface. |
+| Non-functional quality | Clear | FR-004/014/016-018 and SC-001-006 require deterministic bounded work, retained startup/deadline limits, honest recovery, private diagnostics and real evidence. |
+| Integration and dependencies | Clear | Accepted 002/003 contracts, required dependency ranges, both-provider ownership, explicit interface and future-runtime exclusions. |
+| Edge cases and failure handling | Clear | Edge Cases, US2-5 and FR-005/010/013/015/016 cover conflicts, contention, interruption, uncertain effects, cleanup and corrected retry. |
+| Constraints and tradeoffs | Clear | Locked intent and explicit scope assumptions: trusted code, restart-controlled changes, fail-closed configured startup, no implicit cascade or global rollback. |
+| Terminology and consistency | Clear | Key Entities consistently separate deployed/desired/resolved state, lifecycle attempts, observations and assigned stores; Köfte/kofte naming is preserved. |
+| Completion signals | Clear | Required Validation maps all 20 scenarios, 20 functional requirements and six measurable outcomes to meaningful public/process/provider/privacy and retained foundation evidence. |
+| Miscellaneous and placeholders | Clear | No unresolved clarification markers; Planning choices explicitly assigns design details without leaving an unanswered product decision. |
+
+Discovery/packaging, exact versioned signatures, state representation, stable
+ordering tie rule, admitted graph/diagnostic limits, per-stage time budgets,
+health freshness and cleanup supervision remain **planning/ADR choices**, not
+unanswered requirements questions or designs selected by clarification. Plan
+must demonstrate these choices fit the accepted startup/maintenance envelopes.
+No `.specify/extensions.yml` exists, so neither before nor after clarification
+hooks are configured.
+
 No product code, dependency, design/task artifact, reviewer-owned quality
-checklist or feature acceptance is introduced. **Clarify is next**, in a
-separate invocation on this same feature branch/draft PR. No intermediate merge
-or permission to chain stages is implied.
+checklist or feature acceptance is introduced. **Plan is next**, in a separate
+invocation on this same feature branch and
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
+No intermediate merge or permission to chain stages is implied.
 
 **003 acceptance checkpoint:** 003 is **explicitly human-accepted and
 human-merged** on its original `feature/003-storage-registry` and
