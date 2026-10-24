@@ -245,9 +245,51 @@ now records **"this human accesspts 003"** for numbered feature 003, with the
 passing review's scope and limits retained. Product/test code, tasks,
 reviewed checklists and prior evidence remain unchanged; no new product
 measurement or usability study is claimed. The same
-[PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6) is ready for human merge
-after publication. **004 waits for that human merge** and accepted evidence
-on updated main; acceptance does not start it.
+[PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6) was human-merged.
+The accepted ledger and all five acceptance hashes were verified on updated
+main before 004 began; acceptance itself did not start the next feature.
+
+**004 / specify, clarify, plan, checklist, tasks and analyze are complete** on `feature/004-module-lifecycle`.
+The [draft specification](../specs/004-module-lifecycle/spec.md) and
+[16/16 author checklist](../specs/004-module-lifecycle/checklists/requirements.md)
+define five stories, 20 scenarios, 20 requirements and six outcomes for trusted
+composition/lifecycle, safe preflight/migrations, data-preserving disable and
+health/recovery diagnostics. The exact inventory input and project template
+remain authoritative. Clarification found all ten requirements categories clear,
+with zero questions; the spec and 16/16 author checklist remain unchanged.
+The [coverage assessment](development/spec-workflow.md#invocation-and-current-progress)
+distinguishes requirements from the then-open planning choices. The
+[plan](../specs/004-module-lifecycle/plan.md),
+[research](../specs/004-module-lifecycle/research.md),
+[data model](../specs/004-module-lifecycle/data-model.md),
+[author contract](../specs/004-module-lifecycle/contracts/composition-v1.md),
+[operator contract](../specs/004-module-lifecycle/contracts/operator-v1.md) and
+[future guide](../specs/004-module-lifecycle/quickstart.md) now resolve those
+choices: explicit trusted composition, bounded whole-set preflight, offline
+preparation, supervised lifecycle and private current-attempt health.
+[ADR 0006](adr/0006-module-composition-lifecycle.md) is now **human-approved for
+implementation**, recording **"yeah approved"** without changing its design,
+historical planning artifacts or ledger. Both constitutional design checks
+pass, not runtime tests or dependency adoption. The
+[quality checklist](../specs/004-module-lifecycle/checklists/quality.md) is now
+reviewed at the reviewer's explicit request: **36/36 criteria satisfied**
+with per-item evidence and no blocking requirements gap or new human decision.
+Spec, plan and 16/16 author checklist are unchanged; actual DI dependency
+adoption and provider/process/privacy proof remain future gates.
+The [80-task list](../specs/004-module-lifecycle/tasks.md) now maps all five
+stories, 20 scenarios, 20 requirements, six outcomes and twelve plan decisions
+to explicit dependencies and path-specific implementation/validation.
+Safe preflight precedes startup within P1; real provider migration/preservation,
+process termination, privacy, all public examples and retained baseline/full
+gates remain mandatory. All tasks are unstarted; design/checklist artifacts
+are unchanged and no dependency or runtime was adopted.
+The read-only [analysis](../specs/004-module-lifecycle/analysis.md) passes:
+26/26 requirements/outcomes, 20/20 scenarios and all 80 tasks are covered,
+with 118 acyclic dependency edges and no actionable or constitutional finding.
+Assessed inputs and both checklists are unchanged; no task is marked complete.
+**Implement is next**, separately on the same branch and
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
+No module runtime, dependency adoption or feature acceptance is claimed.
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 

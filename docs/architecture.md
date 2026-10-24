@@ -252,9 +252,52 @@ now records **"this human accesspts 003"** for feature 003 and its documented
 scope/limits. No architecture, product/test source, dependency, task, reviewed
 checklist or prior evidence changes. Acceptance adds no product measurement,
 production-readiness claim or later-scope waiver. The same
-[PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6) is ready for human merge
-after publication. **004 waits for that human merge** and accepted evidence
-on updated main; no new feature is started by acceptance.
+[PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6) was human-merged.
+Its accepted ledger and all five acceptance hashes were verified on updated
+main before 004 began; acceptance itself started no new feature.
+
+**004 / specify, clarify, plan, checklist, tasks and analyze are complete** on `feature/004-module-lifecycle`.
+The [draft requirements](../specs/004-module-lifecycle/spec.md) and
+[16/16 author checklist](../specs/004-module-lifecycle/checklists/requirements.md)
+define trusted module composition, dependency/configuration/contribution
+preflight, ordered initialization/migrations, data-preserving restart-controlled
+disable/re-enable and honest health/failure observations. They preserve accepted
+002/003 contracts and exclude public lifecycle administration, hostile-code
+isolation, hot-unload and later extension runtimes. Clarification found all ten
+requirements categories clear, with zero questions and no spec/checklist changes;
+no design choice or human answer was invented. The
+[plan](../specs/004-module-lifecycle/plan.md) and
+[Accepted ADR 0006](adr/0006-module-composition-lifecycle.md) now define explicit
+compiled discovery, stable bounded whole-set preflight, native DI and separate
+stopped preparation versus supervised serving. Assigned migrations/privilege
+separation and exact stores remain accepted 003; no anonymous module route or
+later capability runtime is added. Current-attempt private health drives only
+the existing aggregate readiness contract. Both constitutional design gates
+pass. The human's explicit **"yeah approved"** resolves ADR 0006's design gate;
+dependency-edge adoption and actual process/provider/privacy proof remain
+future gates. Historical planning artifacts and ledger evidence are unchanged.
+The [quality checklist](../specs/004-module-lifecycle/checklists/quality.md)
+now satisfies **36/36 requirements-quality criteria** covering
+composition/lifecycle, storage/recovery, authority, privacy and retained
+interfaces, evaluated with per-item evidence under the reviewer's explicit
+request. No blocking requirements gap, new human decision or design change
+was found. Spec, plan and 16/16 author checklist remain unchanged; DI adoption
+and actual provider/process/privacy proof remain future gates.
+The [80 unchecked tasks](../specs/004-module-lifecycle/tasks.md) now order
+US2 whole-set preflight before US1 startup, then US3 stopped preparation,
+US4 exact preservation and US5 current health/safe failure evidence.
+They trace all 20 scenarios, 20 requirements, six outcomes and R1-R12
+decisions to concrete paths/prerequisites, real provider/process/public
+assertions and retained full gates. No architecture decision, approved
+design, reviewer marker, dependency or product source changes.
+The read-only [analysis](../specs/004-module-lifecycle/analysis.md) passes:
+all 26 requirements/outcomes, 20 scenarios, 80 tasks and twelve plan decisions
+have concrete coverage, with 118 acyclic dependency edges and no actionable
+or constitutional issue. Both contracts, approved design and reviewed
+checklists remain unchanged; all tasks are unstarted.
+**Implement is next**, separately on this same branch and
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), not acceptance
+or a merge. Analysis creates no runtime or dependency adoption.
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.

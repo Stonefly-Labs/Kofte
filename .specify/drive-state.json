@@ -15,6 +15,10 @@
     "003": {
       "directory": "specs/003-storage-registry",
       "next_step": "accepted"
+    },
+    "004": {
+      "directory": "specs/004-module-lifecycle",
+      "next_step": "implement"
     }
   },
   "active": null,
@@ -742,6 +746,102 @@
         "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
       },
       "human_approval": "this human accesspts 003"
+    },
+    {
+      "spec": "004",
+      "step": "specify",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-23T02:36:40+00:00",
+      "completed_at": "2026-10-23T02:43:14+00:00",
+      "outcome": "pass",
+      "note": "004 specify authored from the exact fenced inventory prompt and resolved project template after verifying human-merged PR #6 and accepted 003 evidence on updated main. Five independently testable stories, 20 Given/When/Then scenarios, 20 functional requirements and six measurable outcomes cover module-free/trusted-test-module boot, bounded deterministic manifest/dependency/configuration/contribution preflight, dependency-ordered lifecycle and admitted owner-local migrations, data-preserving controlled-restart disable/re-enable, honest health/failure/recovery and safe operator diagnostics. Accepted 002/003 contracts, installation authority, provider isolation and future interface/runtime exclusions remain explicit. All 16 built-in author requirements criteria satisfy the reviewed spec; no unresolved clarification marker, pre/post hook, reviewer-owned quality checklist, plan, task artifact, runtime change or self-acceptance. Local feature context explicitly targets specs/004-module-lifecycle. Clarify is next on the same feature branch/draft PR, not executed here.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/spec.md": "f1a4b1ccec8dc0a0f606a6ec1724cb5f52861a31334f9c866eed213cff16a0f5",
+        "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "clarify",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-23T03:00:49+00:00",
+      "completed_at": "2026-10-23T03:01:44+00:00",
+      "outcome": "pass",
+      "note": "Executed speckit-clarify using the explicitly recorded specs/004-module-lifecycle path and adopted constitution v2.0.1. No critical ambiguities detected worth formal clarification; 0 questions asked or answered, no invented human decisions, and spec.md remains byte-for-byte unchanged. All ten requirements-level taxonomy categories are Clear: scope/behavior (Scope, US1-5, FR-001-003/011-013/019/020); domain/data (Key Entities, FR-008-015, immutable IDs/assignments and desired-versus-observed state); interaction/UX (US1-5, operational states and no new visual surface); nonfunctional quality (FR-004/014/016-018, SC-001-006 and retained startup/maintenance envelopes); integration/dependencies (accepted 002/003, explicit interfaces and later-runtime exclusions); edge cases/failures (US2-5, FR-005/010/013/015/016, contention, uncertain effects, cleanup and corrected retry); constraints/tradeoffs (trusted code, controlled restart, fail-closed composition, no implicit cascade/global rollback); terminology (Key Entities and consistent naming); completion signals (Required Validation maps all 20 scenarios, 20 requirements and six outcomes); miscellaneous/placeholders (no unresolved material marker). Revalidated built-in author checklist: 16/16 to 16/16, no newly passing items, regressions or unchecked criteria; its bytes remain unchanged. Exact discovery/packaging, public signatures, state representation, deterministic tie rule, finite admitted bounds, per-stage budgets, health freshness and cleanup supervision remain explicitly assigned to plan/ADR, not unanswered product intent. Coverage evidence is in docs/development/spec-workflow.md. No before/after clarification hooks configured. No product/design/task changes, reviewer-owned checklist marking, implementation or human acceptance. Plan is next on the same feature branch/draft PR #7, not executed here; no intermediate merge.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/spec.md": "f1a4b1ccec8dc0a0f606a6ec1724cb5f52861a31334f9c866eed213cff16a0f5"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "plan",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-23T03:15:09+00:00",
+      "completed_at": "2026-10-23T03:29:52+00:00",
+      "outcome": "pass",
+      "note": "Executed speckit-plan on the original feature/004-module-lifecycle and draft PR #7 with explicit specs/004-module-lifecycle context and resolved project template. Produced plan, source-backed twelve-decision research, data model, versioned composition/author and operator contracts, future executable validation guide and Proposed ADR 0006. Both constitutional design gates pass across all twelve principles; mappings cover all 20 requirements, 20 scenarios and six outcomes. Design selects compiled trusted deployments, private persistent desired selection, bounded deterministic whole-set preflight, native DI with per-owner scopes, separate admitted stopped preparation and unprivileged serving, owner-bound 003 migrations/history, three-cycle data preservation, honest supervised exit/cleanup, current-attempt dependency health and safe aggregate/diagnostic projection. Accepted 002 grammar/ranges/category metadata and 003 mappings/privileges/format/deadlines/recovery are unchanged. Official Microsoft references resolve DI/cancellation/process constraints; Microsoft Learn/Context7 MCP unavailable, not fabricated. No before/after plan hooks. Spec and 16/16 author checklist remain byte-for-byte unchanged; no product/test source, package installation/lock change, tasks, reviewer-owned quality marking or feature acceptance. ADR 0006 requires human approval and DI dependency-edge adoption review before implementation. Checklist is next, generated unchecked for reviewer-owned evaluation on this same branch/draft PR; not executed here and no intermediate merge.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/plan.md": "fb30c0d493e87dfef4d8d697428914202c6f125524d4772dd3b655b796407939",
+        "specs/004-module-lifecycle/research.md": "063d125c357ab42b8095b286436849b87283dd1f98dd3978070f7068652a3c19",
+        "specs/004-module-lifecycle/quickstart.md": "af39664af78efb10b53c5fd329e131e8e224b3c4ea6308cadf9848234b3c05d9"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "checklist",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-23T04:01:29+00:00",
+      "completed_at": "2026-10-23T11:51:07+00:00",
+      "outcome": "pass",
+      "note": "Completed the existing 004 checklist stage after resuming its original branch/draft PR #7 under explicit reviewer authorization: \"bro, you review the checklist and lmk what I need eyes on\". Evaluated all 36 original requirements-quality criteria against spec, plan/research, model, versioned author/operator contracts, future guide, accepted 002/003 boundaries, approved ADR 0006 and constitution v2.0.1. All 36 criteria satisfy the written intent with separate per-item evidence; markers 0/36 to 36/36, no regressions/unchecked items, new criterion, blocking gap, constitutional conflict or new human decision. Historical generation notes preserved. Spec, plan/research/model/contracts/guide, 16/16 author checklist, approved ADR and prior ledger history/hashes unchanged. Human-attention section preserves actual DI dependency-edge lock/license/provenance review, real both-provider/three-cycle/termination/privacy evidence and later explicit human feature acceptance as future gates, not checklist achievements. No hooks, product/test source, dependency/lock changes, runtime proof, tasks, implementation, feature acceptance or merge. Tasks is next in a separate invocation on this same draft PR; not run here.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
+        "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "tasks",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-23T12:06:49+00:00",
+      "completed_at": "2026-10-23T12:14:32+00:00",
+      "outcome": "pass",
+      "note": "Executed speckit-tasks on the recorded explicit directory and resolved project task-template override. Generated 80 sequential unchecked path-specific tasks: setup5, foundations9, US2 preflight12, US1 startup10, US3 preparation13, US4 preservation8, US5 health/failure15, cross-cutting8; 22 genuine parallel markers with explicit earlier-task dependencies and an acyclic graph. US2 precedes US1 within shared P1 because whole-set safety is a startup prerequisite. Semantic coverage includes all five stories,20 scenarios,20FRs,sixSCs,R1-R12 and twelve principles: verbatim entity constraints, strict bounded config/graph/claims, audited native DI/phase barriers, read-only complete inventory/recipe preflight, stopped assigned migrations and unprivileged serving, exact three fresh-process preservation cycles/provider, actual owned termination, safe failed-boundary/telemetry captures, eleven mandatory public guide cases and retained full baseline/local/CI gates. Existing ADR0006 approval and reviewer gates are preserved, not repeated; actual DI graph/lock/license adoption and runtime evidence remain implementation tasks. Original spec/plan/research/model/contracts/guide/ADR/checklists and prior ledger history/hashes unchanged; no before/after tasks hooks. README/related progress docs updated; no product/test source, dependency adoption, task execution, analysis report or acceptance. Analyze is next separately on original feature branch/draftPR7; no intermediate merge/readiness.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "17d64c09b71ef68ff7c77caaba7cabe2494ddf1f300f0b4853cca2745a5044c9"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "analyze",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-24T02:04:30+00:00",
+      "completed_at": "2026-10-24T02:10:36+00:00",
+      "outcome": "pass",
+      "note": "Executed read-only speckit-analyze at a6d93f283b6e4c446ffcf773faa480d4b80678ae on the original branch/draft PR #7 with explicit feature context. Persisted analysis.md: pass; zero actionable duplication, ambiguity, underspecification, constitutional conflict, coverage gap or ordering inconsistency. Semantic coverage includes 26/26 requirements/outcomes, 20/20 acceptance scenarios, all 80 tasks, R1-R12 and twelve principles; 118 explicit backward-only acyclic dependency edges and 22 conditional isolated-resource parallel markers. Verified observable positive/negative tests, six-phase preflight before effects, native DI/phase barriers, exact owner-local preparation/preservation, current health, actual owned exit, safe useful diagnostics and eleven mandatory public examples plus retained full gates. ADR0006 approval supersedes historical Proposed labels without new approval. No hooks. Original spec/plan/research/model/contracts/guide/approved ADR/both reviewed checklists and all historical ledger entries/hashes unchanged; all 80 tasks remain unchecked. Driver updates report/ledger/current progress docs only, not analyzed inputs, product/test code, dependencies/locks, runtime measurements or feature acceptance. Actual DI adoption and real provider/process/privacy evidence remain implementation requirements. Implement is next in a separate invocation on this same draft PR; no readiness or intermediate merge.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/analysis.md": "d58c305e9a57493d44a6bf4a2948725e6f5aef1f4dd0ea6711f523674b1cdbd8",
+        "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
+        "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
+      }
     }
   ]
 }

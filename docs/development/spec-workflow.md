@@ -6,17 +6,204 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** 003 is **explicitly human-accepted**, with human merge
-pending on the original `feature/003-storage-registry` and
+**Current checkpoint:** **004 / specify, clarify, plan, checklist, tasks and analyze are complete** on
+`feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
+The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the
+exact fenced inventory input and resolved project template. Five independently
+testable stories, 20 scenarios, 20 functional requirements and six outcomes
+cover trusted composition, safe preflight, dependency-ordered lifecycle/
+migrations, data-preserving disable/re-enable and health/failure diagnostics.
+The [built-in author checklist](../../specs/004-module-lifecycle/checklists/requirements.md)
+satisfies 16/16 criteria.
+
+**Clarification assessment:** No critical ambiguities detected worth formal
+clarification. Zero questions were asked or answered; no human decision was
+invented. `specs/004-module-lifecycle/spec.md` and its author checklist remain
+byte-for-byte unchanged: **16/16 to 16/16**, with no newly passing items,
+regressions or unchecked criteria. No spec section was touched. Requirements-level
+coverage is:
+
+| Category | Status | Existing specification evidence |
+| --- | --- | --- |
+| Functional scope and behavior | Clear | Scope/actors/exclusions, US1-5, FR-001-003/011-013/019/020. |
+| Domain and data model | Clear | Key Entities, desired versus observed state, immutable IDs/assignments, FR-008-015; finite admitted limits belong to plan. |
+| Interaction and UX flow | Clear | US1-5 and Experience/Security/Operations distinguish empty, disabled, blocked, in-progress and failed states; no new visual surface. |
+| Non-functional quality | Clear | FR-004/014/016-018 and SC-001-006 require deterministic bounded work, retained startup/deadline limits, honest recovery, private diagnostics and real evidence. |
+| Integration and dependencies | Clear | Accepted 002/003 contracts, required dependency ranges, both-provider ownership, explicit interface and future-runtime exclusions. |
+| Edge cases and failure handling | Clear | Edge Cases, US2-5 and FR-005/010/013/015/016 cover conflicts, contention, interruption, uncertain effects, cleanup and corrected retry. |
+| Constraints and tradeoffs | Clear | Locked intent and explicit scope assumptions: trusted code, restart-controlled changes, fail-closed configured startup, no implicit cascade or global rollback. |
+| Terminology and consistency | Clear | Key Entities consistently separate deployed/desired/resolved state, lifecycle attempts, observations and assigned stores; Köfte/kofte naming is preserved. |
+| Completion signals | Clear | Required Validation maps all 20 scenarios, 20 functional requirements and six measurable outcomes to meaningful public/process/provider/privacy and retained foundation evidence. |
+| Miscellaneous and placeholders | Clear | No unresolved clarification markers; Planning choices explicitly assigns design details without leaving an unanswered product decision. |
+
+Discovery/packaging, signatures, state representation, ordering, admitted
+limits, budgets, health freshness and cleanup were planning/ADR choices, not
+unanswered requirements or designs selected by clarification.
+
+**Plan checkpoint:** The [plan](../../specs/004-module-lifecycle/plan.md),
+[research](../../specs/004-module-lifecycle/research.md),
+[data model](../../specs/004-module-lifecycle/data-model.md),
+[author/composition contract](../../specs/004-module-lifecycle/contracts/composition-v1.md),
+[operator contract](../../specs/004-module-lifecycle/contracts/operator-v1.md) and
+[future validation guide](../../specs/004-module-lifecycle/quickstart.md)
+resolve twelve traced choices: explicit compiled catalog/private desired file;
+bounded deterministic whole-set preflight; native DI and ordered phase barriers;
+accepted owner-bound storage with separate stopped preparation and read-only
+serving verification; data-preserving disable/re-enable; supervised actual
+termination; fresh private own/dependency health and safe aggregate status;
+bounded correlated diagnostics and independent public/real-provider evidence.
+No future executable capability or anonymous lifecycle-control route is added.
+
+[ADR 0006](../adr/0006-module-composition-lifecycle.md) was **Proposed** at the
+planning checkpoint. Before-research and
+after-design checks cover all twelve principles and pass at design level;
+accepted 002/003 grammar/storage/privilege/deadline rules are unchanged.
+The planned DI-abstractions project edge still requires actual lock/license/
+provenance review before adoption. Microsoft Learn/Context7 MCP are unavailable;
+the bounded research used verified official Microsoft web references instead.
+No `.specify/extensions.yml` exists; neither pre/post planning hook is configured.
+
+At the planning checkpoint, the spec and 16/16 author checklist remained
+byte-for-byte unchanged. No product code, dependency installation/lock change,
+tasks, reviewer-owned quality checklist, runtime proof or feature acceptance
+was introduced; checklist was selected next. The subsequent generation
+checkpoint below is the current stage status.
+
+**Subsequent ADR 0006 approval:** On 2026-10-22, after the explanation of
+compiled trusted deployments/rebuilds, whole-set validation, separate stopped
+preparation and supervised lifecycle/health, the human explicitly replied
+**"yeah approved"**. ADR 0006 is now **Accepted for implementation**. This later
+decision is the current authority for ADR status; earlier plan/research/
+contract artifacts and ledger notes retain historical Proposed/pending-review
+statements and their evidence hashes unchanged. Approval neither adopts the
+DI dependency edge nor evaluates/marks the reviewer-owned quality checklist,
+provides runtime proof, accepts feature 004 or authorizes merge.
+Recording that decision executed no stage: checklist remained next with no
+active stage. That historical approval checkpoint is distinct from the
+subsequent checklist invocation below.
+
+**Checklist generation checkpoint (historical):** The
+[requirements-quality checklist](../../specs/004-module-lifecycle/checklists/quality.md)
+is now generated as a new file with **36 unchecked criteria (CHK001-CHK036)**.
+Standard-depth reviewer/PR coverage addresses composition/lifecycle operability,
+immutable storage/recovery, installation authority, diagnostic privacy and
+retained aggregate status. MCP and UX requirements are limited to explicit
+scope exclusions, future shared authorization and preserved bootstrap
+status/accessibility; no new MCP tool, lifecycle page or user operation is added.
+The driver supplies the focus/audience and standard depth; no additional scope
+question or reviewer decision was needed or invented for generation.
+
+At generation, **004 / checklist was active and blocked for reviewer completion**,
+not complete. All 36 generated markers were unchecked; no item was evaluated,
+no passing quality result or requirements defect was asserted, and the
+16/16 built-in author checklist was unchanged. A reviewer must either evaluate
+the criteria with evidence or explicitly request assisted evaluation before
+the assistant marks any satisfied items. ADR 0006's approval does not authorize
+that marking. Resume the recorded stage on `feature/004-module-lifecycle` and
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) only after the
+reviewer gate is resolved; **tasks is the later stage after completion**, not
+run here.
+
+There is no `.specify/extensions.yml`, so no before/after checklist hook is
+configured. Prerequisite/template resolution explicitly targeted
+`specs/004-module-lifecycle`. The spec, plan, research, data model, contracts,
+future guide, approved ADR and historical ledger entries/evidence are unchanged.
+No product/test source, dependency/lock change, task generation, implementation,
+feature acceptance, PR readiness or intermediate merge is introduced.
+
+**Assisted checklist review checkpoint (historical):** On 2026-10-23, the reviewer
+explicitly requested **"bro, you review the checklist and lmk what I need eyes on"**.
+That authorizes agent-assisted evaluation/marking of this existing checklist,
+not generation of another one, dependency adoption or numbered-feature acceptance.
+The original blocked stage was resumed on its recorded branch/directory.
+
+The [quality assessment](../../specs/004-module-lifecycle/checklists/quality.md)
+now satisfies **36/36 criteria**, from 0/36 checked to 36/36 with no regression
+or remaining unchecked item. Each original question/ID/reference is preserved
+and has a separate evidence row grounded in the spec, plan, research, data
+model, versioned contracts, guide, approved ADR and constitution. All five
+stories, 20 scenarios, 20 requirements and six outcomes have compatible
+design/acceptance coverage. No requirements amendment, blocking quality gap,
+constitutional conflict or new human decision was identified.
+
+**004 / checklist is complete; tasks is next**, in a separate invocation on
+the same branch and [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
+The human-attention section separates resolved ADR 0006 approval from remaining
+implementation DI lock/license/provenance review, actual provider/process/
+privacy evidence and later explicit human feature acceptance. None requires a
+new decision to finish checklist review, and none is falsely satisfied by it.
+The spec, plan/research/model/contracts/guide, approved ADR, 16/16 built-in
+author checklist and historical ledger entries/hashes remain unchanged.
+No new criterion, product/test source, dependency/lock change, task artifact,
+runtime proof, feature acceptance, PR readiness or merge request is added.
+No before/after checklist hook is configured.
+
+**Tasks checkpoint (historical):** The
+[implementation list](../../specs/004-module-lifecycle/tasks.md) now contains
+**80 sequential unchecked tasks**: five setup, nine foundational, twelve US2,
+ten US1, thirteen US3, eight US4, fifteen US5 and eight cross-cutting.
+Each has exact implementation/test paths, explicit earlier-task prerequisites
+and requirement/scenario/principle traceability. US2 safely precedes US1 within
+their shared P1 priority; validation is a real startup prerequisite, not a
+temporary permissive implementation. US1 is the smallest usable no-storage
+startup increment after that preflight, not full feature/MVP completion.
+
+Coverage includes all five stories, 20 scenarios, 20 functional requirements,
+six outcomes, twelve R1-R12 plan decisions and twelve constitutional principles.
+The tasks preserve verbatim entity constraints, fixed bounds and phase/authority
+barriers. Independent public graph expectations, 100-by-ten-by-culture
+decisions, all eleven guide scenarios, actual provider migrations and three
+fresh-process preservation cycles, current health, owned exit evidence,
+private channel captures and retained baseline/full local/CI gates remain
+mandatory evidence. Twenty-two `[P]` markers identify different-file windows
+only after their explicit prerequisites; mutable fixtures/capture listeners
+must not be shared concurrently.
+
+Task setup explicitly targeted `specs/004-module-lifecycle` and resolved the
+project task-template override. There is no `.specify/extensions.yml`, so
+no before/after tasks hook is configured. Spec, plan/research/model/contracts/
+guide, approved ADR, both reviewed checklists and historical ledger evidence
+remain unchanged; no product/test source, dependency adoption, task execution,
+runtime measurement, analysis report or feature acceptance is introduced.
+At that checkpoint, **004 / tasks was complete; analyze was next**, separately on
+`feature/004-module-lifecycle` and
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
+Passing analysis remains a prerequisite to implementation. No PR readiness
+or intermediate merge is requested.
+
+**Current analysis checkpoint:** The read-only
+[analysis](../../specs/004-module-lifecycle/analysis.md) passes at assessed head
+`a6d93f283b6e4c446ffcf773faa480d4b80678ae`. All 26 requirements/outcomes,
+20 acceptance scenarios, 80 tasks, twelve plan decisions and twelve principles
+have concrete coverage; no actionable duplication, ambiguity, underspecification,
+constitutional conflict, coverage gap or ordering inconsistency was identified.
+The 118 explicit dependency edges are acyclic and the 22 parallel markers
+remain conditional on isolated resources and completed prerequisites.
+
+Spec, plan/research/model/contracts/guide, approved ADR, 16/16 author checklist,
+36/36 reviewer-authorized quality checklist and prior ledger entries/hashes
+remain unchanged. Every implementation task is still unchecked. The driver
+persists only the report, truthful stage outcome and current progress docs;
+no remediation, package/lock adoption, product/test implementation or module
+runtime measurement occurs. There are no configured analysis hooks.
+**004 / analyze is complete; implement is next**, in a separate invocation on
+the same `feature/004-module-lifecycle` and
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
+Actual DI graph/license/provenance adoption, both-provider/public/process/privacy
+evidence, convergence, final review and explicit human acceptance remain later
+gates. No PR readiness, intermediate merge or new feature is authorized.
+
+**003 acceptance checkpoint:** 003 is **explicitly human-accepted and
+human-merged** on its original `feature/003-storage-registry` and
 [PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
 The [acceptance record](../../specs/003-storage-registry/acceptance.md)
 quotes **"this human accesspts 003"** in response to the passing review and
 numbered-feature handoff, retaining the review's scope and limitations.
 Tasks, reviewed checklists, product/test source, dependencies and prior evidence
 remain unchanged. No new runtime measurement or human usability result is
-inferred. This decision authorizes readiness and a human merge request after
-publication, not assistant merge. **004 waits for that human merge** and the
-accepted ledger/evidence on updated main. No next feature is begun here.
+inferred. That decision authorized readiness and a human merge request, not
+assistant merge. Before starting 004, the accepted ledger and all five acceptance
+hashes were verified on updated `origin/main`; the human merge gate is satisfied.
 
 **Final review checkpoint (historical):** 003 / final review **passes after T083** on the original
 `feature/003-storage-registry` and [draft PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6).
