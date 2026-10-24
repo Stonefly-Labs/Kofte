@@ -137,7 +137,7 @@ runtime or human usability result is inferred. The same
 accepted ledger and all five acceptance hashes were verified on updated main
 before starting 004. Acceptance does not authorize assistant merge.
 
-**004 / specify, clarify, plan, checklist and tasks are complete** on `feature/004-module-lifecycle`.
+**004 / specify, clarify, plan, checklist, tasks and analyze are complete** on `feature/004-module-lifecycle`.
 The [draft specification](specs/004-module-lifecycle/spec.md) uses the exact
 inventory prompt and resolved template: five independent stories, 20 scenarios,
 20 requirements and six outcomes cover composition, lifecycle, disable/re-enable
@@ -167,9 +167,14 @@ five stories, 20 scenarios, 20 requirements and six outcomes. Safe US2
 preflight precedes US1 startup within P1; actual preparation, exact three-cycle
 provider preservation, owned termination and useful private diagnostics follow.
 Public guide examples and retained full local/CI gates require real evidence.
-**Analyze is next**, in a separate invocation on this same branch and
-[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), not implementation,
-acceptance or a merge.
+The read-only [analysis](specs/004-module-lifecycle/analysis.md) passes:
+26/26 requirements/outcomes and 20/20 scenarios have concrete acceptance
+coverage, all 80 tasks are mapped, and no actionable or constitutional issue
+remains. Its 118 dependency edges are acyclic; assessed inputs and reviewer
+markers are unchanged and every implementation task remains unchecked.
+**Implement is next**, in a separate invocation on this same branch and
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), not acceptance
+or a merge. Analysis adds no runtime or dependency adoption.
 The following paragraphs preserve the historical design-stage checkpoint.
 
 Spec **003 / specify and clarify** establish the

@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** **004 / specify, clarify, plan, checklist and tasks are complete** on
+**Current checkpoint:** **004 / specify, clarify, plan, checklist, tasks and analyze are complete** on
 `feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
 The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the
 exact fenced inventory input and resolved project template. Five independently
@@ -138,7 +138,7 @@ No new criterion, product/test source, dependency/lock change, task artifact,
 runtime proof, feature acceptance, PR readiness or merge request is added.
 No before/after checklist hook is configured.
 
-**Current tasks checkpoint:** The
+**Tasks checkpoint (historical):** The
 [implementation list](../../specs/004-module-lifecycle/tasks.md) now contains
 **80 sequential unchecked tasks**: five setup, nine foundational, twelve US2,
 ten US1, thirteen US3, eight US4, fifteen US5 and eight cross-cutting.
@@ -165,11 +165,33 @@ no before/after tasks hook is configured. Spec, plan/research/model/contracts/
 guide, approved ADR, both reviewed checklists and historical ledger evidence
 remain unchanged; no product/test source, dependency adoption, task execution,
 runtime measurement, analysis report or feature acceptance is introduced.
-**004 / tasks is complete; analyze is next**, in a separate invocation on
+At that checkpoint, **004 / tasks was complete; analyze was next**, separately on
 `feature/004-module-lifecycle` and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
 Passing analysis remains a prerequisite to implementation. No PR readiness
 or intermediate merge is requested.
+
+**Current analysis checkpoint:** The read-only
+[analysis](../../specs/004-module-lifecycle/analysis.md) passes at assessed head
+`a6d93f283b6e4c446ffcf773faa480d4b80678ae`. All 26 requirements/outcomes,
+20 acceptance scenarios, 80 tasks, twelve plan decisions and twelve principles
+have concrete coverage; no actionable duplication, ambiguity, underspecification,
+constitutional conflict, coverage gap or ordering inconsistency was identified.
+The 118 explicit dependency edges are acyclic and the 22 parallel markers
+remain conditional on isolated resources and completed prerequisites.
+
+Spec, plan/research/model/contracts/guide, approved ADR, 16/16 author checklist,
+36/36 reviewer-authorized quality checklist and prior ledger entries/hashes
+remain unchanged. Every implementation task is still unchecked. The driver
+persists only the report, truthful stage outcome and current progress docs;
+no remediation, package/lock adoption, product/test implementation or module
+runtime measurement occurs. There are no configured analysis hooks.
+**004 / analyze is complete; implement is next**, in a separate invocation on
+the same `feature/004-module-lifecycle` and
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
+Actual DI graph/license/provenance adoption, both-provider/public/process/privacy
+evidence, convergence, final review and explicit human acceptance remain later
+gates. No PR readiness, intermediate merge or new feature is authorized.
 
 **003 acceptance checkpoint:** 003 is **explicitly human-accepted and
 human-merged** on its original `feature/003-storage-registry` and

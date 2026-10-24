@@ -256,7 +256,7 @@ production-readiness claim or later-scope waiver. The same
 Its accepted ledger and all five acceptance hashes were verified on updated
 main before 004 began; acceptance itself started no new feature.
 
-**004 / specify, clarify, plan, checklist and tasks are complete** on `feature/004-module-lifecycle`.
+**004 / specify, clarify, plan, checklist, tasks and analyze are complete** on `feature/004-module-lifecycle`.
 The [draft requirements](../specs/004-module-lifecycle/spec.md) and
 [16/16 author checklist](../specs/004-module-lifecycle/checklists/requirements.md)
 define trusted module composition, dependency/configuration/contribution
@@ -290,9 +290,14 @@ They trace all 20 scenarios, 20 requirements, six outcomes and R1-R12
 decisions to concrete paths/prerequisites, real provider/process/public
 assertions and retained full gates. No architecture decision, approved
 design, reviewer marker, dependency or product source changes.
-**Analyze is next**, separately on this same branch and
-[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), not implementation
-or acceptance.
+The read-only [analysis](../specs/004-module-lifecycle/analysis.md) passes:
+all 26 requirements/outcomes, 20 scenarios, 80 tasks and twelve plan decisions
+have concrete coverage, with 118 acyclic dependency edges and no actionable
+or constitutional issue. Both contracts, approved design and reviewed
+checklists remain unchanged; all tasks are unstarted.
+**Implement is next**, separately on this same branch and
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), not acceptance
+or a merge. Analysis creates no runtime or dependency adoption.
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.

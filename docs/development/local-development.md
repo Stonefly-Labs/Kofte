@@ -144,7 +144,7 @@ decision-only stage. The same
 The accepted ledger and all five acceptance hashes were verified on updated
 main before 004 began; acceptance itself did not start the next feature.
 
-**004 / specify, clarify, plan, checklist and tasks are complete**, not a module loader implementation.
+**004 / specify, clarify, plan, checklist, tasks and analyze are complete**, not a module loader implementation.
 The [draft requirements](../../specs/004-module-lifecycle/spec.md) and
 [16/16 author checklist](../../specs/004-module-lifecycle/checklists/requirements.md)
 cover empty/public-test-module boot, preflight, dependency-ordered migrations,
@@ -172,7 +172,12 @@ now specify dependency-ordered paths, all eleven executable guide examples,
 exact both-provider migrations/three-cycle preservation, owned process
 termination, private diagnostic captures and retained local/CI gates.
 No task was executed; no new command, dependency or product behavior is introduced.
-**Analyze is next**, separately on `feature/004-module-lifecycle` and
+The read-only [analysis](../../specs/004-module-lifecycle/analysis.md) passes
+with 26/26 requirements/outcomes and 20/20 scenarios covered, all 80 tasks
+mapped, 118 acyclic dependency edges and no actionable or constitutional
+finding. Assessed inputs/checklist markers are unchanged; every task remains
+unchecked. This is planned coverage, not measured module behavior.
+**Implement is next**, separately on `feature/004-module-lifecycle` and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
 
 For the implemented storage examples, follow the
