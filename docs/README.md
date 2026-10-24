@@ -287,7 +287,7 @@ reviewed checklist artifacts remain unchanged.
 The read-only [analysis](../specs/004-module-lifecycle/analysis.md) passes:
 26/26 requirements/outcomes, 20/20 scenarios and all 80 tasks are covered,
 with 118 acyclic dependency edges and no actionable or constitutional finding.
-The analysis retains its historical assessed inputs. **Implement is running**
+The analysis retains its historical assessed inputs. **Implement is blocked on local verification**
 on the same branch and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
 The [implementation report](../specs/004-module-lifecycle/implementation.md)
@@ -296,7 +296,12 @@ owned strict harnesses, public no-storage/relational lifecycle, explicit
 interrupted-owner recovery and three exact preservation cycles per provider.
 All eleven public scenarios now include corrections, current health, actual
 owned termination and private diagnostic channels. Only evidenced tasks are
-marked; retained full local/CI gates remain incomplete. No feature acceptance is claimed.
+marked. T001-T077 are evidenced, with all eleven CI contexts and 286 product
+steps passing at assessed code head `aaba315`, including every standalone and
+provider `all` command. Local full-gate PostgreSQL composition, public
+recovery/contracts and failure-propagation baseline failures remain unresolved;
+T078-T080 and the post-wiring complete local gate remain incomplete.
+No feature acceptance is claimed.
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 

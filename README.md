@@ -35,7 +35,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 | 🔐 Explicit boundaries     | Team-scoped authorization, audited actions and module-owned storage                                   |
 
 > [!IMPORTANT]
-> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. [004 / implementation](specs/004-module-lifecycle/implementation.md) now supplies all eleven lifecycle/provider/process/privacy examples; retained full local/CI verification remains in progress. Nothing here claims production readiness or MVP completion.
+> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. [004 / implementation](specs/004-module-lifecycle/implementation.md) now supplies all eleven lifecycle/provider/process/privacy examples; CI passes, but implementation is blocked on unresolved local full-gate failures. Nothing here claims production readiness or MVP completion.
 
 ## 🧭 The shape of things to come
 
@@ -110,13 +110,18 @@ The read-only [analysis](specs/004-module-lifecycle/analysis.md) passes with
 The analysis preserves its historical assessed inputs; verified implementation
 markers and exact commands are recorded separately in the
 [implementation evidence](specs/004-module-lifecycle/implementation.md).
-**Implement is running** on this same branch and
+**Implement is blocked on local verification** on this same branch and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
 The immutable contracts, deterministic validation, public no-storage boots and
 real relational clean/additive prepare/serve paths now have focused evidence.
-T001-T072 have component/public evidence, including interrupted-migration
+T001-T077 have component/public/CI evidence, including interrupted-migration
 recovery, three-cycle exact preservation on both providers and correction,
-health/privacy examples. Final retained full local/CI gates remain incomplete. No convergence, feature
+health/privacy examples. Assessed code head `aaba315` passes all eleven CI
+contexts and 286 product steps, including every standalone/provider `all`
+example. The local diagnostic all-suite failed PostgreSQL composition, public
+recovery/contracts and the failure-propagation baseline; its scoped passing
+reproductions do not establish a fix. T078-T080 remain incomplete, including
+the required post-wiring complete local gate. No convergence, feature
 acceptance or intermediate merge is implied.
 The startup gate also exercises two configured-module/web restarts without
 replacing the ten retained empty-host warm cycles or extending their budgets.

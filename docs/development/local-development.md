@@ -180,7 +180,7 @@ unchecked. This is planned coverage, not measured module behavior.
 At that historical checkpoint, **implement was next** on `feature/004-module-lifecycle` and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
 
-**004 / implement is running** on that same branch/draft PR. Its
+**004 / implement is blocked on local verification** on that same branch/draft PR. Its
 [current guide](../../specs/004-module-lifecycle/quickstart.md) now runs
 validation, no-storage boots and real relational `ordered-migration` examples
 on SQLite and owned PostgreSQL. The relational example explicitly upgrades its
@@ -216,8 +216,14 @@ requires restoring failed diagnostics, inspecting preserved incomplete cleanup
 or verifying owned exit before retry. These are trusted-code observations, not
 a sandbox, durable audit/settings product or guaranteed termination of arbitrary
 escaped descendants. The [current guide](../../specs/004-module-lifecycle/quickstart.md)
-states exact bounds and limitations. Final retained local/CI gates remain in
-progress; no feature acceptance is implied.
+states exact bounds and limitations. T001-T077 are evidenced, including all
+eleven CI contexts and 286 product steps at assessed code head `aaba315`.
+Local full-gate PostgreSQL composition, public recovery/contracts and
+failure-propagation baseline failures remain unresolved. The
+[implementation report](../../specs/004-module-lifecycle/implementation.md#blocked-local-gate-and-ci-reconciliation)
+records exact commands, failed identities and passing scoped reproductions;
+the cause is not established. T078-T080, including the required post-wiring
+complete local gate, remain incomplete. No feature acceptance is implied.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).

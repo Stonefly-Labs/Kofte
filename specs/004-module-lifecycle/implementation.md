@@ -1,6 +1,6 @@
 # Implementation: 004 - Module Composition and Lifecycle
 
-**Stage:** implement, started 2026-10-24; in progress, not feature acceptance.
+**Stage:** implement, started 2026-10-24; blocked on local verification, not complete or feature acceptance.
 **Assessed starting revision:** `bac7bdc8c10d7c62394688d3e0364ff422cd3dfb`.
 **Branch / checkpoint:** `feature/004-module-lifecycle`,
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
@@ -460,7 +460,7 @@ T058-T072 now have component/public evidence. Final named regression gates,
 retained direct-guide reports, the full local gate and implementation-head CI
 remain separate obligations.
 
-### Final verifier wiring and retained gates (in progress)
+### Final verifier wiring and retained gates
 
 The verifier inventories the separate test-owned assemblies and all eleven
 scenarios, builds them through the solution, and runs focused composition
@@ -586,6 +586,142 @@ reports remain ignored. Approved spec/plan/research/analysis and both reviewed
 checklists are unchanged; only delivered guide/evidence/current-status docs may
 change. Final progress statements still await actual complete-gate results.
 
+Subsequent actual `720f398` CI recovery and privacy gates passed, including
+both real providers and every focused native/public composition selector.
+Its failure-propagation job did not pass: its isolated PostgreSQL baseline
+reported one failed new native case,
+`PostgresCompositionDeadlineTests.PublicCorrectionsRequireFreshAttemptsAndExplicitUncertainMigrationRecovery`,
+after 542.755 seconds for that storage command. Other contexts' PostgreSQL
+integration passed. The exact failed method was then invoked locally with
+`--filter-method '*PublicCorrectionsRequireFreshAttemptsAndExplicitUncertainMigrationRecovery' --filter-trait Provider=postgres --minimum-expected-tests 1`:
+one passed, zero skipped, 37.270 seconds. This is a bounded reproduction attempt,
+not proof of a fix or permission to ignore the CI failure. No deadline/test floor
+was weakened. That PR run's tested synthetic merge revision is
+`77123073ba13e0d1d18580c5112b7d064eb26dd2`; its associated branch head is `720f398`.
+The local diagnostic full PostgreSQL storage command subsequently passed at
+the recorded four-processor setting in 467.084 seconds, unlike its earlier
+broad failure. Cause remains unestablished; final complete local/exact-head
+CI reconciliation is still required.
+
+### Blocked local gate and CI reconciliation
+
+The diagnostic invocation
+`python3 scripts/verify.py --suite all --disposable-postgres --warm-starts 10`
+completed with **exit 1**, from 17:56:20 to 18:51:24 UTC on 2026-10-24.
+It started at `720f398`, before the final configured-stack wiring at `aaba315`;
+it is neither a passing gate nor a final exact-code run. It used the pinned
+environment above, `DOTNET_PROCESSOR_COUNT=4` and
+`KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true`.
+
+| Local named suite      | Observed result                                                                                                                                                               |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| quality                | 20 steps passed.                                                                                                                                                              |
+| unit                   | 14 steps passed.                                                                                                                                                              |
+| integration / sqlite   | Nine steps passed.                                                                                                                                                            |
+| integration / postgres | Eleven steps passed; `composition-integration-postgres` failed two native identities listed below. The broader storage command passed in 467.084 seconds.                     |
+| recovery / both        | Nine steps passed; `storage-public-recovery-sqlite` failed before subsequent provider/composition work.                                                                       |
+| contract / both        | Thirteen steps passed; `composition-public-contracts` failed in 582.370 seconds, before the direct-guide loop.                                                                |
+| browser                | Sixteen steps passed.                                                                                                                                                         |
+| privacy / both         | Forty-one steps passed.                                                                                                                                                       |
+| startup                | Nine old-wiring steps passed; this invocation did not execute the later configured-stack addition. Separate current-wiring twelve-step startup runs passed as recorded above. |
+| failure-propagation    | Failed `failure_baseline_not_green`; its isolated PostgreSQL storage baseline failed one native identity.                                                                     |
+
+The PostgreSQL composition step identified
+`PostgresCompositionAuthorityTests.KilledLaterMigrationRetainsEarlierCommitAndOriginalDataUntilExplicitAcceptedRecovery`
+and
+`PostgresCompositionPreflightTests.ExistingPreparedModelAndHistoryMustMatchItsActualRecipe`.
+One bounded local invocation of their exact method selectors,
+`dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-method '*KilledLaterMigrationRetainsEarlierCommitAndOriginalDataUntilExplicitAcceptedRecovery' --filter-method '*ExistingPreparedModelAndHistoryMustMatchItsActualRecipe' --filter-trait Provider=postgres --minimum-expected-tests 2`,
+passed three cases, zero skipped. The failed public recovery selection,
+`dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore -c Release --filter-query '/[(Suite=recovery)&(Provider=sqlite)]' --minimum-expected-tests 1`,
+passed six cases, zero skipped, when reproduced separately. Private xUnit XML
+was used for bounded diagnostics, not exported into safe reports. Those passing
+reproductions establish no causal fix. The public-contract assembly's named
+failure reports do not retain failed identities; this diagnostic gap remains
+relevant to investigating the broad public failure.
+
+The isolated failure-propagation baseline cloned **`aaba315`**, despite the
+outer invocation starting earlier. Its storage command failed after 532.967
+seconds with
+`PostgresCompositionPreflightTests.NoStorageRecipeIsRejectedWithoutInvokingItsFactory`.
+Thus the local failure cannot simply be dismissed as testing only old code.
+The safe reports remain under `artifacts/verification/`, including
+`integration-postgres-4fb1247de929468c89f43e144466cc71.json`,
+`recovery-both-9d0e32cea87b4ecfb11f5bc0e738395c.json`,
+`contract-both-cc260560d6464a19864e50c41cb275a2.json` and
+`failure-propagation-none-68d1416e2ea84bc6bf54863d58cb1c3a.json`.
+
+In contrast, actual [product CI run 40119771552](https://github.com/Stonefly-Labs/Kofte/actions/runs/40119771552)
+for branch code head **`aaba315bbaa8debcdc68238e2fd8996a0aff7436`** passed
+all ten named jobs / **286 steps**. Its tested synthetic merge revision,
+retained in every report, is
+`462bf42a4d938e3650bc77ae0ab7760512bc5052`; it is not the branch SHA.
+[Repository checks 40119771559](https://github.com/Stonefly-Labs/Kofte/actions/runs/40119771559)
+also passed: eleven actual contexts, not a claim based on queued job names.
+The target was Ubuntu 24.04 x86_64, four logical CPUs / 16,766,410,752 bytes
+RAM, Python 3.12.3 and the unchanged .NET 10.0.402 / Node 24.22.0 / npm 11.19.1
+pins. Downloaded artifacts contain only the workflow's sanitized verification
+JSON, retained locally under `artifacts/ci/40119771552/verification-*/`.
+
+| Exact named CI command                                                                    | Observed result                                                                                            |
+| ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `python3 scripts/verify.py --suite quality`                                               | Passed 20 steps.                                                                                           |
+| `python3 scripts/verify.py --suite unit`                                                  | Passed 14 steps.                                                                                           |
+| `python3 scripts/verify.py --suite integration --provider sqlite`                         | Passed nine steps.                                                                                         |
+| `python3 scripts/verify.py --suite integration --provider postgres --disposable-postgres` | Passed twelve steps.                                                                                       |
+| `python3 scripts/verify.py --suite recovery --provider both --disposable-postgres`        | Passed 43 steps, including both providers' focused composition selectors.                                  |
+| `python3 scripts/verify.py --suite contract --provider both --disposable-postgres`        | Passed 101 steps, including 24 actual composition guide commands and 24 separate strict observation steps. |
+| `python3 scripts/verify.py --suite browser`                                               | Passed sixteen steps.                                                                                      |
+| `python3 scripts/verify.py --suite privacy --provider both --disposable-postgres`         | Passed 41 steps, including both providers' focused native/public composition selectors.                    |
+| `python3 scripts/verify.py --suite startup --warm-starts 10`                              | Passed twelve steps, retaining ten empty-host cycles and two configured-module/web cycles.                 |
+| `python3 scripts/verify.py --suite failure-propagation --disposable-postgres`             | Passed eighteen steps, including its actual green isolated baseline and negative mutations.                |
+
+T074's eleven standalone scenarios and `all` passed independently on **each**
+provider. Both exact published Release commands executed after the build:
+
+```bash
+dotnet run --project tests/contract/Kofte.Composition.Consumer --no-build -c Release -- --provider sqlite --scenario all
+KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet run --project tests/contract/Kofte.Composition.Consumer --no-build -c Release -- --provider postgres --scenario all
+```
+
+The sanitized `all` results retain **389,385 SQLite / 389,390 PostgreSQL**
+assertions; actual command durations were 159.250 / 245.037 seconds. Each
+provider independently recorded 84,000 exact decisions across 100 repetitions,
+ten permutations, two real cultures and two public consumer paths; three
+preservation cycles/six fresh processes; five named corrections/fresh attempts/
+verified exits; seven ignoring-token boundaries and verified root exits; and
+six private capture channels with six zero-leak comparisons. Mandatory
+owner/data/history/unrelated-state, descendant/refusal, elapsed-budget and
+useful-record observations remain separately validated, not inferred from
+assertion totals. The contract artifact retains distinct command/observation
+steps for all 24 executions.
+
+This supports T073-T076's delivered wiring, executable examples and named
+supported-CI gates. T077's interface/ownership/credential audit above and
+current progress documents now accurately state the block. It does **not**
+satisfy T078's complete post-wiring local invocation or erase the failed
+local/earlier CI results. No cause is established, including resource pressure;
+no production deadline, scenario, test floor or provider requirement was
+weakened. No further broad retry was launched without a causal change.
+
+**Resume implementation, not convergence:** obtain safe failed public-test
+identities and reproduce the retained PostgreSQL preflight/authority and
+public recovery/contracts under their owning named suites; investigate and
+correct any scoped root cause. Then execute the required complete post-wiring
+local command and reconcile its exact reports with assessed-head CI.
+T078-T080 remain unchecked. The driver records a blocked stage on its
+original branch/draft PR, preserving the original start time and prior
+historical stage evidence.
+
+Blocked-checkpoint publication checks:
+`python3 scripts/check_repository.py` passed;
+`python3 -m unittest discover -s scripts/tests -v` passed all **117** cases;
+`git diff --check` passed. This follow-up changes only progress/evidence,
+task markers and driver state, not product/test/tooling code. Private passing
+probe XML/logs are discarded; sanitized local/CI reports remain ignored.
+Publishing this partial checkpoint does not complete T080, which depends on
+the unfinished full-gate and final mapping obligations.
+
 ## Acceptance evidence
 
 T027 reuses `ModuleLifecycleTests.cs` rather than creating a second lifecycle
@@ -706,12 +842,16 @@ and publication obligations actually finish.
 | T037-T049 | US3 both-provider prepare/current/additive/failure/authority/recovery and unchanged ordinary serving.                                                                                  |
 | T050-T057 | US4 exact three-cycle preservation, dependency guard, partial stop and explicit isolated upgrade.                                                                                      |
 | T058-T072 | US5 health/aggregate/fault/termination/correction/six-channel privacy and executable documentation.                                                                                    |
-| T073      | Required-file/project/scenario manifests, focused trait selectors and Python missing/zero/provider/sum/output regressions; final actual suite execution still required.                |
-| T074-T076 | Standalone/all observations and retained named provider/recovery/contract/privacy/browser/startup/failure gates; passing final reports required.                                       |
-| T077      | Reference/test-ownership/credential/ignored-artifact and interface/budget/guide audit; final status docs depend on actual gate result.                                                 |
+| T073      | Required-file/project/scenario manifests, focused trait selectors and Python missing/zero/provider/sum/output regressions; current-wiring quality and all owning CI suites pass.       |
+| T074-T076 | All 24 standalone/provider `all` executions with separate strict observations and all ten supported-CI suites pass; local failed evidence remains distinct and unresolved.              |
+| T077      | Reference/test-ownership/credential/ignored-artifact and interface/budget/guide audit; current docs consistently record the local block and assessed-code CI success.                      |
 | T078-T080 | Complete exact-code local gate/CI reconciliation, this acceptance mapping, mandatory repository checks, truthful ledger/markers and immediate push/draft-PR handoff; not yet complete. |
 
 ## Limitations and handoff
 
-Implementation is not yet complete. Convergence, final review and explicit
-human acceptance are separate later stages on this same branch/draft PR.
+Implementation is blocked, not complete: T001-T077 are evidenced, while
+T078-T080 require resolved local failures and a complete post-wiring local gate.
+Passing assessed-code CI does not replace that requirement. Resume this same
+implementation stage on `feature/004-module-lifecycle` and draft PR #7.
+Convergence, final review and explicit human acceptance remain separate later
+stages; no readiness or merge is requested.

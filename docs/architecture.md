@@ -293,7 +293,7 @@ The read-only [analysis](../specs/004-module-lifecycle/analysis.md) passes:
 all 26 requirements/outcomes, 20 scenarios, 80 tasks and twelve plan decisions
 have concrete coverage, with 118 acyclic dependency edges and no actionable
 or constitutional issue. Both contracts, approved design and reviewed
-checklists remain unchanged. **Implement is running** on this same branch and
+checklists remain unchanged. **Implement is blocked on local verification** on this same branch and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), not acceptance
 or a merge. The [implementation evidence](../specs/004-module-lifecycle/implementation.md)
 records the separately reviewed DI edge and focused foundation checks. A
@@ -326,7 +326,12 @@ retain safe codes/guidance and original storage durability, never raw settings,
 credentials, paths, exception/output text or caller baggage. Trusted code remains
 unsandboxed; no durable audit, lifecycle administration or general descendant
 termination guarantee is introduced. All public scenarios are implemented;
-retained full local/CI gates remain separate obligations.
+all eleven CI contexts and 286 product steps pass at assessed code head
+`aaba315`, including all public guide commands. Local full-gate PostgreSQL
+composition, public recovery/contracts and failure-propagation baseline
+failures remain unresolved, so implementation is not complete. Passing scoped
+reproductions and CI do not explain or repair those local failures; no bound
+or required evidence has been weakened.
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.

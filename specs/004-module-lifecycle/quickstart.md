@@ -1,10 +1,12 @@
 # Validation Guide: 004 - Module Composition and Lifecycle
 
-**Status**: Implementation is in progress, not feature acceptance.
+**Status**: Implementation is blocked on local verification, not feature acceptance.
 All eleven scenarios and their sequential `all` composition are runnable,
 including interrupted migration, explicit recovery, correction, health, owned
-termination and private diagnostic capture. Final retained suite wiring and
-exact-head CI remain implementation gates. The [implementation report](implementation.md) distinguishes
+termination and private diagnostic capture. Assessed code head `aaba315`
+passes all eleven CI contexts, including every guide command. Unresolved local
+full-gate failures and the required post-wiring complete local run remain
+implementation gates. The [implementation report](implementation.md) distinguishes
 executed evidence from the remaining acceptance targets below.
 
 ## Delivered validation, boot and relational preparation increment

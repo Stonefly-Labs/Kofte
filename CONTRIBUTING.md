@@ -176,7 +176,7 @@ At that checkpoint, **implement was next**, in a separate invocation on this sam
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), not acceptance
 or a merge. Analysis adds no runtime or dependency adoption.
 
-**004 / implement is now running** on that original branch/draft PR.
+**004 / implement is blocked on local verification** on that original branch/draft PR.
 The [implementation report](specs/004-module-lifecycle/implementation.md)
 records verified validation, public no-storage boots and actual relational
 clean/additive prepare/serve commands, including both-provider no-effect,
@@ -184,8 +184,12 @@ retained authority/interruption, original-data and unchanged-revision evidence.
 Explicit interrupted-owner recovery and three complete disable/re-enable cycles
 per provider now preserve exact original assignments/data/history and unrelated
 state. All eleven examples now include named corrections, actual health,
-uncooperative process boundaries and private captures. Final retained local/CI
-verification obligations are still being completed. Neither these
+uncooperative process boundaries and private captures. T001-T077 are evidenced:
+assessed code head `aaba315` passes all eleven CI contexts and 286 product steps,
+including all delivered guide commands. Local full-gate PostgreSQL composition,
+public recovery/contracts and failure-propagation baseline failures remain
+unresolved; T078-T080 and a post-wiring complete local run remain incomplete.
+Neither these
 increments nor passing component checks accept feature 004.
 
 The following paragraphs preserve the historical design-stage checkpoint.

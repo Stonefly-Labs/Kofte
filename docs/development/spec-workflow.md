@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** **004 / implement is running** after specify, clarify,
+**Current checkpoint:** **004 / implement is blocked on local verification** after specify, clarify,
 plan, checklist, tasks and analyze completed on
 `feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
 The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the
@@ -194,7 +194,7 @@ Actual DI graph/license/provenance adoption, both-provider/public/process/privac
 evidence, convergence, final review and explicit human acceptance remain later
 gates. No PR readiness, intermediate merge or new feature is authorized.
 
-**Current implementation checkpoint:** The running implementation remains on
+**Current implementation checkpoint:** The blocked implementation remains on
 the original feature branch and draft PR. Its
 [evidence report](../../specs/004-module-lifecycle/implementation.md) records
 the separately reviewed DI edge, immutable public contracts, deterministic
@@ -203,7 +203,16 @@ inventory/recipe foundations. Markers change only for actually evidenced
 tasks; the approved spec, plan, reviewed checklists and historical analysis
 are not rewritten as implementation proof. Lifecycle, preservation, corrections,
 current health, actual owned process exit and private channels now have runnable
-public scenarios. Retained full local/CI gates remain incomplete.
+public scenarios. T001-T077 are evidenced, including all eleven CI contexts
+and 286 product steps at assessed code head `aaba315`, with every standalone
+and provider `all` guide command. The local diagnostic all-suite failed
+PostgreSQL composition, public recovery/contracts and its failure-propagation
+baseline. Isolated passing reproductions do not establish a fix; even the
+baseline cloned at `aaba315` failed one PostgreSQL preflight case. T078-T080,
+including a complete post-wiring local gate, remain incomplete. The driver
+records an actionable block, not implementation completion. Resume only this
+same stage/branch/draft PR to investigate the retained failures and establish
+passing complete local evidence without weakening bounds or minima.
 Convergence, final review and explicit feature acceptance are later invocations;
 no readiness or intermediate merge is requested.
 
