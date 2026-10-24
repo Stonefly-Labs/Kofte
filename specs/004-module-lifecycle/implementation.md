@@ -913,6 +913,68 @@ The subsequent `dotnet build Kofte.slnx --no-restore -c Release -warnaserror
 and guarded command lookup update the required repository/Python/diff checks
 passed again, with all 119 Python tests.
 
+## Post-repair full gate and isolated contention workload
+
+The complete post-repair command at exact code head
+`cf42d829006ab3f60c8b322d4c6144b012ad9469` **failed**, exit 1.
+Nine suite/provider reports passed: quality, unit, both integrations, recovery,
+contract, browser, privacy and startup. This includes the formerly failing
+PostgreSQL composition, SQLite public recovery, broad public contracts and all
+24 direct guide commands/strict observations. Failure propagation alone failed
+its isolated PostgreSQL baseline at
+`PostgresCompositionProviderTests.OwnedProviderBootPreservesInventoryAndExecutesOnlyItsIntendedPublicModules`.
+Every local report correctly retains `completeGate: false`; this is not a
+successful all-suite run.
+
+Exact-head supported [product CI 40130080126](https://github.com/Stonefly-Labs/Kofte/actions/runs/40130080126)
+and [repository CI 40130080124](https://github.com/Stonefly-Labs/Kofte/actions/runs/40130080124)
+passed all eleven contexts. All ten product reports share actual synthetic
+merge revision `304c454332aab5e05ec0f552ee6d2d88cbadc89d`, not the branch SHA;
+their 286 steps, 24 actual Release guide commands and 24 complete observation
+records were reconciled. Safe reports remain under
+`artifacts/ci/40130080126/verification-*/`. This CI success does not replace
+the failed local gate.
+
+Private diagnostic replays retained no raw material in public reports. An
+initial manual replay omitted disposable opt-in and was discarded; the
+correctly opted-in focused three-case run passed. An isolated broad replay
+failed the `disabled-missing` row, while subsequent instrumented broad runs,
+twenty serial and twenty four-way copies passed. Those passing diagnostic
+runs are not a causal repair or final evidence. Private-only tracing changes
+were confined to an ignored disposable checkout and are not product changes.
+
+Capturing through the exact isolated runner, including its nested scratch
+environment, exposed a second failing baseline:
+`PostgresRegistrationConcurrencyTests.TwentyRoundsOfTenSeparateProcessesKeepActualOwnershipUnique`.
+All other 125 cases passed; the fixed failure was
+`storage_deadline_exceeded; operation=acquire`, not an ownership collision.
+The ten-process contention workload was running alongside unrelated xUnit
+collections, including hosted lifecycle fixtures with their own strict budgets.
+Its acquisition deadline remained correctly enforced.
+
+The contention class now follows the existing isolated-deadline/telemetry
+collection pattern: its **twenty rounds and ten independent connections/
+processes remain unchanged**, but its own parallel workload is exclusive of
+unrelated test collections. No product code, acquisition deadline, retry
+policy, case, assertion or minimum changes. This is verification workload
+isolation, not a claim that every historical module boot failure has the
+same cause. Fresh broad provider and complete exact-code evidence remain
+required before T078-T080 can finish.
+
+The focused post-change command was:
+
+```bash
+dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-trait Provider=postgres --minimum-expected-tests 1 --report-xunit-xml --report-xunit-xml-filename result.xml --results-directory <owner-private-results>
+```
+
+It passed **all 126 cases, zero skipped**, 507.086 seconds. Actual xUnit XML
+confirms all **four** unchanged same/distinct connection/process contention
+cases belong to `registration_concurrency`; this is not just an attribute
+inference. `dotnet format Kofte.slnx --verify-no-changes --no-restore --verbosity
+quiet`, the repository checker, all 119 Python tests and `git diff --check`
+also passed. The complete final local gate and exact-candidate CI are still
+pending.
+
 ## Limitations and handoff
 
 Implementation has resumed, not completed: T001-T077 are evidenced, while

@@ -528,6 +528,12 @@ their three-second connection/query limits; product acquisition, lifecycle and
 probe deadlines are unchanged. A controlled pause of an owned disposable
 service exercises this distinction without retries or shared-service mutation.
 
+The registry's twenty-round, ten-connection/process contention tests run in an
+exclusive xUnit collection. Their intended ten-way workload is unchanged, but
+unrelated hosted lifecycle fixtures do not compete with that benchmark's fixed
+acquisition budgets. Worker counts, rounds, retry rules and product deadlines
+are not reduced or relaxed.
+
 Failed native storage and public platform-contract commands retain only
 source-allowlisted test identities and closed diagnostic codes. Their private,
 bounded xUnit XML is deleted; raw assertions, arguments, output and stacks do

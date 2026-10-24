@@ -123,6 +123,8 @@ recovery/contracts and the failure-propagation baseline. A reproduced
 PostgreSQL fixture-administration timeout now has a causal regression and
 scoped fix; source-allowlisted public-test diagnostics close the prior
 reporting omission. These changes do not yet resolve every earlier failure.
+The unchanged twenty-by-ten registry contention workload now runs exclusively
+of unrelated hosted tests; the broad PostgreSQL assembly passes all 126 cases.
 T078-T080 remain incomplete, including
 the required post-wiring complete local gate. No convergence, feature
 acceptance or intermediate merge is implied.
