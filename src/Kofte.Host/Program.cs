@@ -2,6 +2,7 @@ using System.Net;
 using Kofte.Host.Bootstrap;
 using Kofte.Host.Features.Bootstrap;
 using Kofte.Host.Features.StorageMaintenance;
+using Kofte.Host.Features.ModuleComposition;
 using Kofte.Infrastructure.Storage;
 using Kofte.Infrastructure.Storage.Registry;
 using Microsoft.Data.Sqlite;
@@ -13,7 +14,9 @@ public partial class Program;
 
 public static class BootstrapProgram
 {
-    public static async Task<int> RunAsync(string[] args)
+    public static Task<int> RunAsync(string[] args) => ModuleCompositionHost.RunAsync(args, []);
+
+    internal static async Task<int> RunUncomposedAsync(string[] args)
     {
         try
         {

@@ -172,9 +172,22 @@ The read-only [analysis](specs/004-module-lifecycle/analysis.md) passes:
 coverage, all 80 tasks are mapped, and no actionable or constitutional issue
 remains. Its 118 dependency edges are acyclic; assessed inputs and reviewer
 markers are unchanged and every implementation task remains unchecked.
-**Implement is next**, in a separate invocation on this same branch and
+At that checkpoint, **implement was next**, in a separate invocation on this same branch and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), not acceptance
 or a merge. Analysis adds no runtime or dependency adoption.
+
+**004 / implement is now running** on that original branch/draft PR.
+The [implementation report](specs/004-module-lifecycle/implementation.md)
+records verified validation, public no-storage boots and actual relational
+clean/additive prepare/serve commands, including both-provider no-effect,
+retained authority/interruption, original-data and unchanged-revision evidence.
+Explicit interrupted-owner recovery and three complete disable/re-enable cycles
+per provider now preserve exact original assignments/data/history and unrelated
+state. All eleven examples now include named corrections, actual health,
+uncooperative process boundaries and private captures. Final retained local/CI
+verification obligations are still being completed. Neither these
+increments nor passing component checks accept feature 004.
+
 The following paragraphs preserve the historical design-stage checkpoint.
 
 Spec **003 / specify and clarify** establish the

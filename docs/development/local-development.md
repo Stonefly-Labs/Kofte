@@ -177,8 +177,47 @@ with 26/26 requirements/outcomes and 20/20 scenarios covered, all 80 tasks
 mapped, 118 acyclic dependency edges and no actionable or constitutional
 finding. Assessed inputs/checklist markers are unchanged; every task remains
 unchecked. This is planned coverage, not measured module behavior.
-**Implement is next**, separately on `feature/004-module-lifecycle` and
+At that historical checkpoint, **implement was next** on `feature/004-module-lifecycle` and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
+
+**004 / implement is running** on that same branch/draft PR. Its
+[current guide](../../specs/004-module-lifecycle/quickstart.md) now runs
+validation, no-storage boots and real relational `ordered-migration` examples
+on SQLite and owned PostgreSQL. The relational example explicitly upgrades its
+new fixture registry, validates the full set, prepares while stopped, writes
+owner-local original records and serves using only runtime authority.
+An admissible pending target requires explicit preparation; ordinary startup
+does not migrate, upgrade, rewrite revisions or receive CREATE authority.
+Initialize repeats for each fresh attempt and has no store/business access.
+Interrupted owner-local writes preserve earlier commits and require the accepted
+explicit inspection/recovery path, not deleting a row/file/history/lock or
+restoring only the platform database. The delivered migration example now
+interrupts the later owner, proves unchanged retry refusal, explicitly recovers
+it and starts a fresh process while preserving the earlier commit and original
+records. Both-provider recovery tests include disabled owners in complete-set
+backup/restore and refuse legacy platform-only operations. A deliberately
+selected older complete set restores only into a fresh owned target, with
+explicit responsibility for losing newer data; the newer source is preserved.
+The delivered `disable-reenable` example performs three complete stopped-file
+cycles per provider. Six distinct supervised roots/workers/attempts preserve
+both original assignments/revisions, records, histories and complete unrelated
+state after every leg. Disabled owners have zero measured callbacks; leaving a
+dependent enabled while disabling its prerequisite refuses unchanged, without
+cascade, uninstall or hot unload. Stop reverses entered owners and LIFO cleanup,
+then owner scopes and provider; failed cleanup remains incomplete. A separately
+prepared additive release may advance only its selected owner's target, not
+silently change an ordinary re-enable. No lifecycle administration route/page
+or tool exists; edit the private file only after verified process exit.
+All eleven public examples and sequential `all` are now implemented, including
+five named corrections, current-attempt/transitive/stale health, seven actual
+uncooperative boundaries and six-channel private captures. Anonymous health
+keeps its schema and never executes author health callbacks. Fixed guidance
+requires restoring failed diagnostics, inspecting preserved incomplete cleanup
+or verifying owned exit before retry. These are trusted-code observations, not
+a sandbox, durable audit/settings product or guaranteed termination of arbitrary
+escaped descendants. The [current guide](../../specs/004-module-lifecycle/quickstart.md)
+states exact bounds and limitations. Final retained local/CI gates remain in
+progress; no feature acceptance is implied.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).
@@ -550,16 +589,16 @@ before any child; single-provider runs exclude the other provider's trait
 without excluding provider-neutral manifest/harness tests. Startup verification
 also builds `Kofte.Storage.Consumer` before its timed browser exercise.
 
-| Suite | Underlying runner |
-| --- | --- |
-| unit | `dotnet test --project tests/unit/Kofte.Host.Tests --no-restore -c Release --minimum-expected-tests 1`; web and shared-contract `test:unit`; complete Python discovery |
-| integration, each provider | `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore -c Release --filter-trait Provider=PROVIDER --minimum-expected-tests 1` |
-| recovery, each provider | Same integration project with `--filter-query "/[(Suite=recovery)&(Provider=PROVIDER)]" --minimum-expected-tests 1`, then `npm run test --workspace tests/e2e -- recovery.spec.ts --workers=1 --output PRIVATE_DIRECTORY` |
-| contract, each provider | Same integration project with `--filter-class "*OpenApiTests" --filter-trait Provider=PROVIDER --minimum-expected-tests 1`, then `npm run test --workspace tests/contract -- --no-file-parallelism bootstrap.test.ts adapter.test.ts` |
-| browser | `npm run test --workspace tests/e2e -- accessibility.spec.ts bootstrap.spec.ts recovery.spec.ts` against owned SQLite; one configured worker |
-| privacy, each provider | `npm run test --workspace tests/contract -- --no-file-parallelism privacy.test.ts`; E2E `privacy.spec.ts --workers=1 --output PRIVATE_DIRECTORY`; then `python3 scripts/run_python_tests.py --pattern test_dev_output.py` |
-| startup | `npm run test --workspace tests/e2e -- startup.spec.ts --output tests/e2e/test-results/verify-startup-UUID`, with `BOOTSTRAP_WARM_STARTS` set to the requested 2-10 cycles |
-| failure-propagation | `tests/integration/tooling/test_failure_propagation.py` exercises the actual wrapper in an isolated no-hardlinks checkout, never the working checkout |
+| Suite                      | Underlying runner                                                                                                                                                                                                                     |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| unit                       | `dotnet test --project tests/unit/Kofte.Host.Tests --no-restore -c Release --minimum-expected-tests 1`; web and shared-contract `test:unit`; complete Python discovery                                                                |
+| integration, each provider | `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore -c Release --filter-trait Provider=PROVIDER --minimum-expected-tests 1`                                                                             |
+| recovery, each provider    | Same integration project with `--filter-query "/[(Suite=recovery)&(Provider=PROVIDER)]" --minimum-expected-tests 1`, then `npm run test --workspace tests/e2e -- recovery.spec.ts --workers=1 --output PRIVATE_DIRECTORY`             |
+| contract, each provider    | Same integration project with `--filter-class "*OpenApiTests" --filter-trait Provider=PROVIDER --minimum-expected-tests 1`, then `npm run test --workspace tests/contract -- --no-file-parallelism bootstrap.test.ts adapter.test.ts` |
+| browser                    | `npm run test --workspace tests/e2e -- accessibility.spec.ts bootstrap.spec.ts recovery.spec.ts` against owned SQLite; one configured worker                                                                                          |
+| privacy, each provider     | `npm run test --workspace tests/contract -- --no-file-parallelism privacy.test.ts`; E2E `privacy.spec.ts --workers=1 --output PRIVATE_DIRECTORY`; then `python3 scripts/run_python_tests.py --pattern test_dev_output.py`             |
+| startup                    | `npm run test --workspace tests/e2e -- startup.spec.ts --output tests/e2e/test-results/verify-startup-UUID`, with `BOOTSTRAP_WARM_STARTS` set to the requested 2-10 cycles                                                            |
+| failure-propagation        | `tests/integration/tooling/test_failure_propagation.py` exercises the actual wrapper in an isolated no-hardlinks checkout, never the working checkout                                                                                 |
 
 `PROVIDER` is the requested `sqlite` or `postgres`, never a substitute fallback.
 Each owned runtime builds the Release solution and web first, then launches
@@ -573,12 +612,12 @@ cleanup failures fail the suite. Only safe named results are persisted.
 The required script inventory is explicit, so `--if-present` cannot silently
 remove coverage:
 
-| Workspace | Required scripts |
-| --- | --- |
-| root | `format:check`, `contract:check`, `dependencies:check` |
-| `apps/web` | `build`, `lint`, `typecheck`, `test:unit`, `start` |
-| `packages/bootstrap-contract` | `generate`, `build`, `lint`, `typecheck`, `test:unit` |
-| `tests/contract`, `tests/e2e` | `lint`, `typecheck`, `test` |
+| Workspace                     | Required scripts                                       |
+| ----------------------------- | ------------------------------------------------------ |
+| root                          | `format:check`, `contract:check`, `dependencies:check` |
+| `apps/web`                    | `build`, `lint`, `typecheck`, `test:unit`, `start`     |
+| `packages/bootstrap-contract` | `generate`, `build`, `lint`, `typecheck`, `test:unit`  |
+| `tests/contract`, `tests/e2e` | `lint`, `typecheck`, `test`                            |
 
 Safe ignored reports under `artifacts/verification/` retain revision, environment,
 tool versions, start/end/duration, suite, exact commands, outcomes and safe

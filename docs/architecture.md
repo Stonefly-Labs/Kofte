@@ -48,28 +48,28 @@ The diagram is conceptual: MCP may be hosted in the same ASP.NET Core process; t
 
 The following is a **proposed stack** for implementation, not a claim that every package is already selected. Prefer current supported stable versions during repository initialization, pin versions, and confirm licensing before adoption.
 
-| Layer | Proposed choice | Purpose / rationale |
-|---|---|---|
-| Core API | ASP.NET Core (.NET current supported LTS), C# | Mature hosting, middleware, DI, testing, performance |
-| Application style | Modular monolith, VSA, minimal endpoints/route groups | Independent slices without needless mediator abstraction |
-| Frontend | Next.js App Router, React, TypeScript | Polished portal, SSR/server components where useful |
-| UI components | Tailwind CSS, shadcn/ui, Radix primitives, Lucide icons | Fast, accessible, customizable visual system |
-| Frontend state/data | TanStack Query for interactive server state; Zod + React Hook Form for forms | Optimistic UX, validation, consistent caching |
-| Data | EF Core with Npgsql and SQLite providers | Managed relational models/migrations, flexible deployment |
-| PostgreSQL | Database with one dedicated **named schema per module** | Ownership/isolation, migrations, permissions |
-| SQLite | One **database file per module** | Small installs with physically separated data |
-| Realtime | ASP.NET Core SignalR | Provider-neutral push to UI; avoid mandatory Azure Web PubSub |
-| Jobs | Custom minimal persisted job abstractions built on hosted workers; evaluate library later | Durable states/retries without forcing heavy orchestrator |
-| Events | In-process pub/sub abstraction, durable outbox when side effects require it | Decoupled modules, future transport flexibility |
-| MCP | .NET MCP server SDK (verify stable package/API) | Tools and resource discovery for assistants |
-| AuthN | ASP.NET Core authentication integration + pluggable OIDC | No required identity vendor; optional local/dev auth |
-| AuthZ | Central RBAC/permission service + resource/team scope | Same policy for UI/API/jobs/MCP |
-| Validation | FluentValidation or equivalent permissively licensed validation | Validation local to each vertical slice |
-| Telemetry | OpenTelemetry, structured logging, health checks | Vendor-neutral traces, logs, metrics |
-| API contract | OpenAPI/JSON Schema; typed client generation optional | Stable external/SDK/module experience |
-| Local orchestration | .NET Aspire or Docker Compose (assess lowest-friction path) | Reproducible multi-service development |
-| Container/deploy | OCI images, Helm/Kustomize templates for Kubernetes | First-class portable K8s operation |
-| CI / testing | GitHub Actions, xUnit or equivalent, Playwright, Testcontainers | Contract, integration and UI verification |
+| Layer               | Proposed choice                                                                           | Purpose / rationale                                           |
+| ------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Core API            | ASP.NET Core (.NET current supported LTS), C#                                             | Mature hosting, middleware, DI, testing, performance          |
+| Application style   | Modular monolith, VSA, minimal endpoints/route groups                                     | Independent slices without needless mediator abstraction      |
+| Frontend            | Next.js App Router, React, TypeScript                                                     | Polished portal, SSR/server components where useful           |
+| UI components       | Tailwind CSS, shadcn/ui, Radix primitives, Lucide icons                                   | Fast, accessible, customizable visual system                  |
+| Frontend state/data | TanStack Query for interactive server state; Zod + React Hook Form for forms              | Optimistic UX, validation, consistent caching                 |
+| Data                | EF Core with Npgsql and SQLite providers                                                  | Managed relational models/migrations, flexible deployment     |
+| PostgreSQL          | Database with one dedicated **named schema per module**                                   | Ownership/isolation, migrations, permissions                  |
+| SQLite              | One **database file per module**                                                          | Small installs with physically separated data                 |
+| Realtime            | ASP.NET Core SignalR                                                                      | Provider-neutral push to UI; avoid mandatory Azure Web PubSub |
+| Jobs                | Custom minimal persisted job abstractions built on hosted workers; evaluate library later | Durable states/retries without forcing heavy orchestrator     |
+| Events              | In-process pub/sub abstraction, durable outbox when side effects require it               | Decoupled modules, future transport flexibility               |
+| MCP                 | .NET MCP server SDK (verify stable package/API)                                           | Tools and resource discovery for assistants                   |
+| AuthN               | ASP.NET Core authentication integration + pluggable OIDC                                  | No required identity vendor; optional local/dev auth          |
+| AuthZ               | Central RBAC/permission service + resource/team scope                                     | Same policy for UI/API/jobs/MCP                               |
+| Validation          | FluentValidation or equivalent permissively licensed validation                           | Validation local to each vertical slice                       |
+| Telemetry           | OpenTelemetry, structured logging, health checks                                          | Vendor-neutral traces, logs, metrics                          |
+| API contract        | OpenAPI/JSON Schema; typed client generation optional                                     | Stable external/SDK/module experience                         |
+| Local orchestration | .NET Aspire or Docker Compose (assess lowest-friction path)                               | Reproducible multi-service development                        |
+| Container/deploy    | OCI images, Helm/Kustomize templates for Kubernetes                                       | First-class portable K8s operation                            |
+| CI / testing        | GitHub Actions, xUnit or equivalent, Playwright, Testcontainers                           | Contract, integration and UI verification                     |
 
 **Dependency rule:** Do not introduce MediatR or commercially encumbered mediator/framework dependencies by default. Ordinary DI, direct handlers and small in-house dispatch contracts are sufficient. All dependency licenses should be reviewed in CI.
 
@@ -274,30 +274,59 @@ separation and exact stores remain accepted 003; no anonymous module route or
 later capability runtime is added. Current-attempt private health drives only
 the existing aggregate readiness contract. Both constitutional design gates
 pass. The human's explicit **"yeah approved"** resolves ADR 0006's design gate;
-dependency-edge adoption and actual process/provider/privacy proof remain
-future gates. Historical planning artifacts and ledger evidence are unchanged.
+dependency-edge adoption and actual process/provider/privacy proof are separate
+implementation gates. Historical planning artifacts and ledger evidence are unchanged.
 The [quality checklist](../specs/004-module-lifecycle/checklists/quality.md)
 now satisfies **36/36 requirements-quality criteria** covering
 composition/lifecycle, storage/recovery, authority, privacy and retained
 interfaces, evaluated with per-item evidence under the reviewer's explicit
 request. No blocking requirements gap, new human decision or design change
-was found. Spec, plan and 16/16 author checklist remain unchanged; DI adoption
-and actual provider/process/privacy proof remain future gates.
-The [80 unchecked tasks](../specs/004-module-lifecycle/tasks.md) now order
+was found. Spec, plan and 16/16 author checklist remain unchanged.
+The [80 implementation tasks](../specs/004-module-lifecycle/tasks.md) order
 US2 whole-set preflight before US1 startup, then US3 stopped preparation,
 US4 exact preservation and US5 current health/safe failure evidence.
 They trace all 20 scenarios, 20 requirements, six outcomes and R1-R12
 decisions to concrete paths/prerequisites, real provider/process/public
-assertions and retained full gates. No architecture decision, approved
-design, reviewer marker, dependency or product source changes.
+assertions and retained full gates without changing the approved architecture
+or reviewer-owned requirements markers.
 The read-only [analysis](../specs/004-module-lifecycle/analysis.md) passes:
 all 26 requirements/outcomes, 20 scenarios, 80 tasks and twelve plan decisions
 have concrete coverage, with 118 acyclic dependency edges and no actionable
 or constitutional issue. Both contracts, approved design and reviewed
-checklists remain unchanged; all tasks are unstarted.
-**Implement is next**, separately on this same branch and
+checklists remain unchanged. **Implement is running** on this same branch and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), not acceptance
-or a merge. Analysis creates no runtime or dependency adoption.
+or a merge. The [implementation evidence](../specs/004-module-lifecycle/implementation.md)
+records the separately reviewed DI edge and focused foundation checks. A
+non-authoritative model boundary permits new-owner structural inspection
+without an assignment or store opener; actual bindings and migrations retain
+accepted 003 authority. Actual stopped preparation now performs all-enabled
+preflight before owner-local writes in dependency order. Ordinary serving uses
+runtime credentials, verifies current stores/history and never provisions,
+migrates or rewrites migration revisions. Per-owner progress preserves original
+003 correlation/durability; a later interrupted owner does not roll back an
+earlier commit or authorize automatic replay. The public relational example
+passes on both providers, including actual later-owner interruption, unchanged
+automatic-retry refusal and explicit accepted recovery before a fresh attempt.
+Complete-set recovery includes disabled owners and refuses legacy platform-only
+operations. Restoring a deliberately selected older set into a fresh owned
+target is an explicit data-loss decision, not automatic compensation. The
+original source is retained. Three complete disabled/re-enabled process cycles
+per provider now preserve exact original assignments/revisions/data/history and
+complete unrelated state; disabled callbacks remain zero. Invalid dependent
+selection refuses unchanged, and a separately prepared single-owner additive
+release changes only that owner's target. Five explicit corrections now require
+fresh attempts, exact retained stores and accepted recovery for uncertain writes.
+Immutable health samples propagate failed/unknown/degraded prerequisites without
+hiding independent roots; publication checks the same immutable state it commits.
+Anonymous health reads snapshots without author callbacks and retains its schema.
+Supervised timeout/cleanup preserves real owner/stage, withdraws readiness and
+verifies owned exits rather than running concurrent abandoned cleanup. Losing a
+serving lease never reacquires it. Private records/transition events/spans/metrics
+retain safe codes/guidance and original storage durability, never raw settings,
+credentials, paths, exception/output text or caller baggage. Trusted code remains
+unsandboxed; no durable audit, lifecycle administration or general descendant
+termination guarantee is introduced. All public scenarios are implemented;
+retained full local/CI gates remain separate obligations.
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.
@@ -382,7 +411,7 @@ Example **illustrative** manifest (not yet a frozen schema):
 ```yaml
 id: org.example.environments
 version: 0.1.0
-hostApi: '>=0.1 <1.0'
+hostApi: ">=0.1 <1.0"
 displayName: Environments
 capabilities:
   - api
@@ -559,7 +588,7 @@ Start small: sequence/step state, inputs, outputs, retry policy, progress events
 
 ### Events
 
-Publish typed/versioned **integration events** through host abstractions. In-process dispatch is acceptable for noncritical immediate handlers. For durable cross-module side effects, use an outbox/inbox or reliable job mechanism; explicit *at-least-once* semantics, duplicates and replay must be documented. Do not promise exactly-once delivery.
+Publish typed/versioned **integration events** through host abstractions. In-process dispatch is acceptable for noncritical immediate handlers. For durable cross-module side effects, use an outbox/inbox or reliable job mechanism; explicit _at-least-once_ semantics, duplicates and replay must be documented. Do not promise exactly-once delivery.
 
 ### Infrastructure/provider modules
 
@@ -571,11 +600,11 @@ SignalR handles live job status, resource updates, alerts and activity progress;
 
 ## 13. Deployment profiles
 
-| Profile | Pieces | Intended use |
-|---|---|---|
-| **Local/lightweight** | Next.js UI, .NET host (+ optional colocated worker), SQLite file per module, internal scheduler | Developer/evaluation/small-team instance |
-| **Team/shared** | UI, host API, PostgreSQL with module schemas, independently scalable worker, ingress/TLS | Multi-team deployment |
-| **Kubernetes** | OCI containers, secrets, config, persistent database, probes, autoscaling/worker strategy, Helm/Kustomize | First-class production target |
+| Profile               | Pieces                                                                                                    | Intended use                             |
+| --------------------- | --------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| **Local/lightweight** | Next.js UI, .NET host (+ optional colocated worker), SQLite file per module, internal scheduler           | Developer/evaluation/small-team instance |
+| **Team/shared**       | UI, host API, PostgreSQL with module schemas, independently scalable worker, ingress/TLS                  | Multi-team deployment                    |
+| **Kubernetes**        | OCI containers, secrets, config, persistent database, probes, autoscaling/worker strategy, Helm/Kustomize | First-class production target            |
 
 Deployment documentation MUST state persistence/backup responsibilities, TLS setup, auth defaults and security implications. Avoid making Redis, a dedicated message broker, external workflow server, or a cloud-managed realtime service a baseline dependency.
 
@@ -610,18 +639,18 @@ Deployment documentation MUST state persistence/backup responsibilities, TLS set
 
 ## 17. ADR backlog and unresolved design choices
 
-| ADR | Question | Recommended starting position |
-|---|---|---|
-| ADR-001 | Module ID and storage schema allocator | Immutable reverse-DNS ID, allocated deterministic bounded name + unique registry constraint |
-| ADR-002 | Module loading & trust | Trusted in-process backend; external protocol for lower-trust integrations |
-| ADR-003 | UI plugin composition | Versioned build/deployment-time frontend packages in MVP |
-| ADR-004 | MCP transport/auth/external servers | Early server with native tools; phase external federation separately |
-| ADR-005 | Job/workflow persistence | Minimal host-owned durable queue/state tables first |
-| ADR-006 | Postgres/SQLite migration parity | Provider-specific migration strategies; no silent shared database |
-| ADR-007 | First production auth providers | Pluggable OIDC, explicit bootstrap administrator process |
-| ADR-008 | Provider execution model | Direct and CI/CD-delegated adapters; separate IaC state responsibility |
-| ADR-009 | External event transport | Abstract from day one; introduce reliable broker only when needed |
-| ADR-010 | Module distribution and signature verification | Private packages first, community registry/signing later |
+| ADR     | Question                                       | Recommended starting position                                                               |
+| ------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| ADR-001 | Module ID and storage schema allocator         | Immutable reverse-DNS ID, allocated deterministic bounded name + unique registry constraint |
+| ADR-002 | Module loading & trust                         | Trusted in-process backend; external protocol for lower-trust integrations                  |
+| ADR-003 | UI plugin composition                          | Versioned build/deployment-time frontend packages in MVP                                    |
+| ADR-004 | MCP transport/auth/external servers            | Early server with native tools; phase external federation separately                        |
+| ADR-005 | Job/workflow persistence                       | Minimal host-owned durable queue/state tables first                                         |
+| ADR-006 | Postgres/SQLite migration parity               | Provider-specific migration strategies; no silent shared database                           |
+| ADR-007 | First production auth providers                | Pluggable OIDC, explicit bootstrap administrator process                                    |
+| ADR-008 | Provider execution model                       | Direct and CI/CD-delegated adapters; separate IaC state responsibility                      |
+| ADR-009 | External event transport                       | Abstract from day one; introduce reliable broker only when needed                           |
+| ADR-010 | Module distribution and signature verification | Private packages first, community registry/signing later                                    |
 
 ## 18. Recommended Spec Kit decomposition
 
@@ -644,4 +673,4 @@ For each specification include: purpose/personas, core vs module ownership, endp
 
 ---
 
-**Source of truth:** [`product-charter.md`](product-charter.md) sets scope; [`product-vision.md`](product-vision.md) sets direction. Where this file says *recommended/proposed*, the engineering team should record a decision before treating it as a locked requirement.
+**Source of truth:** [`product-charter.md`](product-charter.md) sets scope; [`product-vision.md`](product-vision.md) sets direction. Where this file says _recommended/proposed_, the engineering team should record a decision before treating it as a locked requirement.

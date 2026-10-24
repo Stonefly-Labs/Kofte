@@ -275,21 +275,28 @@ pass, not runtime tests or dependency adoption. The
 reviewed at the reviewer's explicit request: **36/36 criteria satisfied**
 with per-item evidence and no blocking requirements gap or new human decision.
 Spec, plan and 16/16 author checklist are unchanged; actual DI dependency
-adoption and provider/process/privacy proof remain future gates.
+adoption is separately reviewed; complete provider/process/privacy proof remains
+an implementation gate.
 The [80-task list](../specs/004-module-lifecycle/tasks.md) now maps all five
 stories, 20 scenarios, 20 requirements, six outcomes and twelve plan decisions
 to explicit dependencies and path-specific implementation/validation.
 Safe preflight precedes startup within P1; real provider migration/preservation,
 process termination, privacy, all public examples and retained baseline/full
-gates remain mandatory. All tasks are unstarted; design/checklist artifacts
-are unchanged and no dependency or runtime was adopted.
+gates remain mandatory. Generated tasks were initially unstarted; design and
+reviewed checklist artifacts remain unchanged.
 The read-only [analysis](../specs/004-module-lifecycle/analysis.md) passes:
 26/26 requirements/outcomes, 20/20 scenarios and all 80 tasks are covered,
 with 118 acyclic dependency edges and no actionable or constitutional finding.
-Assessed inputs and both checklists are unchanged; no task is marked complete.
-**Implement is next**, separately on the same branch and
+The analysis retains its historical assessed inputs. **Implement is running**
+on the same branch and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
-No module runtime, dependency adoption or feature acceptance is claimed.
+The [implementation report](../specs/004-module-lifecycle/implementation.md)
+records the reviewed DI edge, immutable contracts, deterministic resolution,
+owned strict harnesses, public no-storage/relational lifecycle, explicit
+interrupted-owner recovery and three exact preservation cycles per provider.
+All eleven public scenarios now include corrections, current health, actual
+owned termination and private diagnostic channels. Only evidenced tasks are
+marked; retained full local/CI gates remain incomplete. No feature acceptance is claimed.
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 

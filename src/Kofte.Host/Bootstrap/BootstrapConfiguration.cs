@@ -12,7 +12,7 @@ public sealed record BootstrapConfiguration(
     [
         "KOFTE_PROFILE", "KOFTE_HOST_URL", "KOFTE_WEB_URL", "KOFTE_BACKEND_ORIGIN",
         "KOFTE_DATA_ROOT", "KOFTE_POSTGRES_CONNECTION", "KOFTE_ALLOW_UNSAFE_EXPOSURE",
-        "KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE"
+        "KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE", "KOFTE_MODULES_FILE"
     ];
 
     public static BootstrapConfiguration FromEnvironment() => Parse(

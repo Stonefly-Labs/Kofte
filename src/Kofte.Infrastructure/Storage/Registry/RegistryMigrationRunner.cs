@@ -118,6 +118,9 @@ internal sealed class RegistryMigrationRunner(StorageInstallation installation)
         return result;
     }
 
+    internal async Task<bool> HasRegistryAsync(DbConnection connection, OperationBudget budget) =>
+        (await TablesAsync(connection, budget)).Count != 0;
+
     internal async Task<InstallationRecord> ReadInstallationAsync(DbConnection connection, OperationBudget budget)
     {
         if (!(await TablesAsync(connection, budget)).SequenceEqual(ExpectedTables.Order(StringComparer.Ordinal)))

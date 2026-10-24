@@ -19,6 +19,33 @@ archives, integrity, provenance, licenses and retained notices below.
 passed after these project changes. No pin, source, license decision, production
 test dependency or new NuGet identity was added; existing Ajv 8.20.0 is reused.
 
+## Spec 004 DI project-edge review
+
+**Review date:** 2026-10-24 (UTC). Accepted ADR 0006 requires
+`Microsoft.Extensions.DependencyInjection.Abstractions` **10.0.13** in
+`Kofte.Platform` for the public native-registration signature. Before adding
+that edge, the actual restored official archive/nuspec was inspected:
+MIT, source `dotnet/dotnet` commit
+`4099f83977f4d29604a9aeb971fb0a7bc1d5f699`, with explicit `net10.0` assets
+and **no net10.0 package dependencies**. Framework-specific dependencies for
+net462/netstandard2.0 do not enter this target's closure.
+
+The existing reviewed inventory's NuGet content hash matches `.nupkg.metadata`;
+the signed archive's raw SHA-512 separately matches its retained `.nupkg.sha512`.
+These are different NuGet hash domains, not interchangeable archive hashes.
+The existing `THIRD-PARTY-NOTICES.TXT` retains SHA-256
+`6d15e10a101c6bfff2ab4429ed061bf76c456fc4b23ad6b03e0d0f8377148a21`.
+Both current official NuGet vulnerability-feed pages were retrieved and contain
+no advisory entry for this identity. Existing supported Linux signature
+verification and notice-retention decisions remain applicable; no unsupported
+macOS signature verification is relabeled as passing.
+
+This exact new project edge adds no package identity, version, native asset,
+commercial term, loader, mediator or mapper. Independent test module/deployment
+projects reuse the reviewed infrastructure/test graph. Generated locks and the
+complete dependency checker must still confirm that actual adoption matches
+the reviewed union of 403 npm / 78 NuGet identities.
+
 ## Spec 003 candidate review
 
 **Review date:** 2026-10-22 (UTC). Explicit human ADR 0005 approval authorizes

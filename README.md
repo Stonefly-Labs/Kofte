@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-34d399?style=flat-square"></a>
-  <img alt="Status: module lifecycle planned" src="https://img.shields.io/badge/status-module_lifecycle_planned-a78bfa?style=flat-square">
+  <img alt="Status: module lifecycle implementation" src="https://img.shields.io/badge/status-module_lifecycle_implementation-a78bfa?style=flat-square">
   <a href="docs/master-spec-inventory.md"><img alt="Built with Spec Kit" src="https://img.shields.io/badge/workflow-Spec_Kit-a78bfa?style=flat-square"></a>
 </p>
 
@@ -26,16 +26,16 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 
 **Köfte is being designed for both.** Its planned interfaces share the same operations and permissions, whether you work in a browser, call an API, or use an MCP-enabled coding assistant.
 
-| Ingredient | What we're working toward |
-| --- | --- |
-| 🧩 Deep composability | Modules contributing backend features, UI, resources, events, workflows, permissions and MCP tools |
-| 🏠 Self-hosted freedom | A lightweight SQLite profile, PostgreSQL for shared installations, and first-class Kubernetes support |
-| 🤖 Assistant-native access | Early authenticated MCP tools, not a privileged side door |
-| ✨ Thoughtful experience | A fast, accessible Next.js console with clear loading, empty, error and permission states |
-| 🔐 Explicit boundaries | Team-scoped authorization, audited actions and module-owned storage |
+| Ingredient                 | What we're working toward                                                                             |
+| -------------------------- | ----------------------------------------------------------------------------------------------------- |
+| 🧩 Deep composability      | Modules contributing backend features, UI, resources, events, workflows, permissions and MCP tools    |
+| 🏠 Self-hosted freedom     | A lightweight SQLite profile, PostgreSQL for shared installations, and first-class Kubernetes support |
+| 🤖 Assistant-native access | Early authenticated MCP tools, not a privileged side door                                             |
+| ✨ Thoughtful experience   | A fast, accessible Next.js console with clear loading, empty, error and permission states             |
+| 🔐 Explicit boundaries     | Team-scoped authorization, audited actions and module-owned storage                                   |
 
 > [!IMPORTANT]
-> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. [004 / pre-implementation analysis](specs/004-module-lifecycle/analysis.md) now passes for module composition and lifecycle; it adds no runtime. Nothing here claims production readiness or MVP completion.
+> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. [004 / implementation](specs/004-module-lifecycle/implementation.md) now supplies all eleven lifecycle/provider/process/privacy examples; retained full local/CI verification remains in progress. Nothing here claims production readiness or MVP completion.
 
 ## 🧭 The shape of things to come
 
@@ -87,18 +87,19 @@ offline preparation, supervised ordered lifecycle and safe aggregate health.
 for implementation**, recording the explicit decision **"yeah approved"**.
 The earlier planning artifacts retain their historical Proposed status; this
 approval changes no design or Spec Kit stage. Both constitutional design gates
-pass; no runtime, dependency adoption or executed 004 behavior is claimed.
+passed at planning; design evidence alone is not runtime proof.
 **Checklist review passes** under the reviewer's explicit request:
 the [requirements-quality checklist](specs/004-module-lifecycle/checklists/quality.md)
 now satisfies **36/36 criteria**, with per-item evidence for composition/lifecycle,
 storage/recovery, authority, privacy and retained interface boundaries.
 No blocking requirements gap or new human decision remains. Actual DI dependency
-adoption and provider/process/privacy proof remain future gates, not satisfied
-by checklist marking. The spec, plan and 16/16 author checklist are unchanged.
+adoption is separately recorded in the dependency guide; full provider/process/privacy
+proof remains mandatory, not satisfied by checklist marking. The spec, plan and
+16/16 author checklist are unchanged.
 The [80-task implementation list](specs/004-module-lifecycle/tasks.md) now
 orders safe preflight (US2) before startup (US1), then actual assigned
 preparation (US3), three-cycle preservation (US4) and health/failure/privacy
-(US5). All tasks are unchecked, path-specific and explicitly dependency-linked;
+(US5). Tasks are path-specific and explicitly dependency-linked;
 all 20 scenarios, 20 requirements, six outcomes and twelve design decisions
 have task coverage. Independent public consumers, exact both-provider state,
 owned termination, private captures and retained full gates remain mandatory
@@ -106,11 +107,17 @@ evidence, not results claimed by generation.
 The read-only [analysis](specs/004-module-lifecycle/analysis.md) passes with
 26/26 requirements/outcomes and 20/20 scenarios covered, all 80 tasks mapped,
 118 acyclic dependency edges and no actionable or constitutional finding.
-Assessed inputs and both checklists remain unchanged; all tasks are unchecked.
-**Implement is next**, separately on this same branch and
+The analysis preserves its historical assessed inputs; verified implementation
+markers and exact commands are recorded separately in the
+[implementation evidence](specs/004-module-lifecycle/implementation.md).
+**Implement is running** on this same branch and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
-No product/dependency change, runtime proof, feature acceptance or
-intermediate merge is implied.
+The immutable contracts, deterministic validation, public no-storage boots and
+real relational clean/additive prepare/serve paths now have focused evidence.
+T001-T057 are verified, including explicit interrupted-migration recovery and
+three-cycle exact data preservation on both providers. Complete correction, health/privacy
+examples and retained full gates remain incomplete. No convergence, feature
+acceptance or intermediate merge is implied.
 
 **Spec 003 is explicitly human-accepted and human-merged.**
 The [acceptance record](specs/003-storage-registry/acceptance.md) preserves the
@@ -319,18 +326,18 @@ projects may mirror feature ownership; see the human-approved
 
 ## 📚 Project bookshelf
 
-| Read | Why |
-| --- | --- |
-| [Product charter](docs/product-charter.md) | Mandate, boundaries and required outcomes |
-| [Product vision](docs/product-vision.md) | People, experience and long-term direction |
-| [Technical architecture](docs/architecture.md) | Canonical architecture requirements and proposals |
-| [Constitution](.specify/memory/constitution.md) | Product principles and delivery gates; v2.0.1 clarifies .NET test-source ownership |
-| [Master spec inventory](docs/master-spec-inventory.md) | Ordered prompts; **001–024 MVP**, **025–038 post-MVP** |
-| [Contributing](CONTRIBUTING.md) | Fresh branches, checks, commits, pushes and PR handoffs |
-| [Local development](docs/development/local-development.md) | Current bootstrap startup, prerequisites, checks and remaining limits |
-| [Assistant tooling](docs/development/assistant-tooling.md) | Microsoft Learn, Context7, Next.js, shadcn/ui and Playwright |
-| [Spec workflow](docs/development/spec-workflow.md) | One-stage driver, checkpoints and human acceptance |
-| [Architecture decisions](docs/adr/README.md) | Recording consequential choices without silently changing invariants |
+| Read                                                       | Why                                                                                |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| [Product charter](docs/product-charter.md)                 | Mandate, boundaries and required outcomes                                          |
+| [Product vision](docs/product-vision.md)                   | People, experience and long-term direction                                         |
+| [Technical architecture](docs/architecture.md)             | Canonical architecture requirements and proposals                                  |
+| [Constitution](.specify/memory/constitution.md)            | Product principles and delivery gates; v2.0.1 clarifies .NET test-source ownership |
+| [Master spec inventory](docs/master-spec-inventory.md)     | Ordered prompts; **001–024 MVP**, **025–038 post-MVP**                             |
+| [Contributing](CONTRIBUTING.md)                            | Fresh branches, checks, commits, pushes and PR handoffs                            |
+| [Local development](docs/development/local-development.md) | Current bootstrap startup, prerequisites, checks and remaining limits              |
+| [Assistant tooling](docs/development/assistant-tooling.md) | Microsoft Learn, Context7, Next.js, shadcn/ui and Playwright                       |
+| [Spec workflow](docs/development/spec-workflow.md)         | One-stage driver, checkpoints and human acceptance                                 |
+| [Architecture decisions](docs/adr/README.md)               | Recording consequential choices without silently changing invariants               |
 
 The [older stack exploration](docs/kofte-technology-stack-architecture.md) is background, not authority over the charter, architecture or exact inventory scope.
 

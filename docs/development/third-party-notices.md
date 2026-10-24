@@ -48,3 +48,12 @@ No covered upstream source is modified. SQLite and its native bundle retain
 the existing reviewed graph and notices; this does not approve stripping
 native-library notices or imply all dependencies have the application's MIT
 license. The complete inventory and compliance decisions remain authoritative.
+
+## Spec 004 DI project edge
+
+Microsoft.Extensions.DependencyInjection.Abstractions 10.0.13 is an already
+reviewed MIT-licensed Microsoft component, now required directly by the
+platform author contract. Retain its original copyright/license and packaged
+`THIRD-PARTY-NOTICES.TXT`; no upstream source modification or additional
+license family is introduced. Its exact source is
+[dotnet/dotnet, commit 4099f83977f4d29604a9aeb971fb0a7bc1d5f699](https://github.com/dotnet/dotnet/blob/4099f83977f4d29604a9aeb971fb0a7bc1d5f699/src/runtime/LICENSE.TXT).

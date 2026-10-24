@@ -15,6 +15,11 @@ public sealed class OpenApiTests
         using var root = new TempRoot();
         await new SqlitePlatformStore(root.Path).InitializeAsync();
         await using var host = await StartupFixture.StartAsync(root.Path, token);
+        await AssertDevelopmentDocumentAsync(host, token);
+    }
+
+    internal static async Task AssertDevelopmentDocumentAsync(StartupFixture host, CancellationToken token)
+    {
         using var response = await host.Client.GetAsync("/openapi/v1.json", token);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal("no-store", response.Headers.CacheControl?.ToString());

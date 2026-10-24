@@ -25,9 +25,12 @@ internal sealed class MaintenanceScope : IStorageMaintenanceScope
     }
 
     internal static async Task<MaintenanceScope> AcquireAsync(StorageInstallation installation,
-        CancellationToken token)
+        CancellationToken token, TimeSpan? maximum = null)
     {
-        using var budget = new OperationBudget(OperationBudget.Acquire, token);
+        var duration = maximum ?? OperationBudget.Acquire;
+        if (duration <= TimeSpan.Zero || duration > OperationBudget.Acquire)
+            throw new StorageException(StorageCode.RequestInvalid);
+        using var budget = new OperationBudget(duration, token);
         var started = Stopwatch.GetTimestamp();
         NpgsqlConnection? session = null;
         var contended = false;
@@ -43,7 +46,7 @@ internal sealed class MaintenanceScope : IStorageMaintenanceScope
             while (true)
             {
                 token.ThrowIfCancellationRequested();
-                if (Stopwatch.GetElapsedTime(started) >= OperationBudget.Acquire - OperationBudget.ProbeInterval ||
+                if (Stopwatch.GetElapsedTime(started) >= duration - OperationBudget.ProbeInterval ||
                     session is not null && contended && budget.Remaining < TimeSpan.FromSeconds(1))
                     throw new StorageException(StorageCode.Busy);
                 if (session is not null)

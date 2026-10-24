@@ -9,14 +9,18 @@ public sealed class StoragePhaseBarrier : IObserver<DiagnosticListener>,
 {
     private readonly string phase;
     private readonly bool hold;
+    private readonly string? owner;
+    private readonly Action? onReached;
     private readonly List<IDisposable> subscriptions = [];
     private readonly IDisposable all;
     private int reached;
 
-    public StoragePhaseBarrier(string phase, bool hold = false)
+    public StoragePhaseBarrier(string phase, bool hold = false, string? owner = null, Action? onReached = null)
     {
         this.phase = phase;
         this.hold = hold;
+        this.owner = owner;
+        this.onReached = onReached;
         all = DiagnosticListener.AllListeners.Subscribe(this);
     }
 
@@ -29,6 +33,7 @@ public sealed class StoragePhaseBarrier : IObserver<DiagnosticListener>,
     {
         if (item.Key != "storage.phase" || item.Value is null) return;
         var value = JsonSerializer.SerializeToElement(item.Value);
+        if (owner is not null && value.GetProperty("moduleId").GetString() != owner) return;
         Hit(value.GetProperty("phase").GetString() ?? "");
     }
 
@@ -45,6 +50,7 @@ public sealed class StoragePhaseBarrier : IObserver<DiagnosticListener>,
     private void Hit(string current)
     {
         if (current != phase || Interlocked.CompareExchange(ref reached, 1, 0) != 0) return;
+        onReached?.Invoke();
         Console.WriteLine(JsonSerializer.Serialize(new { eventCode = "storage_worker_phase", phase }));
         Console.Out.Flush();
         if (hold) Thread.Sleep(Timeout.Infinite);

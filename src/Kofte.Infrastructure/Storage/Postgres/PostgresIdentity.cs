@@ -53,14 +53,17 @@ internal sealed class PostgresIdentity
             throw new StorageException(Platform.Modules.Storage.StorageCode.OwnerMismatch);
     }
 
-    internal async Task<bool> TryAcquireLeaseAsync(NpgsqlConnection connection, OperationBudget budget) =>
-        await QueryAsync(connection, budget, acquire: true) ??
+    internal async Task<bool> TryAcquireLeaseAsync(NpgsqlConnection connection, OperationBudget budget,
+        bool shared = false) =>
+        await QueryAsync(connection, budget, acquire: true, shared) ??
             throw new StorageException(Platform.Modules.Storage.StorageCode.OwnerMismatch);
 
-    private async Task<bool?> QueryAsync(NpgsqlConnection connection, OperationBudget budget, bool acquire)
+    private async Task<bool?> QueryAsync(NpgsqlConnection connection, OperationBudget budget, bool acquire,
+        bool shared = false)
     {
+        var acquireFunction = shared ? "pg_try_advisory_lock_shared" : "pg_try_advisory_lock";
         var sql = acquire
-            ? $"SELECT CASE WHEN {OwnershipPredicate} THEN pg_catalog.pg_try_advisory_lock($2) ELSE NULL END"
+            ? $"SELECT CASE WHEN {OwnershipPredicate} THEN pg_catalog.{acquireFunction}($2) ELSE NULL END"
             : $"SELECT {OwnershipPredicate}";
         await using var command = new NpgsqlCommand(sql, connection) { CommandTimeout = budget.CommandSeconds() };
         command.Parameters.AddWithValue(Ownership);

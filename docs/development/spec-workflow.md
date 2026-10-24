@@ -6,7 +6,8 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** **004 / specify, clarify, plan, checklist, tasks and analyze are complete** on
+**Current checkpoint:** **004 / implement is running** after specify, clarify,
+plan, checklist, tasks and analyze completed on
 `feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
 The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the
 exact fenced inventory input and resolved project template. Five independently
@@ -23,18 +24,18 @@ byte-for-byte unchanged: **16/16 to 16/16**, with no newly passing items,
 regressions or unchecked criteria. No spec section was touched. Requirements-level
 coverage is:
 
-| Category | Status | Existing specification evidence |
-| --- | --- | --- |
-| Functional scope and behavior | Clear | Scope/actors/exclusions, US1-5, FR-001-003/011-013/019/020. |
-| Domain and data model | Clear | Key Entities, desired versus observed state, immutable IDs/assignments, FR-008-015; finite admitted limits belong to plan. |
-| Interaction and UX flow | Clear | US1-5 and Experience/Security/Operations distinguish empty, disabled, blocked, in-progress and failed states; no new visual surface. |
-| Non-functional quality | Clear | FR-004/014/016-018 and SC-001-006 require deterministic bounded work, retained startup/deadline limits, honest recovery, private diagnostics and real evidence. |
-| Integration and dependencies | Clear | Accepted 002/003 contracts, required dependency ranges, both-provider ownership, explicit interface and future-runtime exclusions. |
-| Edge cases and failure handling | Clear | Edge Cases, US2-5 and FR-005/010/013/015/016 cover conflicts, contention, interruption, uncertain effects, cleanup and corrected retry. |
-| Constraints and tradeoffs | Clear | Locked intent and explicit scope assumptions: trusted code, restart-controlled changes, fail-closed configured startup, no implicit cascade or global rollback. |
-| Terminology and consistency | Clear | Key Entities consistently separate deployed/desired/resolved state, lifecycle attempts, observations and assigned stores; Köfte/kofte naming is preserved. |
-| Completion signals | Clear | Required Validation maps all 20 scenarios, 20 functional requirements and six measurable outcomes to meaningful public/process/provider/privacy and retained foundation evidence. |
-| Miscellaneous and placeholders | Clear | No unresolved clarification markers; Planning choices explicitly assigns design details without leaving an unanswered product decision. |
+| Category                        | Status | Existing specification evidence                                                                                                                                                   |
+| ------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functional scope and behavior   | Clear  | Scope/actors/exclusions, US1-5, FR-001-003/011-013/019/020.                                                                                                                       |
+| Domain and data model           | Clear  | Key Entities, desired versus observed state, immutable IDs/assignments, FR-008-015; finite admitted limits belong to plan.                                                        |
+| Interaction and UX flow         | Clear  | US1-5 and Experience/Security/Operations distinguish empty, disabled, blocked, in-progress and failed states; no new visual surface.                                              |
+| Non-functional quality          | Clear  | FR-004/014/016-018 and SC-001-006 require deterministic bounded work, retained startup/deadline limits, honest recovery, private diagnostics and real evidence.                   |
+| Integration and dependencies    | Clear  | Accepted 002/003 contracts, required dependency ranges, both-provider ownership, explicit interface and future-runtime exclusions.                                                |
+| Edge cases and failure handling | Clear  | Edge Cases, US2-5 and FR-005/010/013/015/016 cover conflicts, contention, interruption, uncertain effects, cleanup and corrected retry.                                           |
+| Constraints and tradeoffs       | Clear  | Locked intent and explicit scope assumptions: trusted code, restart-controlled changes, fail-closed configured startup, no implicit cascade or global rollback.                   |
+| Terminology and consistency     | Clear  | Key Entities consistently separate deployed/desired/resolved state, lifecycle attempts, observations and assigned stores; Köfte/kofte naming is preserved.                        |
+| Completion signals              | Clear  | Required Validation maps all 20 scenarios, 20 functional requirements and six measurable outcomes to meaningful public/process/provider/privacy and retained foundation evidence. |
+| Miscellaneous and placeholders  | Clear  | No unresolved clarification markers; Planning choices explicitly assigns design details without leaving an unanswered product decision.                                           |
 
 Discovery/packaging, signatures, state representation, ordering, admitted
 limits, budgets, health freshness and cleanup were planning/ADR choices, not
@@ -171,7 +172,7 @@ At that checkpoint, **004 / tasks was complete; analyze was next**, separately o
 Passing analysis remains a prerequisite to implementation. No PR readiness
 or intermediate merge is requested.
 
-**Current analysis checkpoint:** The read-only
+**Analysis checkpoint (historical):** The read-only
 [analysis](../../specs/004-module-lifecycle/analysis.md) passes at assessed head
 `a6d93f283b6e4c446ffcf773faa480d4b80678ae`. All 26 requirements/outcomes,
 20 acceptance scenarios, 80 tasks, twelve plan decisions and twelve principles
@@ -192,6 +193,19 @@ the same `feature/004-module-lifecycle` and
 Actual DI graph/license/provenance adoption, both-provider/public/process/privacy
 evidence, convergence, final review and explicit human acceptance remain later
 gates. No PR readiness, intermediate merge or new feature is authorized.
+
+**Current implementation checkpoint:** The running implementation remains on
+the original feature branch and draft PR. Its
+[evidence report](../../specs/004-module-lifecycle/implementation.md) records
+the separately reviewed DI edge, immutable public contracts, deterministic
+resolver, strict owned consumer harness and mutation-free SQLite/PostgreSQL
+inventory/recipe foundations. Markers change only for actually evidenced
+tasks; the approved spec, plan, reviewed checklists and historical analysis
+are not rewritten as implementation proof. Lifecycle, preservation, corrections,
+current health, actual owned process exit and private channels now have runnable
+public scenarios. Retained full local/CI gates remain incomplete.
+Convergence, final review and explicit feature acceptance are later invocations;
+no readiness or intermediate merge is requested.
 
 **003 acceptance checkpoint:** 003 is **explicitly human-accepted and
 human-merged** on its original `feature/003-storage-registry` and
@@ -718,18 +732,18 @@ built-in author checklist remains **16/16 to 16/16**, with no newly passing
 items, regressions or unchecked criteria; its content is unchanged. This does
 not evaluate or mark the later reviewer-owned quality checklist.
 
-| Ambiguity category | Status | Requirements-level evidence in spec 002 |
-| --- | --- | --- |
-| Functional scope and behavior | Clear | Scope, actors and exclusions; US1-4; FR-001/014/015 distinguish declaration validation from activation. |
-| Domain and data model | Clear | Key Entities, FR-003-009 and Data Ownership define canonical identity, immutable update comparison, version domains and transient metadata; no registry lifecycle is claimed. |
-| Interaction and UX flow | Clear | US1-4 and Experience specify accept/reject, safe correction/retry and valid empty lists; no new web journey or loading/focus state applies. |
-| Non-functional quality attributes | Clear | FR-002/010-012 and SC-001-006 define bounded execution, deterministic offline behavior, privacy, side-effect safety and measurable author/performance evidence. |
-| Integration and external dependencies | Clear | Accepted/merged 001 is the prerequisite; Interfaces and FR-005/006/013-015 distinguish schema/semantic checks, explicit compatibility context, consumer proof and later runtimes. |
-| Edge cases and failure handling | Clear | Edge Cases, US1.2-3/US2.2-3/US3.1-4/US4.1-3 and FR-002/008/010-012 cover malformed/duplicate/over-budget input, compatibility boundaries, safe diagnostics and uncontaminated retry. |
-| Constraints and tradeoffs | Clear | Locked versus undecided and principles I-XII preserve minimal contracts, trust, storage/permission boundaries, portability and the numbered release scope. |
-| Terminology and consistency | Clear | FR-003-009, Data Ownership and Key Entities separate module ID/display name, schema/module/host/capability versions and declared versus installed capabilities/dependencies. |
-| Completion signals | Clear | Four stories, 14 Given/When/Then scenarios, FR-001-015, SC-001-006 and Required Validation provide independently verifiable acceptance and future evidence obligations. |
-| Miscellaneous and placeholders | Clear | No unresolved clarification marker or material unquantified requirement; remaining choices are explicitly assigned to planning. |
+| Ambiguity category                    | Status | Requirements-level evidence in spec 002                                                                                                                                              |
+| ------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Functional scope and behavior         | Clear  | Scope, actors and exclusions; US1-4; FR-001/014/015 distinguish declaration validation from activation.                                                                              |
+| Domain and data model                 | Clear  | Key Entities, FR-003-009 and Data Ownership define canonical identity, immutable update comparison, version domains and transient metadata; no registry lifecycle is claimed.        |
+| Interaction and UX flow               | Clear  | US1-4 and Experience specify accept/reject, safe correction/retry and valid empty lists; no new web journey or loading/focus state applies.                                          |
+| Non-functional quality attributes     | Clear  | FR-002/010-012 and SC-001-006 define bounded execution, deterministic offline behavior, privacy, side-effect safety and measurable author/performance evidence.                      |
+| Integration and external dependencies | Clear  | Accepted/merged 001 is the prerequisite; Interfaces and FR-005/006/013-015 distinguish schema/semantic checks, explicit compatibility context, consumer proof and later runtimes.    |
+| Edge cases and failure handling       | Clear  | Edge Cases, US1.2-3/US2.2-3/US3.1-4/US4.1-3 and FR-002/008/010-012 cover malformed/duplicate/over-budget input, compatibility boundaries, safe diagnostics and uncontaminated retry. |
+| Constraints and tradeoffs             | Clear  | Locked versus undecided and principles I-XII preserve minimal contracts, trust, storage/permission boundaries, portability and the numbered release scope.                           |
+| Terminology and consistency           | Clear  | FR-003-009, Data Ownership and Key Entities separate module ID/display name, schema/module/host/capability versions and declared versus installed capabilities/dependencies.         |
+| Completion signals                    | Clear  | Four stories, 14 Given/When/Then scenarios, FR-001-015, SC-001-006 and Required Validation provide independently verifiable acceptance and future evidence obligations.              |
+| Miscellaneous and placeholders        | Clear  | No unresolved clarification marker or material unquantified requirement; remaining choices are explicitly assigned to planning.                                                      |
 
 Serialization/field names, precise range/prerelease rules, initial supported
 schema/host/capability versions, numeric budgets, reference conditions and
@@ -776,7 +790,7 @@ bounded diagnostics, privacy, operations, measurable acceptance and human gates.
 No checklist hooks are configured.
 
 The reviewer explicitly requested: **"bro you rn through the checklist and tell
-me if anything needs my attention.  that's how we'll do checklists from now on"**.
+me if anything needs my attention. that's how we'll do checklists from now on"**.
 That request authorized evaluation and marking in this stage. All 36 criteria
 were assessed against the spec, plan, data model, public contract, schema,
 examples, independent corpus, quickstart, research, proposed ADR and constitution;
@@ -894,19 +908,19 @@ sources remain unchanged; amendment review must keep the project overrides align
 
 ## Sequence and evidence
 
-| Stage | Gate / durable output |
-| --- | --- |
-| constitution | Versioned constitution, resolved placeholders, required template consistency |
-| specify | `spec.md`, `checklists/requirements.md` |
-| clarify | Resolved ambiguity recorded in `spec.md`, or a no-ambiguity completion note |
-| plan | `plan.md`, `research.md`, `quickstart.md`, plus applicable data model/contracts |
-| checklist | Reviewed `checklists/quality.md`; no unchecked quality criteria before advancing |
-| tasks | Numbered dependency-ordered `tasks.md` |
-| analyze | Read-only cross-artifact review, saved as `analysis.md`; no unresolved blocking findings |
-| implement | Completed tasks, updated docs, actual checks and `implementation.md` |
-| converge | Append-only gap tasks if needed and `convergence.md`; no product edits |
-| review | Requirement/acceptance evidence, exact checks and findings in `review.md` |
-| accept | Explicit human decision in `acceptance.md` and recorded approval |
+| Stage        | Gate / durable output                                                                    |
+| ------------ | ---------------------------------------------------------------------------------------- |
+| constitution | Versioned constitution, resolved placeholders, required template consistency             |
+| specify      | `spec.md`, `checklists/requirements.md`                                                  |
+| clarify      | Resolved ambiguity recorded in `spec.md`, or a no-ambiguity completion note              |
+| plan         | `plan.md`, `research.md`, `quickstart.md`, plus applicable data model/contracts          |
+| checklist    | Reviewed `checklists/quality.md`; no unchecked quality criteria before advancing         |
+| tasks        | Numbered dependency-ordered `tasks.md`                                                   |
+| analyze      | Read-only cross-artifact review, saved as `analysis.md`; no unresolved blocking findings |
+| implement    | Completed tasks, updated docs, actual checks and `implementation.md`                     |
+| converge     | Append-only gap tasks if needed and `convergence.md`; no product edits                   |
+| review       | Requirement/acceptance evidence, exact checks and findings in `review.md`                |
+| accept       | Explicit human decision in `acceptance.md` and recorded approval                         |
 
 Analysis, convergence and review reports include `**Result:** pass`, `gaps` (converge)
 or `changes` (review). Reports must substantiate that result. Both convergence gaps

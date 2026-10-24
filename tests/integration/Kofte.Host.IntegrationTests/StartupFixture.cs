@@ -19,14 +19,14 @@ public sealed class StartupFixture : IAsyncDisposable
     }
 
     public static async Task<StartupFixture> StartAsync(string dataRoot, CancellationToken token,
-        string environment = "Development", string? postgres = null)
+        string environment = "Development", string? postgres = null, string? modulesFile = null)
     {
         using var reservation = new TcpListener(IPAddress.Loopback, 0);
         reservation.Start();
         var port = ((IPEndPoint)reservation.LocalEndpoint).Port;
         reservation.Stop();
         var address = new Uri($"http://127.0.0.1:{port}");
-        var process = OwnedProcesses.Start(StartInfo(dataRoot, address, environment, postgres));
+        var process = OwnedProcesses.Start(StartInfo(dataRoot, address, environment, postgres, modulesFile));
         var fixture = new StartupFixture(process, address);
         try
         {
@@ -51,7 +51,8 @@ public sealed class StartupFixture : IAsyncDisposable
         }
     }
 
-    private static ProcessStartInfo StartInfo(string dataRoot, Uri address, string environment, string? postgres)
+    private static ProcessStartInfo StartInfo(string dataRoot, Uri address, string environment, string? postgres,
+        string? modulesFile = null)
     {
         var repository = OwnedProcesses.FindRepository();
         var configuration = new DirectoryInfo(AppContext.BaseDirectory).Parent!.Name;
@@ -69,6 +70,7 @@ public sealed class StartupFixture : IAsyncDisposable
         start.Environment["KOFTE_HOST_URL"] = address.AbsoluteUri;
         start.Environment["ASPNETCORE_ENVIRONMENT"] = environment;
         start.Environment["DOTNET_ENVIRONMENT"] = environment;
+        if (modulesFile is not null) start.Environment["KOFTE_MODULES_FILE"] = modulesFile;
         if (postgres is not null)
         {
             start.Environment["KOFTE_PROFILE"] = "test-postgres";

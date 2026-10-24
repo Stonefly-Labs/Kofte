@@ -20,8 +20,7 @@ public sealed class StorageCompatibilityTests
         var before = await File.ReadAllBytesAsync(bootstrap.DatabasePath, TestContext.Current.CancellationToken);
         await using (var host = await StartupFixture.StartAsync(root.Path, TestContext.Current.CancellationToken))
         {
-            using var ready = await host.Client.GetAsync("/health/ready", TestContext.Current.CancellationToken);
-            Assert.True(ready.IsSuccessStatusCode);
+            await AssertCoreSurfaceAsync(host, TestContext.Current.CancellationToken);
         }
 
         Assert.Equal(before, await File.ReadAllBytesAsync(bootstrap.DatabasePath, TestContext.Current.CancellationToken));
@@ -35,12 +34,26 @@ public sealed class StorageCompatibilityTests
         before = await File.ReadAllBytesAsync(bootstrap.DatabasePath, TestContext.Current.CancellationToken);
         await using (var host = await StartupFixture.StartAsync(root.Path, TestContext.Current.CancellationToken))
         {
-            using var ready = await host.Client.GetAsync("/health/ready", TestContext.Current.CancellationToken);
-            Assert.True(ready.IsSuccessStatusCode);
+            await AssertCoreSurfaceAsync(host, TestContext.Current.CancellationToken);
         }
         Assert.Equal(before, await File.ReadAllBytesAsync(bootstrap.DatabasePath, TestContext.Current.CancellationToken));
         Assert.Equal(0, (await StartupFixture.RunExitAsync(root.Path,
             ["--registry", "upgrade"], TestContext.Current.CancellationToken)).ExitCode);
+    }
+
+    internal static async Task AssertCoreSurfaceAsync(StartupFixture host, CancellationToken token)
+    {
+        foreach (var endpoint in new[] { "live", "ready" })
+        {
+            using var response = await host.Client.GetAsync("/health/" + endpoint, token);
+            Assert.True(response.IsSuccessStatusCode);
+            Assert.Equal("no-store", response.Headers.CacheControl?.ToString());
+            using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync(token));
+            Assert.Equal(["component", "correlationId", "state", "version"],
+                document.RootElement.EnumerateObject().Select(property => property.Name).Order().ToArray());
+            Assert.Equal(endpoint, document.RootElement.GetProperty("state").GetString());
+        }
+        await OpenApiTests.AssertDevelopmentDocumentAsync(host, token);
     }
 
     [Fact]

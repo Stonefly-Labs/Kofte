@@ -10,6 +10,9 @@ namespace Kofte.Infrastructure.Storage.Migrations;
 internal static class MigrationBoundaryValidator
 {
     internal static void ValidateModel(IModel model, ModuleStorageBinding binding)
+        => ValidateModel(model, new ModuleStorageModelBoundary(binding));
+
+    internal static void ValidateModel(IModel model, ModuleStorageModelBoundary binding)
     {
         Schema(model.GetDefaultSchema(), binding);
         if (model.GetDbFunctions().Any()) Reject();
@@ -58,14 +61,14 @@ internal static class MigrationBoundaryValidator
         var count = Array.IndexOf(ids, targetId) + 1;
         if (count < applied.Count) Reject();
         if (assembly.ModelSnapshot is not AssignedModelSnapshot snapshot) Reject();
-        else ValidateModel(snapshot.Model, context.Storage);
+        else ValidateModel(snapshot.Model, context.Boundary);
         var pending = ids.Take(count).Skip(applied.Count).ToArray();
         foreach (var id in pending)
         {
             var migration = assembly.CreateMigration(assembly.Migrations[id], context.Database.ProviderName!);
-            ValidateModel(migration.TargetModel, context.Storage);
+            ValidateModel(migration.TargetModel, context.Boundary);
             foreach (var operation in migration.UpOperations)
-                ValidateOperation(operation, context.Storage);
+                ValidateOperation(operation, context.Boundary);
             // SQL generation is also part of preflight: reject provider-generated
             // transaction suppression before EF executes even the first migration.
             var commands = context.GetService<IMigrationsSqlGenerator>()
@@ -76,6 +79,9 @@ internal static class MigrationBoundaryValidator
     }
 
     internal static void ValidateOperation(MigrationOperation operation, ModuleStorageBinding binding)
+        => ValidateOperation(operation, new ModuleStorageModelBoundary(binding));
+
+    internal static void ValidateOperation(MigrationOperation operation, ModuleStorageModelBoundary binding)
     {
         if (operation.GetAnnotations().Any()) Reject();
         switch (operation)
@@ -111,7 +117,7 @@ internal static class MigrationBoundaryValidator
         }
     }
 
-    private static void ValidateConstraint(MigrationOperation operation, ModuleStorageBinding binding)
+    private static void ValidateConstraint(MigrationOperation operation, ModuleStorageModelBoundary binding)
     {
         if (operation.GetAnnotations().Any()) Reject();
         switch (operation)
@@ -124,7 +130,7 @@ internal static class MigrationBoundaryValidator
         }
     }
 
-    private static void Schema(string? schema, ModuleStorageBinding binding)
+    private static void Schema(string? schema, ModuleStorageModelBoundary binding)
     {
         if (!string.Equals(schema, binding.Schema, StringComparison.Ordinal)) Reject();
     }
