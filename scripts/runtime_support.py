@@ -43,7 +43,10 @@ class CommandDiagnostics:
         rb"([1-9][0-9]{0,8}):([1-9][0-9]{0,8})(?![0-9])",
     )
 
-    storage_test = re.compile(rb"^\s*failed (Kofte\.Storage\.IntegrationTests\.[A-Za-z0-9_.]{1,240})(?=[( ])")
+    storage_test = re.compile(
+        rb"^\s*failed (Kofte\.(?:Storage\.IntegrationTests|Platform\.ContractTests)\."
+        rb"[A-Za-z0-9_.+]{1,240})(?=[( ])",
+    )
     storage_code = re.compile(rb"\b(?:StorageException|XunitException)\s*:\s*([A-Za-z_]{1,64})\b")
 
     def __init__(self, kind, codes=(), tests=()):
@@ -76,7 +79,7 @@ class CommandDiagnostics:
                 with self.lock:
                     if not self.closed and len(self.dependency_codes) < 2:
                         self.dependency_codes.add(event["eventCode"])
-        elif self.kind == "storage":
+        elif self.kind in ("storage", "contract"):
             test = self.storage_test.match(line)
             code = self.storage_code.search(line)
             with self.lock:
@@ -131,7 +134,8 @@ class CommandDiagnostics:
                 if text.strip() in self.codes:
                     self.storage_codes.add(text.strip())
                 self.storage_codes.update(
-                    code for code in re.findall(r"\bstorage_[a-z_]{1,60}\b", text) if code in self.codes
+                    code for code in re.findall(r"\b(?:storage|composition)_[a-z_]{1,60}\b", text)
+                    if code in self.codes
                 )
                 self.failed_operations.update(
                     re.findall(r"\boperation=(acquire|register|setup)\b", text)
@@ -146,12 +150,13 @@ class CommandDiagnostics:
                 return {"sourceLocations": sorted(self.sources)}
             if self.kind == "dependency" and len(self.dependency_codes) == 1:
                 return {"dependencyFailureCode": next(iter(self.dependency_codes))}
-            if self.kind == "storage":
+            if self.kind in ("storage", "contract"):
+                prefix = self.kind
                 return {
-                    **({"failedStorageTests": sorted(self.failed_tests)} if self.failed_tests else {}),
-                    **({"storageFailureCodes": sorted(self.storage_codes)} if self.storage_codes else {}),
-                    **({"storageFailureOperations": sorted(self.failed_operations)} if self.failed_operations else {}),
-                    **({"storageDiagnosticCode": self.storage_report_code} if self.storage_report_code else {}),
+                    **({f"failed{prefix.title()}Tests": sorted(self.failed_tests)} if self.failed_tests else {}),
+                    **({f"{prefix}FailureCodes": sorted(self.storage_codes)} if self.storage_codes else {}),
+                    **({f"{prefix}FailureOperations": sorted(self.failed_operations)} if self.failed_operations else {}),
+                    **({f"{prefix}DiagnosticCode": self.storage_report_code} if self.storage_report_code else {}),
                 }
             return {}
 

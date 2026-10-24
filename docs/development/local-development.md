@@ -180,7 +180,7 @@ unchecked. This is planned coverage, not measured module behavior.
 At that historical checkpoint, **implement was next** on `feature/004-module-lifecycle` and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
 
-**004 / implement is blocked on local verification** on that same branch/draft PR. Its
+**004 / implement has resumed for final verification** on that same branch/draft PR. Its
 [current guide](../../specs/004-module-lifecycle/quickstart.md) now runs
 validation, no-storage boots and real relational `ordered-migration` examples
 on SQLite and owned PostgreSQL. The relational example explicitly upgrades its
@@ -221,9 +221,12 @@ eleven CI contexts and 286 product steps at assessed code head `aaba315`.
 Local full-gate PostgreSQL composition, public recovery/contracts and
 failure-propagation baseline failures remain unresolved. The
 [implementation report](../../specs/004-module-lifecycle/implementation.md#blocked-local-gate-and-ci-reconciliation)
-records exact commands, failed identities and passing scoped reproductions;
-the cause is not established. T078-T080, including the required post-wiring
-complete local gate, remain incomplete. No feature acceptance is implied.
+records those historical failures and passing scoped reproductions. The
+[resumed verification](../../specs/004-module-lifecycle/implementation.md#resumed-verification-fixture-administration-and-safe-public-failures)
+now reproduces and fixes a fixture-administration timeout and closes the public
+failure-identity reporting omission. T078-T080, including a complete post-fix
+local/CI reconciliation, remain incomplete; not every earlier failure is yet
+explained. No feature acceptance is implied.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).
@@ -517,6 +520,19 @@ concurrent use. Existing/nonempty targets and corrupt/incompatible backups are
 refused, not replaced. Cleanup revalidates exact database/role/container/volume/
 network ownership; missing proof preserves resources and fails explicitly.
 These are verification fixtures, not production database administration commands.
+
+Privileged fixture administration has a separate 30-second linked budget for
+connection plus command, still clipped by caller cancellation and the outer
+fixture/cleanup limits. Exported runtime and provisioning connections retain
+their three-second connection/query limits; product acquisition, lifecycle and
+probe deadlines are unchanged. A controlled pause of an owned disposable
+service exercises this distinction without retries or shared-service mutation.
+
+Failed native storage and public platform-contract commands retain only
+source-allowlisted test identities and closed diagnostic codes. Their private,
+bounded xUnit XML is deleted; raw assertions, arguments, output and stacks do
+not enter verification reports. Isolated failure-propagation evidence validates
+these fields again against the owning command.
 
 ## Focused checks currently available
 

@@ -6,6 +6,30 @@ namespace Kofte.Host.IntegrationTests;
 public sealed class PostgresOwnershipTests
 {
     [Fact]
+    public async Task FixtureAdministrationUsesItsOwnBudgetAndStillHonorsCallerCancellation()
+    {
+        var token = TestContext.Current.CancellationToken;
+        await using var fixture = await PostgresFixture.CreateAsync(true, token: token);
+        using var cancelled = CancellationTokenSource.CreateLinkedTokenSource(token);
+        await cancelled.CancelAsync();
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
+            fixture.ValidateOwnershipAsync(cancelled.Token));
+        await fixture.SetAvailableAsync(false, token);
+        Task validation;
+        try
+        {
+            validation = fixture.ValidateOwnershipAsync(token);
+            await Task.Delay(TimeSpan.FromSeconds(4), token);
+        }
+        finally
+        {
+            await fixture.SetAvailableAsync(true, token);
+        }
+        await validation;
+        await fixture.ValidateOwnershipAsync(token);
+    }
+
+    [Fact]
     public async Task OptInLoopbackAndNewTargetAreRequiredBeforeProvisioning()
     {
         await Assert.ThrowsAsync<InvalidOperationException>(() =>

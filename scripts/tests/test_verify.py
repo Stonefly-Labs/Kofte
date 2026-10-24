@@ -323,6 +323,36 @@ class VerifyTests(unittest.TestCase):
         self.assertNotIn("credential-canary", report.path.read_text())
         self.assertEqual(set(), diagnostic.sources)
 
+    def test_failed_public_contract_retains_nested_source_known_identity_without_private_output(self):
+        runner = verify.Runner(self.root, self.report("contract"), {})
+        diagnostic = verify.command_diagnostics([
+            "dotnet", "test", "--project", "tests/contract/Kofte.Platform.ContractTests",
+        ])
+        self.assertIsNotNone(diagnostic)
+        name = ("Kofte.Platform.ContractTests.Composition.CompositionPublicContractTests"
+                "+PostgresCompositionPublicContractTests."
+                "AllRequiresEveryActualStandaloneScenarioAndItsCompleteSemanticEvidence")
+        owner, method = name.rsplit(".", 1)
+        xml = (f'<assemblies><test type="{owner}" method="{method}" result="Fail" '
+               'name="credential-canary"><failure><message>composition_consumer_failed</message>'
+               '<stack-trace>/private/credential-canary</stack-trace></failure></test>'
+               '<test type="credential-canary" method="unknown" result="Fail"/></assemblies>')
+        script = (
+            "import sys; from pathlib import Path; "
+            "directory=Path(sys.argv[sys.argv.index('--results-directory')+1]); "
+            f"(directory/'storage.xml').write_text({xml!r}); "
+            "print('/private/credential-canary'); sys.exit(2)"
+        )
+        with self.assertRaisesRegex(verify.VerificationError, "command_failed"):
+            runner.command("composition-public-contracts", ["python3", "-c", script],
+                           diagnostics=diagnostic)
+        step = runner.report.data["steps"][-1]
+        self.assertEqual([name], step["failedContractTests"])
+        self.assertEqual(["composition_consumer_failed"], step["contractFailureCodes"])
+        self.assertFalse(list((self.root / "artifacts/verification/.private").rglob("storage.xml")))
+        self.assertNotIn("credential", runner.report.path.read_text())
+        self.assertEqual(set(), diagnostic.failed_tests)
+
     def test_missing_tool_and_timeout_fail_instead_of_skipping(self):
         report = self.report()
         runner = verify.Runner(self.root, report, {})

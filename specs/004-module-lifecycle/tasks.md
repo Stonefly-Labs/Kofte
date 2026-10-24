@@ -8,7 +8,7 @@ implementation** under the human's exact **"yeah approved"** decision.
 Passing read-only **analyze remains required before implementation**; generation
 neither runs it nor requests repeated ADR/checklist approval.
 **Constitution**: Adopted v2.0.1, principles I-XII.
-**Status**: Implementation in progress: T001-T057 verified; T058-T080 remain.
+**Status**: Implementation resumed for final verification: T001-T077 evidenced; T078-T080 remain.
 The execution evidence is in `implementation.md`. Task completion is not
 feature acceptance or MVP completion.
 
@@ -224,8 +224,11 @@ required alongside zero leaks; a timeout alone is not termination.
 T073-T076 have actual passing named-runner evidence on supported Ubuntu CI
 at code head `aaba315`; T077 includes the delivered-interface audit and truthful
 blocked status. These markers do not declare the local complete gate green:
-T078-T080 remain incomplete because the diagnostic local run failed and its
-cause is unresolved. See the [gate reconciliation](implementation.md#blocked-local-gate-and-ci-reconciliation).
+T078-T080 remain incomplete after the diagnostic local run failed. The resumed
+stage has a reproduced fixture-timeout regression/fix and safe public-failure
+identities, but complete post-fix local/CI reconciliation is still required.
+See the [gate history](implementation.md#blocked-local-gate-and-ci-reconciliation)
+and [resumed verification](implementation.md#resumed-verification-fixture-administration-and-safe-public-failures).
 
 ### Required implementation commands
 

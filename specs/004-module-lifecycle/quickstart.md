@@ -1,6 +1,6 @@
 # Validation Guide: 004 - Module Composition and Lifecycle
 
-**Status**: Implementation is blocked on local verification, not feature acceptance.
+**Status**: Implementation has resumed for final verification, not feature acceptance.
 All eleven scenarios and their sequential `all` composition are runnable,
 including interrupted migration, explicit recovery, correction, health, owned
 termination and private diagnostic capture. Assessed code head `aaba315`

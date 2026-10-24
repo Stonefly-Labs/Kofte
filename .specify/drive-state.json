@@ -25,9 +25,9 @@
     "spec": "004",
     "step": "implement",
     "directory": "specs/004-module-lifecycle",
-    "status": "blocked",
+    "status": "running",
     "branch": "feature/004-module-lifecycle",
-    "reason": "T078-T080 remain incomplete: diagnostic local all exited 1 in PostgreSQL composition, public recovery/contracts and failure-propagation baseline; its aaba315 isolated baseline failed NoStorageRecipeIsRejectedWithoutInvokingItsFactory. Bounded reproductions pass but no causal fix is established. Assessed code aaba315 CI passes all eleven contexts / 286 steps, supporting T073-T077, not the required post-wiring complete local gate. Resume this implement stage on the original branch/PR to identify safe public failures, investigate scoped root causes and establish passing complete local evidence without weakening bounds/minima.",
+    "reason": "",
     "started_at": "2026-10-24T12:59:06+00:00"
   },
   "history": [

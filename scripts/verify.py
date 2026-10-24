@@ -363,25 +363,35 @@ def command_diagnostics(command):
         ["npm", "run", "dependencies:check"], ["python3", "scripts/check_dependencies.py"],
     ):
         return runtime_support.CommandDiagnostics("dependency", check_dependencies.FAILURE_CODES)
-    if list(command[:4]) == ["dotnet", "test", "--project", STORAGE_INTEGRATION]:
+    native_projects = {
+        STORAGE_INTEGRATION: ("storage", "Kofte.Storage.IntegrationTests"),
+        "tests/contract/Kofte.Platform.ContractTests": ("contract", "Kofte.Platform.ContractTests"),
+    }
+    if (len(command) > 3 and list(command[:3]) == ["dotnet", "test", "--project"]
+            and command[3] in native_projects):
+        project = command[3]
+        kind, prefix = native_projects[project]
         tests = set()
-        for path in (ROOT / STORAGE_INTEGRATION).rglob("*.cs"):
+        for path in (ROOT / project).rglob("*.cs"):
             if {"bin", "obj"}.intersection(path.relative_to(ROOT).parts):
                 continue
             source = path.read_text()
-            namespace = re.search(r"^namespace (Kofte\.Storage\.IntegrationTests(?:\.[A-Za-z0-9_]+)*);",
+            namespace = re.search(r"^namespace (" + re.escape(prefix) + r"(?:\.[A-Za-z0-9_]+)*);",
                                   source, re.MULTILINE)
             if namespace:
                 classes = re.findall(r"public (?:(?:abstract|sealed|partial|static) )*class ([A-Za-z0-9_]+)", source)
+                owners = (*classes, *(f"{outer}+{inner}" for outer in classes for inner in classes if outer != inner))
                 methods = re.findall(r"public (?:async )?(?:Task(?:<[^<>]+>)?|void) ([A-Za-z0-9_]+)\(", source)
-                tests.update(f"{namespace[1]}.{owner}.{method}" for owner in classes for method in methods)
+                tests.update(f"{namespace[1]}.{owner}.{method}" for owner in owners for method in methods)
         codes = (
             "Busy", "Conflict", "TargetReserved", "PathRejected", "OwnerMismatch", "Missing", "Corrupt",
             "Incomplete", "ReconciliationRequired", "VersionUnsupported", "PrivilegeDenied",
             "Unavailable", "DeadlineExceeded", "Cancelled", "RequestInvalid",
         )
-        return runtime_support.CommandDiagnostics("storage", (
+        return runtime_support.CommandDiagnostics(kind, (
             *codes, *("storage_" + re.sub(r"(?<!^)(?=[A-Z])", "_", code).lower() for code in codes),
+            *(("composition_consumer_failed", "composition_consumer_output_limit",
+               "composition_consumer_result_invalid") if kind == "contract" else ()),
         ), tests)
     return None
 
@@ -591,7 +601,7 @@ class Runner:
 
         def execute(step):
             diagnostic = diagnostics or command_diagnostics(command)
-            if diagnostic and diagnostic.kind == "storage":
+            if diagnostic and diagnostic.kind in ("storage", "contract"):
                 with private_root(self.root) as directory:
                     step["command"] = safe_command([
                         *command, "--report-xunit-xml",

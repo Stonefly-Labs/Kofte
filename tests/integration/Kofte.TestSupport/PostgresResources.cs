@@ -7,6 +7,7 @@ namespace Kofte.TestSupport;
 
 public sealed partial class PostgresResources : IAsyncDisposable
 {
+    private static readonly TimeSpan AdministrationBudget = TimeSpan.FromSeconds(30);
     private readonly OwnedTestRoot root = new();
     private readonly string database;
     private readonly string role;
@@ -69,8 +70,8 @@ public sealed partial class PostgresResources : IAsyncDisposable
                 };
             }
             supplied.Pooling = false;
-            supplied.Timeout = 3;
-            supplied.CommandTimeout = 3;
+            supplied.Timeout = (int)AdministrationBudget.TotalSeconds;
+            supplied.CommandTimeout = (int)AdministrationBudget.TotalSeconds;
             supplied.IncludeErrorDetail = false;
             fixture.adminConnection = supplied.ConnectionString;
             await fixture.ProvisionAsync(token);
@@ -85,12 +86,15 @@ public sealed partial class PostgresResources : IAsyncDisposable
 
     private async Task<object?> AdminAsync(string sql, CancellationToken token, bool target = false)
     {
+        using var budget = CancellationTokenSource.CreateLinkedTokenSource(token);
+        budget.CancelAfter(AdministrationBudget);
+        budget.Token.ThrowIfCancellationRequested();
         var builder = new NpgsqlConnectionStringBuilder(adminConnection);
         if (target) builder.Database = database;
         await using var connection = new NpgsqlConnection(builder.ConnectionString);
-        await connection.OpenAsync(token);
+        await connection.OpenAsync(budget.Token);
         await using var command = new NpgsqlCommand(sql, connection);
-        return await command.ExecuteScalarAsync(token);
+        return await command.ExecuteScalarAsync(budget.Token);
     }
 
     private async Task RecordAsync(CancellationToken token)
@@ -175,6 +179,8 @@ public sealed partial class PostgresResources : IAsyncDisposable
             Database = database,
             Username = role,
             Password = password,
+            Timeout = 3,
+            CommandTimeout = 3,
             ApplicationName = "kofte_bootstrap_" + RunId,
             SearchPath = "kofte_system"
         };

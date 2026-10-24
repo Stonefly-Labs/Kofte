@@ -287,7 +287,7 @@ reviewed checklist artifacts remain unchanged.
 The read-only [analysis](../specs/004-module-lifecycle/analysis.md) passes:
 26/26 requirements/outcomes, 20/20 scenarios and all 80 tasks are covered,
 with 118 acyclic dependency edges and no actionable or constitutional finding.
-The analysis retains its historical assessed inputs. **Implement is blocked on local verification**
+The analysis retains its historical assessed inputs. **Implement has resumed for final verification**
 on the same branch and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
 The [implementation report](../specs/004-module-lifecycle/implementation.md)
@@ -299,8 +299,10 @@ owned termination and private diagnostic channels. Only evidenced tasks are
 marked. T001-T077 are evidenced, with all eleven CI contexts and 286 product
 steps passing at assessed code head `aaba315`, including every standalone and
 provider `all` command. Local full-gate PostgreSQL composition, public
-recovery/contracts and failure-propagation baseline failures remain unresolved;
-T078-T080 and the post-wiring complete local gate remain incomplete.
+recovery/contracts and failure-propagation baseline failures remain historical
+failed evidence. The resumed stage has a causal fixture-timeout regression/fix
+and source-allowlisted public-failure diagnostics; T078-T080 and a complete
+post-fix local/CI reconciliation remain incomplete.
 No feature acceptance is claimed.
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.

@@ -1,6 +1,6 @@
 # Implementation: 004 - Module Composition and Lifecycle
 
-**Stage:** implement, started 2026-10-24; blocked on local verification, not complete or feature acceptance.
+**Stage:** implement, started 2026-10-24; resumed for final verification, not complete or feature acceptance.
 **Assessed starting revision:** `bac7bdc8c10d7c62394688d3e0364ff422cd3dfb`.
 **Branch / checkpoint:** `feature/004-module-lifecycle`,
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
@@ -847,11 +847,78 @@ and publication obligations actually finish.
 | T077      | Reference/test-ownership/credential/ignored-artifact and interface/budget/guide audit; current docs consistently record the local block and assessed-code CI success.                      |
 | T078-T080 | Complete exact-code local gate/CI reconciliation, this acceptance mapping, mandatory repository checks, truthful ledger/markers and immediate push/draft-PR handoff; not yet complete. |
 
+## Resumed verification: fixture administration and safe public failures
+
+The explicit instruction **"well finis hthat bish"** resumed the original
+004 / implement stage on its existing branch/draft PR. Its original start and
+history are preserved; reviewer checklists, approved intent and T001-T077 are
+unchanged. T078-T080 remain incomplete pending the complete post-fix gate.
+
+Two new Python regressions first failed because public platform-contract
+commands had no native diagnostic collector and isolated failure evidence
+dropped their diagnostic fields. The runner now uses the same private bounded
+xUnit path for native storage and public platform contracts, including actual
+nested `Outer+Derived` identities. Reports retain only source-allowlisted
+identities and fixed codes. Unknown/duplicate/canary fields and a mismatched
+owning command are rejected on isolated-report revalidation; private XML and
+raw output are not retained in public evidence. The focused diagnostics,
+runtime and failure-propagation selection passed all **72 tests**; the full
+repository Python suite passed all **119 tests**.
+
+A fresh broad PostgreSQL storage run used:
+
+```bash
+dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-trait Provider=postgres --minimum-expected-tests 1 --report-xunit-xml --report-xunit-xml-filename result.xml --results-directory <owner-private-results>
+```
+
+It **failed**, exit 2: **126 total, 125 passed, one failed, zero skipped**,
+449.754 seconds. Private XML identified
+`PostgresCompositionRecipeTests.LaterUnselectedProviderUnsafeMigrationCannotAllocateOrUpgradeEarlierAuthorOwner`.
+The failure stack was fixture disposal/ownership validation calling
+`PostgresResources.AdminAsync`, not the recipe assertion: a fresh privileged
+connection exceeded the three-second connection cap with
+`Npgsql.NpgsqlException` / `Timeout during reading attempt`.
+
+The accepted causal regression is
+`PostgresOwnershipTests.FixtureAdministrationUsesItsOwnBudgetAndStillHonorsCallerCancellation`.
+It first checks caller cancellation, then pauses only its own disposable
+container for four seconds while ownership validation opens a fresh privileged
+connection, always resuming that service in `finally`. Before the fix this
+failed at fixture administration's three-second cap. After the fix this and
+the retained ownership/store cases passed: **six tests, zero skipped**,
+28.320 seconds, using a single class-filter command selecting
+`PostgresOwnershipTests` and `PostgresStoreTests`. Earlier catalog-lock fault
+attempts were discarded because they introduced unrelated cancellation/
+catalog behavior; no such catalog manipulation remains in the regression.
+
+The fix is limited to test infrastructure: each private administration
+operation has one **30-second linked connection-plus-command budget**, still
+clipped by caller cancellation, the outer fixture scope and the retained
+60-second cleanup. Exported runtime **and provisioning** connection/query
+limits remain explicitly **three seconds**. No production code, lifecycle/
+probe/acquisition deadline, scenario, floor or provider requirement changes;
+there is no retry. The inherited three-second product limits are not a
+reasonable budget for fixture-owned control-plane setup/ownership/cleanup.
+
+The actual workstation configuration remains the pinned SDK/runtime above,
+`DOTNET_PROCESSOR_COUNT=4` and explicit disposable PostgreSQL opt-in.
+Processor count is recorded configuration, not an established explanation for
+every earlier failure. `dotnet format Kofte.slnx --verify-no-changes --no-restore
+--verbosity quiet`, `python3 scripts/check_repository.py`, the 119-test Python
+suite and `git diff --check` passed. No complete post-fix local all-suite or
+exact-candidate CI result is claimed by this checkpoint; earlier SQLite/public
+failures are not all causally explained by the fixture defect.
+The subsequent `dotnet build Kofte.slnx --no-restore -c Release -warnaserror
+--verbosity quiet` also passed with zero warnings/errors; after the documentation
+and guarded command lookup update the required repository/Python/diff checks
+passed again, with all 119 Python tests.
+
 ## Limitations and handoff
 
-Implementation is blocked, not complete: T001-T077 are evidenced, while
-T078-T080 require resolved local failures and a complete post-wiring local gate.
-Passing assessed-code CI does not replace that requirement. Resume this same
-implementation stage on `feature/004-module-lifecycle` and draft PR #7.
+Implementation has resumed, not completed: T001-T077 are evidenced, while
+T078-T080 require resolved local failures and a complete post-fix local/CI
+reconciliation. Passing earlier assessed-code CI does not replace that
+requirement. This same implementation stage remains active on
+`feature/004-module-lifecycle` and draft PR #7.
 Convergence, final review and explicit human acceptance remain separate later
 stages; no readiness or merge is requested.
