@@ -960,7 +960,7 @@ def browser_specs(root):
     )
 
 
-def startup_observations(directory, cycles):
+def startup_observations(directory, cycles, *, composition=False):
     def unique_fields(pairs):
         result = {}
         for name, value in pairs:
@@ -973,7 +973,8 @@ def startup_observations(directory, cycles):
         if (type(cycles) is not int or not 2 <= cycles <= 10
                 or directory.resolve() != directory.absolute() or not directory.is_dir()):
             raise ValueError
-        candidates = list(directory.rglob("startup-observations.json"))
+        candidates = list(directory.rglob(
+            "composition-startup-observations.json" if composition else "startup-observations.json"))
         if not candidates:
             raise VerificationError("startup_observations_missing")
         if len(candidates) != 1:
@@ -993,18 +994,23 @@ def startup_observations(directory, cycles):
             values = json.loads(content, object_pairs_hook=unique_fields)
         if not isinstance(values, list) or len(values) != cycles:
             raise ValueError
-        fields = ("cycle", "readySeconds", "pageSeconds", "fixtureMatches")
+        fields = ("cycle", "readySeconds", "pageSeconds", "fixtureMatches") + (
+            ("totalSeconds", "modulesPublished") if composition else ())
         samples = []
         for cycle, sample in enumerate(values, 1):
             if (not isinstance(sample, dict) or set(sample) != set(fields)
                     or type(sample["cycle"]) is not int or sample["cycle"] != cycle
                     or sample["fixtureMatches"] is not True):
                 raise ValueError
-            for name, limit in (("readySeconds", 285), ("pageSeconds", 2)):
+            for name, limit in (("readySeconds", 285), ("pageSeconds", 2)) + (
+                    (("totalSeconds", 300),) if composition else ()):
                 duration = sample[name]
                 if (isinstance(duration, bool) or not isinstance(duration, (int, float))
                         or not 0 <= duration < limit or not math.isfinite(duration)):
                     raise ValueError
+            if composition and (sample["modulesPublished"] is not True or
+                                sample["totalSeconds"] < sample["readySeconds"] + sample["pageSeconds"]):
+                raise ValueError
             samples.append({name: sample[name] for name in fields})
         return samples
     except (OSError, ValueError, TypeError) as error:
@@ -1206,17 +1212,30 @@ def execute_suite(runner, suite, provider, arguments):
             "dotnet", "build", "tests/contract/Kofte.Storage.Consumer",
             "--no-restore", "-c", "Release", "-warnaserror",
         ])
+        runner.command("startup-composition-fixture-build", [
+            "dotnet", "build", "tests/contract/Kofte.Composition.Consumer",
+            "--no-restore", "-c", "Release", "-warnaserror",
+        ])
         output_root = owned_directory(runner.root, "tests/e2e/test-results")
         directory = output_root / f"verify-startup-{uuid.uuid4().hex}"
         directory.mkdir(mode=0o700)
         runner.command("startup-warm-restarts", [
             "npm", "run", "test", "--workspace", "tests/e2e", "--", "startup.spec.ts",
-            "--output", str(directory),
+            "--grep-invert", "configured-modules", "--output", str(directory),
         ], environment=dict(runner.environment, BOOTSTRAP_WARM_STARTS=str(arguments.warm_starts)),
             timeout=arguments.warm_starts * 320 + 60)
         runner.operation("startup-observations", lambda step: step.update(
             configuredCycles=arguments.warm_starts,
             observations=startup_observations(directory, arguments.warm_starts),
+        ))
+        directory = output_root / f"verify-composition-startup-{uuid.uuid4().hex}"
+        directory.mkdir(mode=0o700)
+        runner.command("startup-composition-restarts", [
+            "npm", "run", "test", "--workspace", "tests/e2e", "--", "startup.spec.ts",
+            "--grep", "configured-modules", "--output", str(directory),
+        ], environment=runner.environment, timeout=700)
+        runner.operation("startup-composition-observations", lambda step: step.update(
+            configuredCycles=2, observations=startup_observations(directory, 2, composition=True),
         ))
     elif suite == "failure-propagation":
         def failure_opt_in(_):

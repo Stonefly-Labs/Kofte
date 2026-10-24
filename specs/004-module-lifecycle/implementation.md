@@ -538,6 +538,54 @@ failed multiple new and retained cases after 451.505 seconds. This is not a
 passing PostgreSQL/local-all result. The exact-head Ubuntu PostgreSQL gate did
 pass; local failures still require investigation and an honest complete gate.
 
+The final documentation/interface audit identified an evidence gap: retained
+warm starts used the empty host, while configured boot was measured only in
+the public host examples. The startup suite now additionally boots the real
+compiled Alpha/Beta/no-storage deployment with the built web application for
+two fresh controlled restarts. It retains the ten original empty-host cycles,
+exact unrelated stored fixture, 285-second work/300-second total and two-second
+usable-page limits. Private selection is owner-only, ambient test selectors are
+stripped, and composition receives its full fifteen-second graceful stop window.
+Separate fresh reports require two actual configured observations, including
+elapsed startup/page/cleanup total; missing/oversized/invalid observations fail.
+Each configured cycle additionally requires actual passed Start records for
+all three exact owners and the successful startup publication record before its
+report may set `modulesPublished: true`; a merely healthy empty host cannot
+satisfy this evidence. Partial/invalid/private output and omitted owner/start/
+publication cases have focused regressions.
+`python3 scripts/verify.py --suite startup --warm-starts 10` passed all twelve
+steps, including both new configured cycles. Full Python tests passed 117;
+e2e ESLint/typecheck and formatting passed. No new production behavior, interface,
+package or budget was introduced.
+The focused Playwright regression also passes for legitimate transient
+composition/host 503 before publication; malformed/storage 503 and the original
+empty-host refusal remain failures. Final named quality passed all twenty
+steps, and startup passed all twelve again after that refinement.
+
+The active diagnostic all-suite run uses the pinned SDK plus
+`DOTNET_PROCESSOR_COUNT=4` and `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true`.
+The workstation still has eighteen logical CPUs/64 GiB, while Docker reports
+eighteen CPUs/about 15.7 GiB. The explicit .NET processor-count override bounds
+test concurrency on this shared host; it changes no test floor, scenario,
+provider, production deadline or cleanup reserve. It is recorded configuration,
+not proof of the cause of the earlier broad PostgreSQL failure. That run began
+at `720f398`; the subsequent configured-stack verifier addition requires a final
+complete run after publication, not relabeling this diagnostic run exact-head.
+
+T077 audit: production project references remain host → infrastructure/platform
+and infrastructure → platform, without test projects, linked test source or a
+directory loader. The author module project references only public platform/
+infrastructure contracts; its executable/fixture projects remain under `tests/`.
+`CompositionSupervisor.Start` removes the desired-file path after snapshot
+transport and strips PostgreSQL provisioning credentials except in preparation;
+the worker independently rejects them in validate/serve. Contracts/guide agree
+on private operator authority, actual lifecycle/health bounds, read-only serving,
+no-storage absence, explicit owner recovery and unchanged anonymous health.
+Runtime stores, sockets, credentials, build/browser outputs and verification
+reports remain ignored. Approved spec/plan/research/analysis and both reviewed
+checklists are unchanged; only delivered guide/evidence/current-status docs may
+change. Final progress statements still await actual complete-gate results.
+
 ## Acceptance evidence
 
 T027 reuses `ModuleLifecycleTests.cs` rather than creating a second lifecycle
@@ -546,11 +594,122 @@ states before the fix. Attempt publication now invokes the final health
 admission after deadline/mode checks and sets its latch only when admission
 succeeds. Public boot and later story evidence remain separate obligations.
 
-All 20 functional requirements, 20 story scenarios, six outcomes, R1-R12
-design decisions and twelve constitutional principles remain implementation
-obligations. Their exact source/assertion/run mapping will be recorded as work
-is verified. Unfinished tasks remain unchecked; a partial increment does not
-complete implementation or authorize convergence.
+The following mapping identifies delivered source and meaningful assertions.
+It does not turn an incomplete final gate into a passing gate. Test classes
+below live in the dedicated unit, integration or public-contract projects under
+`tests/`; their owning named commands are recorded above and in the final gate
+report. Unfinished cross-cutting tasks remain unchecked until their executions
+and publication obligations actually finish.
+
+### Functional requirements
+
+| Requirement | Delivered implementation and discriminating evidence                                                                                                                                                                                                                                 |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| FR-001      | `ModuleCompositionHost` retains `RunUncomposedAsync`; `BootScenarios.EmptyAsync` checks actual endpoints and no optional activation, while disabled scenarios count zero callbacks and stores. Retained browser/startup suites remain required.                                      |
+| FR-002      | Explicit `ModuleDeployment` catalog, `CompositionPreflight` and `CompositionResolver`; manifest/missing/duplicate cases reject without runtime factories. Public `disabled-missing` and `invalid-composition` exercise actual deployed selection.                                    |
+| FR-003      | `CompositionGraph` uses accepted parsed ranges and explicitly selected owners; independent missing/disabled/range/prerelease/self/SCC cases in `CompositionCorpus` and resolver tests reject without enabling or downloading.                                                        |
+| FR-004      | Ordinal frontier and bounded SCC/diagnostic ordering in `CompositionGraph`/`CompositionResolver`; `CompositionLimitTests` and both public determinism paths compare independently expected results across repetitions, permutations and real cultures.                               |
+| FR-005      | `CompositionPreflight`, read-only `CompositionStorageInspector` and all-recipe boundary precede registration/writes; both-provider `CompositionPreflightTests` compare complete seeded inventory and physical state after refusals.                                                  |
+| FR-006      | `ContributionValidator` and native registration ownership audit; `ContributionClaimTests` and `ModuleLifecycleTests` reject reserved/overlapping/wrong-owner/unsupported claims before publication or factories.                                                                     |
+| FR-007      | Strict copied owner settings in `ModuleSelectionReader`/`ModuleConfiguration`, declared validators and known field tokens; selection/configuration/preflight tests prove byte/depth/enumeration bounds, no environment fallback and no raw unknown keys/values.                      |
+| FR-008      | `CompositionAttempt` and `ModuleLifecycleCoordinator` track entered/completed stages and whole-phase barriers; `ModuleLifecycleTests` and actual migration progress tests reject partial-completion publication.                                                                     |
+| FR-009      | Infrastructure `CompositionStorageSession`, inspector, preparation and verification reuse actual 003 bindings; both-provider recipe/migration/preflight tests verify immutable assignments, own histories and no fabricated no-storage binding.                                      |
+| FR-010      | Exclusive stopped preparation and read-only serving in `CompositionWorker`; real migration, retained authority, crash/recovery and public `ordered-migration` cases prove no replay/revision writes, no lease reacquisition and preserved earlier commits.                           |
+| FR-011      | Initial health admission plus atomic snapshot publication; unhealthy-initial-sweep red/green regression, concurrent withdrawal tests and public boot/health scenarios prove zero premature or partial readiness.                                                                     |
+| FR-012      | Strict private desired file is copied per attempt; preservation scenarios edit only between verified exits and compare exact original mappings/data/history after each disabled/re-enabled leg.                                                                                      |
+| FR-013      | Resolver selection guard and current storage verification; selection/preservation/upgrade tests reject enabled dependents and declaration/identity changes unchanged, without cascade or remapping.                                                                                  |
+| FR-014      | Public `ModuleObservation` and `CompositionHealth` recompute individual freshness and dependency-effective severity; health/observation tests and `health-impact` prove transitive impact, independent roots and stale/current-attempt separation.                                   |
+| FR-015      | `ModuleAttemptResources`, coordinator reverse cleanup and supervisor owned exits; stop/lifecycle/budget tests plus correction/recovery scenarios prove entry-before-callback, LIFO, single disposal, preserved data and fresh explicitly corrected attempts.                         |
+| FR-016      | Shared monotonic `CompositionAttempt` caps, callback runner and process supervisor; actual deadline tests/public `bounded-stop` distinguish cooperative cancellation from continuing work, verified root/descendant exit and unverified-termination refusal.                         |
+| FR-017      | Fixed-code `CompositionDiagnostics`/`CompositionProtocol` and bounded parent projection; diagnostic tests and six-channel captures require useful stage/outcome/guidance/current correlation/003 durability alongside zero leaks, including failed sinks and identity-less refusals. |
+| FR-018      | Operator-only file/CLI and private observations; serving child strips provisioning credentials. Snapshot-only `HealthHandler` preserves anonymous schema, host/storage failure distinction and no inventory or lifecycle mutation route.                                             |
+| FR-019      | Public lifecycle/configuration/composition contracts plus separately compiled `Kofte.Composition.TestModule` and `Kofte.Composition.Consumer`; native-DI/public guide cases consume those contracts without production references to test code or executing future capabilities.     |
+| FR-020      | Eleven standalone guide scenarios and required sequential `all`, strict C#/Python omission/result regressions, and retained named foundation gates. Full local/CI results, not file presence, determine final completion.                                                            |
+
+### All twenty story scenarios
+
+| Scenario | Observable assertion / actual evidence owner                                                                                                                                            |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| US1.1    | `empty-boot`: actual empty host endpoints, zero optional activation/allocation; retains both empty registry formats.                                                                    |
+| US1.2    | `valid-dependency`: independent compiled Alpha/Beta services, exact phase/dependency order and no prepublication readiness.                                                             |
+| US1.3    | `disabled-missing`: disabled author/registrar/runtime/storage counters remain zero.                                                                                                     |
+| US1.4    | `disabled-missing` and public boundary cases: missing enabled implementation rejects, never becomes successful empty composition.                                                       |
+| US2.1    | Independent malformed/duplicate/incompatible corpus and process validation compare ordered safe diagnostics and zero mutating callbacks.                                                |
+| US2.2    | Missing/disabled/incompatible/prerelease dependency fixtures identify dependent and accepted range without changing selection.                                                          |
+| US2.3    | Self/multiple SCC fixtures compare stable canonical cycle diagnostics across all permutations.                                                                                          |
+| US2.4    | Configuration/contribution negative corpus and real preflight snapshots prove safe known-token guidance, no publication and unchanged stores.                                           |
+| US3.1    | `ordered-migration` and provider migration tests compare actual Alpha/Beta clean/additive histories, stable stage order and all-recipes-before-write barrier.                           |
+| US3.2    | No-storage provider/boot cases activate independent behavior with no binding, store/history or recipe invocation.                                                                       |
+| US3.3    | Later-owner interruption preserves the earlier commit/original records, blocks dependent serving and unchanged automatic retry, then requires explicit accepted recovery.               |
+| US3.4    | Retained-authority/lease-loss/crash cases and `bounded-stop` use actual owned processes/sessions, classified contention, no reacquisition or continuation.                              |
+| US4.1    | `disable-reenable`: each of three disabled legs preserves exact original assignment, sentinel, history/revision and unrelated state.                                                    |
+| US4.2    | Three fresh re-enabled legs reuse original stores without replay; separate explicitly prepared upgrade advances only its selected owner.                                                |
+| US4.3    | Invalid dependent-disable selection refuses unchanged; no cascade, uninstall or hidden correction.                                                                                      |
+| US4.4    | Reverse entered-owner Stop and LIFO resources, scope/provider-last disposal, verified exit and fresh next-attempt health.                                                               |
+| US5.1    | Boot/public health snapshots show desired/stage/unknown before complete initialization/migration/healthy admission; no falsely ready latch.                                             |
+| US5.2    | Own/effective failed > unknown > degraded > healthy, individual expiry and independent roots are asserted by unit tests and `health-impact`.                                            |
+| US5.3    | Five named corrections and seven uncooperative boundaries require proper stage/outcome/budget, actual exit, new correlation and explicit recovery for uncertain writes.                 |
+| US5.4    | Actual record/event/span/metric/stdout/stderr/HTTP captures require safe diagnostics and zero seeded secrets/paths/exceptions; aggregate routes remain non-mutating and inventory-free. |
+
+### Measurable outcomes
+
+| Outcome | Required measured evidence                                                                                                                                                                                                                |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SC-001  | Public real-process empty/dependency/disabled scenarios and native provider boots; distinct module services usable, zero disabled effects.                                                                                                |
+| SC-002  | Twenty-one independently expected fixtures × 100 repetitions × ten permutations × two cultures × two public consumer paths = 84,000 exact comparisons per full deterministic scenario; invalid fixtures have zero mutating effects.       |
+| SC-003  | Three complete cycles per provider, six distinct roots/workers/attempts, exact original Alpha/Beta mappings/data/history and unrelated-state comparisons after every leg; explicit owner-only upgrade is separate.                        |
+| SC-004  | Validate 45 s (35+10), prepare 120 s (105+15), startup 60 s (45+15), stop 15 s (10+5); actual fault/exit cases and monotonic clipping tests retain native storage 2/3/30/120 s maxima and whole-stack 285/300 s envelope.                 |
+| SC-005  | Configuration/Initialize/Start/health/migration correction examples succeed only after their named correction with fresh attempt and retained stores; migration uncertainty first requires explicit recovery.                             |
+| SC-006  | Actual six-channel capture requires zero canary leaks and all useful safe records; retained quality/unit/providers/contracts/recovery/privacy/browser/startup/failure-propagation gates remain mandatory, not inferred from new examples. |
+
+### R1-R12 and constitutional boundaries
+
+| Decision | Delivered evidence                                                                                                                                                                 |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| R1       | Explicit public deployment entry point, compiled test-module/deployment projects; production project-reference audit finds no test project/source reference.                       |
+| R2       | Bounded ordinal graph/diagnostic resolver, independent exact repeated/permuted corpus and one-over-limit refusals.                                                                 |
+| R3       | Strict owner-only private desired file, copied snapshot transport and ephemeral current-attempt observations; replacement-after-admission regression.                              |
+| R4       | Declarative contribution validation/native ownership audit; unsupported execution refuses and metadata confers no authority.                                                       |
+| R5       | One final native provider, per-owner scopes, direct handlers and whole-phase barriers; partial entry, dependency binding and single-disposal regressions.                          |
+| R6       | Mutation-free inventory/model preflight, exclusive admitted preparation, credential-stripped ordinary serving; real both-provider unchanged-state assertions.                      |
+| R7       | Exact assigned history/current-target verification, three preservation cycles and explicit interrupted-owner/complete-set recovery; earlier commits retained.                      |
+| R8       | Serialized topological health, 1/20/10/30-second callback/sweep/interval/freshness behavior, conservative initial admission and unchanged anonymous aggregate contract.            |
+| R9       | Owned serving/preparation workers, monotonic nested budgets, cooperative-cancellation drain within original deadline, actual root/fixture-descendant exit and incomplete refusal.  |
+| R10      | Fixed codes/field tokens/guidance, bounded validated frames/rates, linked storage durability and actual safe private captures; required sink failure remains failure.              |
+| R11      | Independent public module/consumer, all eleven standalone scenarios plus `all`, strict omission/tampering/result guards; no synthetic positive counts substitute for observations. |
+| R12      | Existing ten suite groups/minima, both real providers, browser/accessibility/startup/failure propagation and exact-head CI; historical failure evidence preserved.                 |
+
+| Principle | Implementation scope / evidence                                                                                                                                                |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| I         | Empty optional-module host retained, Köfte branding, reviewed MIT dependencies; no Hoard/cloud prerequisite.                                                                   |
+| II        | Versioned immutable catalog/preflight/lifecycle/storage/health, preserved disable; compiled trusted code explicitly not sandboxed or hot-unloaded.                             |
+| III       | Module-local slices, minimal common author contracts, native DI/direct handlers and test source exclusively in dedicated `tests/` projects; reviewed exact DI dependency edge. |
+| IV        | Accepted registry UNIQUE/concurrent/reserved/63-byte/path/owner/model/history checks and real schema/file-isolated migrations retained.                                        |
+| V         | Earlier owner commits remain real; no cross-owner table/connection/transaction or global rollback; explicit forward/full-set recovery responsibility.                          |
+| VI        | Installation-owned file/commands, scoped settings and credential stripping; no anonymous administration/business authorization bypass or diagnostic leakage.                   |
+| VII       | MCP/tool declarations are validated inert metadata, not a functioning tool runtime or permission grant; future authenticated parity remains required.                          |
+| VIII      | Attempts/health are ephemeral observations, not durable jobs/events/resources or exactly-once work; later runtimes not claimed.                                                |
+| IX        | No new lifecycle UI/frontend loader; existing anonymous schema, generated contract, adapter, browser/accessibility/loading/error/status remain regression gates.               |
+| X         | Existing macOS/Ubuntu targets, both real stores, finite supervised budgets, explicit setup/recovery and safe bounded telemetry; no deployment-production claim.                |
+| XI        | Focused red/green races and actual provider/process/public/privacy assertions plus retained complete gates; no full reference-module or MVP release claim.                     |
+| XII       | All requirements/scenarios/outcomes and R1-R12 mapped; approved intent/checklists unchanged, one original branch/draft PR, separate converge/review/explicit acceptance.       |
+
+### Task coverage
+
+| Tasks     | Evidence ownership                                                                                                                                                                     |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| T001-T003 | Entry/checklist/ADR/dependency adoption and locked project/build evidence above.                                                                                                       |
+| T004-T005 | Owned fixtures/process captures and strict public consumer omission/tampering harness.                                                                                                 |
+| T006-T014 | Immutable shared contracts, attempt/budget/diagnostic/selection/storage preflight foundations and unit/provider red/green matrices.                                                    |
+| T015-T026 | US2 independent rejection/determinism/limits/configuration/contribution and unchanged-store evidence.                                                                                  |
+| T027-T036 | US1 actual empty/dependency/disabled boots, native DI, phase barriers, initial-health admission and reverse cleanup.                                                                   |
+| T037-T049 | US3 both-provider prepare/current/additive/failure/authority/recovery and unchanged ordinary serving.                                                                                  |
+| T050-T057 | US4 exact three-cycle preservation, dependency guard, partial stop and explicit isolated upgrade.                                                                                      |
+| T058-T072 | US5 health/aggregate/fault/termination/correction/six-channel privacy and executable documentation.                                                                                    |
+| T073      | Required-file/project/scenario manifests, focused trait selectors and Python missing/zero/provider/sum/output regressions; final actual suite execution still required.                |
+| T074-T076 | Standalone/all observations and retained named provider/recovery/contract/privacy/browser/startup/failure gates; passing final reports required.                                       |
+| T077      | Reference/test-ownership/credential/ignored-artifact and interface/budget/guide audit; final status docs depend on actual gate result.                                                 |
+| T078-T080 | Complete exact-code local gate/CI reconciliation, this acceptance mapping, mandatory repository checks, truthful ledger/markers and immediate push/draft-PR handoff; not yet complete. |
 
 ## Limitations and handoff
 

@@ -786,9 +786,10 @@ class VerifyTests(unittest.TestCase):
             group.stop()
         group.stop()
 
-    def startup_samples(self):
+    def startup_samples(self, composition=False):
         return [
-            {"cycle": cycle, "readySeconds": cycle / 10, "pageSeconds": cycle / 100, "fixtureMatches": True}
+            {"cycle": cycle, "readySeconds": cycle / 10, "pageSeconds": cycle / 100, "fixtureMatches": True,
+             **({"totalSeconds": cycle / 5, "modulesPublished": True} if composition else {})}
             for cycle in (1, 2)
         ]
 
@@ -802,18 +803,23 @@ class VerifyTests(unittest.TestCase):
 
         def child(name, command, **kwargs):
             commands.append(name)
-            if name == "startup-storage-fixture-build":
-                self.assertIn("tests/contract/Kofte.Storage.Consumer", command)
+            if name in ("startup-storage-fixture-build", "startup-composition-fixture-build"):
+                self.assertIn("tests/contract/Kofte." + (
+                    "Composition" if "composition" in name else "Storage") + ".Consumer", command)
                 runner.operation(name, lambda _: None, command)
                 return
             def produce(_):
                 directory = Path(command[command.index("--output") + 1])
                 outputs.append(directory)
                 self.assertEqual([], list(directory.iterdir()))
-                self.assertEqual("2", kwargs["environment"]["BOOTSTRAP_WARM_STARTS"])
-                path = directory / "actual-startup-test/startup-observations.json"
+                composition = name == "startup-composition-restarts"
+                if not composition:
+                    self.assertEqual("2", kwargs["environment"]["BOOTSTRAP_WARM_STARTS"])
+                self.assertIn("--grep" if composition else "--grep-invert", command)
+                filename = "composition-startup-observations.json" if composition else "startup-observations.json"
+                path = directory / "actual-startup-test" / filename
                 path.parent.mkdir()
-                path.write_text(json.dumps(self.startup_samples()))
+                path.write_text(json.dumps(self.startup_samples(composition)))
             runner.operation(name, produce, command)
 
         with patch.object(runner, "versions"), patch.object(runner, "build_runtime"), \
@@ -824,12 +830,57 @@ class VerifyTests(unittest.TestCase):
         self.assertEqual("passed", step["outcome"])
         self.assertEqual(2, step["configuredCycles"])
         self.assertEqual(self.startup_samples(), step["observations"])
+        composition = next(step for step in persisted["steps"] if step["name"] == "startup-composition-observations")
+        self.assertEqual("passed", composition["outcome"])
+        self.assertEqual(self.startup_samples(True), composition["observations"])
         self.assertIn(runner.report.path, list((self.root / "artifacts/verification").glob("*.json")))
         self.assertNotIn("credential-canary", runner.report.path.read_text())
         self.assertNotIn(str(self.root), runner.report.path.read_text())
         self.assertTrue((outputs[0] / "actual-startup-test/startup-observations.json").is_file())
         self.assertEqual("credential-canary /private/old-results", stale.read_text())
         self.assertLess(commands.index("startup-storage-fixture-build"), commands.index("startup-warm-restarts"))
+        self.assertLess(commands.index("startup-composition-fixture-build"), commands.index("startup-composition-restarts"))
+
+    def test_composition_startup_requires_its_own_samples_and_total_with_cleanup(self):
+        directory = self.root / "composition-startup"
+        directory.mkdir()
+        (directory / "startup-observations.json").write_text(json.dumps(self.startup_samples()))
+        with self.assertRaisesRegex(verify.VerificationError, "startup_observations_missing"):
+            verify.startup_observations(directory, 2, composition=True)
+        path = directory / "composition-startup-observations.json"
+        path.write_text(json.dumps(self.startup_samples(True)))
+        self.assertEqual(self.startup_samples(True),
+                         verify.startup_observations(directory, 2, composition=True))
+        for total in (None, 300, 0.01, True):
+            samples = self.startup_samples(True)
+            if total is None:
+                del samples[0]["totalSeconds"]
+            else:
+                samples[0]["totalSeconds"] = total
+            path.write_text(json.dumps(samples))
+            with self.subTest(total=total), \
+                    self.assertRaisesRegex(verify.VerificationError, "startup_observations_invalid"):
+                verify.startup_observations(directory, 2, composition=True)
+        samples = self.startup_samples(True)
+        samples[0]["modulesPublished"] = False
+        path.write_text(json.dumps(samples))
+        with self.assertRaisesRegex(verify.VerificationError, "startup_observations_invalid"):
+            verify.startup_observations(directory, 2, composition=True)
+
+    def test_startup_cannot_pass_with_only_empty_host_warm_observations(self):
+        runner = verify.Runner(self.root, self.report("startup"), {})
+
+        def child(name, command, **_kwargs):
+            if name == "startup-warm-restarts":
+                directory = Path(command[command.index("--output") + 1])
+                (directory / "startup-observations.json").write_text(json.dumps(self.startup_samples()))
+
+        with patch.object(runner, "versions"), patch.object(runner, "build_runtime"), \
+                patch.object(runner, "command", side_effect=child), \
+                self.assertRaisesRegex(verify.VerificationError, "startup_observations_missing"):
+            verify.execute_suite(runner, "startup", None, Mock(warm_starts=2))
+        self.assertEqual("startup-composition-observations", runner.report.data["steps"][-1]["name"])
+        self.assertEqual("failed", runner.report.data["steps"][-1]["outcome"])
 
     def test_startup_requires_exact_sample_count_sequence_fields_and_fixture_matches(self):
         directory = self.root / "observations"
@@ -929,7 +980,7 @@ class VerifyTests(unittest.TestCase):
         runner = verify.Runner(self.root, self.report("startup"), {})
 
         def child(name, command, **_kwargs):
-            if name == "startup-storage-fixture-build":
+            if name in ("startup-storage-fixture-build", "startup-composition-fixture-build"):
                 runner.operation(name, lambda _: None, command)
                 return
             def fail(_):

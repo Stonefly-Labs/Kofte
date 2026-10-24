@@ -208,7 +208,13 @@ Focused .NET selector families to add in the **existing** projects:
 test-owned projects are built by quality and required by contract/suite manifest
 checks, with minimum expected tests/cases; the wrapper must fail if omitted.
 Recovery/privacy selectors include actual composition cases, not only old 003
-tests. Exact final paths/selectors and measured results belong in tasks/
+tests. Focused recovery/privacy use a single provider/suite/`Feature=composition`
+trait query; xUnit query filters must not be mixed with simple class filters.
+The startup gate retains all requested empty-host warm cycles and additionally
+runs two real compiled Alpha/Beta/no-storage deployment restarts with the built
+web application, exact persisted unrelated fixture and separately validated
+startup/page/cleanup observations inside the unchanged 285/300-second envelope.
+Exact final paths/selectors and measured results belong in tasks/
 implementation evidence, not invented passing output here.
 
 ## Acceptance mapping and evidence

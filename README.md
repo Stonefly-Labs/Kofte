@@ -118,6 +118,8 @@ T001-T072 have component/public evidence, including interrupted-migration
 recovery, three-cycle exact preservation on both providers and correction,
 health/privacy examples. Final retained full local/CI gates remain incomplete. No convergence, feature
 acceptance or intermediate merge is implied.
+The startup gate also exercises two configured-module/web restarts without
+replacing the ten retained empty-host warm cycles or extending their budgets.
 
 **Spec 003 is explicitly human-accepted and human-merged.**
 The [acceptance record](specs/003-storage-registry/acceptance.md) preserves the
