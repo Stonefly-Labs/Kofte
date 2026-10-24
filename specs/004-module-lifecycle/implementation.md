@@ -517,6 +517,27 @@ After the cancellation and fixture refinements, the complete named quality
 (20 steps) and unit (14 steps) suites passed again. This checkpoint remains
 an in-progress implementation, not a completed stage or accepted feature.
 
+Checkpoint `79d62aee64c2a88d29161fa8a21f9b753815cccf` was committed and
+immediately pushed to the same draft PR. Its actual Ubuntu CI passed repository,
+quality, unit, both-provider integration, browser, startup and failure
+propagation. Recovery/privacy failed their new focused selectors: xUnit rejects
+mixing simple class filters with its query-filter format. A direct invocation
+reproduced zero tests/nonzero exit, and the official
+[query-filter documentation](https://xunit.net/docs/query-filter-language)
+confirms the restriction. Structural wildcard queries also discovered zero
+cases in the installed adapter; this was not treated as a successful fix.
+The focused suites now use explicit inherited `Feature=composition` traits
+with the existing supported provider/suite trait query, without changing
+retained selectors or minima. Actual SQLite native privacy selected/passed one
+case (18.564 seconds), and public recovery selected/passed four (57.443 seconds).
+The 45 verifier regressions passed; exact safe query arguments remain reportable.
+
+The local named SQLite integration gate subsequently passed all nine steps.
+The PostgreSQL host integration step passed, but the complete storage step
+failed multiple new and retained cases after 451.505 seconds. This is not a
+passing PostgreSQL/local-all result. The exact-head Ubuntu PostgreSQL gate did
+pass; local failures still require investigation and an honest complete gate.
+
 ## Acceptance evidence
 
 T027 reuses `ModuleLifecycleTests.cs` rather than creating a second lifecycle

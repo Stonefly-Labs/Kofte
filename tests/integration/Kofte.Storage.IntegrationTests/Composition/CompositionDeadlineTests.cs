@@ -2,6 +2,7 @@ using Kofte.TestSupport;
 
 namespace Kofte.Storage.IntegrationTests.Composition;
 
+[Trait("Feature", "composition")]
 public abstract class CompositionDeadlineTests(ITestOutputHelper output)
 {
     protected abstract string Provider { get; }

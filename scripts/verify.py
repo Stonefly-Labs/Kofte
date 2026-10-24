@@ -319,7 +319,8 @@ def safe_command(command):
     """Only repository-relative arguments and plain options may enter reports."""
     result = []
     for item in map(str, command):
-        query = re.fullmatch(r"/\[\(Suite=(recovery|privacy)\)&\(Provider=(sqlite|postgres)\)\]", item)
+        query = re.fullmatch(
+            r"/\[\(Suite=(recovery|privacy)\)&\(Provider=(sqlite|postgres)\)(?:&\(Feature=composition\))?\]", item)
         if (item.startswith("/") and not query or ".." in Path(item).parts or len(item) > 180
                 or not re.fullmatch(r"[-a-zA-Z0-9_./:=*]+", item)
                 and not query
@@ -1023,9 +1024,10 @@ def provider_environment(runner, arguments, provider):
     return environment
 
 
-def integration_command(provider, suite=None, project=INTEGRATION):
+def integration_command(provider, suite=None, project=INTEGRATION, feature=None):
+    feature_query = f"&(Feature={feature})" if feature else ""
     selector = (
-        ["--filter-query", f"/[(Suite={suite})&(Provider={provider})]"] if suite
+        ["--filter-query", f"/[(Suite={suite})&(Provider={provider}){feature_query}]"] if suite
         else ["--filter-trait", f"Provider={provider}"]
     )
     return [
@@ -1152,13 +1154,13 @@ def execute_suite(runner, suite, provider, arguments):
                     f"/[(Suite={suite})&(Provider={selected})]", "--minimum-expected-tests", "1",
                 ], environment=environment)
                 runner.command(f"composition-{suite}-{selected}", [
-                    *integration_command(selected, suite, project=STORAGE_INTEGRATION)[:-2],
-                    "--filter-class", "*Composition*", "--minimum-expected-tests", "4" if suite == "recovery" else "1",
+                    *integration_command(selected, suite, project=STORAGE_INTEGRATION,
+                                         feature="composition")[:-2],
+                    "--minimum-expected-tests", "4" if suite == "recovery" else "1",
                 ], environment=environment)
                 runner.command(f"composition-public-{suite}-{selected}", [
-                    "dotnet", "test", "--project", "tests/contract/Kofte.Platform.ContractTests",
-                    "--no-restore", "-c", "Release", "--filter-query",
-                    f"/[(Suite={suite})&(Provider={selected})]", "--filter-class", "*Composition*",
+                    *integration_command(selected, suite, project="tests/contract/Kofte.Platform.ContractTests",
+                                         feature="composition")[:-2],
                     "--minimum-expected-tests", "4" if suite == "recovery" else "1",
                 ], environment=environment)
             if suite == "contract":

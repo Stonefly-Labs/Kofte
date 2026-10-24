@@ -190,6 +190,12 @@ class VerifyTests(unittest.TestCase):
                 self.assertIn(f"/[(Suite={suite})&(Provider={provider})]", command)
                 self.assertEqual(["--minimum-expected-tests", "1"], command[-2:])
                 self.assertEqual(command, verify.safe_command(command))
+                focused = verify.integration_command(
+                    provider, suite, project=verify.STORAGE_INTEGRATION, feature="composition")
+                self.assertIn(f"/[(Suite={suite})&(Provider={provider})&(Feature=composition)]", focused)
+                self.assertNotIn("--filter-class", focused)
+                self.assertNotIn("--filter-trait", focused)
+                self.assertEqual(focused, verify.safe_command(focused))
 
     def test_actual_child_failure_is_named_nonzero_and_output_is_not_saved(self):
         memory_bytes = verify.os.sysconf("SC_PHYS_PAGES") * verify.os.sysconf("SC_PAGE_SIZE")

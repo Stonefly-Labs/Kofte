@@ -2,6 +2,7 @@ using Kofte.TestSupport;
 
 namespace Kofte.Platform.ContractTests.Composition;
 
+[Trait("Feature", "composition")]
 public abstract class CompositionPrivacyContractTests
 {
     protected abstract string Provider { get; }

@@ -114,9 +114,9 @@ markers and exact commands are recorded separately in the
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
 The immutable contracts, deterministic validation, public no-storage boots and
 real relational clean/additive prepare/serve paths now have focused evidence.
-T001-T057 are verified, including explicit interrupted-migration recovery and
-three-cycle exact data preservation on both providers. Complete correction, health/privacy
-examples and retained full gates remain incomplete. No convergence, feature
+T001-T072 have component/public evidence, including interrupted-migration
+recovery, three-cycle exact preservation on both providers and correction,
+health/privacy examples. Final retained full local/CI gates remain incomplete. No convergence, feature
 acceptance or intermediate merge is implied.
 
 **Spec 003 is explicitly human-accepted and human-merged.**

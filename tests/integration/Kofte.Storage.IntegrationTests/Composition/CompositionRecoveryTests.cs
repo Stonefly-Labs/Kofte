@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Kofte.Storage.IntegrationTests.Composition;
 
+[Trait("Feature", "composition")]
 public abstract class CompositionRecoveryTests
 {
     protected abstract string Provider { get; }
