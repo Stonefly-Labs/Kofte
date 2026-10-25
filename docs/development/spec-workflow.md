@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** **004 / T086 implement complete; converge is next** after specify, clarify,
+**Current checkpoint:** **004 / converge passes after T086; review is next** after specify, clarify,
 plan, checklist, tasks and analyze completed on
 `feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
 The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the
@@ -381,6 +381,24 @@ not a general test waiver or feature acceptance. No test is disabled, deadline
 relaxed, new product run started or later gate skipped. Resume and complete
 only implement, mark T086 complete, publish on the same branch/draft PR #7 and
 stop with **converge next**. No intermediate merge or 005 work is authorized.
+
+**Current convergence after T086:** The
+[assessment](../../specs/004-module-lifecycle/convergence.md) passes after
+checking all 46 requirements/outcomes/scenarios, twelve plan decisions,
+86 tasks and twelve principles against current source/assertions.
+Review R1/T086 is closed by corrected metadata admission and actual
+both-provider compiled-host behavior; prior F1-F4 remain closed. There are
+zero new actionable findings and no appended task; every task byte, approved
+intent, reviewed checklist and historical report is preserved.
+Fresh focused execution covers protocol/limit/provider boundaries and strict
+semantic/culture evidence; independently downloaded fix-commit CI retains
+286 passing targeted steps. Neither is a new full local gate.
+The human-deferred PostgreSQL observation remains undiagnosed and is not
+rerun/investigated; the failed/interrupted 109/111 local result stays failed.
+The driver completes only **converge / pass**, selecting **review** separately
+on the same branch/draft PR #7 with that limitation retained. No passing final
+review, numbered-feature acceptance, readiness, intermediate merge or 005 is
+implied.
 
 **003 acceptance checkpoint:** 003 is **explicitly human-accepted and
 human-merged** on its original `feature/003-storage-registry` and

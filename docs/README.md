@@ -387,7 +387,7 @@ checklists and product/test source. Acceptance is blocked until remediation,
 convergence and passing review on the same draft PR #7. No new design approval,
 readiness, intermediate merge or later-feature work is introduced.
 
-**Current 004 / T086 implement complete; investigation deferred.**
+**Historical 004 / T086 implement complete; investigation deferred.**
 The [increment](../specs/004-module-lifecycle/implementation.md#final-review-remediation-t086)
 corrects all-catalog diagnostic metadata admission to 2,048 prerequisites while
 preserving the 1,024 enabled-edge bound. Public resolution and actual
@@ -402,6 +402,16 @@ The [facts and revisit guidance](../specs/004-module-lifecycle/implementation.md
 preserve the failed local result and unknown cause. T086 is complete;
 follow-up converge is next on draft PR #7. Historical review, approved intent
 and reviewed checklists remain unchanged; no acceptance or merge is requested.
+
+**Current 004 / converge passes after T086.** The
+[assessment](../specs/004-module-lifecycle/convergence.md) covers all 46
+requirements/outcomes/scenarios, twelve decisions, 86 tasks and twelve
+principles with no new actionable gaps. Review R1 is closed by actual bounded
+protocol/public-host behavior; prior F1-F4 stay closed. No task or product/test
+code changes. The deferred PostgreSQL anomaly remains undiagnosed, with its
+failed local full-suite result preserved; this is not a new full-gate pass.
+**Review is next** on draft PR #7, before explicit human feature acceptance.
+No PR readiness or intermediate merge is requested.
 
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.

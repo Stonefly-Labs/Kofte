@@ -437,6 +437,15 @@ and one failure. This changes no architecture, test assertion or recorded result
 T086 is complete; converge is next on draft PR #7, before final review and
 explicit human acceptance.
 
+The [convergence after T086](../specs/004-module-lifecycle/convergence.md)
+now passes across all 46 requirements/outcomes/scenarios, twelve decisions,
+86 tasks and twelve principles, with no new actionable gap. Review R1 and
+prior F1-F4 are closed; approved architecture, tasks and product/test source
+are unchanged. The separately deferred PostgreSQL observation remains
+undiagnosed, and the failed local complete attempt remains failed.
+**Review is next** on the same draft PR #7; no later gate or human acceptance
+is waived, and no intermediate merge is requested.
+
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.

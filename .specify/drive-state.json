@@ -18,7 +18,7 @@
     },
     "004": {
       "directory": "specs/004-module-lifecycle",
-      "next_step": "converge"
+      "next_step": "review"
     }
   },
   "active": null,
@@ -1013,6 +1013,22 @@
         "specs/004-module-lifecycle/implementation.md": "8ee34a8221d9e14ce7c831f9203ee8c7c60860dbf28434ddc9161e3dee7a5029",
         "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
         "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "converge",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-25T22:11:30+00:00",
+      "completed_at": "2026-10-25T22:16:14+00:00",
+      "outcome": "pass",
+      "note": "Converge pass after T086: assessed 46 FR/outcome/scenario items, 12 plan decisions, all 86 tasks and 12 principles against current source/assertions; zero new actionable gaps and no task changes. Review R1/T086 closed by bounded 2048-entry diagnostic metadata plus fresh protocol50/limits29/both-provider compiled-host10/strict-corpus35 passing cases (124 total, zero skips). Independently downloaded exact c749acc CI: 11 contexts, 10 safe reports, 286 targeted steps, 24 guide commands and 24 observation checks; synthetic checkout parents verified and present source applicability confirmed. Prior F1-F4 remain closed. Human-deferred separate PostgreSQL anomaly remains undiagnosed and uninvestigated; failed/interrupted local109/111 is still failed, not a new full-gate pass or later-gate waiver. Entire historical convergence preserved, protected intent/checklists/review/implementation/tasks unchanged. Review is next on same draft PR7; no acceptance, readiness, intermediate merge or005.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "1edad3eee4b8e81d8490bc12591d65e9497517a1dc08fab9c98764ecdc595bda",
+        "specs/004-module-lifecycle/convergence.md": "f079990c57d297a2f132fff21991b50e4f609cd105dbfa8f35374ada72abda61"
       }
     }
   ]

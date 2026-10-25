@@ -291,6 +291,15 @@ next on the same draft PR #7. The failed local outcome is not relabeled passing,
 and no test or later feature gate is waived. Historical review and reviewed
 checklists are preserved; do not request an intermediate merge.
 
+**Current 004 / converge passes after T086.** The
+[assessment](specs/004-module-lifecycle/convergence.md) checks all 46
+requirements/outcomes/scenarios, twelve decisions, 86 tasks and twelve
+principles with no new actionable gap. Review R1 and prior F1-F4 are closed;
+tasks and product/test source remain unchanged. The human-deferred PostgreSQL
+observation remains undiagnosed and the failed local attempt stays failed.
+**Review is next** on the same draft PR #7; retain that limitation and the
+separate explicit human acceptance gate. No intermediate merge is requested.
+
 The following paragraphs preserve the historical design-stage checkpoint.
 
 Spec **003 / specify and clarify** establish the

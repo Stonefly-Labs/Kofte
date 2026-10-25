@@ -324,6 +324,16 @@ as non-blocking for this checkpoint. No further investigation or product-test
 rerun is performed. T086 is complete; converge is next on draft PR #7.
 The failed local result, all tests and later review/acceptance gates remain.
 
+**Current 004 / converge passes after T086.** The
+[assessment](../../specs/004-module-lifecycle/convergence.md) covers all 46
+requirements/outcomes/scenarios, twelve decisions, 86 tasks and twelve
+principles without new actionable gaps or task/code changes. Review R1 and
+prior F1-F4 are closed. Focused actual both-provider metadata boots pass;
+the deferred migration-interruption case is not rerun or investigated, and
+the failed local full-suite attempt stays failed. Supported commands,
+deadlines and recovery responsibilities are unchanged. **Review is next**
+on draft PR #7, retaining this limitation before explicit human acceptance.
+
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).
 Only trusted composition receives `StorageRegistry`/`StorageMaintenance`;
