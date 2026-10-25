@@ -366,7 +366,7 @@ Failed historical/diagnostic runs and complete-gate reconciliation remain
 explicit. Follow-up converge, review and explicit human acceptance remain
 separate stages on the same draft PR #7.
 
-**Current 004 / converge after T084-T085: pass; review is next.**
+**Historical 004 / converge after T084-T085: pass.**
 The [assessment](../specs/004-module-lifecycle/convergence.md) covers all 46
 requirements/outcomes/scenarios, twelve plan decisions, 85 tasks and twelve
 principles with zero actionable gaps. F1-F4 are closed with fresh focused
@@ -375,6 +375,17 @@ reviewed checklists, product/test code and historical evidence are unchanged.
 Final review and explicit human acceptance remain separate on the same
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), without an
 intermediate merge or later-feature work.
+
+**Current 004 / final review: changes; implement T086 is next.**
+The [review](../specs/004-module-lifecycle/review.md) covers all 46
+requirements/outcomes/scenarios, twelve plan decisions, 85 existing tasks and
+twelve principles. HIGH R1 reproduces valid disabled-catalog prerequisite
+metadata being rejected by the enabled-edge protocol bound in 16/16 actual
+public-host probe cases. Prior F1-F4 remain closed. Exactly T086 is appended
+unchecked, preserving all prior task bytes/markers, approved intent, reviewed
+checklists and product/test source. Acceptance is blocked until remediation,
+convergence and passing review on the same draft PR #7. No new design approval,
+readiness, intermediate merge or later-feature work is introduced.
 
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.

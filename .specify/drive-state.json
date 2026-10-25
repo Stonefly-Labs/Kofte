@@ -18,7 +18,7 @@
     },
     "004": {
       "directory": "specs/004-module-lifecycle",
-      "next_step": "review"
+      "next_step": "implement"
     }
   },
   "active": null,
@@ -977,6 +977,24 @@
       "evidence_sha256": {
         "specs/004-module-lifecycle/tasks.md": "66dd9ff25d731ebf7de7de942040148af9d72d19286202028a1ea1207fabf9b3",
         "specs/004-module-lifecycle/convergence.md": "914823652e2e7e831b8ee577f65d293cdc27309cd204c22efac402ac0b2ef8c6"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "review",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-25T20:28:43+00:00",
+      "completed_at": "2026-10-25T20:37:52+00:00",
+      "outcome": "changes",
+      "note": "Final spec-review assessed all20FRs,six outcomes,20scenarios,R1-R12,85 existing tasks and twelve principles at55d2f735. One HIGH reviewR1: all-catalog disabled prerequisite metadata incorrectly consumes1024 enabled-edge protocol bound. Caller compiled public-host probe confirms16/16 resolver-accepted omitted/false,unrelated enabled and max32 catalog inputs fail actual validate/serve with composition_observation_invalid before worker/callback/storage. Appended only uncheckedT086, preserving every byte/marker of prior85 tasks,approved intent,checklists,implementation/convergence and product/test/verifier source. PriorF1-F4 remain closed. Fresh quality20/unit14 pass; actual assessed-head CI11 contexts and all10 downloaded targeted reports286 steps independently verified,synthetic618ff04 parentsmain3a5deff+55d2f735;24 guide commands+24 strict observations. Green existing evidence missesR1; no new full local/provider/browser gate claimed. Review changes selects implementT086 separately on original draftPR7. Acceptance request cannot bypass missing passingreview; no acceptance,readiness,merge or005.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "958525e41dbb0e6970793abe9369c2822589c38baaf73879ccc21436e4e440e0",
+        "specs/004-module-lifecycle/review.md": "f9f79659b87e761003aa02a10b1fd02e58cbb6755b91651f88e62e74280ed4c3",
+        "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
+        "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
       }
     }
   ]

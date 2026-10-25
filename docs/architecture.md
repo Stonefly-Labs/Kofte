@@ -410,6 +410,16 @@ checklists and product/test code are unchanged. **Review is next**, separately
 on the same draft PR #7, before explicit human acceptance; no new architecture,
 readiness or intermediate merge is introduced.
 
+The subsequent [final review](../specs/004-module-lifecycle/review.md) records
+**changes** for one HIGH implementation defect R1: diagnostic prerequisite
+metadata from disabled deployments incorrectly shares the 1,024 enabled-edge
+limit. Valid catalogs can contain up to 2,048 distinct disabled prerequisites;
+actual validate/serve refuses before worker admission despite accepted public
+resolution. Exactly T086 is appended to reconcile bounded parent/worker
+metadata without weakening graph, identity or framing rules. **Implement is
+next** on the same draft PR #7. No approved architecture, product/test source,
+historical finding closure or human acceptance is changed by this review.
+
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.

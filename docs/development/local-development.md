@@ -298,6 +298,17 @@ checks pass; inspected assessed-head CI retains all 286 product steps.
 No new full local gate is claimed. **Review is next** on the same draft PR #7,
 then explicit human acceptance; commands and operator responsibilities are unchanged.
 
+The subsequent [final review](../../specs/004-module-lifecycle/review.md)
+records **changes**: valid omitted/explicitly disabled catalogs can fail
+validate/serve with `composition_observation_invalid` when their distinct
+prerequisite metadata exceeds 1,024, even with zero enabled edges. A
+session-only public-host probe confirms 16/16 cases before callbacks/storage;
+existing green gates do not cover this combination. Exactly T086 is appended
+for the bounded protocol correction and actual both-provider regressions.
+**Implement T086 is next** on the same draft PR #7; acceptance remains blocked
+pending remediation, convergence and passing review. No command, deadline,
+operator responsibility or product/test implementation changes here.
+
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).
 Only trusted composition receives `StorageRegistry`/`StorageMaintenance`;

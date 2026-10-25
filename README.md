@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-34d399?style=flat-square"></a>
-  <img alt="Status: module lifecycle review next" src="https://img.shields.io/badge/status-module_lifecycle_review_next-a78bfa?style=flat-square">
+  <img alt="Status: module lifecycle review changes" src="https://img.shields.io/badge/status-module_lifecycle_review_changes-a78bfa?style=flat-square">
   <a href="docs/master-spec-inventory.md"><img alt="Built with Spec Kit" src="https://img.shields.io/badge/workflow-Spec_Kit-a78bfa?style=flat-square"></a>
 </p>
 
@@ -35,7 +35,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 | 🔐 Explicit boundaries     | Team-scoped authorization, audited actions and module-owned storage                                   |
 
 > [!IMPORTANT]
-> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004's [convergence after T084-T085](specs/004-module-lifecycle/convergence.md) passes with zero actionable gaps; all prior findings are closed and tasks remain unchanged. Final review is next, before explicit human acceptance on the same draft PR. Nothing here claims production readiness or MVP completion.
+> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004's [final review](specs/004-module-lifecycle/review.md) records changes: valid disabled-catalog metadata can prevent host startup. Exactly T086 is appended; implement is next on the same draft PR, before passing review and explicit human acceptance. Prior convergence findings remain closed. Nothing here claims production readiness or MVP completion.
 
 ## 🧭 The shape of things to come
 
@@ -199,7 +199,7 @@ retains all failed evidence and full reconciliation.
 Follow-up converge, review and explicit human acceptance remain separate
 stages on the same draft PR #7; no intermediate merge is requested.
 
-**004 / convergence after T084-T085 passes; review is next.** The
+**004 / convergence after T084-T085 passes (historical checkpoint).** The
 [assessment](specs/004-module-lifecycle/convergence.md) covers all 46
 requirements/outcomes/scenarios, twelve plan decisions, 85 tasks and twelve
 principles with zero actionable gaps. F1-F4 are closed by actual behavior and
@@ -207,6 +207,17 @@ evidence; the task file is byte-for-byte unchanged. Approved intent, reviewed
 checklists, product/test code and historical reports are preserved. Final
 review and explicit human acceptance remain separate on
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7); no merge is requested.
+
+**004 / final review records changes; implement T086 is next.** The
+[review](specs/004-module-lifecycle/review.md) assesses all 46
+requirements/outcomes/scenarios, twelve plan decisions, 85 existing tasks and
+twelve principles. One HIGH finding R1 reproduces valid disabled-catalog
+metadata exceeding an incorrect protocol bound: 16/16 public-host probe cases
+fail validate/serve despite accepted resolution and zero enabled edges.
+Exactly T086 is appended unchecked, preserving all prior task bytes/markers,
+approved intent, reviewer checklists and product/test source. Acceptance is
+blocked pending remediation, convergence and passing final review on the same
+draft PR #7; no intermediate merge is requested.
 
 **Spec 003 is explicitly human-accepted and human-merged.**
 The [acceptance record](specs/003-storage-registry/acceptance.md) preserves the

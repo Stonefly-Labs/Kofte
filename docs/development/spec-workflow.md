@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** **004 / converge passes after T084-T085; review is next** after specify, clarify,
+**Current checkpoint:** **004 / final review records changes; implement T086 is next** after specify, clarify,
 plan, checklist, tasks and analyze completed on
 `feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
 The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the
@@ -327,6 +327,32 @@ The driver completes only **converge / pass** and selects **review**, in a
 separate invocation on this original branch and draft PR #7. Final review
 and explicit numbered-feature human acceptance remain required; no PR readiness,
 intermediate merge or 005 work is authorized.
+
+**Final review after T084-T085:** The
+[review](../../specs/004-module-lifecycle/review.md) records **changes** across
+all 46 requirements/outcomes/scenarios, twelve plan decisions, 85 existing
+tasks and twelve principles. One HIGH finding R1 identifies disabled-catalog
+prerequisite metadata incorrectly sharing the 1,024 enabled-edge protocol
+limit. The caller independently compiles a public-host probe: all 16 cases
+accept public resolution but fail actual validate/serve before worker,
+callbacks or storage. Coverage includes 1,025 identities, the maximum valid
+catalog, omitted/explicit-false selections and an unrelated enabled owner.
+Prior convergence F1-F4 remain closed.
+
+Exactly Phase 12/T086 is appended unchecked; every prior task byte/marker,
+approved intent, reviewed checklist and historical report remains unchanged.
+Product/test/verifier source and dependencies are not edited. Fresh quality
+20/20 and unit 14/14 pass; original assessed-head CI has eleven passing contexts
+and 286 independently downloaded/reconciled steps, including all 24 public
+guide commands/strict observation pairs. None covers R1; no new complete local
+or both-provider execution is claimed for this review.
+
+The driver completes only **review / changes** and selects **implement T086**
+for a separate invocation on the original branch/draft PR #7. The human's
+acceptance request did not supply the missing passing review or authorize
+self-acceptance around a demonstrated defect. Remediation must be followed
+by converge/review and explicit human acceptance. No new design decision,
+readiness, intermediate merge or 005 work is authorized.
 
 **003 acceptance checkpoint:** 003 is **explicitly human-accepted and
 human-merged** on its original `feature/003-storage-registry` and

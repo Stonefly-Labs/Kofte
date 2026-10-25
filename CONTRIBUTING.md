@@ -265,6 +265,16 @@ intent, reviewed checklists, product/test code and historical evidence are
 preserved. **Review is next**, separately on the same draft PR #7, before
 explicit human acceptance. No readiness or intermediate merge is implied.
 
+The subsequent [004 final review](specs/004-module-lifecycle/review.md)
+records **changes**: one HIGH R1 reproduces valid disabled-catalog prerequisite
+metadata preventing actual host validate/serve, despite accepted resolution.
+Exactly T086 is appended unchecked; all 85 prior task bytes/markers, approved
+intent, reviewed checklists and product/test source remain unchanged.
+Fresh quality/unit and assessed-head CI pass but do not cover this interaction.
+**Implement T086 is next** on the same draft PR #7, then converge/review and
+explicit human acceptance. Acceptance and readiness remain blocked; no
+intermediate merge is requested.
+
 The following paragraphs preserve the historical design-stage checkpoint.
 
 Spec **003 / specify and clarify** establish the
