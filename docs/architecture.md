@@ -293,7 +293,7 @@ The read-only [analysis](../specs/004-module-lifecycle/analysis.md) passes:
 all 26 requirements/outcomes, 20 scenarios, 80 tasks and twelve plan decisions
 have concrete coverage, with 118 acyclic dependency edges and no actionable
 or constitutional issue. Both contracts, approved design and reviewed
-checklists remain unchanged. **Implement is complete; converge is next** on this same branch and
+checklists remain unchanged. **The original implementation completed all 80 tasks** on this same branch and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), not acceptance
 or a merge. The [implementation evidence](../specs/004-module-lifecycle/implementation.md)
 records the separately reviewed DI edge and focused foundation checks. A
@@ -332,8 +332,19 @@ product steps also pass, including every public guide command and strict
 observation. The [final reconciliation](../specs/004-module-lifecycle/implementation.md#final-complete-gate-and-implementation-handoff)
 retains earlier failed evidence and fixture-only administrative-budget/
 contention-workload repairs. No product bound, retry rule, assertion or floor
-is relaxed. Convergence, final review and explicit human acceptance remain
-separate later stages on this same draft PR; no merge is requested.
+is relaxed. That checkpoint selected convergence, not acceptance or merge.
+
+The [004 convergence assessment](../specs/004-module-lifecycle/convergence.md)
+now records **gaps**: the configured host does not project its existing explicit
+disabled observations into the private operator channel. An actual healthy
+`BootDisabled` deployment emits only `discovered/passed` for each disabled owner.
+This is one HIGH partial observability finding, not a storage-loss or authority
+failure or a changed design decision. T081 wires the existing observation model
+and actual both-provider public regressions; **implement is next** on the same
+draft PR. All original 80 task bytes/markers, product/test source, approved
+architecture, dependencies and reviewer-owned checklists are preserved.
+Final review and explicit human acceptance remain separate later stages.
+
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.

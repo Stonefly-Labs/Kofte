@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** **004 / implement is complete; converge is next** after specify, clarify,
+**Current checkpoint:** **004 / converge completed with gaps; implement T081 is next** after specify, clarify,
 plan, checklist, tasks and analyze completed on
 `feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
 The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the
@@ -194,7 +194,7 @@ Actual DI graph/license/provenance adoption, both-provider/public/process/privac
 evidence, convergence, final review and explicit human acceptance remain later
 gates. No PR readiness, intermediate merge or new feature is authorized.
 
-**Current implementation checkpoint:** The completed implementation remains on
+**Original implementation checkpoint (historical):** The completed implementation remains on
 the original feature branch and draft PR. Its
 [evidence report](../../specs/004-module-lifecycle/implementation.md) records
 the separately reviewed DI edge, immutable public contracts, deterministic
@@ -215,6 +215,27 @@ are unchanged. The driver completes only this original implementation stage
 and selects **converge for a separate invocation**.
 Convergence, final review and explicit feature acceptance are later invocations;
 no readiness or intermediate merge is requested.
+
+**Current convergence checkpoint:** 004 / converge records **gaps** on
+`feature/004-module-lifecycle` and the same
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
+The [assessment](../../specs/004-module-lifecycle/convergence.md) checks all
+20 functional requirements, six outcomes, 20 scenarios, twelve plan decisions,
+80 original tasks and twelve principles against actual source/assertions.
+One HIGH partial finding F1 reproduces missing explicit disabled-state operator
+output: a real healthy `BootDisabled` deployment reports each disabled owner
+only as `discovered/passed`. `CompositionHealth.Snapshot` models the correct
+state, but the actual worker/protocol never project it. Existing public checks
+assert zero callback/storage effects, not the missing operator observation.
+
+Exactly T081 is appended unchecked under Phase 9. Every byte and marker of the
+original task file, product/test/verifier source, approved spec/plan/ADR,
+reviewed checklists and historical implementation/analysis evidence are
+preserved. No data-loss, disabled execution, constitutional design conflict or
+new human decision is demonstrated. The driver selects **implement** for the
+next separate invocation, then follow-up convergence/review and explicit
+human acceptance. This stage implements nothing, accepts nothing and requests
+no intermediate merge. No convergence hooks are configured.
 
 **003 acceptance checkpoint:** 003 is **explicitly human-accepted and
 human-merged** on its original `feature/003-storage-registry` and

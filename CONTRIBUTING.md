@@ -176,7 +176,7 @@ At that checkpoint, **implement was next**, in a separate invocation on this sam
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), not acceptance
 or a merge. Analysis adds no runtime or dependency adoption.
 
-**004 / implement is complete; converge is next** on that original branch/draft PR.
+**004 / original implementation checkpoint completed all 80 tasks** on that original branch/draft PR.
 The [implementation report](specs/004-module-lifecycle/implementation.md)
 records verified validation, public no-storage boots and actual relational
 clean/additive prepare/serve commands, including both-provider no-effect,
@@ -191,8 +191,19 @@ all delivered guide commands and isolated failure exercises.
 The [final reconciliation](specs/004-module-lifecycle/implementation.md#final-complete-gate-and-implementation-handoff)
 preserves historical failures, fixture-only repairs and exact outcomes.
 No product deadline, assertion, provider requirement or floor changed.
-Convergence, final review and explicit human acceptance remain separate later
-stages; implementation completion does not accept feature 004 or request merge.
+That historical checkpoint selected convergence; implementation completion does
+not accept feature 004 or request merge.
+
+The [004 convergence assessment](specs/004-module-lifecycle/convergence.md)
+now records **gaps** after checking all 46 requirements/outcomes/scenarios,
+twelve plan decisions, 80 tasks and twelve principles. One HIGH partial finding
+reproduces missing explicit disabled-state output from the configured host:
+the correct in-memory observation never reaches the trusted operator channel.
+Exactly T081 is appended unchecked, preserving all original task bytes/markers,
+product/test source, approved intent and reviewer checklists.
+**Implement T081 is next** on the same branch/draft PR #7, before follow-up
+convergence, final review and explicit human acceptance. No intermediate merge
+or new design approval is needed.
 
 The following paragraphs preserve the historical design-stage checkpoint.
 

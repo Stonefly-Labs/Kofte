@@ -180,7 +180,7 @@ unchecked. This is planned coverage, not measured module behavior.
 At that historical checkpoint, **implement was next** on `feature/004-module-lifecycle` and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
 
-**004 / implement is complete; converge is next** on that same branch/draft PR. Its
+**004 / original implementation checkpoint completed all 80 tasks** on that same branch/draft PR. Its
 [current guide](../../specs/004-module-lifecycle/quickstart.md) now runs
 validation, no-storage boots and real relational `ordered-migration` examples
 on SQLite and owned PostgreSQL. The relational example explicitly upgrades its
@@ -226,8 +226,17 @@ records the fixture-administration regression/fix and safe public-failure
 identities. The [final reconciliation](../../specs/004-module-lifecycle/implementation.md#final-complete-gate-and-implementation-handoff)
 records unchanged contention workload isolation, all 24 actual guide commands/
 strict observations and passing isolated failure exercises. Historical failed
-runs are not rewritten. Convergence, review and explicit human acceptance are
-separate later stages; no product deadline or floor is weakened.
+runs are not rewritten; no product deadline or floor is weakened.
+
+The [004 convergence assessment](../../specs/004-module-lifecycle/convergence.md)
+now records **gaps**. The actual configured host emits `discovered/passed` but
+no explicit disabled-state observation for disabled deployments; the correct
+in-memory state is not projected to its trusted operator channel. This HIGH
+partial finding appends only T081, leaving all original task bytes/markers,
+product/test source, supported commands, approved intent and reviewer checklists
+unchanged. **Implement T081 is next** on the same draft PR #7. Existing zero
+disabled callbacks and storage preservation are not contradicted. Follow-up
+convergence, review and explicit human acceptance remain separate invocations.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).

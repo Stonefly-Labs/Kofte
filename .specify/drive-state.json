@@ -18,7 +18,7 @@
     },
     "004": {
       "directory": "specs/004-module-lifecycle",
-      "next_step": "converge"
+      "next_step": "implement"
     }
   },
   "active": null,
@@ -859,6 +859,22 @@
         "specs/004-module-lifecycle/implementation.md": "d10b2e4d83d2caca266b71c0c3842011882da2a1293b7f933f2e824db6f00517",
         "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
         "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "converge",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-25T03:15:15+00:00",
+      "completed_at": "2026-10-25T03:33:05+00:00",
+      "outcome": "gaps",
+      "note": "Assessed all 20 FRs, six outcomes, 20 scenarios, twelve plan decisions, 80 original tasks and twelve principles at faa4dfe. One HIGH partial finding F1 reproduces missing explicit disabled operator output from the real configured host; appended only Phase 9/T081, preserving the original task byte prefix, approved intent, reviewer checklists and product/test/verifier source. Recorded convergence.md and current progress docs. Fresh quality 20/20, unit 14/14, composition integration 104/104 and repository/119 Python/format/whitespace checks pass. Broad composition contracts retain 83/84 with one PostgreSQL cleanup-incomplete failure; unchanged isolated preservation rerun passes both providers (2/2), cause unestablished. Independently reconciled ten existing assessed-head CI artifacts/286 passed steps. Next invocation implements T081 on the same branch/draft PR #7; no acceptance or merge.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "a3945ed4a9f25f516df2074f312c8ab2e42575628a025fff79b6c3e7f7ccf2c3",
+        "specs/004-module-lifecycle/convergence.md": "165a1b81ea2c3300921fd6de44e94392b1cf4ef67dd409fc0d1b05b22f24f03f"
       }
     }
   ]

@@ -287,7 +287,7 @@ reviewed checklist artifacts remain unchanged.
 The read-only [analysis](../specs/004-module-lifecycle/analysis.md) passes:
 26/26 requirements/outcomes, 20/20 scenarios and all 80 tasks are covered,
 with 118 acyclic dependency edges and no actionable or constitutional finding.
-The analysis retains its historical assessed inputs. **Implement is complete; converge is next**
+The analysis retains its historical assessed inputs. **The original implementation completed all 80 tasks**
 on the same branch and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
 The [implementation report](../specs/004-module-lifecycle/implementation.md)
@@ -302,8 +302,19 @@ eleven CI contexts and 286 CI steps. Every standalone/provider `all` command,
 strict observation and isolated failure exercise is reconciled in the
 [final evidence](../specs/004-module-lifecycle/implementation.md#final-complete-gate-and-implementation-handoff).
 Historical failures remain distinct; fixture-only budget/workload repairs do
-not relax product deadlines, assertions or floors. Convergence, review and
-explicit human acceptance remain later stages; the PR stays draft.
+not relax product deadlines, assertions or floors. That checkpoint selected
+convergence; the PR stays draft.
+
+The [004 convergence assessment](../specs/004-module-lifecycle/convergence.md)
+now records **gaps** across all 46 requirements/outcomes/scenarios, twelve plan
+decisions, 80 original tasks and twelve principles. One HIGH partial finding
+reproduces the actual configured host's missing explicit disabled-state operator
+output, despite a correct in-memory snapshot. Exactly T081 is appended unchecked;
+all original task bytes/markers, product/test code, approved intent, historical
+reports and reviewed checklists remain unchanged. **Implement T081 is next**
+on the same draft PR #7, followed separately by convergence/review and explicit
+human acceptance. No intermediate merge is requested.
+
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 
