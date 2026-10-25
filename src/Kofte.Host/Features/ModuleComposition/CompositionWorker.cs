@@ -25,6 +25,7 @@ internal static class CompositionWorker
         WebApplication? app = null;
         CompositionFailure? failure = null;
         Task? observing = null, watching = null;
+        string? cleanupBoundary = null;
         var served = false;
         using var lifetime = new CancellationTokenSource();
         try
@@ -183,17 +184,33 @@ internal static class CompositionWorker
             {
                 if (app is not null)
                 {
+                    cleanupBoundary = "composition_host_stop_incomplete";
                     await callbacks.RunAsync(CompositionWork.Cleanup, cancellation => new ValueTask(app.StopAsync(cancellation)));
+                    cleanupBoundary = "composition_host_dispose_incomplete";
                     await callbacks.RunAsync(CompositionWork.Cleanup, _ => app.DisposeAsync());
                 }
                 if (provider is not null)
+                {
+                    cleanupBoundary = "composition_services_dispose_incomplete";
                     await callbacks.RunAsync(CompositionWork.Cleanup, _ => provider.DisposeAsync());
+                }
                 if (storage is not null)
+                {
+                    cleanupBoundary = "composition_storage_dispose_incomplete";
                     await callbacks.RunAsync(CompositionWork.Cleanup, _ => storage.DisposeAsync());
+                }
             }
         }
-        catch (CompositionUnstoppedException error) { TerminateUnstopped(error); }
-        catch (Exception) { failure = new("composition_cleanup_incomplete", CompositionOutcome.Incomplete, 1); }
+        catch (CompositionUnstoppedException error)
+        {
+            TerminateUnstopped(error);
+        }
+        catch (Exception)
+        {
+            failure = new("composition_cleanup_incomplete", CompositionOutcome.Incomplete, 1);
+            try { ReportCleanupBoundary(); }
+            catch (Exception projection) { failure = CompositionFailure.From(projection); }
+        }
         try
         {
             if (failure is not null) attempt?.FailPhase(CompositionStage.Cleanup, failure.Outcome, failure.Code);
@@ -208,10 +225,17 @@ internal static class CompositionWorker
         finally { admission?.Dispose(); }
         return failure?.Exit ?? 0;
 
+        void ReportCleanupBoundary()
+        {
+            if (cleanupBoundary is not null)
+                diagnostics?.Emit(CompositionStage.Stopping, CompositionOutcome.Incomplete, cleanupBoundary);
+        }
+
         void TerminateUnstopped(CompositionUnstoppedException error)
         {
             try
             {
+                ReportCleanupBoundary();
                 var stage = error.Work switch
                 {
                     CompositionWork.Validator or CompositionWork.Resolver => CompositionStage.Validated,
@@ -241,6 +265,8 @@ internal static class CompositionWorker
         builder.Configuration.Sources.Clear();
         builder.Configuration.AddInMemoryCollection();
         builder.Logging.ClearProviders();
+        // Leave part of the one-second cleanup action for Kestrel to abort and finish draining.
+        builder.Services.Configure<HostOptions>(options => options.ShutdownTimeout = TimeSpan.FromMilliseconds(500));
         builder.Host.UseDefaultServiceProvider(options =>
         {
             options.ValidateScopes = true;

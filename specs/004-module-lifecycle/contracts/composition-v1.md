@@ -60,6 +60,14 @@ resolve a container-owned runtime or explicitly register a factory-created
 runtime for disposal, never both. Public prerequisite operations are supplied
 as explicit versioned dependency bindings, not arbitrary cross-owner service
 resolution or shared context/connection access.
+The delivered host qualifies executable service identities as
+`owner.Value + "." + localName`, without truncation or hashing. Version-1
+`ModuleDependencyBinding` retains explicit contract IDs up to 128 ASCII
+characters and also accepts that binding owner's exact prefix followed by up
+to 128 ASCII characters (maximum 382 with a 253-character owner). An unrelated
+owner's prefix cannot expand the bound. Owner and semantic version remain
+separate binding fields and collision keys; valid local names do not lose
+their inclusive 128-character limit when exported to a dependent.
 Arbitrary trusted code can violate supported conventions;
 these rules and scoped contexts are not hostile-code isolation.
 

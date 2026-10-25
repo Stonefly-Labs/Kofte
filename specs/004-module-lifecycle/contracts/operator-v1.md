@@ -126,6 +126,11 @@ and module migration/recovery ≤120 s are unchanged. The composition batch
 budget can be **stricter**; it does not allocate 120 s per owner cumulatively.
 Insufficient remaining budget fails before entering the next mutation.
 Maintained connections/child lifetime retain authority until verified exit.
+The configured HTTP host uses a 500-ms internal graceful shutdown timeout so
+Kestrel can abort incomplete requests and finish before its unchanged one-second
+cleanup-action deadline. This does not extend any author callback, cooperative
+reserve, process termination or total budget. In-flight bootstrap requests may
+be disconnected during controlled stop; they are not durable business work.
 
 Use accepted admitted-process ownership patterns, with long-lived serving
 supervision added in the host (do not apply the existing at-most-120-second
@@ -191,6 +196,14 @@ Link existing 003 child correlations without relabeling old success as current.
 Record every rejected boundary, including malformed config, admission,
 acquisition and observation projection failures, even without a module identity.
 Required output failure is an operational failure, not successful invisible work.
+Infrastructure cleanup failures additionally identify their fixed private
+boundary with `composition_host_stop_incomplete`,
+`composition_host_dispose_incomplete`, `composition_services_dispose_incomplete`
+or `composition_storage_dispose_incomplete`. These nonterminal
+`stopping / incomplete` records retain the same attempt and fixed
+`inspect_preserved_state` guidance, without an owner, raw exception or new
+record fields. The final ownerless `cleanup / incomplete` record remains the
+terminal refusal; a boundary record cannot substitute for verified exit.
 
 After successful composition resolution, every explicitly disabled or omitted
 deployed owner emits exactly one additional version-1 record with

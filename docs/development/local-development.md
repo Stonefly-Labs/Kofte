@@ -251,7 +251,19 @@ and `bounded-stop` unexpectedly report incomplete cleanup, while unchanged
 isolated cases pass 5/5 (MEDIUM F3). The cause is unestablished; do not treat
 reruns as a fix or weaken deadlines, cleanup refusal/assertions or floors.
 Commands and product/test source are unchanged by this stage.
-**Implement T082-T083 is next** on the same draft PR #7.
+That checkpoint selected implement on the same draft PR #7.
+
+The [T082-T083 increment](../../specs/004-module-lifecycle/implementation.md#convergence-remediation-t082-t083)
+now preserves full owner-qualified dependency bindings, including the public
+example's 128-character local service name. A normal stop with an incomplete
+HTTP request reproduced failure on both providers; the composed HTTP host
+now uses a 500-ms internal drain budget inside the unchanged one-second
+cleanup action and 15-second total stop limit. Fixed private `stopping /
+incomplete` codes distinguish host stop/dispose, services disposal and storage
+disposal; final `cleanup` remains terminal and fail-closed. No raw exception,
+path or setting is exposed. Historical failures cannot all be attributed
+retroactively to this demonstrated cause. All 83 tasks are implemented;
+**follow-up converge is next**, separately on the same draft PR.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).

@@ -186,6 +186,8 @@ public sealed class CompositionDiagnostics
         "composition_registration_failed" or "composition_initialization_failed" or
         "composition_activation_failed" or "composition_health_degraded" or "composition_health_failed" or
         "composition_health_unknown" or "composition_deadline_exceeded" or "composition_cancelled" or
+        "composition_host_stop_incomplete" or "composition_host_dispose_incomplete" or
+        "composition_services_dispose_incomplete" or "composition_storage_dispose_incomplete" or
         "composition_cleanup_incomplete" or "composition_reconciliation_required" or
         "composition_diagnostics_truncated" => code,
         _ => throw new ArgumentOutOfRangeException(nameof(code), "composition_code_invalid")
@@ -198,6 +200,8 @@ public sealed class CompositionDiagnostics
         "composition_disabled" => "edit_selection_while_stopped",
         "composition_prepare_required" => "prepare_while_stopped",
         "composition_storage_rejected" or "composition_reconciliation_required" or
+            "composition_host_stop_incomplete" or "composition_host_dispose_incomplete" or
+            "composition_services_dispose_incomplete" or "composition_storage_dispose_incomplete" or
             "composition_cleanup_incomplete" => "inspect_preserved_state",
         "composition_health_degraded" or "composition_health_failed" or
             "composition_health_unknown" => "inspect_current_health",

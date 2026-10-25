@@ -443,27 +443,38 @@ public sealed class ModuleLifecycleTests
         Assert.Equal(1, events.Count(item => item == "dispose:a"));
     }
 
-    [Fact]
-    public async Task DeclaredPrerequisiteOperationIsBoundFromItsOwnScopeWithItsAcceptedVersion()
+    [Theory]
+    [InlineData(10, 117)]
+    [InlineData(10, 118)]
+    [InlineData(10, 128)]
+    [InlineData(253, 128)]
+    public async Task DeclaredPrerequisiteOperationIsBoundFromItsOwnScopeWithItsAcceptedVersion(
+        int ownerLength, int localLength)
     {
         var activated = false;
+        var owner = ownerLength == 10 ? "org.test.a" :
+            string.Join(".", new string('a', 63), new string('b', 63), new string('c', 63), new string('d', 61));
+        var local = new string('s', localLength);
         var alphaManifest = System.Text.Encoding.UTF8.GetBytes(System.Text.Encoding.UTF8.GetString(
-            HostCompositionTestData.Manifest("org.test.a")).Replace("\"capabilities\":[]",
+            HostCompositionTestData.Manifest(owner)).Replace("\"capabilities\":[]",
                 "\"capabilities\":[{\"kind\":\"backend\",\"contractVersion\":\"1.0.0\"}]", StringComparison.Ordinal));
         var alpha = new ModuleDeployment(alphaManifest,
-            claims: [new("org.test.a", "backend-service", "operations", "1.0.0",
+            claims: [new(owner, "backend-service", local, "1.0.0",
                 ContributionMode.Executable, ServiceType: typeof(IOperations))],
             ownedServiceTypes: [typeof(IOperations)],
             configureServices: (services, _) => services.AddScoped<IOperations, Operations>(),
             createRuntime: (_, _) => new(new Runtime("a", [], false), ModuleRuntimeOwnership.Attempt));
-        var beta = new ModuleDeployment(HostCompositionTestData.Manifest("org.test.b", "org.test.a"),
+        var beta = new ModuleDeployment(HostCompositionTestData.Manifest("org.test.b", owner),
             createRuntime: (provider, _) =>
             {
                 Assert.Null(provider.GetService<IOperations>());
                 return new(new ActivationRuntime(context =>
                 {
                     var binding = Assert.Single(context.Dependencies);
-                    Assert.Equal("org.test.a.operations", binding.ContractId);
+                    Assert.Equal(owner, binding.Owner.Value);
+                    Assert.Equal(owner + "." + local, binding.ContractId);
+                    Assert.Equal(ownerLength + 1 + localLength, binding.ContractId.Length);
+                    Assert.Equal(1, binding.ContractVersion);
                     Assert.Equal("1.0.0", binding.Version.ToString());
                     Assert.Equal("owner-only-operation", Assert.IsType<Operations>(binding.Operations).Read());
                     activated = true;
@@ -477,6 +488,7 @@ public sealed class ModuleLifecycleTests
         coordinator.MarkMigrated();
         await coordinator.StartAsync(new Dictionary<ModuleId, IModuleStorage>(), TestContext.Current.CancellationToken);
         Assert.True(activated);
+        Assert.True(coordinator.Health.IsReady);
         await coordinator.CleanupAsync();
     }
 

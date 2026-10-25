@@ -247,8 +247,16 @@ internal static class MigrationScenarios
 
     internal static string ExitReason(string output)
     {
-        var terminal = BootScenarios.HostRecords(output).LastOrDefault();
+        var records = BootScenarios.HostRecords(output);
+        var terminal = records.LastOrDefault();
         var code = terminal.ValueKind == JsonValueKind.Object ? terminal.GetProperty("code").GetString() : null;
+        if (code == "composition_cleanup_incomplete")
+        {
+            var boundary = records.Select(record => record.GetProperty("code").GetString()).LastOrDefault(value =>
+                value is "composition_host_stop_incomplete" or "composition_host_dispose_incomplete" or
+                    "composition_services_dispose_incomplete" or "composition_storage_dispose_incomplete");
+            if (boundary is not null) return code + "_" + boundary;
+        }
         return code is "composition_deadline_exceeded" or "composition_output_failed" or "composition_cancelled" or
             "composition_cleanup_incomplete" or "composition_observation_invalid" or "composition_storage_rejected"
             ? code : "other";

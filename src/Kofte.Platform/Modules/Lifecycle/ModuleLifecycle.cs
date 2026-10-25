@@ -78,9 +78,12 @@ public sealed class ModuleDependencyBinding
     public ModuleDependencyBinding(ModuleId owner, string contractId, SemanticVersion version, object operations)
     {
         ArgumentNullException.ThrowIfNull(owner);
+        ArgumentNullException.ThrowIfNull(contractId);
         ArgumentNullException.ThrowIfNull(version);
         ArgumentNullException.ThrowIfNull(operations);
-        if (contractId.Length is < 1 or > 128 || !contractId.All(c =>
+        var limit = contractId.StartsWith(owner.Value + ".", StringComparison.Ordinal)
+            ? owner.Value.Length + 1 + 128 : 128;
+        if (contractId.Length < 1 || contractId.Length > limit || !contractId.All(c =>
             c is >= 'a' and <= 'z' or >= '0' and <= '9' or '.' or '-'))
             throw new ArgumentException("Invalid dependency contract.");
         (Owner, ContractId, Version, Operations) = (owner, contractId, version, operations);

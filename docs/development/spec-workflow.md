@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** **004 / follow-up converge records gaps; implement T082-T083 is next** after specify, clarify,
+**Current checkpoint:** **004 / implement T082-T083 is complete; follow-up converge is next** after specify, clarify,
 plan, checklist, tasks and analyze completed on
 `feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
 The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the
@@ -249,7 +249,7 @@ analysis/convergence and reviewer-owned checklist markers stay unchanged.
 The ledger completes only implement and selects **follow-up converge** on the
 original branch/draft PR #7, not automatic review, acceptance or merge.
 
-**Current follow-up convergence checkpoint:** The
+**Historical follow-up convergence checkpoint:** The
 [assessment](../../specs/004-module-lifecycle/convergence.md) checks all 46
 requirements/outcomes/scenarios, twelve plan decisions, 81 tasks and twelve
 principles, closing F1/T081. It records **gaps**: HIGH F2 reproducibly rejects
@@ -263,6 +263,20 @@ source, approved intent, reviewer checklist and historical report intact.
 The driver completes only **converge / gaps** and selects **implement** for
 the next invocation on the same branch/draft PR #7. No review, acceptance,
 readiness or intermediate merge is authorized here.
+
+**Current T082-T083 implementation checkpoint:** The
+[increment](../../specs/004-module-lifecycle/implementation.md#convergence-remediation-t082-t083)
+fixes valid owner-qualified dependency binding across the accepted local/owner
+bounds and proves the public boundary through actual Start/readiness.
+Deterministic incomplete-request stop tests reproduce the HTTP drain defect
+on both providers; a 500-ms internal shutdown budget fits the unchanged
+one-second cleanup action. Fixed nonterminal private causal records identify
+infrastructure failures while preserving final fail-closed refusal, process/
+storage evidence and anonymous privacy. All 83 tasks are implemented.
+Historical failures, intermediate investigation mistakes and causal limits are
+retained in the report. The driver completes only **implement** and selects
+**follow-up converge** on the original branch/draft PR #7. It does not execute
+converge/review, accept the feature, mark ready or request a merge.
 
 **003 acceptance checkpoint:** 003 is **explicitly human-accepted and
 human-merged** on its original `feature/003-storage-registry` and

@@ -14,6 +14,7 @@ public static class BootModules
     public const string Alpha = "org.example.alpha";
     public const string Beta = "org.example.beta";
     public const string NoStorage = "org.example.no-storage";
+    public static string AlphaServiceName { get; } = new('s', 128);
     public static IReadOnlyList<string> Owners { get; } = Array.AsReadOnly(new[] { Alpha, Beta, NoStorage });
 
     private static readonly ModuleConfigurationField alphaSeed = new("seed", ["seed"], ModuleSettingType.Number, true);
@@ -67,7 +68,8 @@ public static class BootModules
     }
 
     private static ContributionClaim Claim(string owner, Type service) =>
-        new(owner, "backend-service", "operations", Mode: ContributionMode.Executable, ServiceType: service);
+        new(owner, "backend-service", owner == Alpha ? AlphaServiceName : "operations",
+            Mode: ContributionMode.Executable, ServiceType: service);
 
     private static byte[] Manifest(string owner, string? dependency = null) =>
         JsonSerializer.SerializeToUtf8Bytes(new
@@ -217,11 +219,13 @@ public static class BootModules
         public override async ValueTask StartAsync(ModuleActivationContext context, CancellationToken token)
         {
             var binding = context.Dependencies.Single();
-            if (binding.Owner.Value != Alpha || binding.ContractId != Alpha + ".operations" ||
-                binding.Version.ToString() != "1.0.0" || binding.Operations is not IAlphaOperations alpha)
+            if (binding.Owner.Value != Alpha || binding.ContractId != Alpha + "." + AlphaServiceName ||
+                binding.ContractVersion != 1 || binding.Version.ToString() != "1.0.0" ||
+                binding.Operations is not IAlphaOperations alpha)
                 throw new InvalidOperationException("composition_author_binding_invalid");
             operations.Prerequisite = alpha;
             AuthorProbe.Record(Beta, "dependency-bound", attemptId: context.AttemptId);
+            AuthorProbe.Record(Beta, "boundary-dependency-bound", binding.ContractId.Length, context.AttemptId);
             _ = operations.Calculate(5);
             if (AuthorProbe.HoldBeta)
             {

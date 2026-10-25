@@ -324,15 +324,24 @@ All 81 then-existing tasks are implemented; that checkpoint selected follow-up
 convergence on draft PR #7.
 Historical convergence/analysis and reviewed checklists remain untouched.
 
-**004 / follow-up converge: gaps; T082-T083 implementation is next.**
+**Historical 004 / follow-up converge: gaps.**
 The [current assessment](../specs/004-module-lifecycle/convergence.md) verifies
 F1/T081's actual disabled observations, but valid service names can exceed the
 host-generated dependency-binding limit and fail activation (HIGH F2).
 Recurring expected-success cleanup failures remain causally unexplained
 (MEDIUM F3): broad integration passes 102/104, unchanged isolated PostgreSQL
 cases 5/5. Exactly two tasks are appended under Phase 10, preserving all 81
-prior tasks, historical evidence and product/test source. Continue the same
-draft PR #7; convergence/review and explicit acceptance remain later gates.
+prior tasks, historical evidence and product/test source.
+
+**004 / T082-T083 implement is complete; follow-up converge is next.**
+The [increment](../specs/004-module-lifecycle/implementation.md#convergence-remediation-t082-t083)
+retains accepted dependency identity bounds through actual public binding/
+Start, and reproduces/fixes normal-stop failure with incomplete HTTP requests
+on both providers. An internal 500-ms drain preserves external cleanup/stop
+limits; fixed private causal codes retain intentional incomplete/uncertain
+refusal and anonymous privacy. All 83 tasks are implemented. Historical
+failures and causal limits remain explicit; follow-up convergence, final review
+and explicit human acceptance remain separate on the same draft PR #7.
 
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.

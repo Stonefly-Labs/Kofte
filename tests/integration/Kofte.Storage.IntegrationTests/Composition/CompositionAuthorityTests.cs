@@ -202,6 +202,13 @@ public sealed class PostgresCompositionAuthorityTests : CompositionAuthorityTest
             Assert.Single(records, record => record.GetProperty("stage").GetString() == "admission");
             Assert.Equal("composition_cleanup_incomplete", records[^1].GetProperty("code").GetString());
             Assert.Equal("incomplete", records[^1].GetProperty("outcome").GetString());
+            var boundary = Assert.Single(records, record =>
+                record.GetProperty("code").GetString() == "composition_storage_dispose_incomplete");
+            Assert.Equal("stopping", boundary.GetProperty("stage").GetString());
+            Assert.Equal("incomplete", boundary.GetProperty("outcome").GetString());
+            Assert.Equal("inspect_preserved_state", boundary.GetProperty("guidance").GetString());
+            Assert.Equal(firstAttempt, boundary.GetProperty("attempt").GetString());
+            Assert.Equal(System.Text.Json.JsonValueKind.Null, boundary.GetProperty("owner").ValueKind);
             Assert.Equal(0, await CompositionLeaseProbe.CountAsync(postgres, token));
         }
         Assert.Equal(before, await CompositionStoreSnapshot.CaptureAsync(fixture.Storage, token));

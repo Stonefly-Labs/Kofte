@@ -14,6 +14,34 @@ public sealed class CompositionLifecycleContractTests
     }
     private static ModuleConfiguration Configuration(ModuleId owner) => new(owner, "{}"u8);
 
+    [Theory]
+    [InlineData(128, false, true)]
+    [InlineData(129, false, false)]
+    [InlineData(128, true, true)]
+    [InlineData(129, true, false)]
+    public void DependencyBindingsPreserveBoundedLocalAndOwnerQualifiedIdentities(
+        int localLength, bool qualified, bool valid)
+    {
+        var owner = Id(string.Join(".", new string('a', 63), new string('b', 63),
+            new string('c', 63), new string('d', 61)));
+        var id = (qualified ? owner.Value + "." : "") + new string('s', localLength);
+        Assert.True(SemanticVersion.TryParse("1.0.0", out var version));
+        var operations = new object();
+        if (!valid)
+        {
+            Assert.Throws<ArgumentException>(() => new ModuleDependencyBinding(owner, id, version, operations));
+            return;
+        }
+        var binding = new ModuleDependencyBinding(owner, id, version, operations);
+        Assert.Equal(id, binding.ContractId);
+        Assert.Same(owner, binding.Owner);
+        Assert.Same(operations, binding.Operations);
+        Assert.Equal(1, binding.ContractVersion);
+        if (qualified)
+            Assert.Throws<ArgumentException>(() =>
+                new ModuleDependencyBinding(Id("org.test.other"), id, version, operations));
+    }
+
     [Fact]
     public void IssuedContextsEnforceSameOwnerAndInitializeCarriesNoStoreOrDependencies()
     {

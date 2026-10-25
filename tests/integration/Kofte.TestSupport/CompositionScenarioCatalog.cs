@@ -7,7 +7,7 @@ public static class CompositionScenarioCatalog
         {
             ["empty-boot"] = Required(("coreEndpoints", 2), ("emptyInventoryComparisons", 2)),
             ["valid-dependency"] = Required(("publicServiceComparisons", 2), ("phaseOrderComparisons", 1),
-                ("ownerHistoryComparisons", 2), ("prepublicationComparisons", 1)),
+                ("ownerHistoryComparisons", 2), ("prepublicationComparisons", 1), ("dependencyIdentityComparisons", 1)),
             ["disabled-missing"] = Required(("disabledCallbackComparisons", 1), ("missingRefusals", 1),
                 ("unchangedInventories", 1), ("explicitDisabledObservations", 2),
                 ("omittedDisabledObservations", 2), ("freshDisabledAttempts", 2)),

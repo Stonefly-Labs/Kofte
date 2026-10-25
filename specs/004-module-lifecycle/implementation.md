@@ -1231,3 +1231,238 @@ for a separate invocation on the original branch and draft PR #7. This
 increment does not rewrite the earlier gaps result, run convergence/review,
 accept feature 004, mark the PR ready or request a merge. No pre/post hooks
 are configured.
+
+## Convergence remediation T082-T083
+
+This is the next **004 / implement** increment on the original
+`feature/004-module-lifecycle` and open draft
+[PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), starting at
+`2026-10-25T05:05:00+00:00` from `3617931956f8f6d73b59b0cf64137fda0acde348`.
+Updated `origin/main` was verified as its ancestor; no new feature/stage branch
+or replacement PR was created. The driver began once with explicit
+`SPECIFY_FEATURE_DIRECTORY=specs/004-module-lifecycle`. Requirements remain
+16/16 and reviewer-authorized quality criteria 36/36, with zero unchecked.
+No pre/post implementation hooks are configured.
+
+The approved specification, plan, research/model, ADR, analysis, convergence
+assessment and reviewer-owned checklists are unchanged. This increment fixes
+only appended T082-T083; it does not perform another convergence assessment,
+final review, acceptance or merge.
+
+### T082: preserve accepted executable dependency identities
+
+The existing host prefixes service local names with their immutable owner.
+The focused activation theory reproduced the finding: under the ten-character
+`org.test.a`, local length 117 succeeds, but accepted lengths 118 and 128 fail;
+the maximum 253-character owner plus local length 128 also fails. The initial
+run passed **1/4**, with three `composition_activation_failed` results.
+
+`ModuleDependencyBinding` now preserves legacy explicit identities of at most
+128 characters and additionally accepts its **exact owner's prefix plus at
+most 128 local characters**. Maximum generated identity length is therefore
+382; accepted owner/local bounds, character rules, ownership, semantic/contract
+versions, collision safety and generation are unchanged. No identity is
+truncated, hashed or silently narrowed.
+
+The corrected host theory passes **4/4**, requiring actual registration,
+initialization, migration barrier, dependency binding, Start and readiness.
+The dedicated platform lifecycle class passes **6/6**, including inclusive and
+one-over local/qualified limits, rejection of another owner's long identity,
+and preserved owner/operations/version. Tests remain in dedicated test projects.
+
+The separately compiled Alpha module now exports a 128-character local service
+name. Beta requires the full 146-character `org.example.alpha`-qualified binding,
+exact identity, contract/semantic versions and actual public operation during
+Start. The test-owned author observation `boundary-dependency-bound` is required
+by the independent consumer; `dependencyIdentityComparisons` is mandatory in
+both strict C# and Python observation catalogs. Existing generic per-field
+omission/decrement tests cover it. No-storage, disabled and anonymous privacy
+assertions remain in place.
+
+### T083: demonstrate and fix an HTTP shutdown defect
+
+Historical terminal-only failures do not identify their individual failing
+cleanup operations. The unchanged historical failures above and in convergence
+are preserved; a passing isolated rerun is not a causal explanation.
+
+Four fixed private codes now identify outer infrastructure cleanup boundaries:
+`composition_host_stop_incomplete`, `composition_host_dispose_incomplete`,
+`composition_services_dispose_incomplete` and
+`composition_storage_dispose_incomplete`, all with fixed
+`inspect_preserved_state` guidance. They add no raw exception, path, settings,
+field, protocol version, anonymous detail or output-budget expansion.
+These causal records use **`stopping / incomplete`**, not ownerless `cleanup`:
+the supervisor already treats every ownerless cleanup record as terminal.
+The final cleanup refusal remains unchanged and terminal. Projection errors
+remain failures; no failure is converted to successful cleanup.
+
+An initial investigative broad composition run passed **100/104**, failing
+four tests due to two temporary mistakes in this increment: the new author
+phase was missing from the test-owned allowlist, and causal records were
+incorrectly emitted as ownerless terminal cleanup records. Both were corrected.
+The corrected focused provider/deadline/PostgreSQL-authority selection passed
+**14/14**, and the corrected broad selection passed **104/104** before the
+HTTP drain change. Neither result alone was treated as a cleanup fix.
+
+A deterministic real-process regression then keeps an incomplete HTTP request
+open during normal stop. Both SQLite and disposable PostgreSQL fail before
+the fix (**0/2**, exit 1), now identifying
+`composition_host_stop_incomplete`. Kestrel's graceful shutdown outlasts/races
+the outer one-second cleanup action while the request remains incomplete.
+The composed HTTP host now sets its internal `HostOptions.ShutdownTimeout`
+to **500 ms**, leaving time to abort and finish draining inside that action.
+The empty direct bootstrap is unaffected.
+
+The regression passes **2/2** after the fix, requiring exit 0, empty stderr,
+verified owned root/descendant exit, elapsed stop below 15 seconds and exact
+unchanged durable inventory while the client connection stays open.
+The one-second Stop/cleanup action, ten-second cooperative reserve,
+five-second termination reserve and 15-second total limit are unchanged.
+No retry, removed scenario/assertion, lowered floor or expanded external
+deadline is used.
+
+The existing actual PostgreSQL lost-serving-session regression additionally
+requires exactly one correlated private `composition_storage_dispose_incomplete`
+record with fixed stage/outcome/guidance and no owner. It still requires final
+incomplete/uncertain refusal, verified process exit and no lease reacquisition.
+Final focused provider/deadline/PostgreSQL-authority evidence passes **16/16**,
+zero skipped, including both new normal-stop cases and intentional refusal.
+
+This demonstrates and corrects **one causal normal-stop defect**, not a
+retroactive forensic explanation of every historical intermittent failure.
+The fixed private boundary evidence makes future occurrences distinguishable
+without exposing sensitive details.
+
+### Acceptance and constitutional mapping
+
+| Source obligation | Current evidence |
+| --- | --- |
+| T082; FR-006/008/019/020; US1.2; SC-001; R4/R5/R11 | Actual host boundary Start/readiness, dedicated public binding limits, independent Alpha/Beta exact qualified identity and mandatory strict measured observation. |
+| T083; FR-015/016/017/020; US4.4/US5.3; SC-004/006; R12 | Both-provider incomplete-request red/green, fixed bounded private causal output, unchanged cleanup/termination limits, real lost-authority incomplete refusal, exact inventory and owned-process evidence. |
+| Principles II/III/V/VI/X/XI | Preserved owner/version boundaries, dedicated test-project source, real providers and owned supervision, no anonymous/raw diagnostic expansion, no weakened assertions or success-shaped cleanup. |
+| Principles I/IV/VII/VIII/IX/XII | Existing architecture/DI/dependency and module/storage boundaries retained, no permission/MCP/business endpoint or new package, delivered guide/contracts/progress updated, historical evidence and human-owned later acceptance preserved. |
+
+### Increment verification
+
+Commands use the existing installed .NET SDK 10.0.402/runtime 10.0.13 on
+macOS arm64, Node 24.22.0 and npm 11.19.1. No dependency versions, packages or
+lockfiles change. Disposable PostgreSQL is explicitly opted in:
+
+```bash
+export DOTNET_ROOT="$PWD/artifacts/toolchain/dotnet-10.0.402"
+export PATH="$DOTNET_ROOT:$PATH"
+export DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_PROCESSOR_COUNT=4
+export KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true
+```
+
+| Exact command / selection | Observed result |
+| --- | --- |
+| `dotnet test --project tests/unit/Kofte.Host.Tests --no-restore -c Release --filter-method '*DeclaredPrerequisiteOperationIsBoundFromItsOwnScopeWithItsAcceptedVersion*' --minimum-expected-tests 4` | Red: 1/4 passed, three actual activation failures. Green: 4/4 passed with unchanged accepted owner/local bounds. |
+| `dotnet test --project tests/unit/Kofte.Platform.Tests --no-restore -c Release --filter-class '*CompositionLifecycleContractTests*' --minimum-expected-tests 6` | Passed 6/6, including inclusive/one-over qualified/local boundaries and wrong-owner rejection. |
+| `dotnet build tests/contract/Kofte.Composition.Consumer --no-restore -c Release -warnaserror` | Passed after the binding change and again after the HTTP drain change. |
+| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-class '*Composition*' --minimum-expected-tests 100` | Investigative run failed: 100/104 passed, four temporary allowlist/terminal-record mistakes described above. Corrected pre-drain run passed 104/104, zero skipped, 4m 30.417s. |
+| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-class '*CompositionProviderTests' --filter-class '*CompositionDeadlineTests' --filter-class '*PostgresCompositionAuthorityTests' --minimum-expected-tests 13` | After correcting the investigative diagnostic mistakes, passed 14/14 before adding the incomplete-request regression. |
+| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-method '*NormalStopWithAnOpenIncompleteHttpRequest*' --minimum-expected-tests 2` | Red: 0/2 passed; both actual providers identify HTTP host-stop cleanup failure. Green after the internal drain fix: 2/2 passed. |
+| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-class '*CompositionProviderTests' --filter-class '*CompositionDeadlineTests' --filter-class '*PostgresCompositionAuthorityTests' --minimum-expected-tests 16` | Final corrected run passed 16/16, zero skipped, 1m 25.352s, including both-provider normal stop and PostgreSQL lost-authority refusal. |
+| `python3 scripts/verify.py --suite all --disposable-postgres --warm-starts 10` | Failed, exit 1: eight suite/provider reports passed and two failed; 251/253 executed steps passed. SQLite baseline host integration and SQLite composition public recovery failed with exit 2. All ten reports retain `completeGate: false`; no rerun relabels this attempt. |
+| `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-trait Provider=sqlite --minimum-expected-tests 1` | Unchanged diagnostic rerun passed 31/31, zero skipped, 2m 07.468s. The safe verifier report exposes no individual failed test, so this does not identify the first failure's cause. |
+| `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore -c Release --filter-query '/[(Suite=recovery)&(Provider=sqlite)&(Feature=composition)]' --minimum-expected-tests 4` | The complete gate's SQLite public-recovery command failed, exit 2; safe evidence identifies `ActualPublicCommandsPrepareUpgradeAndServeWithoutRewritingHistoryOrOriginalData` with `composition_consumer_failed`, not its underlying operation. The wrapper adds its existing private xUnit-report arguments. |
+| `dotnet run --project tests/contract/Kofte.Composition.Consumer --no-build -c Release -- --provider sqlite --scenario ordered-migration` | Unchanged diagnostic execution passed, 84 actual assertions and all six mandatory observation fields. The subsequent complete-gate public-contract command and standalone SQLite guide scenario also passed. These do not erase the failed recovery invocation. |
+
+The first SQLite integration report is
+`integration-sqlite-a773172030a2408a9076d68e4289bee3.json`;
+its failed baseline `integration-sqlite` command prevented that report's later
+storage/composition steps. Safe failure correlation is
+`3eef5d98d2e84ba78989cddb385338da`. The diagnostic rerun changes no source,
+assertions, deadlines or fixtures.
+
+The first recovery report is
+`recovery-both-2d079572f51a4e84b738a155b5c6c788.json`, safe failure correlation
+`2704470b92e44a8bb60bc8d85b2861c1`. It stops before PostgreSQL recovery steps.
+That historical-safe report's generic consumer failure is insufficient to
+attribute the failed migration example to HTTP shutdown or any other boundary.
+
+The complete attempt's safe report reconciliation is:
+
+| Suite/provider | Report | Passed / executed steps |
+| --- | --- | --- |
+| quality | `quality-none-cee301d644b84df8bfb1f5eefbc40873.json` | 20/20 |
+| unit | `unit-none-b271be2260a1455387531d93563f0f65.json` | 14/14 |
+| integration / SQLite | `integration-sqlite-a773172030a2408a9076d68e4289bee3.json` | 6/7; failed |
+| integration / PostgreSQL | `integration-postgres-e3790f3a6a4d4d43b6a06ed45327a6d8.json` | 12/12 |
+| recovery / both | `recovery-both-2d079572f51a4e84b738a155b5c6c788.json` | 11/12; failed |
+| contract / both | `contract-both-9a28d0db419e4e249f242c3d48c359ba.json` | 101/101 |
+| browser | `browser-none-459590a1527f42b1a07e1c2c2aa2358b.json` | 16/16 |
+| privacy / both | `privacy-both-6c3e4251a89e4dc4903949cdd6242d35.json` | 41/41 |
+| startup | `startup-none-b7f1d5fde92d4296a8503167714357a7.json` | 12/12 |
+| failure propagation | `failure-propagation-none-695be1d9dd8b49b2800f5945282fdb9c.json` | 18/18 |
+
+All reports are ignored safe artifacts under `artifacts/verification/`, not
+committed raw runtime output. Their revision identifies the precommit base
+`3617931` plus this tested working-tree increment, not a claim that the old
+commit already contained these changes.
+
+The contract report executes **all 24 guide commands** (eleven individual
+scenarios plus `all`, on each actual provider) and all 24 strict observation
+checks. `valid-dependency` passes **37 assertions** on each provider, measuring
+three public-service comparisons, three owner-history comparisons, one phase
+order comparison, one prepublication comparison and the new exact dependency
+identity comparison. Sequential `all` passes **389,418 assertions on SQLite**
+and **389,423 on PostgreSQL**, retaining every original scenario, measured
+inventory/process/authority/privacy assertion and strict omission requirement.
+Startup proves ten warm original-data cycles and two fresh composed-module
+cycles. Browser/accessibility, both-provider captured privacy, owned cleanup
+and all isolated failure-propagation injections pass.
+
+Only the two failed suites were rerun unchanged to reconcile their
+unexecuted later steps; the already passing suites were not needlessly repeated:
+
+| Exact narrowed command | Observed result |
+| --- | --- |
+| `python3 scripts/verify.py --suite integration --provider sqlite` | Passed 9/9 steps, 421.892s, including baseline host, full storage and dedicated composition integration. Report `integration-sqlite-8da491e12a8749539ac5b4b3f3884aad.json`. |
+| `python3 scripts/verify.py --suite recovery --provider both --disposable-postgres` | Passed 43/43 steps, 968.520s, including both-provider native/public composition recovery, original storage recovery, browser recovery and verified owned cleanup. Report `recovery-both-d9e614d3ea4d4872be2e9f4dfd774f3a.json`. |
+
+These **52 successful targeted steps**, together with the eight previously
+passing reports, supply passing evidence for the same **286 named steps**.
+This is **not a new passing complete local gate**: both targeted reports also
+retain `completeGate: false`, the two original failures remain failures, and
+their individual causes remain unknown. No runtime, fixture, deadline,
+assertion, test floor or source change occurred between the failed all-suite
+attempt and narrowed reconciliation. Do not attribute those failures to the
+demonstrated HTTP defect or treat the reruns as causal closure.
+
+Final repository checks after the documentation/task updates:
+
+| Exact command | Observed result |
+| --- | --- |
+| `python3 scripts/check_repository.py` | Passed assets, local links, MCP parity and driver state. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed 119/119 tests, 2.078s. |
+| `git diff --check` | Passed. |
+
+Microsoft Learn/Context7 MCP tools were not connected. Official Microsoft
+HostOptions/Kestrel documentation was used as the fallback; compilation against
+the installed .NET 10 API and the actual red/green process regressions verify
+the selected shutdown option, rather than relying on preview documentation.
+
+### Increment completion and handoff
+
+Only T082/T083 markers are completed; T001-T081 descriptions/markers and all
+earlier implementation evidence remain intact. The delivered public/operator
+contracts, guide, README and directly affected development/architecture/progress
+docs now describe the actual qualified binding, internal drain and safe causal
+records. No dependency, migration, configuration key, public endpoint or
+permission boundary changes.
+
+The driver completes only **implement**, selecting **follow-up converge** for
+a separate invocation on the same branch/draft PR #7. This increment does not
+rewrite convergence's gaps result, conduct final review, accept feature 004,
+mark the PR ready or request a merge. Historical causal uncertainty and the
+failed complete local attempt remain explicit limitations for those later
+assessments. Actual new-head CI is inspected after commit/push and recorded in
+the PR; no historical CI result is claimed for unpublished changes.
+
+The ledger's implementation-report digest is its historical completion
+snapshot, before relocating this increment's final-check paragraph out of
+the T081 section. This published checkpoint preserves the earlier report
+verbatim; runtime/tests and measured results are unchanged by that editorial
+correction.

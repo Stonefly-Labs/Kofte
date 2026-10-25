@@ -357,8 +357,25 @@ T082 must reconcile composition without silently narrowing approved inputs.
 MEDIUM F3 requires establishing the cause of repeated unexpected normal-stop
 cleanup failures, not assuming a product timeout or relaxing fail-closed
 semantics. Broad integration passes 102/104; unchanged isolation passes 5/5.
-Exactly T082-T083 are appended; **implement is next** on draft PR #7.
+Exactly T082-T083 were appended, selecting implement on draft PR #7.
 This assessment changes no architecture decision, source or approved contract.
+
+The [T082-T083 implementation](../specs/004-module-lifecycle/implementation.md#convergence-remediation-t082-t083)
+now admits the exact owner prefix plus the accepted 128-character local service
+name (up to 382 characters for a 253-character owner), retaining legacy explicit
+binding IDs up to 128. Ownership, versioning, collision safety and input bounds
+are unchanged; identities are neither truncated nor hashed. The independent
+public example requires its exact boundary binding and actual Start/readiness.
+Incomplete HTTP requests deterministically reproduced normal-stop failures on
+both providers. A 500-ms internal HTTP shutdown budget leaves time to abort/
+finish draining inside the unchanged one-second outer action; total stop
+remains 15 seconds. Four fixed private `stopping / incomplete` codes identify
+infrastructure cleanup boundaries without introducing raw details or new
+fields. Ownerless `cleanup` remains terminal, and lost-authority disposal still
+refuses success with uncertain durability. All 83 tasks are implemented;
+follow-up converge is next. Historical failures remain recorded without claiming
+that this reproduction explains each occurrence. No new architecture decision,
+dependency, public endpoint or privilege is introduced.
 
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements

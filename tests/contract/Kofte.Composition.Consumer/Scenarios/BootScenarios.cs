@@ -79,6 +79,10 @@ internal static class BootScenarios
         evidence.Require(records.Count(record => record.Owner == BootModules.Beta && record.Phase == "dependency-bound") == 1 &&
             records.Count(record => record.Owner == BootModules.Beta && record.Phase == "cross-owner-denied") == 1,
             "composition_test_public_binding_not_owner_scoped");
+        evidence.Require(records.Count(record => record.Owner == BootModules.Beta &&
+            record.Phase == "boundary-dependency-bound" && record.Value == BootModules.Alpha.Length + 1 + 128) == 1,
+            "composition_test_dependency_identity_boundary_missing");
+        evidence.Observed("dependencyIdentityComparisons");
         var phases = records.Where(record => record.Phase is "register" or "initialize" or "start" or "health")
             .Select(record => record.Phase + ":" + record.Owner).ToArray();
         evidence.Require(phases.SequenceEqual(new[] { "register", "initialize", "start", "health" }

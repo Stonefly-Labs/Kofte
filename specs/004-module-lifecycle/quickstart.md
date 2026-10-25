@@ -1,7 +1,8 @@
 # Validation Guide: 004 - Module Composition and Lifecycle
 
-**Status**: T081 now implements explicit disabled operator observations;
-follow-up convergence is next, not feature acceptance.
+**Status**: T082-T083 now implement accepted dependency identity bounds and the
+demonstrated HTTP normal-stop correction; follow-up convergence is next,
+not feature acceptance.
 All eleven scenarios and their sequential `all` composition are runnable,
 including interrupted migration, explicit recovery, correction, health, owned
 termination and private diagnostic capture. Historical assessed code head `267efc8`
@@ -10,7 +11,11 @@ all 24 guide commands/strict observations. Its eleven CI contexts and 286
 product steps also pass. The [implementation report](implementation.md#final-complete-gate-and-implementation-handoff)
 preserves earlier failures and that original gate. The
 [T081 increment](implementation.md#convergence-remediation-t081)
-records its separate current evidence; no new complete local all-suite is implied.
+records its separate historical evidence. The
+[T082-T083 increment](implementation.md#convergence-remediation-t082-t083)
+records current red/green and the failed local all-suite attempt, narrowed
+reconciliation evidence and historical causal limits. Do not relabel that
+attempt as a passing complete local gate.
 Convergence, final review
 and explicit human acceptance remain separate later stages on the same draft PR.
 
@@ -26,6 +31,11 @@ including explicit dependency binding, prepublication unavailability and
 disabled zero-callback behavior. Their Alpha/Beta definitions currently declare
 no relational storage: history comparisons prove actual assignment/history
 absence, not the later relational requirement.
+The Alpha service uses the inclusive 128-character local identity; Beta
+requires its exact owner-qualified binding, contract/semantic versions and
+public operation result during actual supervised Start/readiness. Both the
+C# harness and Python verifier require `dependencyIdentityComparisons`;
+declaration acceptance or a shortened identity is insufficient.
 The separate relational example uses real owner-local initial/additive
 histories and original Alpha/Beta records. It executes validate, explicit stopped
 prepare and ordinary serving; current preparation/serving do not replay
@@ -59,6 +69,12 @@ Stopping reverses entered owners and LIFO cleanup, scopes then provider, once.
 Failed cleanup remains a failure, not authorization to erase durable evidence
 or assume rollback. Use explicit inspection/forward recovery or a deliberately
 selected full-set restore when required.
+Configured HTTP shutdown drains gracefully for 500 ms inside the existing
+one-second cleanup action, then aborts remaining incomplete requests. It does
+not extend module cleanup or the 15-second stop/termination envelope.
+Fixed private infrastructure-boundary records distinguish host stop/disposal,
+service-provider disposal and storage disposal failures; the final
+`composition_cleanup_incomplete` refusal and verified owned exit remain required.
 
 After the Release build, invoke a delivered scenario, for example:
 

@@ -222,8 +222,18 @@ the public limit; MEDIUM F3 requires causal reconciliation of recurring
 unexpected cleanup failures (broad integration 102/104, isolated PostgreSQL
 5/5). Only T082-T083 are appended under Phase 10; all 81 prior markers,
 approved intent, reviewer checklists and product/test source are preserved.
-**Implement is next**, separately on the original branch/draft PR #7,
-before follow-up convergence, final review and explicit human acceptance.
+That checkpoint selected implement on the original branch/draft PR #7.
+
+The [T082-T083 increment](specs/004-module-lifecycle/implementation.md#convergence-remediation-t082-t083)
+now preserves full owner-qualified dependency identities across accepted input
+bounds, with actual public Start/readiness evidence. A both-provider incomplete
+HTTP request reproduces a normal-stop defect; the composed host's internal
+500-ms drain fits within unchanged cleanup/stop limits. Fixed private causal
+codes preserve fail-closed cleanup and privacy. Historical failures remain
+recorded, not retroactively explained by this reproduction. All 83 tasks are
+implemented; **follow-up converge is next** on the same draft PR. Approved
+intent, historical assessments and reviewed checklists remain unchanged;
+final review and explicit human acceptance are still separate gates.
 
 The following paragraphs preserve the historical design-stage checkpoint.
 
