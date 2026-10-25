@@ -309,6 +309,16 @@ for the bounded protocol correction and actual both-provider regressions.
 pending remediation, convergence and passing review. No command, deadline,
 operator responsibility or product/test implementation changes here.
 
+The [T086 increment](../../specs/004-module-lifecycle/implementation.md#final-review-remediation-t086)
+now admits valid disabled-catalog prerequisite metadata through its full
+2,048-identity bound, separately from the unchanged 1,024 enabled dependency
+edges. Both-provider regressions exercise actual validate and usable serving
+for omitted/explicit-false selections and an unrelated enabled no-storage
+module, preserving exact disabled observations, complete inventory and verified
+clean stop. No operator command, deadline or responsibility changes.
+Follow-up converge is next on draft PR #7; passing review and explicit human
+acceptance remain required.
+
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).
 Only trusted composition receives `StorageRegistry`/`StorageMaintenance`;

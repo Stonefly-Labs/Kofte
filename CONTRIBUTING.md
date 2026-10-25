@@ -275,6 +275,16 @@ Fresh quality/unit and assessed-head CI pass but do not cover this interaction.
 explicit human acceptance. Acceptance and readiness remain blocked; no
 intermediate merge is requested.
 
+The [T086 implementation increment](specs/004-module-lifecycle/implementation.md#final-review-remediation-t086)
+now separates the 2,048 all-catalog diagnostic prerequisites from the unchanged
+1,024 enabled dependency edges. Focused red/green tests exercise protocol
+overflow/copies/forgery, public resolution and actual both-provider validate/
+serve at the inclusive boundaries, with disabled callbacks forbidden, exact
+disabled observations, unchanged inventory, readiness and verified exit.
+Follow-up converge, final review and explicit human acceptance remain separate
+on the same draft PR #7; the historical review and reviewed checklists are
+preserved. Do not request an intermediate merge.
+
 The following paragraphs preserve the historical design-stage checkpoint.
 
 Spec **003 / specify and clarify** establish the

@@ -1,7 +1,9 @@
 # Validation Guide: 004 - Module Composition and Lifecycle
 
-**Status**: T084-T085 implementation complete; follow-up converge, final
-review and explicit human acceptance remain separate gates. Complete accepted
+**Status**: T086 implementation corrects disabled-catalog diagnostic metadata
+admission; follow-up converge, final review and explicit human acceptance remain
+separate gates. See the [T086 increment](implementation.md#final-review-remediation-t086).
+Complete accepted
 service counts and unused default JSON watcher cleanup are corrected; see
 the [increment evidence](implementation.md#convergence-remediation-t084-t085).
 All eleven scenarios and their sequential `all` composition are runnable,
@@ -54,6 +56,14 @@ and NoStorage bring the executable total to 129. Both strict harnesses require
 `prerequisiteServiceComparisons: 127`. The executable lifecycle retains the
 approved 128-per-owner/1,024-total bounds; service bindings are not capped by
 the separate module-dependency count.
+Disabled deployments remain validated metadata without author callbacks or
+store allocation. Their diagnostic prerequisite IDs may reach 2,048 across
+32 manifests with 64 dependencies each; that bound does not consume or enlarge
+the separate 1,024 enabled-edge limit. Actual both-provider integration covers
+omitted/explicit-false full catalogs, an unrelated enabled no-storage module,
+usable readiness, exact disabled observations, unchanged inventory and clean
+owned exit. These are regressions in the existing compiled-consumer fixtures,
+not a new operator command or twelfth public scenario.
 The separate relational example uses real owner-local initial/additive
 histories and original Alpha/Beta records. It executes validate, explicit stopped
 prepare and ordinary serving; current preparation/serving do not replay

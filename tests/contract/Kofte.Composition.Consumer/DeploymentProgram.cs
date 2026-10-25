@@ -7,6 +7,7 @@ using Kofte.Host.Features.ModuleComposition;
 using Kofte.Infrastructure.Composition;
 using Kofte.Platform.Modules.Composition;
 using Kofte.Platform.Modules.Lifecycle;
+using Kofte.Platform.Modules.Manifest;
 using Kofte.TestSupport;
 
 namespace Kofte.Composition.Consumer;
@@ -53,7 +54,8 @@ internal static class DeploymentProgram
         return args is ["--modules-worker", "serve" or "prepare"] &&
             (Fault(catalog) is not null || catalog is CompositionTestCatalog.BootDependency or CompositionTestCatalog.BootDisabled or
                 CompositionTestCatalog.RelationalInitial or CompositionTestCatalog.RelationalCurrent or
-                CompositionTestCatalog.RelationalHoldMigration)
+                CompositionTestCatalog.RelationalHoldMigration or CompositionTestCatalog.DisabledPrerequisitesWithEnabled or
+                CompositionTestCatalog.DisabledPrerequisitesMaximumWithEnabled)
             ? await Scenarios.AuthorProbePump.RunWorkerAsync(args, deployments, recipes)
             : await ModuleCompositionHost.RunAsync(args, deployments, recipes);
     }
@@ -89,6 +91,11 @@ internal static class DeploymentProgram
             CompositionTestCatalog.BootDependency => BootModules.Catalog(holdBeta: true),
             CompositionTestCatalog.BootDisabled => BootModules.Catalog(holdBeta: false),
             CompositionTestCatalog.BootMissing => [],
+            CompositionTestCatalog.DisabledPrerequisitesAtLimit => DisabledPrerequisites(16, 64, enabled: false),
+            CompositionTestCatalog.DisabledPrerequisitesOverLimit => DisabledPrerequisites(17, 1, enabled: false),
+            CompositionTestCatalog.DisabledPrerequisitesWithEnabled => DisabledPrerequisites(17, 1, enabled: true),
+            CompositionTestCatalog.DisabledPrerequisitesMaximum => DisabledPrerequisites(32, 64, enabled: false),
+            CompositionTestCatalog.DisabledPrerequisitesMaximumWithEnabled => DisabledPrerequisites(31, 64, enabled: true),
             CompositionTestCatalog.RelationalInitial => RelationalModules.Catalog(StorageRelease.Initial),
             CompositionTestCatalog.RelationalCurrent or CompositionTestCatalog.RelationalInvalidRecipe or
                 CompositionTestCatalog.RelationalHoldMigration =>
@@ -196,7 +203,20 @@ internal static class DeploymentProgram
         ContributionMode mode = ContributionMode.Declaration) =>
         Module(owner, [new(claimOwner, "route", "read", Mode: mode, Method: "GET", Route: route)], capability: "backend");
 
-    private static byte[] Manifest(string id, string? capability = null) =>
+    private static IReadOnlyList<ModuleDeployment> DisabledPrerequisites(int disabled, int lastCount, bool enabled)
+    {
+        var catalog = Enumerable.Range(0, disabled).Select(index => Module($"org.example.disabled{index}",
+            validator: new DisabledValidator(), dependencies: Enumerable.Range(0,
+                index == disabled - 1 ? lastCount : 64).Select(dependency =>
+                    $"org.example.required{index * 64 + dependency}").ToArray())).ToList();
+        if (enabled)
+            catalog.Add(BootModules.Catalog(holdBeta: false).Single(deployment =>
+                ManifestValidator.Validate(deployment.Manifest.Span, new("1.0.0")) is
+                    ManifestValidationResult.Accepted accepted && accepted.Description.Id.Value == BootModules.NoStorage));
+        return catalog;
+    }
+
+    private static byte[] Manifest(string id, string? capability = null, string[]? dependencies = null) =>
         JsonSerializer.SerializeToUtf8Bytes(new
         {
             schemaVersion = "1",
@@ -205,15 +225,15 @@ internal static class DeploymentProgram
             displayName = "Validation fixture",
             hostContract = "1.0.0",
             capabilities = capability is null ? [] : new[] { new { kind = capability, contractVersion = "1.0.0" } },
-            dependencies = Array.Empty<object>(),
+            dependencies = (dependencies ?? []).Select(dependency => new { id = dependency, versionRange = "1.0.0" }),
             permissions = Array.Empty<object>(),
             storage = new { relational = false }
         });
 
     private static ModuleDeployment Module(string owner, IEnumerable<ContributionClaim>? claims = null,
         IEnumerable<ModuleConfigurationField>? fields = null, IModuleConfigurationValidator? validator = null,
-        string? capability = null) =>
-        new(Manifest(owner, capability), claims, fields, configurationValidator: validator,
+        string? capability = null, string[]? dependencies = null) =>
+        new(Manifest(owner, capability, dependencies), claims, fields, configurationValidator: validator,
             configureServices: (_, _) => throw MutatingCallback(), createRuntime: (_, _) => throw MutatingCallback());
 
     private static Exception MutatingCallback()

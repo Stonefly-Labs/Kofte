@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** **004 / final review records changes; implement T086 is next** after specify, clarify,
+**Current checkpoint:** **004 / T086 implementation; follow-up converge is next** after specify, clarify,
 plan, checklist, tasks and analyze completed on
 `feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
 The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the
@@ -353,6 +353,19 @@ acceptance request did not supply the missing passing review or authorize
 self-acceptance around a demonstrated defect. Remediation must be followed
 by converge/review and explicit human acceptance. No new design decision,
 readiness, intermediate merge or 005 work is authorized.
+
+**Final-review remediation T086:** The
+[implementation increment](../../specs/004-module-lifecycle/implementation.md#final-review-remediation-t086)
+corrects only the diagnostic prerequisite bound: all 32 deployments may declare
+2,048 identities, independently of 1,024 enabled edges. Dedicated protocol,
+public-resolution and actual both-provider process tests retain finite overflow,
+copied allowlists, genuine dependency diagnostics, forged-identity refusal,
+disabled zero effects, complete inventory, readiness and verified exit.
+The original review, preceding task descriptions/markers, approved intent and
+reviewed checklists remain historical evidence. Complete only implement,
+publish to the same original branch/draft PR #7, then stop before follow-up
+converge. Passing final review and explicit human acceptance remain separate;
+no intermediate merge or 005 work is authorized.
 
 **003 acceptance checkpoint:** 003 is **explicitly human-accepted and
 human-merged** on its original `feature/003-storage-registry` and

@@ -114,6 +114,7 @@ No execution order is returned from a rejected graph.
 | Selection file | 1,048,576 UTF-8 bytes, 32 entries, depth 8; each settings object at most 16,384 original UTF-8 bytes |
 | Settings fields | 128 declared fields/module, fixed ASCII token ≤64 chars and JSON path ≤8 known segments; unknown keys reported only at known containing field |
 | Enabled graph | 1,024 edges maximum; per-module 002's 64 dependencies unchanged |
+| Diagnostic prerequisite metadata | 2,048 identities across all 32 deployed manifests, including disabled sources; inspect at most 2,049 before refusal, independently of enabled graph edges |
 | Contributions | 128/module, 1,024 total enabled; stable local ID ≤128 ASCII chars; canonical route ≤256 ASCII chars |
 | Executable prerequisite bindings | At most 1,024 copied service bindings per activation, within the same enabled contribution limits; 64 module dependencies is not a service-count cap |
 | Cleanup registrations | 32/module, 512/attempt; refusal is a stage failure, never silently dropped |

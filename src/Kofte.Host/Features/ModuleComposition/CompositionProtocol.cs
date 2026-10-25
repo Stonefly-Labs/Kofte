@@ -7,6 +7,7 @@ namespace Kofte.Host.Features.ModuleComposition;
 
 public sealed class CompositionProtocol
 {
+    private const int MaximumCatalogPrerequisites = 32 * 64;
     private readonly string attempt, snapshot;
     private readonly HashSet<string> owners;
     private readonly HashSet<string> selectedOwners;
@@ -32,8 +33,8 @@ public sealed class CompositionProtocol
         if (selected.Length > 32 || selected.Any(owner => owner is null)) throw Invalid();
         this.selectedOwners = selected.Select(owner => owner.Value).ToHashSet(StringComparer.Ordinal);
         if (this.selectedOwners.Count != selected.Length) throw Invalid();
-        var prerequisites = (prerequisiteOwners ?? []).Take(1025).ToArray();
-        if (prerequisites.Length > 1024 || prerequisites.Any(owner => owner is null)) throw Invalid();
+        var prerequisites = (prerequisiteOwners ?? []).Take(MaximumCatalogPrerequisites + 1).ToArray();
+        if (prerequisites.Length > MaximumCatalogPrerequisites || prerequisites.Any(owner => owner is null)) throw Invalid();
         this.prerequisiteOwners = prerequisites.Select(owner => owner.Value).ToHashSet(StringComparer.Ordinal);
         var enabled = (enabledOwners ?? []).Take(33).ToArray();
         if (enabled.Length > 32 || enabled.Any(owner => owner is null)) throw Invalid();

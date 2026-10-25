@@ -420,6 +420,17 @@ metadata without weakening graph, identity or framing rules. **Implement is
 next** on the same draft PR #7. No approved architecture, product/test source,
 historical finding closure or human acceptance is changed by this review.
 
+The [T086 implementation](../specs/004-module-lifecycle/implementation.md#final-review-remediation-t086)
+retains the existing shared parent/worker all-catalog prerequisite collection
+and corrects its copied diagnostic allowlist to the derived 32-by-64 maximum:
+2,048 identities, refusing the 2,049th without unbounded enumeration.
+This is metadata, not the enabled graph; its 1,024-edge limit and all owner,
+dependency, frame and related-identity restrictions are unchanged.
+Real both-provider boundary boots require no disabled callback/allocation,
+usable readiness, exact disabled observations, unchanged inventory and verified
+clean exit. Follow-up convergence and passing final review precede explicit
+human acceptance on the same draft PR #7.
+
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.

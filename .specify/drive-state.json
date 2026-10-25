@@ -21,7 +21,15 @@
       "next_step": "implement"
     }
   },
-  "active": null,
+  "active": {
+    "spec": "004",
+    "step": "implement",
+    "directory": "specs/004-module-lifecycle",
+    "status": "running",
+    "branch": "feature/004-module-lifecycle",
+    "reason": "",
+    "started_at": "2026-10-25T20:42:03+00:00"
+  },
   "history": [
     {
       "spec": null,

@@ -11,6 +11,35 @@ namespace Kofte.Platform.Tests.Modules.Composition;
 
 public sealed class CompositionLimitTests
 {
+    [Theory]
+    [InlineData(16, 64, false)]
+    [InlineData(17, 1, false)]
+    [InlineData(17, 1, true)]
+    [InlineData(32, 64, false)]
+    [InlineData(31, 64, true)]
+    public void DisabledCatalogPrerequisitesDoNotConsumeEnabledGraphEdges(int disabled, int lastCount, bool enabled)
+    {
+        var owners = Enumerable.Range(0, disabled).Select(index => $"org.test.disabled{index}").ToArray();
+        var callbacks = 0;
+        var catalog = owners.Select((owner, index) => Deploy(owner, Enumerable.Range(0,
+            index == disabled - 1 ? lastCount : 64).Select(dependency =>
+                $"org.missing.required{index * 64 + dependency}").ToArray(), callback: () => callbacks++)).ToList();
+        if (enabled) catalog.Add(Deploy("org.test.enabled"));
+        foreach (var explicitFalse in new[] { false, true })
+        {
+            var selected = owners.Where(_ => explicitFalse).Select(owner => new ModuleSelection(owner, false)).ToList();
+            if (enabled) selected.Add(new("org.test.enabled", true));
+            var result = Assert.IsType<CompositionResolution.Accepted>(CompositionResolver.Resolve(catalog, selected,
+                new("1.0.0"), TestContext.Current.CancellationToken));
+            Assert.Equal(catalog.Count, result.Composition.Deployed.Count);
+            Assert.Equal(owners.Order(StringComparer.Ordinal), result.Composition.Disabled.Select(owner => owner.Value));
+            Assert.Equal(enabled ? ["org.test.enabled"] : Array.Empty<string>(),
+                result.Composition.Order.Select(owner => owner.Value));
+            Assert.Empty(result.Composition.Dependencies);
+            Assert.Equal(0, callbacks);
+        }
+    }
+
     [Fact]
     public void EnumerationStopsAtFirstRefusedEntry()
     {

@@ -17,15 +17,39 @@ public sealed class CompositionDiagnosticsCollection { }
 public sealed class CompositionDiagnosticTests
 {
     [Fact]
-    public async Task MissingPrerequisiteIsActionableButNeverAdmittedAsARuntimeOwnerOrHealthDependency()
+    public void PrerequisiteMetadataRejectsTheFirstEntryBeyondTheCatalogBoundWithoutOverEnumeration()
+    {
+        var seen = 0;
+        IEnumerable<ModuleId> Prerequisites()
+        {
+            while (true)
+            {
+                if (++seen > 2049) throw new InvalidOperationException("prerequisite_over_enumeration");
+                yield return Id($"org.example.required{seen}");
+            }
+        }
+        var diagnostics = new CompositionDiagnostics(CompositionMode.Validate, "none", _ => { });
+        var error = Assert.Throws<CompositionBoundaryException>(() => new CompositionProtocol(
+            diagnostics.Attempt, new string('b', 32), [], CompositionMode.Validate,
+            prerequisiteOwners: Prerequisites()));
+        Assert.Equal("composition_observation_invalid", error.Code);
+        Assert.Equal(2049, seen);
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(1024)]
+    [InlineData(1025)]
+    [InlineData(2048)]
+    public async Task MissingPrerequisiteIsActionableButNeverAdmittedAsARuntimeOwnerOrHealthDependency(int count)
     {
         var diagnostics = new CompositionDiagnostics(CompositionMode.Validate, "none", _ => { });
         var owner = Id("org.example.alpha");
-        var missing = Id("org.example.beta");
-        var prerequisites = new[] { missing };
+        var prerequisites = Enumerable.Range(0, count).Select(index => Id($"org.example.required{index}")).ToArray();
+        var missing = prerequisites[^1];
         var protocol = new CompositionProtocol(diagnostics.Attempt, new string('b', 32), [owner],
             CompositionMode.Validate, prerequisiteOwners: prerequisites);
-        prerequisites[0] = Id("org.example.other");
+        prerequisites[^1] = Id("org.example.other");
         using var stream = new MemoryStream();
         await protocol.WriteAsync(stream, diagnostics.Emit(CompositionStage.Validated,
             CompositionOutcome.Rejected, "composition_dependency_missing", owner, [missing]),
@@ -37,7 +61,7 @@ public sealed class CompositionDiagnosticTests
         {
             diagnostics.Emit(CompositionStage.Started, CompositionOutcome.Passed, "composition_progress", missing),
             diagnostics.Emit(CompositionStage.Health, CompositionOutcome.Failed, "composition_health_failed", owner, [missing]),
-            diagnostics.Emit(CompositionStage.Validated, CompositionOutcome.Rejected, "composition_dependency_missing", owner, prerequisites)
+            diagnostics.Emit(CompositionStage.Validated, CompositionOutcome.Rejected, "composition_dependency_missing", owner, [prerequisites[^1]])
         })
             await Assert.ThrowsAsync<CompositionBoundaryException>(() =>
                 protocol.WriteAsync(new MemoryStream(), record, TestContext.Current.CancellationToken));

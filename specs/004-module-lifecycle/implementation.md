@@ -1670,3 +1670,79 @@ An integrity comparison additionally proves all 85 task descriptions, the first
 83 checked markers and the entire preceding implementation report are
 preserved. No approved specification/plan/research/model/analysis/convergence
 or reviewer-checklist file changes.
+
+## Final-review remediation T086
+
+This implement-only increment resumes the original branch and open draft PR #7
+from `be29bf24c4d498716bbf89b3329585247d489df4`. The final review's HIGH R1
+and its 16/16 independent public-host counterexamples remain unchanged in
+`review.md`. Both checklists remain read-only and passing, 16/16 and 36/36.
+The active implementation began at `2026-10-25T20:42:03+00:00`; no extension
+hooks, dependency changes or new design approval are involved.
+
+### Demonstrated cause and correction
+
+Parent and worker already share the same all-catalog prerequisite collection.
+The protocol incorrectly bounded that diagnostic metadata by 1,024 enabled
+graph edges. Thirty-two valid deployed manifests can instead declare 2,048
+distinct prerequisites, including dependencies of disabled sources; these
+create no enabled edges and require no deployed/enabled prerequisite targets.
+Only the protocol materialization changes to the derived `32 * 64` maximum
+and its 2,049 overflow sentinel. The enabled resolver, parent/worker collection,
+32-deployed/16-enabled/64-per-manifest bounds, frame/record limits and
+identity restrictions are unchanged. No accepted input is truncated or narrowed.
+
+Dedicated protocol tests round-trip a genuine missing-prerequisite diagnostic
+at 1/1,024/1,025/2,048 identities, prove source-array independence and reject
+runtime/health identity grants and forged related IDs. An infinite enumerable
+is refused after exactly 2,049 entries without requesting the 2,050th.
+The existing public resolver cases preserve missing versus disabled prerequisite
+refusals and the enabled-edge/per-manifest limits.
+
+Five structural catalog cases independently resolve both omitted and explicit
+false selections, with zero enabled edges and no disabled registration callback:
+1,024 prerequisites, 1,025, 1,025 plus an unrelated enabled root, all 32 disabled
+deployments/2,048 prerequisites, and 31 disabled plus one enabled/1,984
+prerequisites. Matching fixed catalogs in the separately compiled consumer run
+actual validate and serve on both SQLite and owned disposable PostgreSQL.
+Each case exercises both selection forms: 20 successful validation processes
+and 20 serving roots, usable aggregate readiness, exact disabled private
+observations, verified clean root/descendant exit and complete inventory equality
+after each command. Disabled validators/registrars/runtime factories throw if
+invoked; successful validation/ready serving therefore cannot hide their
+execution. The mixed cases additionally observe the independent no-storage
+module's actual public computation (`13 - 5 = 8`) through its existing private
+author channel. No new public scenario, endpoint, product test hook or authority
+is introduced.
+
+### Discriminating execution
+
+Commands use the existing SDK/runtime and environment documented in the
+T084-T085 increment above, with `SPECIFY_FEATURE_DIRECTORY` explicitly set to
+`specs/004-module-lifecycle`.
+
+| Exact command / selection | Observed result |
+| --- | --- |
+| `dotnet test --project tests/unit/Kofte.Host.Tests --no-restore -c Release --filter-class '*CompositionDiagnosticTests*' --minimum-expected-tests 1` | Red 47/50: 1,025/2,048 metadata is refused as `composition_observation_invalid`; overflow stops at 1,025 instead of 2,049. The overlapping missing-prerequisite test was then parameterized rather than duplicated. |
+| `dotnet test --project tests/unit/Kofte.Platform.Tests --no-restore -c Release --filter-class '*CompositionLimitTests*' --minimum-expected-tests 5` | Passed 29/29, including five new accepted structural cases, both selection forms, zero edges/callbacks and existing inclusive/overflow limits. |
+| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-method '*DisabledCatalogPrerequisiteMetadata*' --minimum-expected-tests 10` | Red 2/10; all eight over-1,024 cases fail actual validation with `composition_observation_invalid` on both providers (41.624s). Corrected run passes 10/10, zero skipped (39.544s), executing all 40 validate/serve combinations. |
+| `dotnet test --project tests/unit/Kofte.Host.Tests --no-restore -c Release --filter-class '*CompositionDiagnosticTests*' --minimum-expected-tests 50` | Corrected 50/50, zero skipped; missing-prerequisite transport, overflow, copies, framing and identity refusal retained. |
+| `python3 scripts/verify.py --suite all --disposable-postgres --warm-starts 10` | Running; complete-gate results must be reconciled before stage completion. |
+
+### Acceptance mapping and handoff
+
+FR-001/004/020, US1.1-1.3/US2.2, SC-001/002/006 and plan R1/R2/R9-R12
+map to the exact resolver/protocol/public-process boundaries above.
+FR-003/017/019 and principles I/II/VI/X/XI/XII retain finite admission,
+fail-closed actual diagnostics, private framing, zero disabled effects,
+independent public behavior and truthful checked evidence.
+The report preserves all historical failed runs and the distinction between
+complete local gates, narrower selectors and publication-head CI.
+
+Only T086 is eligible for completion after its checks; all preceding 85 task
+descriptions/markers, approved intent, original review/convergence and reviewed
+checklists are preserved. The composition contract documents the derived
+metadata bound; README, guide and related progress docs reflect the increment.
+Complete only **implement**, select **follow-up converge** on the same draft
+PR #7, and stop. Passing final review and explicit human acceptance remain
+separate; no acceptance, readiness, merge request or later feature is authorized.

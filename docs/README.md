@@ -376,7 +376,7 @@ Final review and explicit human acceptance remain separate on the same
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), without an
 intermediate merge or later-feature work.
 
-**Current 004 / final review: changes; implement T086 is next.**
+**Historical 004 / final review: changes; implement T086 was next.**
 The [review](../specs/004-module-lifecycle/review.md) covers all 46
 requirements/outcomes/scenarios, twelve plan decisions, 85 existing tasks and
 twelve principles. HIGH R1 reproduces valid disabled-catalog prerequisite
@@ -386,6 +386,17 @@ unchecked, preserving all prior task bytes/markers, approved intent, reviewed
 checklists and product/test source. Acceptance is blocked until remediation,
 convergence and passing review on the same draft PR #7. No new design approval,
 readiness, intermediate merge or later-feature work is introduced.
+
+**Current 004 / T086 implementation; follow-up converge is next.**
+The [increment](../specs/004-module-lifecycle/implementation.md#final-review-remediation-t086)
+corrects all-catalog diagnostic metadata admission to 2,048 prerequisites while
+preserving the 1,024 enabled-edge bound. Public resolution and actual
+both-provider validate/serve cover full disabled catalogs, both selection forms
+and an unrelated enabled owner, including exact disabled observations,
+unchanged inventory, readiness and verified clean stop. Historical review,
+approved intent and reviewer-owned checklists remain unchanged. Convergence,
+passing final review and explicit human acceptance are still separate gates
+on draft PR #7; no readiness or merge is requested.
 
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.

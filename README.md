@@ -35,7 +35,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 | 🔐 Explicit boundaries     | Team-scoped authorization, audited actions and module-owned storage                                   |
 
 > [!IMPORTANT]
-> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004's [final review](specs/004-module-lifecycle/review.md) records changes: valid disabled-catalog metadata can prevent host startup. Exactly T086 is appended; implement is next on the same draft PR, before passing review and explicit human acceptance. Prior convergence findings remain closed. Nothing here claims production readiness or MVP completion.
+> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004's [T086 implementation](specs/004-module-lifecycle/implementation.md#final-review-remediation-t086) corrects disabled-catalog diagnostic metadata admission without changing the enabled graph limit. Follow-up convergence, passing final review and explicit human acceptance remain separate on the same draft PR. Prior convergence findings remain closed. Nothing here claims production readiness or MVP completion.
 
 ## 🧭 The shape of things to come
 
@@ -208,7 +208,7 @@ checklists, product/test code and historical reports are preserved. Final
 review and explicit human acceptance remain separate on
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7); no merge is requested.
 
-**004 / final review records changes; implement T086 is next.** The
+**004 / final review records changes (historical checkpoint).** The
 [review](specs/004-module-lifecycle/review.md) assesses all 46
 requirements/outcomes/scenarios, twelve plan decisions, 85 existing tasks and
 twelve principles. One HIGH finding R1 reproduces valid disabled-catalog
@@ -218,6 +218,17 @@ Exactly T086 is appended unchecked, preserving all prior task bytes/markers,
 approved intent, reviewer checklists and product/test source. Acceptance is
 blocked pending remediation, convergence and passing final review on the same
 draft PR #7; no intermediate merge is requested.
+
+**004 / T086 implementation:** The
+[increment](specs/004-module-lifecycle/implementation.md#final-review-remediation-t086)
+retains all-catalog diagnostic prerequisites up to 2,048 identities, independently
+of the unchanged 1,024 enabled-edge limit. Protocol overflow/copy/identity checks,
+public resolution and actual validate/serve regressions cover omitted and
+explicit-false selections, full disabled catalogs and an unrelated enabled
+module on both providers. Inventory, disabled observations, usable readiness
+and owned clean exit are required. Follow-up converge is next on the same
+draft PR #7; the historical review remains unchanged and no acceptance or merge
+is requested.
 
 **Spec 003 is explicitly human-accepted and human-merged.**
 The [acceptance record](specs/003-storage-registry/acceptance.md) preserves the

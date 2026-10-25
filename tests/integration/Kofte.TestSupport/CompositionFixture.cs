@@ -22,6 +22,8 @@ public enum CompositionTestCatalog
     CatalogLimit, EnabledLimit, ManifestByteLimit, ClaimLimit,
     IgnoringValidator, RequiredOutputFault, SnapshotTransport,
     EmptyBoot, BootDependency, BootDisabled, BootMissing,
+    DisabledPrerequisitesAtLimit, DisabledPrerequisitesOverLimit, DisabledPrerequisitesWithEnabled,
+    DisabledPrerequisitesMaximum, DisabledPrerequisitesMaximumWithEnabled,
     RelationalInitial, RelationalCurrent, RelationalInvalidRecipe, RelationalHoldMigration,
     RelationalConfigurationGate, RelationalFailInitialize, RelationalFailStart, RelationalFailHealth,
     RelationalIgnoreValidator, RelationalIgnoreRegistrar, RelationalIgnoreInitialize, RelationalIgnoreStart,
@@ -60,6 +62,9 @@ public sealed class CompositionFixture : IAsyncDisposable
     {
         if (catalog is not (CompositionTestCatalog.EmptyBoot or CompositionTestCatalog.BootDependency or
             CompositionTestCatalog.BootDisabled or CompositionTestCatalog.BootMissing or
+            CompositionTestCatalog.DisabledPrerequisitesAtLimit or CompositionTestCatalog.DisabledPrerequisitesOverLimit or
+            CompositionTestCatalog.DisabledPrerequisitesWithEnabled or CompositionTestCatalog.DisabledPrerequisitesMaximum or
+            CompositionTestCatalog.DisabledPrerequisitesMaximumWithEnabled or
             CompositionTestCatalog.RelationalInitial or CompositionTestCatalog.RelationalCurrent))
             throw new InvalidOperationException("composition_fixture_catalog_invalid");
         var start = CreateStart("serve", catalog, explicitSelection);
