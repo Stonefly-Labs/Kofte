@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-34d399?style=flat-square"></a>
-  <img alt="Status: module lifecycle convergence gaps" src="https://img.shields.io/badge/status-module_lifecycle_convergence_gaps-a78bfa?style=flat-square">
+  <img alt="Status: module lifecycle remediation" src="https://img.shields.io/badge/status-module_lifecycle_remediation-a78bfa?style=flat-square">
   <a href="docs/master-spec-inventory.md"><img alt="Built with Spec Kit" src="https://img.shields.io/badge/workflow-Spec_Kit-a78bfa?style=flat-square"></a>
 </p>
 
@@ -35,7 +35,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 | 🔐 Explicit boundaries     | Team-scoped authorization, audited actions and module-owned storage                                   |
 
 > [!IMPORTANT]
-> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. [004 / implementation](specs/004-module-lifecycle/implementation.md) completed its original 80 tasks; [convergence](specs/004-module-lifecycle/convergence.md) found one HIGH gap in explicit disabled-state operator output and appended T081. Implement T081 is next on the same draft PR. Nothing here claims production readiness or MVP completion.
+> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 now implements [T081's disabled-state correction](specs/004-module-lifecycle/implementation.md#convergence-remediation-t081), following its original 80 tasks and first convergence finding. Follow-up convergence is next on the same draft PR. Nothing here claims production readiness or MVP completion.
 
 ## 🧭 The shape of things to come
 
@@ -129,7 +129,7 @@ stays draft and no intermediate merge is requested.
 The startup gate also exercises two configured-module/web restarts without
 replacing the ten retained empty-host warm cycles or extending their budgets.
 
-**004 / converge completed with gaps.** The
+**First 004 convergence checkpoint (historical): gaps.** The
 [assessment](specs/004-module-lifecycle/convergence.md) checks all 46
 requirements/outcomes/scenarios, twelve plan decisions, 80 original tasks and
 twelve principles. One HIGH partial finding reproduces disabled owners appearing
@@ -137,8 +137,17 @@ only as `discovered/passed` in the actual configured host's operator output;
 the explicit disabled state exists only in an unprojected in-memory snapshot.
 Exactly T081 is appended, preserving every original task byte and marker,
 product/test source, approved intent and reviewer-owned checklists.
-**Implement T081 is next**, separately on the same draft PR #7. No data-loss,
+That checkpoint selected implement on the same draft PR #7. No data-loss,
 disabled-callback execution, new design decision or feature acceptance is claimed.
+
+**T081 now implements explicit disabled operator output.** Successful composition
+resolution projects the existing disabled snapshot into bounded private
+`composition_disabled` records for explicitly false and omitted deployments.
+The actual SQLite/PostgreSQL host examples require both forms under fresh
+attempts, with zero disabled callbacks/store effects and unchanged anonymous
+health. The [implementation increment](specs/004-module-lifecycle/implementation.md#convergence-remediation-t081)
+records red/green evidence and retained regressions. **Follow-up convergence is
+next**; the historical finding/report and reviewer checklists remain unchanged.
 
 **Spec 003 is explicitly human-accepted and human-merged.**
 The [acceptance record](specs/003-storage-registry/acceptance.md) preserves the

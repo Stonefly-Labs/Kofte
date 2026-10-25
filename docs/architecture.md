@@ -334,16 +334,20 @@ retains earlier failed evidence and fixture-only administrative-budget/
 contention-workload repairs. No product bound, retry rule, assertion or floor
 is relaxed. That checkpoint selected convergence, not acceptance or merge.
 
-The [004 convergence assessment](../specs/004-module-lifecycle/convergence.md)
-now records **gaps**: the configured host does not project its existing explicit
-disabled observations into the private operator channel. An actual healthy
-`BootDisabled` deployment emits only `discovered/passed` for each disabled owner.
-This is one HIGH partial observability finding, not a storage-loss or authority
-failure or a changed design decision. T081 wires the existing observation model
-and actual both-provider public regressions; **implement is next** on the same
-draft PR. All original 80 task bytes/markers, product/test source, approved
-architecture, dependencies and reviewer-owned checklists are preserved.
-Final review and explicit human acceptance remain separate later stages.
+The historical [004 convergence assessment](../specs/004-module-lifecycle/convergence.md)
+found one HIGH partial gap: disabled snapshots never reached private operator
+output. The [T081 implementation](../specs/004-module-lifecycle/implementation.md#convergence-remediation-t081)
+now projects that existing model after successful composition resolution,
+emitting one bounded `discovered / disabled / composition_disabled` record per
+explicitly disabled or omitted owner. Parent and worker copy the admitted
+enabled-owner set and reject contradictory disabled frames. Version 1, frame/
+record limits, fixed guidance, owner allowlists and anonymous aggregate schema
+are unchanged; no new storage/configuration/runtime authority is introduced.
+Actual both-provider public hosts prove fresh explicit/omitted observations
+and zero disabled effects. All 81 tasks are implemented; **follow-up convergence
+is next** on the same draft PR. Historical reports, approved architecture/
+dependencies and reviewer-owned checklists are preserved; review and explicit
+human acceptance remain later gates.
 
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements

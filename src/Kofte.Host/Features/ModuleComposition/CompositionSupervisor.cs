@@ -25,7 +25,7 @@ public static class CompositionSupervisor
         var selectedOwners = selection.Modules.Select(module => module.Owner).ToArray();
         var recordOwners = owners.Concat(selectedOwners).Distinct().ToArray();
         var protocol = new CompositionProtocol(diagnostics.Attempt, snapshot, owners, diagnostics.Mode, CatalogFields(catalog),
-            selectedOwners, prerequisites);
+            selectedOwners, prerequisites, selection.Modules.Where(module => module.Enabled).Select(module => module.Owner));
         using var input = new AnonymousPipeServerStream(PipeDirection.Out, HandleInheritability.Inheritable);
         using var events = new AnonymousPipeServerStream(PipeDirection.In, HandleInheritability.Inheritable);
         var start = Start(configuration, diagnostics.Mode);

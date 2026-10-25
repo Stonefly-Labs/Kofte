@@ -71,7 +71,15 @@ public static class CompositionPreflight
                 attempt.Clip(CompositionWork.Resolver))), token);
         if (resolution is CompositionResolution.Rejected rejected)
             Reject(rejected.Diagnostics);
-        return new(((CompositionResolution.Accepted)resolution).Composition, deployments, configurations);
+        var composition = ((CompositionResolution.Accepted)resolution).Composition;
+        var snapshot = new CompositionHealth(composition, attempt.TraceId).Snapshot;
+        foreach (var observation in snapshot.Modules.Where(module => !module.DesiredEnabled))
+        {
+            attempt.Check();
+            diagnostics.Emit(CompositionStage.Discovered, CompositionOutcome.Disabled,
+                "composition_disabled", observation.Owner);
+        }
+        return new(composition, deployments, configurations);
 
         void Reject(IReadOnlyList<CompositionDiagnostic> rejected)
         {

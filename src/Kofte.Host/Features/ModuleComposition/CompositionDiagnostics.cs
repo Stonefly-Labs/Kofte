@@ -13,7 +13,7 @@ public enum CompositionStage
     Input, Admission, Discovered, Validated, Registered, Initialized, Migrated,
     Started, Health, Published, Stopping, Stopped, Cleanup
 }
-public enum CompositionOutcome { Progress, Passed, Rejected, Busy, Failed, Deadline, Cancelled, ReconciliationRequired, Incomplete }
+public enum CompositionOutcome { Progress, Passed, Rejected, Busy, Failed, Deadline, Cancelled, ReconciliationRequired, Incomplete, Disabled }
 
 public class CompositionBoundaryException : Exception
 {
@@ -174,7 +174,7 @@ public sealed class CompositionDiagnostics
 
     internal static string RequireCode(string code) => code switch
     {
-        "composition_progress" or "composition_ready" or "composition_configuration_invalid" or
+        "composition_progress" or "composition_ready" or "composition_disabled" or "composition_configuration_invalid" or
         "composition_admission_invalid" or "composition_observation_invalid" or "composition_output_limit" or
         "composition_output_failed" or "composition_input_limit" or "composition_contract_unsupported" or
         "composition_manifest_rejected" or "composition_module_duplicate" or
@@ -195,6 +195,7 @@ public sealed class CompositionDiagnostics
     {
         "composition_progress" => "observe_current_attempt",
         "composition_ready" => "none",
+        "composition_disabled" => "edit_selection_while_stopped",
         "composition_prepare_required" => "prepare_while_stopped",
         "composition_storage_rejected" or "composition_reconciliation_required" or
             "composition_cleanup_incomplete" => "inspect_preserved_state",

@@ -228,15 +228,20 @@ records unchanged contention workload isolation, all 24 actual guide commands/
 strict observations and passing isolated failure exercises. Historical failed
 runs are not rewritten; no product deadline or floor is weakened.
 
-The [004 convergence assessment](../../specs/004-module-lifecycle/convergence.md)
-now records **gaps**. The actual configured host emits `discovered/passed` but
-no explicit disabled-state observation for disabled deployments; the correct
-in-memory state is not projected to its trusted operator channel. This HIGH
-partial finding appends only T081, leaving all original task bytes/markers,
-product/test source, supported commands, approved intent and reviewer checklists
-unchanged. **Implement T081 is next** on the same draft PR #7. Existing zero
-disabled callbacks and storage preservation are not contradicted. Follow-up
-convergence, review and explicit human acceptance remain separate invocations.
+The historical [004 convergence assessment](../../specs/004-module-lifecycle/convergence.md)
+found missing explicit disabled operator output and appended T081. The
+[implemented correction](../../specs/004-module-lifecycle/implementation.md#convergence-remediation-t081)
+now adds a private `discovered / disabled / composition_disabled` record with
+`edit_selection_while_stopped` guidance for each explicitly false or omitted
+deployment, under the current attempt. Existing discovery records remain;
+absence of later callbacks is no longer the only disabled-state evidence.
+The both-provider `disabled-missing` example boots both selections in fresh
+processes and requires exact disabled observations, zero disabled callbacks/
+store effects and unchanged anonymous health. Commands, protocol version and
+all lifecycle/storage/output bounds remain unchanged. All 81 tasks are
+implemented; **follow-up convergence is next** on draft PR #7, separately
+before review and explicit human acceptance. Historical reports, approved
+intent and reviewer-owned checklists remain unchanged.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).

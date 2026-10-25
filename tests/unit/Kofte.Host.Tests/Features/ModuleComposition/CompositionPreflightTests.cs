@@ -10,8 +10,10 @@ namespace Kofte.Host.Tests.Features.ModuleComposition;
 
 public sealed class CompositionPreflightTests
 {
-    [Fact]
-    public async Task DisabledSettingsAreEnvelopeOnlyAndNoMutatingCallbackRunsDuringPreflight()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task DisabledSettingsAreEnvelopeOnlyAndPrivateObservationsIncludeOmittedOwners(bool omitted)
     {
         var calls = 0;
         var enabled = new ModuleDeployment(HostCompositionTestData.Manifest("org.test.a"),
@@ -20,11 +22,21 @@ public sealed class CompositionPreflightTests
             configurationFields: [new("required", ["required"], ModuleSettingType.String, true)],
             configurationValidator: new NeverValidator(),
             configureServices: (_, _) => calls++, createRuntime: (_, _) => throw new InvalidOperationException());
-        var selection = Selection("""[{"id":"org.test.a","enabled":true,"settings":{}},{"id":"org.test.b","enabled":false,"settings":{"unrecognized":"private"}}]""");
-        var result = await Resolve([disabled, enabled], selection);
+        var selection = Selection(omitted
+            ? """[{"id":"org.test.a","enabled":true,"settings":{}}]"""
+            : """[{"id":"org.test.a","enabled":true,"settings":{}},{"id":"org.test.b","enabled":false,"settings":{"unrecognized":"private"}}]""");
+        var records = new List<CompositionRecord>();
+        var result = await Resolve([disabled, enabled], selection, records);
         Assert.Equal(["org.test.a"], result.Composition.Order.Select(id => id.Value));
         Assert.Single(result.Configurations);
         Assert.Equal(0, calls);
+        var observation = Assert.Single(records, record => record.Outcome == "disabled");
+        Assert.Equal("org.test.b", observation.Owner);
+        Assert.Equal("discovered", observation.Stage);
+        Assert.Equal("composition_disabled", observation.Code);
+        Assert.Equal("edit_selection_while_stopped", observation.Guidance);
+        Assert.Equal(records[0].Attempt, observation.Attempt);
+        Assert.DoesNotContain("private", JsonSerializer.Serialize(records));
     }
 
     [Fact]

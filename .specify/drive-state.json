@@ -18,7 +18,7 @@
     },
     "004": {
       "directory": "specs/004-module-lifecycle",
-      "next_step": "implement"
+      "next_step": "converge"
     }
   },
   "active": null,
@@ -875,6 +875,24 @@
       "evidence_sha256": {
         "specs/004-module-lifecycle/tasks.md": "a3945ed4a9f25f516df2074f312c8ab2e42575628a025fff79b6c3e7f7ccf2c3",
         "specs/004-module-lifecycle/convergence.md": "165a1b81ea2c3300921fd6de44e94392b1cf4ef67dd409fc0d1b05b22f24f03f"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "implement",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-25T04:27:23+00:00",
+      "completed_at": "2026-10-25T04:47:02+00:00",
+      "outcome": "pass",
+      "note": "Implemented T081/F1 from c6d587e: project existing disabled snapshots into actual bounded private discovered/disabled records for explicit and omitted owners; parent/worker protocols copy enablement and reject contradictory frames. Original failing actual-host regression now passes with 35 assertions/provider and fresh explicit/omitted observations, zero disabled effects and unchanged anonymous schema. All 81 tasks complete; approved intent, prior convergence/analysis and reviewer checklists unchanged. Quality 20/20 and unit 14/14 steps, targeted host 53/53, public/harness/boot/preservation contracts 53/53, isolated both-provider preservation 2/2, repository/119 Python/format/whitespace pass. Broad integration retains 103/104 with one cleanup-incomplete failure; PostgreSQL all first failed similarly, unchanged isolated reruns pass. All eleven public scenarios pass SQLite 389417/PostgreSQL 389422 assertions with strict Python result validation. No cleanup cause/fix or fresh complete local gate claimed. Published docs/interface/evidence align; follow-up converge is next on the same draft PR #7, not acceptance or merge.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "f1aa919bdafbd1237dbd29701d467ad004fae584c3955a52ede4d49cdbc3a76c",
+        "specs/004-module-lifecycle/implementation.md": "928b66fdd3e0082111bf37947a5dcf6b863f6bf230b5bda783e868a78f74496c",
+        "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
+        "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
       }
     }
   ]

@@ -192,6 +192,20 @@ Record every rejected boundary, including malformed config, admission,
 acquisition and observation projection failures, even without a module identity.
 Required output failure is an operational failure, not successful invisible work.
 
+After successful composition resolution, every explicitly disabled or omitted
+deployed owner emits exactly one additional version-1 record with
+`stage: discovered`, `outcome: disabled`, `code: composition_disabled` and
+`guidance: edit_selection_while_stopped`, under the current attempt. This is the
+existing snapshot's `DesiredEnabled = false` observation, not successful
+activation or failed health. It runs through the same private framed protocol,
+parent projection, telemetry and record/frame budgets as other records.
+The parent and worker copy the admitted enabled-owner set and refuse disabled
+claims for those owners, unknown owners, missing identity, contradictory
+stage/code/outcome/guidance or attached dependency/settings/storage evidence.
+No new record fields, protocol version, authority or anonymous response fields
+are introduced. These observations invoke no disabled author callback, allocate
+no store and do not assert that later storage preflight or serving succeeded.
+
 Use Activity/Meter and existing telemetry patterns. Metric dimensions only
 `mode`, `stage`, `provider` (`sqlite|postgresql|none|unknown`) and fixed `outcome`;
 no IDs, correlation, settings fields or local paths. This is observable

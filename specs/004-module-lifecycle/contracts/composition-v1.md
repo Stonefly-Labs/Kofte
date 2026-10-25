@@ -166,7 +166,7 @@ use discovery index as a tie-breaker. Per-manifest 002 diagnostics retain their
 own field ordering; manifests themselves are ordered by canonical identity or
 bounded input digest internally when invalid, never by display text.
 
-Stable composition codes include `composition_input_limit`,
+Stable composition codes include `composition_disabled`, `composition_input_limit`,
 `composition_configuration_invalid`, `composition_contract_unsupported`,
 `composition_manifest_rejected`, `composition_module_duplicate`,
 `composition_implementation_missing`, `composition_dependency_missing`,

@@ -1086,3 +1086,148 @@ This is not a full reference module, new human usability study, production
 certification or MVP release. Convergence, final review and explicit human
 acceptance are separate later stages on `feature/004-module-lifecycle` and
 draft PR #7. **Converge is next; no readiness or merge is requested.**
+
+## Convergence remediation T081
+
+**Stage:** implement increment, begun 2026-10-25T04:27:23+00:00.
+**Starting revision:** `c6d587e2a5c7837585a0ee61a0db2a35c5fbbab9`.
+**Scope:** the first convergence's F1, not a new numbered feature or acceptance.
+The original branch/worktree was clean and the same draft PR #7 open;
+updated main was inspected. Checklist gates remain 16/16 and 36/36.
+No extension hooks are configured. The supported SDK/runtime/environment
+above is reused, with `DOTNET_PROCESSOR_COUNT=4` and explicitly owned disposable
+PostgreSQL. No tool, dependency, lock, approved intent or product bound changes.
+
+### Delivered correction and invariants
+
+`CompositionPreflight` projects the existing `CompositionHealth.Snapshot`
+after successful composition resolution. Each explicitly false or omitted
+deployed owner emits one additional current-attempt private
+`discovered / disabled / composition_disabled` record with fixed
+`edit_selection_while_stopped` guidance. It uses the actual diagnostics,
+framed worker/parent transport, projection and telemetry, not a test-owned
+snapshot or inferred absence of later callbacks. This identifies disabled
+desired state; it does not assert activation, healthy disabled callbacks,
+successful later storage inspection or serving readiness.
+
+`CompositionProtocol` copies the admitted enabled-owner set in both parent
+and worker. Disabled frames require a known nonenabled identity, exact
+stage/code/outcome/guidance and no dependency/settings/storage evidence.
+Unknown/missing/enabled owners and contradictory frames fail closed.
+The existing version-1 record/frame schema is unchanged: one fixed code/outcome
+is added, not a new settings/snapshot field or public endpoint. All output still
+passes the existing 4,096-byte frame, 256-record startup/terminal-reserve and
+64-record/minute limits; safe metric dimensions remain fixed.
+
+Neither the lifecycle coordinator nor storage/migration/authority implementation
+changes. Disabled author validators/registrars/factories/runtime/cleanup remain
+uninvoked, omitted owners remain disabled, and anonymous health retains only its
+original aggregate fields. No new privilege, failure fallback, automatic
+repair/retry, deadline extension, test-floor reduction or production test hook
+is introduced.
+
+### Reproduction and acceptance mapping
+
+The public `disabled-missing` case was strengthened **before** the product fix.
+The actual command
+`dotnet run --project tests/contract/Kofte.Composition.Consumer --no-restore -c Release -- --provider sqlite --scenario disabled-missing`
+failed with exit 1 and safe
+`composition_test_disabled_observation_missing`, zero reported assertions.
+This reproduces the original actual-host omission, not a missing-type error.
+After the fix, the same command passes.
+
+On **each** provider the example now boots two real supervised hosts: Alpha/Beta
+explicitly false, then omitted with only the no-storage owner selected.
+It checks exactly one disabled record per owner/form before publication,
+matching fresh attempts and fixed fields/guidance, no later owner stages,
+zero disabled callbacks and unchanged exact inventories, enabled public behavior,
+clean stop and the retained explicit missing-implementation refusal.
+Each standalone result passes **35 assertions**, with:
+
+| Measured observation | SQLite | PostgreSQL |
+| --- | --- | --- |
+| `explicitDisabledObservations` | 2 | 2 |
+| `omittedDisabledObservations` | 2 | 2 |
+| `freshDisabledAttempts` | 2 | 2 |
+| `disabledCallbackComparisons` | 2 | 2 |
+| `unchangedInventories` | 3 | 3 |
+| `missingRefusals` | 1 | 1 |
+
+Both the C# scenario catalog/harness and Python named verifier require the three
+new observation fields. Existing per-field omission/decrement/tampering tests
+now exercise them for standalone and `all`; new unit regressions verify explicit/
+omitted preflight observations and valid/contradictory disabled private frames.
+They would not be satisfied by callback totals alone.
+
+| Source obligation | Current evidence |
+| --- | --- |
+| FR-008/012; US1.3; R1/R8 | Existing disabled model projected by actual preflight/worker/parent; real explicit/omitted boots and fresh identity assertions. |
+| FR-017/018; R10; principles VI/X | Validated fixed private frames/records, copied enablement allowlist, unchanged bounds/metrics and actual aggregate HTTP privacy assertions. |
+| FR-019/020; SC-001/006; T052/T062/T069/T074 | Independent public consumer, both-provider measured output and inventories, strict mandatory observations/omission tests, delivered guide/operator contract. |
+| Principles II/III/IV/V/XI/XII | No disabled execution/storage change, dedicated test-project source, retained provider/process/recovery/privacy proof, original feature branch/draft PR and separate later convergence/review/acceptance. |
+
+### Increment verification
+
+The targeted protocol/preflight command
+`dotnet test --project tests/unit/Kofte.Host.Tests --no-restore -c Release --filter-class '*CompositionDiagnosticTests' --filter-class '*CompositionPreflightTests' --minimum-expected-tests 1`
+passes **53/53**, zero skipped. The SQLite public command above and
+`dotnet run --project tests/contract/Kofte.Composition.Consumer --no-build -c Release -- --provider postgres --scenario disabled-missing`
+both pass with the measured observations above. Disposable PostgreSQL is
+explicitly opted in, never a developer/production target.
+
+Fresh `python3 scripts/verify.py --suite quality` passes all **20 steps**,
+including warnings-as-errors build, .NET formatting, web format/lint/types,
+generated contract and dependency reconciliation.
+`python3 scripts/verify.py --suite unit` passes all **14 steps**, including
+retained baseline and composition suites. These are targeted reports, not a
+new complete local all-suite.
+
+| Exact increment command | Observed result |
+| --- | --- |
+| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-class '*Composition*' --minimum-expected-tests 100` | **Failed**, exit 2: 103/104 passed, zero skipped, 3m 30.714s. SQLite's `ThreeStoppedSelectionCyclesPreserveExactOriginalStoresAndUseFreshProcesses` returned `composition_cleanup_incomplete`. |
+| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-class '*CompositionPreservationTests' --minimum-expected-tests 2` | Unchanged isolated rerun passed 2/2, both providers, zero skipped; 16.925s. |
+| `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore -c Release --filter-class '*CompositionConsumerHarnessTests' --filter-class '*CompositionBoot*' --filter-class '*CompositionMigrationContractTests*' --minimum-expected-tests 35` | Passed 53/53, zero skipped; 1m 34.338s. Includes new strict-result omission/decrement checks, actual both-provider boots and original preservation regressions. |
+| `dotnet run --project tests/contract/Kofte.Composition.Consumer --no-build -c Release -- --provider sqlite --scenario all` | Passed all eleven scenarios, 389,417 assertions; Python's actual `composition_result` validation also accepted the captured complete result and empty stderr. |
+| `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet run --project tests/contract/Kofte.Composition.Consumer --no-build -c Release -- --provider postgres --scenario all` | First attempt failed, exit 1, `composition_cleanup_incomplete`. One unchanged isolated rerun passed all eleven scenarios, 389,422 assertions; strict Python validation accepted the complete result and empty stderr. |
+| `dotnet format whitespace --no-restore --verify-no-changes --include tests/contract/Kofte.Composition.Consumer/Scenarios/BootScenarios.cs` | Passed after the final strengthened before-publication assertion. |
+| `python3 scripts/check_repository.py` | Passed repository assets, links, MCP parity and driver state. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed all 119 tests. |
+| `git diff --check` | Passed. |
+| `npm run format:check` | Passed. |
+
+The broad integration failure and first PostgreSQL `all` failure above are
+retained, **not relabeled as passing runs by their reruns**. Their safe event
+code is `composition_test_command_exit_expected_0_actual_1_composition_cleanup_incomplete`.
+The same failure category occurred before this increment in the unchanged
+convergence assessment; no causal diagnosis or fix to cleanup is claimed.
+Both-provider preservation passed unchanged in isolation, and all eleven
+public scenarios now passed independently on both providers with their actual
+current output. No deadline, assertion, cleanup reserve or test floor was
+changed to produce these results. The execution limitation remains explicit
+for follow-up convergence/review.
+
+Current targeted safe reports are
+`quality-none-15fc44a7af2d4f23a769fe15a0044d22.json` (20 passed steps,
+27.131s) and `unit-none-445f727d19f346a28b2afd23abf42993.json`
+(14 passed steps, 32.939s), under ignored `artifacts/verification/`.
+Actual original-checkpoint [product CI 40158692080](https://github.com/Stonefly-Labs/Kofte/actions/runs/40158692080)
+at `c6d587e` passed all ten jobs. It does not test these uncommitted runtime
+changes; no new complete local gate or publication CI result is fabricated.
+Unchanged browser/web/startup/failure-propagation suites were not separately
+rerun by this increment; the retained complete gate above is historical.
+
+### Increment completion and handoff
+
+T081 is implemented and marked complete; the other 80 task descriptions/markers
+are unchanged. The task-file status now says 81 tasks, without rewriting
+historical generation/completion evidence. The original implementation report
+is preserved verbatim before this appended increment, and the convergence
+finding/analysis/reviewer-owned checklists/approved spec/plan/research/model/ADR
+are untouched. Only delivered interface/guide/current-progress documentation
+changes with the runtime/tests/verifier.
+
+The ledger completes only **implement**, selecting **follow-up converge**
+for a separate invocation on the original branch and draft PR #7. This
+increment does not rewrite the earlier gaps result, run convergence/review,
+accept feature 004, mark the PR ready or request a merge. No pre/post hooks
+are configured.

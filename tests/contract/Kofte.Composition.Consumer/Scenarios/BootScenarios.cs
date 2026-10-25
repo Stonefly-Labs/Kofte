@@ -116,30 +116,57 @@ internal static class BootScenarios
         token = fixture.Storage.Token;
         await fixture.SeedUnrelatedNoStorageAsync(token);
         var before = await CompositionStoreSnapshot.CaptureAsync(fixture.Storage, token);
-        await fixture.WriteSelectionAsync(Selection(disabled: true), token);
-        await using (var process = fixture.StartBoot(CompositionTestCatalog.BootDisabled, observeAuthor: true))
+        var attempts = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var omitted in new[] { false, true })
         {
+            await fixture.WriteSelectionAsync(omitted
+                ? DeploymentProgram.Selection([new(BootModules.NoStorage, true)], new { seed = 13 })
+                : Selection(disabled: true), token);
+            await using var process = fixture.StartBoot(CompositionTestCatalog.BootDisabled, observeAuthor: true);
             using var http = Client(fixture);
             await ReadyAsync(evidence, process, http, token);
             await fixture.AuthorTrace.WaitForAsync(BootModules.NoStorage, "health", token);
             await WaitForPublishedAsync(process, token);
             await StopAsync(evidence, process, composed: true, token);
+            await fixture.AuthorTrace.CompleteAsync(token);
+            var host = HostRecords((await process.ResultAsync()).Stdout);
+            var published = host.Single(record => record.GetProperty("stage").GetString() == "published");
+            var attempt = published.GetProperty("attempt").GetString()!;
+            evidence.Require(attempts.Add(attempt), "composition_test_disabled_attempt_reused");
+            evidence.Observed("freshDisabledAttempts");
+            var records = fixture.AuthorTrace.Records;
+            foreach (var owner in new[] { BootModules.Alpha, BootModules.Beta })
+            {
+                var own = records.Where(record => record.Owner == owner).ToArray();
+                evidence.Require(own.Length == 6 && own.All(record => record.Phase.EndsWith("-total", StringComparison.Ordinal) &&
+                    record.Value == 0), "composition_test_disabled_callback_executed");
+                var observations = host.TakeWhile(record => record.GetProperty("stage").GetString() != "published")
+                    .Where(record => record.GetProperty("owner").GetString() == owner &&
+                        record.GetProperty("code").GetString() == "composition_disabled").ToArray();
+                evidence.Require(observations.Length == 1, "composition_test_disabled_observation_missing");
+                var observation = observations[0];
+                evidence.Require(observation.GetProperty("version").GetInt32() == 1 &&
+                    observation.GetProperty("attempt").GetString() == attempt &&
+                    observation.GetProperty("mode").GetString() == "serve" &&
+                    observation.GetProperty("stage").GetString() == "discovered" &&
+                    observation.GetProperty("outcome").GetString() == "disabled" &&
+                    observation.GetProperty("guidance").GetString() == "edit_selection_while_stopped" &&
+                    observation.GetProperty("elapsedMilliseconds").GetInt64() <=
+                        published.GetProperty("elapsedMilliseconds").GetInt64() &&
+                    host.Where(record => record.GetProperty("owner").GetString() == owner)
+                        .All(record => record.GetProperty("stage").GetString() == "discovered"),
+                    "composition_test_disabled_observation_invalid");
+                evidence.Observed(omitted ? "omittedDisabledObservations" : "explicitDisabledObservations");
+            }
+            evidence.Require(host.Count(record => record.GetProperty("code").GetString() == "composition_disabled") == 2 &&
+                records.Any(record => record.Owner == BootModules.NoStorage && record.Phase == "compute" && record.Value == 8),
+                "composition_test_enabled_no_storage_not_executed");
+            RequireCleanup(evidence, records, [BootModules.NoStorage]);
+            evidence.Observed("disabledCallbackComparisons");
+            evidence.Require(before == await CompositionStoreSnapshot.CaptureAsync(fixture.Storage, token),
+                "composition_test_disabled_inventory_changed");
+            evidence.Observed("unchangedInventories");
         }
-        await fixture.AuthorTrace.CompleteAsync(token);
-        var records = fixture.AuthorTrace.Records;
-        foreach (var owner in new[] { BootModules.Alpha, BootModules.Beta })
-        {
-            var own = records.Where(record => record.Owner == owner).ToArray();
-            evidence.Require(own.Length == 6 && own.All(record => record.Phase.EndsWith("-total", StringComparison.Ordinal) &&
-                record.Value == 0), "composition_test_disabled_callback_executed");
-        }
-        evidence.Require(records.Any(record => record.Owner == BootModules.NoStorage && record.Phase == "compute" &&
-            record.Value == 8), "composition_test_enabled_no_storage_not_executed");
-        RequireCleanup(evidence, records, [BootModules.NoStorage]);
-        evidence.Observed("disabledCallbackComparisons");
-        evidence.Require(before == await CompositionStoreSnapshot.CaptureAsync(fixture.Storage, token),
-            "composition_test_disabled_inventory_changed");
-        evidence.Observed("unchangedInventories");
 
         await fixture.WriteSelectionAsync(DeploymentProgram.Selection(
             [new(BootModules.Alpha, true)], new { seed = 7 }), token);

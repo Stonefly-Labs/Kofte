@@ -305,15 +305,23 @@ Historical failures remain distinct; fixture-only budget/workload repairs do
 not relax product deadlines, assertions or floors. That checkpoint selected
 convergence; the PR stays draft.
 
-The [004 convergence assessment](../specs/004-module-lifecycle/convergence.md)
-now records **gaps** across all 46 requirements/outcomes/scenarios, twelve plan
+The historical [004 convergence assessment](../specs/004-module-lifecycle/convergence.md)
+records **gaps** across all 46 requirements/outcomes/scenarios, twelve plan
 decisions, 80 original tasks and twelve principles. One HIGH partial finding
 reproduces the actual configured host's missing explicit disabled-state operator
 output, despite a correct in-memory snapshot. Exactly T081 is appended unchecked;
 all original task bytes/markers, product/test code, approved intent, historical
-reports and reviewed checklists remain unchanged. **Implement T081 is next**
+reports and reviewed checklists remained unchanged. That selected implement
 on the same draft PR #7, followed separately by convergence/review and explicit
 human acceptance. No intermediate merge is requested.
+
+The [T081 increment](../specs/004-module-lifecycle/implementation.md#convergence-remediation-t081)
+now delivers the missing private disabled records, derived from the existing
+snapshot for explicit/omitted deployments and validated against the copied
+enabled-owner set. Both-provider actual-host/strict-harness regressions require
+fresh attempts, zero disabled effects and unchanged anonymous privacy.
+All 81 tasks are implemented; **follow-up convergence is next** on draft PR #7.
+Historical convergence/analysis and reviewed checklists remain untouched.
 
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.

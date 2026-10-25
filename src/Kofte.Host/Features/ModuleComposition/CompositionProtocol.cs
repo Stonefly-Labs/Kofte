@@ -11,12 +11,14 @@ public sealed class CompositionProtocol
     private readonly HashSet<string> owners;
     private readonly HashSet<string> selectedOwners;
     private readonly HashSet<string> prerequisiteOwners;
+    private readonly HashSet<string> enabledOwners;
     private readonly CompositionMode mode;
     private readonly Dictionary<string, HashSet<string>> fieldTokens = new(StringComparer.Ordinal);
 
     public CompositionProtocol(string attempt, string snapshot, IEnumerable<ModuleId> owners, CompositionMode mode,
         IReadOnlyDictionary<ModuleId, IReadOnlyList<ModuleConfigurationField>>? configurationFields = null,
-        IEnumerable<ModuleId>? selectedOwners = null, IEnumerable<ModuleId>? prerequisiteOwners = null)
+        IEnumerable<ModuleId>? selectedOwners = null, IEnumerable<ModuleId>? prerequisiteOwners = null,
+        IEnumerable<ModuleId>? enabledOwners = null)
     {
         if (!CompositionDiagnostics.IsToken(attempt) || !CompositionDiagnostics.IsToken(snapshot) || !Enum.IsDefined(mode))
             throw Invalid();
@@ -33,6 +35,10 @@ public sealed class CompositionProtocol
         var prerequisites = (prerequisiteOwners ?? []).Take(1025).ToArray();
         if (prerequisites.Length > 1024 || prerequisites.Any(owner => owner is null)) throw Invalid();
         this.prerequisiteOwners = prerequisites.Select(owner => owner.Value).ToHashSet(StringComparer.Ordinal);
+        var enabled = (enabledOwners ?? []).Take(33).ToArray();
+        if (enabled.Length > 32 || enabled.Any(owner => owner is null)) throw Invalid();
+        this.enabledOwners = enabled.Select(owner => owner.Value).ToHashSet(StringComparer.Ordinal);
+        if (this.enabledOwners.Count != enabled.Length) throw Invalid();
         var declarations = (configurationFields ??
             new Dictionary<ModuleId, IReadOnlyList<ModuleConfigurationField>>()).Take(33).ToArray();
         if (declarations.Length > 32) throw Invalid();
@@ -107,6 +113,11 @@ public sealed class CompositionProtocol
             record.StorageCorrelation is not null && !CompositionDiagnostics.IsToken(record.StorageCorrelation) ||
             record.Durability is not null && record.Durability is not ("unchanged" or "committed" or "uncertain") ||
             (record.StorageCorrelation is null) != (record.Durability is null))
+            throw Invalid();
+        if ((record.Code == "composition_disabled" || record.Outcome == "disabled") &&
+            (record.Code != "composition_disabled" || record.Outcome != "disabled" ||
+                record.Stage != "discovered" || record.Owner is null || enabledOwners.Contains(record.Owner) ||
+                record.RelatedIds.Count != 0 || record.StorageCorrelation is not null || record.FieldToken is not null))
             throw Invalid();
         try
         {

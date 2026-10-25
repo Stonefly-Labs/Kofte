@@ -39,7 +39,8 @@ internal static class CompositionWorker
                 throw new CompositionBoundaryException("composition_admission_invalid");
             var protocol = new CompositionProtocol(admission.Attempt, admission.Snapshot,
                 CompositionSupervisor.CatalogOwners(catalog), mode, CompositionSupervisor.CatalogFields(catalog),
-                admission.Selection.Modules.Select(module => module.Owner), CompositionSupervisor.CatalogPrerequisites(catalog));
+                admission.Selection.Modules.Select(module => module.Owner), CompositionSupervisor.CatalogPrerequisites(catalog),
+                admission.Selection.Modules.Where(module => module.Enabled).Select(module => module.Owner));
             diagnostics = new(mode, configuration.Runtime.Profile == "local-sqlite" ? "sqlite" : "postgresql",
                 record => protocol.WriteAsync(admission.Events, record, CancellationToken.None).GetAwaiter().GetResult(),
                 attemptId: admission.Attempt);

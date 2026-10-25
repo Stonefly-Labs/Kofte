@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** **004 / converge completed with gaps; implement T081 is next** after specify, clarify,
+**Current checkpoint:** **004 / implement T081 is complete; follow-up converge is next** after specify, clarify,
 plan, checklist, tasks and analyze completed on
 `feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
 The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the
@@ -216,7 +216,7 @@ and selects **converge for a separate invocation**.
 Convergence, final review and explicit feature acceptance are later invocations;
 no readiness or intermediate merge is requested.
 
-**Current convergence checkpoint:** 004 / converge records **gaps** on
+**First convergence checkpoint (historical):** 004 / converge records **gaps** on
 `feature/004-module-lifecycle` and the same
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
 The [assessment](../../specs/004-module-lifecycle/convergence.md) checks all
@@ -236,6 +236,18 @@ new human decision is demonstrated. The driver selects **implement** for the
 next separate invocation, then follow-up convergence/review and explicit
 human acceptance. This stage implements nothing, accepts nothing and requests
 no intermediate merge. No convergence hooks are configured.
+
+**Current remediation checkpoint:** [T081 implementation](../../specs/004-module-lifecycle/implementation.md#convergence-remediation-t081)
+now wires the existing disabled snapshot to actual bounded private operator
+output for both explicitly false and omitted deployments. Parent/worker
+protocols copy the admitted enabled set and reject forged disabled state;
+no new fields, version, privilege or anonymous details are introduced.
+The real SQLite/PostgreSQL examples require two fresh attempts and both
+disabled forms, zero disabled callbacks/stores, missing-owner refusal and
+strict omission/decrement rejection. All 81 tasks are implemented; historical
+analysis/convergence and reviewer-owned checklist markers stay unchanged.
+The ledger completes only implement and selects **follow-up converge** on the
+original branch/draft PR #7, not automatic review, acceptance or merge.
 
 **003 acceptance checkpoint:** 003 is **explicitly human-accepted and
 human-merged** on its original `feature/003-storage-registry` and

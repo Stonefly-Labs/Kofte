@@ -116,6 +116,36 @@ public sealed class CompositionDiagnosticTests
     }
 
     [Fact]
+    public async Task DisabledFramesRoundTripWithOnlyTheCurrentDisabledOwnerAndFixedGuidance()
+    {
+        var (protocol, frame) = await ValidFrame(disabled: true);
+        using var source = Encode(frame.ToJsonString());
+        var record = Assert.IsType<CompositionRecord>(
+            await protocol.ReadAsync(source, TestContext.Current.CancellationToken));
+        Assert.Equal("org.example.alpha", record.Owner);
+        Assert.Equal("disabled", record.Outcome);
+        Assert.Equal("edit_selection_while_stopped", record.Guidance);
+    }
+
+    [Theory]
+    [InlineData("owner", "null")]
+    [InlineData("owner", "\"org.example.beta\"")]
+    [InlineData("stage", "\"started\"")]
+    [InlineData("outcome", "\"passed\"")]
+    [InlineData("code", "\"composition_progress\"")]
+    [InlineData("guidance", "\"observe_current_attempt\"")]
+    [InlineData("relatedIds", "[\"org.example.beta\"]")]
+    public async Task DisabledFramesRejectEnabledOwnersAndContradictoryState(string field, string value)
+    {
+        var (protocol, frame) = await ValidFrame(disabled: true);
+        frame["record"]![field] = JsonNode.Parse(value);
+        using var source = Encode(frame.ToJsonString());
+        var error = await Assert.ThrowsAsync<CompositionBoundaryException>(() =>
+            protocol.ReadAsync(source, TestContext.Current.CancellationToken));
+        Assert.Equal("composition_observation_invalid", error.Code);
+    }
+
+    [Fact]
     public async Task RawCallbackOutputIsDrainedWithoutBecomingAProjectedRecordOrUnboundedLine()
     {
         const string canary = "private-settings-path-exception-canary";
@@ -335,7 +365,8 @@ public sealed class CompositionDiagnosticTests
         return stream;
     }
 
-    private static async Task<(CompositionProtocol Protocol, JsonNode Frame)> ValidFrame(bool settings = false)
+    private static async Task<(CompositionProtocol Protocol, JsonNode Frame)> ValidFrame(bool settings = false,
+        bool disabled = false)
     {
         var diagnostics = new CompositionDiagnostics(CompositionMode.Validate, "none", _ => { });
         var owner = Id("org.example.alpha");
@@ -346,9 +377,11 @@ public sealed class CompositionDiagnosticTests
             {
                 [owner] = [new("server", ["server"], ModuleSettingType.Object)],
                 [other] = [new("other", ["other"], ModuleSettingType.String)]
-            });
+            }, enabledOwners: [other]);
         using var pipe = new MemoryStream();
-        var record = settings
+        var record = disabled
+            ? diagnostics.Emit(CompositionStage.Discovered, CompositionOutcome.Disabled, "composition_disabled", owner)
+            : settings
             ? diagnostics.Emit(CompositionStage.Validated, CompositionOutcome.Rejected,
                 "composition_setting_invalid", owner, fieldToken: "server", fieldReason: "required")
             : diagnostics.Emit(CompositionStage.Input, CompositionOutcome.Progress, "composition_progress");

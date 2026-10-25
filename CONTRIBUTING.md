@@ -194,16 +194,25 @@ No product deadline, assertion, provider requirement or floor changed.
 That historical checkpoint selected convergence; implementation completion does
 not accept feature 004 or request merge.
 
-The [004 convergence assessment](specs/004-module-lifecycle/convergence.md)
-now records **gaps** after checking all 46 requirements/outcomes/scenarios,
+The historical [004 convergence assessment](specs/004-module-lifecycle/convergence.md)
+records **gaps** after checking all 46 requirements/outcomes/scenarios,
 twelve plan decisions, 80 tasks and twelve principles. One HIGH partial finding
 reproduces missing explicit disabled-state output from the configured host:
 the correct in-memory observation never reaches the trusted operator channel.
 Exactly T081 is appended unchecked, preserving all original task bytes/markers,
 product/test source, approved intent and reviewer checklists.
-**Implement T081 is next** on the same branch/draft PR #7, before follow-up
+That checkpoint selected implement on the same branch/draft PR #7, before follow-up
 convergence, final review and explicit human acceptance. No intermediate merge
 or new design approval is needed.
+
+The [T081 implementation increment](specs/004-module-lifecycle/implementation.md#convergence-remediation-t081)
+now projects the existing disabled observations into bounded private records
+for explicitly false and omitted deployed owners. Both-provider public examples
+require real supervised output under two fresh attempts, zero disabled effects
+and unchanged anonymous health; protocol and strict-result omission/tampering
+checks cover the new evidence. All 81 tasks are implemented; **follow-up
+convergence is next** on the same draft PR. Historical convergence/analysis and
+reviewer-owned checklists are untouched; no feature acceptance is implied.
 
 The following paragraphs preserve the historical design-stage checkpoint.
 
