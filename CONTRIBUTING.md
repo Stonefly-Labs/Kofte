@@ -231,9 +231,20 @@ HTTP request reproduces a normal-stop defect; the composed host's internal
 500-ms drain fits within unchanged cleanup/stop limits. Fixed private causal
 codes preserve fail-closed cleanup and privacy. Historical failures remain
 recorded, not retroactively explained by this reproduction. All 83 tasks are
-implemented; **follow-up converge is next** on the same draft PR. Approved
-intent, historical assessments and reviewed checklists remain unchanged;
+implemented; that checkpoint selected follow-up converge on the same draft PR.
+Approved intent, historical assessments and reviewed checklists remain unchanged;
 final review and explicit human acceptance are still separate gates.
+
+The [current 004 convergence](specs/004-module-lifecycle/convergence.md)
+closes F1/T081 and F2/T082 but records **gaps** after assessing all 46
+requirements/outcomes/scenarios, twelve plan decisions, 83 tasks and twelve
+principles. HIGH F4 reproduces accepted executable counts failing registration
+or activation; MEDIUM F3 remains open with two ordinary host-disposal failures
+in fresh 104/106 broad integration. The actual HTTP-stop regression passes;
+it does not explain the disposal failures. Only T084-T085 are appended under
+Phase 11, preserving prior task bytes/markers, approved intent, reviewed
+checklists and product/test code. **Implement is next** on the same draft PR #7,
+before follow-up convergence, review and explicit human acceptance.
 
 The following paragraphs preserve the historical design-stage checkpoint.
 

@@ -333,7 +333,7 @@ Recurring expected-success cleanup failures remain causally unexplained
 cases 5/5. Exactly two tasks are appended under Phase 10, preserving all 81
 prior tasks, historical evidence and product/test source.
 
-**004 / T082-T083 implement is complete; follow-up converge is next.**
+**Historical 004 / T082-T083 implementation checkpoint.**
 The [increment](../specs/004-module-lifecycle/implementation.md#convergence-remediation-t082-t083)
 retains accepted dependency identity bounds through actual public binding/
 Start, and reproduces/fixes normal-stop failure with incomplete HTTP requests
@@ -342,6 +342,17 @@ limits; fixed private causal codes retain intentional incomplete/uncertain
 refusal and anonymous privacy. All 83 tasks are implemented. Historical
 failures and causal limits remain explicit; follow-up convergence, final review
 and explicit human acceptance remain separate on the same draft PR #7.
+
+**Current 004 / converge: gaps; implement T084-T085 is next.**
+The [assessment](../specs/004-module-lifecycle/convergence.md) checks all 46
+requirements/outcomes/scenarios, twelve plan decisions, 83 tasks and twelve
+principles. F1/T081 and F2/T082 are closed. HIGH F4 demonstrates narrower
+runtime service-count limits rejecting valid compositions; MEDIUM F3 retains
+two normal host-disposal failures in fresh 104/106 broad integration.
+The HTTP-stop regression passes but does not close the distinct disposal
+boundary. Only Phase 11/T084-T085 are appended; prior tasks, product/test
+source, approved intent, reviewed checklists and historical reports are
+preserved. Continue on the same draft PR #7, without an intermediate merge.
 
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.

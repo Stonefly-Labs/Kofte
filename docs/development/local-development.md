@@ -262,8 +262,20 @@ cleanup action and 15-second total stop limit. Fixed private `stopping /
 incomplete` codes distinguish host stop/dispose, services disposal and storage
 disposal; final `cleanup` remains terminal and fail-closed. No raw exception,
 path or setting is exposed. Historical failures cannot all be attributed
-retroactively to this demonstrated cause. All 83 tasks are implemented;
-**follow-up converge is next**, separately on the same draft PR.
+retroactively to this demonstrated cause. All 83 then-existing tasks are
+implemented; that checkpoint selected follow-up converge on the same draft PR.
+
+The [current convergence](../../specs/004-module-lifecycle/convergence.md)
+closes F1/T081 and F2/T082 but records **gaps**. Valid compositions with 65
+prerequisite services or 129 global executable exports fail later lifecycle
+stages (HIGH F4). Fresh broad integration passes 104/106: SQLite preservation
+and PostgreSQL correction still fail ordinary host disposal (MEDIUM F3).
+The private code is now `composition_host_dispose_incomplete`; its underlying
+cause is not established by the passing HTTP-stop regression or historical
+reruns/CI. Only T084-T085 are appended, preserving existing task bytes,
+product/test source, approved intent and reviewed checklists.
+**Implement is next** on the same draft PR #7. Commands and runtime bounds
+are unchanged; no complete local gate or feature acceptance is claimed here.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).

@@ -372,10 +372,22 @@ finish draining inside the unchanged one-second outer action; total stop
 remains 15 seconds. Four fixed private `stopping / incomplete` codes identify
 infrastructure cleanup boundaries without introducing raw details or new
 fields. Ownerless `cleanup` remains terminal, and lost-authority disposal still
-refuses success with uncertain durability. All 83 tasks are implemented;
-follow-up converge is next. Historical failures remain recorded without claiming
-that this reproduction explains each occurrence. No new architecture decision,
+refuses success with uncertain durability. All 83 then-existing tasks are
+implemented; that checkpoint selected follow-up converge. Historical failures
+remain recorded without claiming that this reproduction explains each occurrence.
+No new architecture decision,
 dependency, public endpoint or privilege is introduced.
+
+The [current convergence](../specs/004-module-lifecycle/convergence.md) closes
+the disabled-state and binding-name findings, but retains two partial gaps.
+HIGH F4 shows 65 prerequisite service exports or 129 global executable
+exports fail after accepted resolution; complete runtime counts must match
+the approved 128-per-owner/1,024-total contribution bounds. MEDIUM F3 remains
+open: two fresh normal paths fail host disposal despite passing incomplete-
+request HTTP-stop regressions. Only T084-T085 are appended; no product,
+contract, dependency, authority or approved architecture is changed.
+Implement is next on the same draft PR #7; the underlying disposal cause is
+not established or silently attributed to scheduling.
 
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements

@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** **004 / implement T082-T083 is complete; follow-up converge is next** after specify, clarify,
+**Current checkpoint:** **004 / converge records gaps after T082-T083; implement T084-T085 is next** after specify, clarify,
 plan, checklist, tasks and analyze completed on
 `feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
 The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the
@@ -264,7 +264,7 @@ The driver completes only **converge / gaps** and selects **implement** for
 the next invocation on the same branch/draft PR #7. No review, acceptance,
 readiness or intermediate merge is authorized here.
 
-**Current T082-T083 implementation checkpoint:** The
+**Historical T082-T083 implementation checkpoint:** The
 [increment](../../specs/004-module-lifecycle/implementation.md#convergence-remediation-t082-t083)
 fixes valid owner-qualified dependency binding across the accepted local/owner
 bounds and proves the public boundary through actual Start/readiness.
@@ -277,6 +277,25 @@ Historical failures, intermediate investigation mistakes and causal limits are
 retained in the report. The driver completes only **implement** and selects
 **follow-up converge** on the original branch/draft PR #7. It does not execute
 converge/review, accept the feature, mark ready or request a merge.
+
+**Current convergence after T082-T083:** The
+[assessment](../../specs/004-module-lifecycle/convergence.md) covers all 46
+requirements/outcomes/scenarios, twelve plan decisions, 83 tasks and twelve
+principles. F1/T081's disabled observations and F2/T082's owner-qualified
+binding-name correction are closed by actual public behavior. New HIGH F4
+reproduces accepted compositions failing at 65 prerequisite service bindings
+or 129 total executable exports. MEDIUM F3 remains open: fresh broad
+integration passes 104/106, with SQLite preservation and PostgreSQL correction
+failing expected-success cleanup at `composition_host_dispose_incomplete`.
+The incomplete-request HTTP-stop regression and intentional lost-authority
+refusal pass in the same run; they do not identify the disposal cause.
+
+Only Phase 11/T084-T085 are appended. All 83 prior task bytes/markers,
+product/test/verifier source, approved intent, reviewer checklists and
+historical implementation/convergence reports are preserved. The driver
+completes only **converge / gaps**, selecting **implement** for the next
+separate invocation on the same branch/draft PR #7. No new design approval,
+review, acceptance, readiness or intermediate merge is implied.
 
 **003 acceptance checkpoint:** 003 is **explicitly human-accepted and
 human-merged** on its original `feature/003-storage-registry` and

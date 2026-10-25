@@ -1,3 +1,251 @@
+# Convergence after T082-T083: 004 - Module Composition and Lifecycle
+
+**Result:** gaps
+
+**Stage:** converge only; begun 2026-10-25T12:55:02+00:00.
+**Assessed revision:** `74074f9b6bac009403e3a0d7c5bf5ca6987feb90`.
+**Branch / checkpoint:** `feature/004-module-lifecycle`,
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
+**Intent:** `spec.md`, `plan.md` and all 83 existing tasks, governed by
+constitution v2.0.1. Contracts/model explain their bounds; checked markers,
+historical reports and CI cannot substitute for actual behavior.
+
+## Decision
+
+**F1/T081 and F2/T082 are closed.** Explicit and omitted disabled owners
+reach the actual private operator channel. Full owner-qualified binding names
+now preserve inclusive accepted owner/local-name lengths through actual Start
+and readiness, including the independent public module.
+
+**F3 remains open after T083.** The demonstrated incomplete-HTTP-request
+shutdown correction and private causal records are real, but fresh broad
+integration still fails two ordinary expected-success paths. Their new safe
+records identify **host disposal**, not HTTP stop, as the failing boundary.
+No underlying exception, deadline or fixture/scheduling cause is established.
+
+**New F4** reproduces accepted executable contribution counts failing later
+registration or activation: global exports are capped at 128 and prerequisite
+service bindings at 64, below the admitted composition contribution limits.
+Append only **T084-T085 under Phase 11**, high priority first. **Implement
+is next**, in a separate invocation on this same branch/draft PR.
+
+No application/test/verifier source, dependency, generated contract, approved
+intent, reviewer checklist or implementation history changes here. The entire
+pre-stage convergence report is preserved verbatim below.
+
+## Findings
+
+| ID | Gap type | Severity | Source | Evidence | Remaining work |
+| --- | --- | --- | --- | --- | --- |
+| F4 | partial | HIGH | FR-004/006/008/019/020; US1.2; SC-001; R4/R5/R11; T007/T016/T018/T023/T028/T030/T034 | Public resolution accepts 65 prerequisite exports, but activation fails; 129 total executable exports across two owners fail registration despite accepted per-owner/global contribution bounds. | T084: preserve complete bounded exports/bindings through actual lifecycle and public regression evidence. |
+| F3 | partial | MEDIUM | FR-012/013/015/016/017/020 evidence; US4.4/US5.3; SC-003/005; R9/R12; T060/T068/T075/T078/T083 | Fresh both-provider integration passes 104/106; SQLite preservation and PostgreSQL correction fail expected-success exit with private `composition_host_dispose_incomplete`. | T085: establish and correct the remaining disposal cause without relaxing cleanup, deadlines or evidence. |
+
+### F4: admitted contribution counts do not survive executable composition
+
+The source admits **128 claims per owner / 1,024 enabled total** in
+`src/Kofte.Platform/Modules/Composition/CompositionResolver.cs:115-117`,
+consistent with plan Technical Context, T018/T023 and the composition contract's
+admission table. Backend service identities, service types and ownership are
+validated by `ContributionValidator`; required dependency identities and service
+exports are different quantities.
+
+`src/Kofte.Host/Features/ModuleComposition/ModuleLifecycleCoordinator.cs:101-105`
+materializes default executable exports with `Take(129)`, then `:116-119`
+rejects more than 128 exports for the entire composition. Separately,
+`src/Kofte.Platform/Modules/Lifecycle/ModuleLifecycle.cs:104-107` copies only
+65 bindings and rejects more than 64. The coordinator supplies every declared
+prerequisite service export during Start (`:294-300`), so a single valid
+prerequisite with 65 executable services violates that constructor's limit.
+Neither narrower runtime bound appears in approved admission intent.
+
+A session-only .NET executable used public platform/host lifecycle contracts,
+native DI, two no-storage owners, unique closed generic service types, valid
+manifests/claims and ordinary immediately completing healthy callbacks. It
+resolved, registered, initialized, marked the no-storage boundary, started,
+checked readiness and reversed cleanup for each fresh composition:
+
+| Alpha exports | Beta exports | Beta requires Alpha | Resolver accepted | Actual ready | Failure |
+| --- | --- | --- | --- | --- | --- |
+| 64 | 0 | Yes | Yes | Yes; Beta receives exactly 64 bindings | None |
+| 65 | 0 | Yes | Yes | No; Beta Start is not entered | `composition_activation_failed` |
+| 128 | 0 | No | Yes | Yes | None |
+| 128 | 1 | No | Yes | No; registration refuses | `composition_registration_failed` |
+
+All cases stay within two enabled owners, one dependency edge, at most 128
+claims/types per owner and at most 129 total contributions. No provider,
+private API, repository source change, raw output fault or injected timeout is
+needed. This is independent of F2's now-correct name length and F3's process
+cleanup failures. The initial probe used an incorrect `name` manifest field
+and was rejected before lifecycle; that run is not reproduction evidence.
+The corrected `displayName` fixture produces the table above.
+
+The probe exits 0 after reporting all observations; that means the diagnostic
+experiment completed, not that the two failing compositions passed. T084 must
+preserve complete identities/versions/operations under approved finite bounds,
+not truncate service lists, narrow public inputs or merely reject later with
+a more descriptive message. Persistent regressions belong to implement.
+
+### F3: HTTP stop is corrected; normal host disposal still fails
+
+The fresh broad command has **106 tests, 104 passed, two failed, zero skipped**:
+
+| Test / public scenario | Actual result |
+| --- | --- |
+| `SqliteCompositionPreservationTests.ThreeStoppedSelectionCyclesPreserveExactOriginalStoresAndUseFreshProcesses` / `disable-reenable` | Expected exit 0, actual 1; `composition_cleanup_incomplete_composition_host_dispose_incomplete`; 7.574s. |
+| `PostgresCompositionDeadlineTests.PublicCorrectionsRequireFreshAttemptsAndExplicitUncertainMigrationRecovery` / `failure-correction` | Expected exit 0, actual 1; same private causal code; 25.800s. |
+
+These are unchanged required examples, not deliberate cleanup-refusal cases.
+`CompositionWorker.cs:189-190` identifies bounded `app.DisposeAsync()` after
+the host-stop action; `:269` applies the internal 500-ms graceful stop budget.
+`CompositionCallbackRunner` still gives each cleanup action at most one second.
+The safe boundary does **not** distinguish a disposal exception from an
+uncompleted callback/deadline or establish why either occurred. No scheduling,
+database, double-disposal, data-loss or false-termination diagnosis is asserted.
+
+Both `NormalStopWithAnOpenIncompleteHttpRequestPreservesInventoryAndVerifiesExit`
+provider cases pass in this same broad run. The PostgreSQL lost-serving-session
+case also passes, retaining correlated `composition_storage_dispose_incomplete`,
+final incomplete refusal, actual exit, no reacquisition and fresh explicit
+retry. Thus T083 supplies a genuine targeted correction and useful privacy-safe
+evidence; it does not establish closure of all normal-stop failures.
+No unchanged isolated rerun is used to erase the two new failures.
+
+The original failed local all-suite and successful narrowed reconciliation
+remain accurately recorded in `implementation.md`. Passing assessed-head CI
+is useful evidence but does not resolve these new same-head local failures.
+T085 addresses the remaining scoped operation/evidence gap; it does not repeat
+T083's already-proven incomplete-request correction or authorize broader scope.
+
+## Complete intent assessment
+
+| Inventory | Assessed | Result |
+| --- | --- | --- |
+| Functional requirements | 20/20 | F4 qualifies valid executable composition; F3 qualifies current lifecycle/evidence completeness. |
+| Buildable success criteria | 6/6 | SC-001 retains F4; SC-003/005 retain F3's preservation/correction completion limitation; SC-004/006 refusal/privacy assertions remain required. |
+| Acceptance scenarios | 20/20 | Five stories, four scenarios each; US1.2 retains F4 and US4.4/US5.3 retain F3. |
+| Plan decisions | 12/12 | R4/R5/R11 retain F4; R9/R12 retain F3; no architecture or scope dispute. |
+| Existing tasks | 83/83 | Original T001-T080 plus all corrective tasks assessed regardless of checkboxes. |
+| Constitution principles | 12/12 | Applicable ownership/trust/authority/evidence constraints checked; no separate constitutional contradiction. |
+| Findings by type | missing 0; partial 2; contradicts 0; unrequested 0 | F4 new, F3 remains open. |
+| Findings by severity | CRITICAL 0; HIGH 1; MEDIUM 1; LOW 0 | Two scoped implementation tasks, not new design decisions. |
+
+### Requirements, scenarios and outcomes
+
+| Intent | Actual source and discriminating assertions | Assessment |
+| --- | --- | --- |
+| FR-001/002; US1.1-4; SC-001 | `ModuleCompositionHost`, copied explicit selection/catalog, resolver/preflight/worker; `BootScenarios` real v0/v1 endpoints, public operations, explicit/omitted disabled observations, zero disabled callbacks/inventory effects and missing-implementation refusal. | F1 closed; valid composed service-count boundary remains F4. |
+| FR-003/004; US2.1-3; SC-002 | `CompositionResolver`, graph SCC/ordinal frontier and diagnostic ordering; resolver/limit tests, frozen public corpus and `ValidationScenarios` run independent expected decisions 100 times across ten permutations, two real cultures and author/host paths. | Pure resolution exists; its accepted contribution counts do not survive runtime under F4. |
+| FR-005/006/007; US2.1-4 | Strict original-byte selection/settings, known field tokens, claim ownership/routes/unsupported execution, complete storage/recipe preflight; invalid scenarios and both-provider preflight tests compare exact unchanged inventory and zero mutating callbacks. | No additional preflight gap; F4 is later executable materialization, not a request to reduce valid inputs. |
+| FR-008/011; US3.1/2, US5.1; SC-001/004 | Audited native DI, owner scopes, coordinator whole-phase barriers, partial-entry tracking, verified storage and fresh initial health before whole-set publication; lifecycle tests and actual public services/migrations. | F2's four owner/local boundaries pass; F4 prevents valid larger executable sets from becoming ready. |
+| FR-009/010; US3.1-4 | `CompositionStorageSession` inspection/preparation/read verification reuses accepted registry/bind/migrate authority; provider migration/recipe/progress/authority/recovery tests prove exact histories, no serving writes, earlier commits and explicit recovery. | No additional storage-ownership gap; current cleanup evidence is qualified by F3. |
+| FR-012/013; US4.1-4; SC-003 | Copied persisted selection, exact assignment/data/history/unrelated-state comparisons after each of three fresh-process cycles; dependency-invalid disable and explicit owner-only upgrade assertions. | No missing preservation assertion; fresh SQLite public cycles fail final expected-success cleanup under F3. |
+| FR-014; US5.1/2; SC-005 | Current-attempt atomic own/effective health, individual 30-second freshness, serialized sweeps, transitive impact/independent roots; health/observation tests and actual aggregate HTTP assertions. | No additional gap; anonymous requests do not invoke module code. |
+| FR-015/016; US3.3/4, US4.4, US5.3; SC-004/005 | Monotonic clipped budgets, partial-entry reverse cleanup, owned process-group/root/descendant verification, seven ignoring-token boundaries, cancellation, authority and named correction examples. | New safe host-disposal failures keep F3 open; termination/refusal assertions and product bounds are retained. |
+| FR-017/018; US5.4; SC-006 | Generated attempts, fixed structured records, admitted frames/owners/fields, bounded output/labels and private captures; anonymous aggregate schema and route exclusions. | T083 causal records work without raw exception/settings/path output; no new privacy/authority gap identified. |
+| FR-019/020; all scenarios; SC-001-006 | Separate public author/consumer projects, strict C#/Python mandatory observations/omission rejection, eleven guide scenarios and retained named quality/provider/recovery/privacy/browser/startup/failure gates. | F4 lacks boundary lifecycle support; F3's failures must remain failures despite successful historical/CI evidence. |
+
+### Every task, plan decision and principle
+
+| Task set | Current implementation/evidence assessed |
+| --- | --- |
+| T001-T005 | Reviewed ADR 0006/analysis/checklist gate, existing reviewed DI edge/locks/notices, separate test assemblies, owned provider/process fixtures and strict result harness. |
+| T006-T014 | Copied public/configuration/lifecycle/observation contracts, strict private selection, safe record/protocol/attempt limits and complete read-only storage/model/recipe inspection. F4 qualifies T007's derived binding bound. |
+| T015-T026 | Independent expected graph/limits/cultures, settings/claims, deterministic diagnostics and actual supervised zero-effect preflight. F4 qualifies accepted count-to-runtime consistency, not missing pure limits. |
+| T027-T036 | Native registration audit, owner-scoped public operations, actual empty/dependency/disabled/missing boots and atomic healthy readiness. F4 qualifies runtime exports/bindings; F2's identity fix is verified. |
+| T037-T049 | Actual both-provider assigned clean/additive/current migrations, all-recipe barriers, contention/lease loss/killed later-owner recovery, retained earlier data and explicit stopped recovery/serve guide. |
+| T050-T057 | Exact three-cycle preservation, invalid dependent disable, reverse partial cleanup and separate explicit upgrade. F3 qualifies fresh completion of SQLite's process cycle example. |
+| T058-T072 | Current/stale/dependency health and HTTP privacy, actual process budgets/exit/correction, six-channel privacy, strict omitted-evidence refusals and truthful operational limitations. F3 qualifies ordinary correction/cleanup completeness. |
+| T073-T080 | Existing verifier inventories/minima and mandatory public-guide observations retain foundation gates and documented local/CI reconciliation. Original failed complete attempts remain failed; F3 prevents fresh blanket success. |
+| T081 | Actual disabled observations and enabled-owner protocol checks; both-provider public boot and strict observation omissions close F1. |
+| T082 | Exact owner-qualified public service identities survive 117/118/128-character locals and maximum owner length; independent public boundary evidence closes F2. F4 is a distinct count-composition defect. |
+| T083 | Real incomplete-request HTTP-stop regression and fixed private cleanup boundaries are present and pass; new host-disposal evidence prevents complete closure of F3. |
+
+R1-R3 retain explicit compiled discovery, bounded deterministic whole-set
+resolution and owner-only settings. R4/R5 retain supported contribution/DI/
+phase boundaries, but their complete valid executable counts need T084.
+R6/R7 retain stopped owner-local preparation, immutable stores and explicit
+recovery. R8 retains current dependency-aware health; R9's actual cleanup and
+R12's regression evidence retain T085. R10's safe correlated boundaries and
+R11's independent public proof exist, with F4's additional boundary obligation.
+
+Principle I retains MIT licensing, Köfte branding, technical `kofte` identities,
+optional modules and no mandatory Hoard. II/III preserve trusted versioned
+module contracts, native DI, module-local ownership and dedicated test-project
+source. IV/V preserve schema/file/registry/physical ownership and honest
+owner-local commits. VI preserves installation-only authority, owner contexts
+and safe output. VII-IX retain inert future MCP/frontend/job/event/realtime
+categories and unchanged aggregate UI/HTTP contracts; their later
+authorization/accessibility/release obligations are not waived. X retains both
+real providers, reproducible pinned tooling and no mandatory cloud/deployment
+service. XI requires honest provider/process evidence, including both current
+failures, and focused regressions before closure. XII retains 004 scope,
+approved intent and no MVP-completion claim; the driver adds append-only tasks,
+one branch/draft PR and separate review/explicit human acceptance. No new
+mandatory service, later-feature runtime or unrequested implementation is identified.
+
+## Fresh commands and limitations
+
+The default shell's `dotnet --version` initially failed (exit 155): only SDK
+10.0.203 was selected there. The already installed repository-local SDK was
+then selected, without installing dependencies or changing pins:
+
+```bash
+export DOTNET_ROOT="$PWD/artifacts/toolchain/dotnet-10.0.402"
+export PATH="$DOTNET_ROOT:$PATH"
+export DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_PROCESSOR_COUNT=4
+export KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true
+```
+
+Actual target: macOS arm64, .NET SDK 10.0.402/runtime 10.0.13,
+Node 24.22.0/npm 11.19.1; PostgreSQL uses only owned disposable fixtures.
+
+| Exact command | Result |
+| --- | --- |
+| `dotnet test --project tests/unit/Kofte.Host.Tests --no-restore -c Release --filter-class '*ModuleComposition*' --minimum-expected-tests 100` | Passed 136/136, zero skipped; 10.665s. Includes T082's actual boundary Start/readiness cases. |
+| `dotnet test --project tests/unit/Kofte.Platform.Tests --no-restore -c Release --filter-class '*Composition*' --minimum-expected-tests 80` | Passed 87/87, zero skipped; 2.554s. |
+| `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore -c Release --filter-class '*CompositionConsumerHarnessTests*' --filter-class '*CompositionBootProviderContractTests*' --minimum-expected-tests 35` | Passed 39/39, zero skipped; 30.106s. Strict omission checks plus six actual both-provider boot cases. |
+| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-class '*Composition*' --minimum-expected-tests 106` | **Failed**, exit 2; 104/106 passed, two host-disposal failures, zero skipped; 3m 14.705s. Includes passing both-provider incomplete-request regression and intentional authority/refusal cases. |
+| `python3 scripts/check_repository.py` | Passed: repository assets, local links, MCP parity and driver-state validity. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed 119/119. |
+| `git diff --check` | Passed. |
+
+The session-only public probe above was additionally executed against these
+projects. It creates no repository test/source and establishes the F4
+observations, not provider/whole-gate success. No fresh complete all-suite,
+human usability, production or MVP claim is made.
+
+`gh pr view 7` and `gh run view 40171283911` independently confirm all eleven
+assessed-head contexts successful: ten product jobs in
+[40171283911](https://github.com/Stonefly-Labs/Kofte/actions/runs/40171283911)
+and repository checks in
+[40171283885](https://github.com/Stonefly-Labs/Kofte/actions/runs/40171283885),
+for exact branch head `74074f9b6bac009403e3a0d7c5bf5ca6987feb90`.
+Those successful CI invocations do not establish the cause of the two fresh
+local failures or supply the absent service-count behavior. New publication
+checks are recorded in the PR rather than retroactively attributed to this head.
+
+## Persistence and handoff
+
+The pre-stage task file has SHA-256
+`2263a9f592bde7f7c76870daaadb9088e1916e085ce08a0ef4575463463dc3cf`.
+Every byte and all 83 checked markers are preserved; only Phase 11's unchecked
+T084-T085 are appended. Approved spec/plan, both reviewer/author checklists,
+analysis, contracts and historical implementation/convergence evidence remain
+unchanged. The historical task status header describes its implementation
+checkpoint; it is not rewritten by this append-only stage.
+
+No `.specify/extensions.yml` exists; no before/after convergence hook applies.
+The driver completes only **converge / gaps**, selecting **implement T084-T085**
+for the next separate invocation on the same draft PR #7. Review, explicit
+human acceptance and any eventual human merge remain later gates; no
+intermediate merge or readiness is requested.
+
+---
+
+# Historical Convergence before T082-T083
+
+The complete pre-stage report follows verbatim.
+
 # Follow-up Convergence: 004 - Module Composition and Lifecycle
 
 **Result:** gaps

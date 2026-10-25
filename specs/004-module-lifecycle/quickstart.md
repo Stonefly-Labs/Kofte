@@ -1,8 +1,9 @@
 # Validation Guide: 004 - Module Composition and Lifecycle
 
-**Status**: T082-T083 now implement accepted dependency identity bounds and the
-demonstrated HTTP normal-stop correction; follow-up convergence is next,
-not feature acceptance.
+**Status**: Follow-up convergence after T082-T083 records gaps; implement
+T084-T085 is next, not feature acceptance. Binding-name and disabled-state
+findings are closed, but valid service counts and normal host disposal remain
+incomplete; see the [current assessment](convergence.md).
 All eleven scenarios and their sequential `all` composition are runnable,
 including interrupted migration, explicit recovery, correction, health, owned
 termination and private diagnostic capture. Historical assessed code head `267efc8`
@@ -16,8 +17,15 @@ records its separate historical evidence. The
 records current red/green and the failed local all-suite attempt, narrowed
 reconciliation evidence and historical causal limits. Do not relabel that
 attempt as a passing complete local gate.
-Convergence, final review
-and explicit human acceptance remain separate later stages on the same draft PR.
+The current assessment adds only two remediation tasks, preserving all
+existing examples and runtime bounds. Fresh broad integration passes 104/106:
+SQLite preservation and PostgreSQL correction fail ordinary host disposal
+with safe `composition_host_dispose_incomplete` evidence, despite passing
+incomplete-request stop regressions. No underlying disposal cause is
+established. Separately, accepted sets with 65 prerequisite service bindings
+or 129 total executable exports fail lifecycle due to narrower runtime caps.
+Implement, follow-up convergence, final review and explicit human acceptance
+remain separate stages on the same draft PR.
 
 ## Delivered validation, boot and relational preparation increment
 

@@ -35,7 +35,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 | 🔐 Explicit boundaries     | Team-scoped authorization, audited actions and module-owned storage                                   |
 
 > [!IMPORTANT]
-> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 now implements [T082-T083's dependency-boundary and normal-stop corrections](specs/004-module-lifecycle/implementation.md#convergence-remediation-t082-t083), following T081's disabled-state correction. Follow-up convergence is next on the same draft PR; final review and explicit human acceptance remain separate gates. Nothing here claims production readiness or MVP completion.
+> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004's [follow-up convergence](specs/004-module-lifecycle/convergence.md) closes the disabled-state and binding-name findings but retains gaps in accepted service counts and ordinary host disposal. Implement T084-T085 is next on the same draft PR; final review and explicit human acceptance remain separate gates. Nothing here claims production readiness or MVP completion.
 
 ## 🧭 The shape of things to come
 
@@ -171,8 +171,20 @@ incomplete/uncertain refusal remains enforced. The
 retains all failed runs and the limits of historical causal attribution.
 The local all-suite attempt's two failures remain explicit, not erased by
 successful narrowed rechecks.
-All 83 tasks are implemented; **follow-up converge is next** on draft PR #7,
-not review, acceptance or an intermediate merge.
+All 83 then-existing tasks are implemented; that checkpoint selected follow-up
+converge on draft PR #7, not review, acceptance or an intermediate merge.
+
+**Current 004 convergence: gaps.** The
+[assessment after T082-T083](specs/004-module-lifecycle/convergence.md) checks
+all 46 requirements/outcomes/scenarios, twelve plan decisions, 83 tasks and
+twelve principles. F1/T081 and F2/T082 are closed. New HIGH F4 reproduces
+accepted compositions failing at 65 prerequisite service bindings or 129
+global executable exports. MEDIUM F3 remains open: fresh broad integration
+passes 104/106, with SQLite preservation and PostgreSQL correction reporting
+private `composition_host_dispose_incomplete`. The HTTP-stop correction passes
+but does not establish this disposal cause. Only T084-T085 are appended,
+preserving all prior tasks, approved intent, reviewer checklists and product/test
+source. **Implement is next** on the same draft PR #7; no intermediate merge.
 
 **Spec 003 is explicitly human-accepted and human-merged.**
 The [acceptance record](specs/003-storage-registry/acceptance.md) preserves the

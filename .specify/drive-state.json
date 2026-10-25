@@ -18,7 +18,7 @@
     },
     "004": {
       "directory": "specs/004-module-lifecycle",
-      "next_step": "converge"
+      "next_step": "implement"
     }
   },
   "active": null,
@@ -927,6 +927,22 @@
         "specs/004-module-lifecycle/implementation.md": "17f916bb843eaedf77f81f7a7dc45a0289d7f43fd193327f18613ef15ed12edd",
         "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
         "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "converge",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-25T12:55:02+00:00",
+      "completed_at": "2026-10-25T13:04:14+00:00",
+      "outcome": "gaps",
+      "note": "Assessed all 46 requirements/outcomes/scenarios, 12 plan decisions, 83 tasks and 12 principles at 74074f9. F1/T081 and F2/T082 close; F4 reproduces accepted 65-binding/129-export failures; F3 retains two normal host-disposal failures in fresh 104/106 integration. Appended only Phase 11 T084-T085; preserved original tasks, report history, intent and reviewer checklists. Fresh unit/public selections pass 136/136, 87/87 and 39/39; repository checks and 119 Python tests pass. Converge gaps selects implement for a separate invocation on the same draft PR #7; no review, acceptance or merge.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "4dd5efb00f4b9078cfbf29976a913531dd97f8e3977057746a4605030bc276f6",
+        "specs/004-module-lifecycle/convergence.md": "b983d725e6bd1a70fc14b2b1f31b156a683f1366bfb5eca93825a45ed43e9f34"
       }
     }
   ]
