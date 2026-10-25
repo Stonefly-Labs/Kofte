@@ -8,7 +8,7 @@ implementation** under the human's exact **"yeah approved"** decision.
 Passing read-only **analyze remains required before implementation**; generation
 neither runs it nor requests repeated ADR/checklist approval.
 **Constitution**: Adopted v2.0.1, principles I-XII.
-**Status**: T084-T085 implementation complete: all 85 tasks evidenced; follow-up converge is next.
+**Status**: T086 fix/regressions published with green code-head CI; implement is blocked by a local complete-gate failure. T086 stays unchecked; all 85 preceding tasks remain evidenced.
 The execution evidence is in `implementation.md`. Task completion is not
 feature acceptance or MVP completion.
 

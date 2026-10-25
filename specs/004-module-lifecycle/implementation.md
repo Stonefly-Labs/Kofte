@@ -1673,6 +1673,9 @@ or reviewer-checklist file changes.
 
 ## Final-review remediation T086
 
+**Status:** code fix and focused regressions published; implement is blocked
+by the local complete-gate failure below. T086 remains unchecked.
+
 This implement-only increment resumes the original branch and open draft PR #7
 from `be29bf24c4d498716bbf89b3329585247d489df4`. The final review's HIGH R1
 and its 16/16 independent public-host counterexamples remain unchanged in
@@ -1727,7 +1730,73 @@ T084-T085 increment above, with `SPECIFY_FEATURE_DIRECTORY` explicitly set to
 | `dotnet test --project tests/unit/Kofte.Platform.Tests --no-restore -c Release --filter-class '*CompositionLimitTests*' --minimum-expected-tests 5` | Passed 29/29, including five new accepted structural cases, both selection forms, zero edges/callbacks and existing inclusive/overflow limits. |
 | `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-method '*DisabledCatalogPrerequisiteMetadata*' --minimum-expected-tests 10` | Red 2/10; all eight over-1,024 cases fail actual validation with `composition_observation_invalid` on both providers (41.624s). Corrected run passes 10/10, zero skipped (39.544s), executing all 40 validate/serve combinations. |
 | `dotnet test --project tests/unit/Kofte.Host.Tests --no-restore -c Release --filter-class '*CompositionDiagnosticTests*' --minimum-expected-tests 50` | Corrected 50/50, zero skipped; missing-prerequisite transport, overflow, copies, framing and identity refusal retained. |
-| `python3 scripts/verify.py --suite all --disposable-postgres --warm-starts 10` | Running; complete-gate results must be reconciled before stage completion. |
+| `python3 scripts/verify.py --suite all --disposable-postgres --warm-starts 10` | Failed, exit 1. PostgreSQL composition fails `KilledLaterMigrationRetainsEarlierCommitAndOriginalDataUntilExplicitAcceptedRecovery`; after collecting recovery, the already-failed attempt is gracefully interrupted during contract tests. No passing complete gate. |
+| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --filter-trait 'Provider=postgres' --filter-method '*KilledLaterMigrationRetainsEarlierCommitAndOriginalDataUntilExplicitAcceptedRecovery' --minimum-expected-tests 1` | Unchanged diagnostic selection passes 1/1, zero skipped (11.978s). This does not diagnose or erase the full-run failure. |
+
+The first complete attempt's PostgreSQL composition step exits 2 after
+216.981s; its safe report is
+`integration-postgres-fb12cfa1e3354655abd558c697f88410.json`.
+It identifies the migration-interruption test above but retains no raw
+assertion/exception. That test uses direct storage preparation/recovery and
+the existing crash worker, not the changed protocol or new boundary catalogs.
+No causal diagnosis, scheduling explanation or fix to that failure is claimed.
+The isolated pass and passing code-head CI PostgreSQL job are narrower
+evidence, not a successful full local gate.
+
+### Complete-attempt and actual-code-head reconciliation
+
+The stopped local attempt retains **109 passed / 111 executed steps** across
+six reports. One actual PostgreSQL test step fails; one contract step records
+the deliberate `verification_interrupted` shutdown. Remaining local suites
+were not started. Every report has `completeGate: false`; no isolated rerun,
+recovery pass or CI result changes those recorded outcomes.
+
+| Local suite/provider | Safe report under `artifacts/verification/` | Passed/executed steps |
+| --- | --- | --- |
+| quality | `quality-none-46defa32582948da82efc7a75945ff4b.json` | 20/20 |
+| unit | `unit-none-62f69e4e3f0e4d8cae5993364b4f51c3.json` | 14/14 |
+| integration / SQLite | `integration-sqlite-3eacd2ae3841438eb661c724dcf04010.json` | 9/9 |
+| integration / PostgreSQL | `integration-postgres-fb12cfa1e3354655abd558c697f88410.json` | 11/12; migration-interruption failure |
+| recovery / both | `recovery-both-06e00f80cb9e48698de4cc90e099a92d.json` | 43/43, including composition recovery |
+| contract / both | `contract-both-5f192bef23fd4adb8882dd64c744216e.json` | 12/13; deliberately interrupted |
+
+The first three reports identify precommit base `be29bf2` plus this tested
+working tree; subsequent reports identify code checkpoint
+`c749acc22345e4ab868dfc84e30c599208d953bd`. Product/test/script source is
+unchanged after that checkpoint. This is not a claim that the old base commit
+contains the correction.
+
+Actual code checkpoint **`c749acc22345e4ab868dfc84e30c599208d953bd` passes all
+eleven GitHub contexts**:
+[Product checks 40232738175](https://github.com/Stonefly-Labs/Kofte/actions/runs/40232738175)
+and [Repository checks 40232738167](https://github.com/Stonefly-Labs/Kofte/actions/runs/40232738167).
+The ten actual downloaded product artifacts independently reconcile to
+**286/286 passed targeted steps**, including 24 executed composition guide
+commands and 24 strict observation checks. The contract job passes 101/101.
+All reports have `completeGate: false`, because CI runs named targeted jobs,
+not the single complete local invocation.
+
+| CI suite/provider | Downloaded safe report | Passed/executed steps |
+| --- | --- | --- |
+| quality | `quality-none-723e5879e4824f6783861f5f1e9afcdc.json` | 20/20 |
+| unit | `unit-none-596fb73e63e640fba9e35408fce5cf49.json` | 14/14 |
+| integration / SQLite | `integration-sqlite-8520474675184a45833438deda92434d.json` | 9/9 |
+| integration / PostgreSQL | `integration-postgres-fe5ad98e79e54ab091584abfb909ea21.json` | 12/12 |
+| recovery / both | `recovery-both-9d8c6a67f5064cde9c6a6ff858e45480.json` | 43/43 |
+| contract / both | `contract-both-c28dae2e529040859bef03b2c5cc9292.json` | 101/101 |
+| browser | `browser-none-55a6b02af8494945880b465230c0c3c1.json` | 16/16 |
+| privacy / both | `privacy-both-fc837c7fe9574de68e9579b0d26d82fc.json` | 41/41 |
+| startup | `startup-none-ae63bcac992542c9bdd5d963c53ce77a.json` | 12/12 |
+| failure propagation | `failure-propagation-none-83779311df7b46b18db61437c189ee7f.json` | 18/18 |
+
+CI checks out synthetic merge `81a5b26b9da97e1b1f30859a6c30a947a82181c1`.
+GitHub's commit API verifies its parents are main
+`3a5deff380655e72eb6b08ebc1ef694ed5676f4a` and the exact code checkpoint
+`c749acc22345e4ab868dfc84e30c599208d953bd`; no unrelated green revision is
+substituted. `gh pr checks 7 --required` reports no configured required checks.
+The subsequent blocked-state/evidence checkpoint changes only documentation
+and the driver ledger; its fresh publication checks are reported separately
+in PR #7 rather than being confused with the verified code-head result.
 
 ### Acceptance mapping and handoff
 
@@ -1739,10 +1808,30 @@ independent public behavior and truthful checked evidence.
 The report preserves all historical failed runs and the distinction between
 complete local gates, narrower selectors and publication-head CI.
 
-Only T086 is eligible for completion after its checks; all preceding 85 task
+T086 remains unchecked pending complete-gate reconciliation; all preceding 85 task
 descriptions/markers, approved intent, original review/convergence and reviewed
 checklists are preserved. The composition contract documents the derived
 metadata bound; README, guide and related progress docs reflect the increment.
-Complete only **implement**, select **follow-up converge** on the same draft
-PR #7, and stop. Passing final review and explicit human acceptance remain
-separate; no acceptance, readiness, merge request or later feature is authorized.
+The driver records **blocked implement** on the original branch/draft PR #7.
+Resume that stage before converge; do not complete it around the failed local
+gate. Passing final review and explicit human acceptance remain separate; no
+acceptance, readiness, merge request or later feature is authorized.
+
+### Blocked-checkpoint verification
+
+No `.specify/extensions.yml` exists, so no before/after implementation hook
+is configured. Final checks validate the blocked state and documentation,
+not a passing complete product gate:
+
+| Exact command | Observed result |
+| --- | --- |
+| `python3 scripts/check_repository.py` | Passed assets, links, MCP parity and blocked driver state. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed 119/119, 1.975s. |
+| `npm run format:check` | Passed. |
+| `git diff --check` | Passed. |
+| `git diff --cached --check` | Passed before checkpoint publication. |
+
+An integrity comparison preserves all 86 task descriptions and markers,
+including unchecked T086, every prior implementation-report byte and the
+approved spec/plan/research/model/analysis/convergence/review/checklists.
+The follow-up checkpoint changes no product, test, script or dependency source.

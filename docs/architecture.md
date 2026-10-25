@@ -428,8 +428,10 @@ This is metadata, not the enabled graph; its 1,024-edge limit and all owner,
 dependency, frame and related-identity restrictions are unchanged.
 Real both-provider boundary boots require no disabled callback/allocation,
 usable readiness, exact disabled observations, unchanged inventory and verified
-clean exit. Follow-up convergence and passing final review precede explicit
-human acceptance on the same draft PR #7.
+clean exit. All eleven code-head CI contexts pass. A separate local complete-gate
+PostgreSQL migration-interruption failure is retained without a causal
+diagnosis; implement remains blocked with T086 unchecked on draft PR #7.
+Convergence, passing final review and explicit human acceptance remain later.
 
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements

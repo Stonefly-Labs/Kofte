@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** **004 / T086 implementation; follow-up converge is next** after specify, clarify,
+**Current checkpoint:** **004 / T086 fix published; implement is blocked** after specify, clarify,
 plan, checklist, tasks and analyze completed on
 `feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
 The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the
@@ -362,10 +362,13 @@ public-resolution and actual both-provider process tests retain finite overflow,
 copied allowlists, genuine dependency diagnostics, forged-identity refusal,
 disabled zero effects, complete inventory, readiness and verified exit.
 The original review, preceding task descriptions/markers, approved intent and
-reviewed checklists remain historical evidence. Complete only implement,
-publish to the same original branch/draft PR #7, then stop before follow-up
-converge. Passing final review and explicit human acceptance remain separate;
-no intermediate merge or 005 work is authorized.
+reviewed checklists remain historical evidence. Actual code-head CI passes all
+eleven contexts and 286 targeted steps. The required local complete attempt
+fails a PostgreSQL migration-interruption test and is then stopped gracefully;
+its isolated pass and local recovery pass do not establish the original cause.
+The driver records **blocked implement**, preserving T086 unchecked rather than
+completing the stage or selecting converge. Resume the same stage on its original
+branch/draft PR #7. No acceptance, intermediate merge or 005 work is authorized.
 
 **003 acceptance checkpoint:** 003 is **explicitly human-accepted and
 human-merged** on its original `feature/003-storage-registry` and

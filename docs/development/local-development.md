@@ -316,8 +316,10 @@ edges. Both-provider regressions exercise actual validate and usable serving
 for omitted/explicit-false selections and an unrelated enabled no-storage
 module, preserving exact disabled observations, complete inventory and verified
 clean stop. No operator command, deadline or responsibility changes.
-Follow-up converge is next on draft PR #7; passing review and explicit human
-acceptance remain required.
+Code-head CI passes all eleven contexts, but the local complete attempt fails
+a PostgreSQL migration-interruption test; isolated/local recovery passes do not
+erase it. Resume blocked implement on draft PR #7 before converge. T086 remains
+unchecked, and passing review and explicit human acceptance remain required.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).

@@ -281,9 +281,12 @@ now separates the 2,048 all-catalog diagnostic prerequisites from the unchanged
 overflow/copies/forgery, public resolution and actual both-provider validate/
 serve at the inclusive boundaries, with disabled callbacks forbidden, exact
 disabled observations, unchanged inventory, readiness and verified exit.
-Follow-up converge, final review and explicit human acceptance remain separate
-on the same draft PR #7; the historical review and reviewed checklists are
-preserved. Do not request an intermediate merge.
+All eleven code-head CI contexts pass, but the local complete attempt fails
+a PostgreSQL migration-interruption test. The isolated pass and subsequent
+local recovery pass do not establish its original cause. T086 remains unchecked
+and implement is blocked on the same draft PR #7; resume it before convergence.
+The historical review and reviewed checklists are preserved. Do not request
+an intermediate merge.
 
 The following paragraphs preserve the historical design-stage checkpoint.
 

@@ -25,9 +25,9 @@
     "spec": "004",
     "step": "implement",
     "directory": "specs/004-module-lifecycle",
-    "status": "running",
+    "status": "blocked",
     "branch": "feature/004-module-lifecycle",
-    "reason": "",
+    "reason": "T086 code fix and focused red/green are published at c749acc; actual code-head CI passes all eleven contexts and 286 targeted steps. The required local all attempt failed PostgreSQL KilledLaterMigrationRetainsEarlierCommitAndOriginalDataUntilExplicitAcceptedRecovery; unchanged isolated1/1, local recovery and CI passes do not establish its original cause. Stopped the already-failed local attempt gracefully; no passing complete local gate. Preserve T086 unchecked and resume implement on the original branch/draft PR before converge.",
     "started_at": "2026-10-25T20:42:03+00:00"
   },
   "history": [
