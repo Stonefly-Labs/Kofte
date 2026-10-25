@@ -15,6 +15,35 @@ public sealed class CompositionLifecycleContractTests
     private static ModuleConfiguration Configuration(ModuleId owner) => new(owner, "{}"u8);
 
     [Theory]
+    [InlineData(65)]
+    [InlineData(1024)]
+    public void ActivationCopiesEveryBoundedPrerequisiteServiceAndRejectsTheFirstOverflow(int count)
+    {
+        var owner = Id("org.test.dependent");
+        Assert.True(SemanticVersion.TryParse("1.0.0", out var version));
+        var bindings = Enumerable.Range(0, count).Select(index =>
+            new ModuleDependencyBinding(Id($"org.test.root{index / 128}"), $"service{index}", version, new object())).ToList();
+        var expected = bindings.ToArray();
+        var activated = new Activation(owner, Configuration(owner), new Resources(owner), bindings);
+        bindings.Clear();
+        Assert.Equal(expected, activated.Dependencies);
+        Assert.Throws<NotSupportedException>(() =>
+            Assert.IsAssignableFrom<IList<ModuleDependencyBinding>>(activated.Dependencies).Clear());
+        var enumerated = 0;
+        Assert.Throws<ArgumentException>(() => new Activation(owner, Configuration(owner), new Resources(owner), Overflow()));
+        Assert.Equal(1025, enumerated);
+
+        IEnumerable<ModuleDependencyBinding> Overflow()
+        {
+            while (true)
+            {
+                enumerated++;
+                yield return expected[0];
+            }
+        }
+    }
+
+    [Theory]
     [InlineData(128, false, true)]
     [InlineData(129, false, false)]
     [InlineData(128, true, true)]

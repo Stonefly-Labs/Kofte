@@ -18,7 +18,7 @@
     },
     "004": {
       "directory": "specs/004-module-lifecycle",
-      "next_step": "implement"
+      "next_step": "converge"
     }
   },
   "active": null,
@@ -943,6 +943,24 @@
       "evidence_sha256": {
         "specs/004-module-lifecycle/tasks.md": "4dd5efb00f4b9078cfbf29976a913531dd97f8e3977057746a4605030bc276f6",
         "specs/004-module-lifecycle/convergence.md": "b983d725e6bd1a70fc14b2b1f31b156a683f1366bfb5eca93825a45ed43e9f34"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "implement",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-25T13:40:45+00:00",
+      "completed_at": "2026-10-25T15:27:53+00:00",
+      "outcome": "pass",
+      "note": "Implemented only T084-T085: bounded lazy executable exports preserve 128 per owner/1024 enabled total and copied prerequisite bindings; actual count boundary and independent 127-service/129-total evidence. Demonstrated unused default JSON watcher survives source clearing; disable reload before worker builder creation, with deterministic red/green and unchanged disposal/stop/refusal bounds. Corrected both-provider composition 106/106; complete local all-suite passes all ten reports/286 steps with completeGate true, 24 guide commands/strict checks and ten warm/two composed starts. Repository checks, 119 Python tests, format and whitespace pass. Historical failures, approved intent, first 83 markers and reviewed checklists preserved. Actual publication-head CI is checked after push and recorded in existing draft PR7. Follow-up converge is next in a separate invocation; no acceptance or merge.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "66dd9ff25d731ebf7de7de942040148af9d72d19286202028a1ea1207fabf9b3",
+        "specs/004-module-lifecycle/implementation.md": "f9915cfc09db2f0aafefb7db5634384d346b88fe83cc7c30d769762a04ec8270",
+        "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
+        "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
       }
     }
   ]

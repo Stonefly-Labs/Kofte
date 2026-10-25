@@ -82,6 +82,7 @@ STORAGE_SCENARIOS = (
 COMPOSITION_OBSERVATIONS = {
     "empty-boot": {"coreEndpoints": 2, "emptyInventoryComparisons": 2},
     "valid-dependency": {"publicServiceComparisons": 2, "phaseOrderComparisons": 1, "dependencyIdentityComparisons": 1,
+                         "prerequisiteServiceComparisons": 127,
                          "ownerHistoryComparisons": 2, "prepublicationComparisons": 1},
     "disabled-missing": {"disabledCallbackComparisons": 1, "missingRefusals": 1, "unchangedInventories": 1,
                          "explicitDisabledObservations": 2, "omittedDisabledObservations": 2, "freshDisabledAttempts": 2},

@@ -204,6 +204,11 @@ or `composition_storage_dispose_incomplete`. These nonterminal
 `inspect_preserved_state` guidance, without an owner, raw exception or new
 record fields. The final ownerless `cleanup / incomplete` record remains the
 terminal refusal; a boundary record cannot substitute for verified exit.
+The composed host disables default JSON reload watchers before constructing
+its slim builder. Configuration sources are still cleared for the admitted
+snapshot; unused file watchers must not survive that clearing and consume
+the one-second host-disposal action. Cleanup/termination budgets and
+incomplete/uncertain refusal are unchanged.
 
 After successful composition resolution, every explicitly disabled or omitted
 deployed owner emits exactly one additional version-1 record with

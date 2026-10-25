@@ -83,6 +83,10 @@ internal static class BootScenarios
             record.Phase == "boundary-dependency-bound" && record.Value == BootModules.Alpha.Length + 1 + 128) == 1,
             "composition_test_dependency_identity_boundary_missing");
         evidence.Observed("dependencyIdentityComparisons");
+        evidence.Require(records.Count(record => record.Owner == BootModules.Beta &&
+            record.Phase == "complete-dependencies-bound" && record.Value == 127) == 1,
+            "composition_test_dependency_count_boundary_missing");
+        evidence.Observed("prerequisiteServiceComparisons", 127);
         var phases = records.Where(record => record.Phase is "register" or "initialize" or "start" or "health")
             .Select(record => record.Phase + ":" + record.Owner).ToArray();
         evidence.Require(phases.SequenceEqual(new[] { "register", "initialize", "start", "health" }

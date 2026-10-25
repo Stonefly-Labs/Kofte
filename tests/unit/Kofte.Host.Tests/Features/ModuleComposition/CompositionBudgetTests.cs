@@ -1,10 +1,40 @@
+using System.Reflection;
+using Kofte.Host.Bootstrap;
 using Kofte.Host.Features.ModuleComposition;
+using Kofte.Platform.Modules.Composition;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using Xunit;
 
 namespace Kofte.Host.Tests.Features.ModuleComposition;
 
 public sealed class CompositionBudgetTests
 {
+    [Fact]
+    public async Task ComposedHostDoesNotStartUnusedDefaultConfigurationWatchers()
+    {
+        var token = TestContext.Current.CancellationToken;
+        var composition = Assert.IsType<CompositionResolution.Accepted>(
+            CompositionResolver.Resolve([], [], new("1.0.0"), token)).Composition;
+        var configuration = BootstrapConfiguration.Parse(new Dictionary<string, string?>(), Directory.GetCurrentDirectory());
+        // Exercise the actual private worker builder without adding a public hosting API.
+        var worker = typeof(ModuleCompositionHost).Assembly.GetType(
+            "Kofte.Host.Features.ModuleComposition.CompositionWorker", throwOnError: true)!;
+        var factory = worker.GetMethod("Builder", BindingFlags.NonPublic | BindingFlags.Static)!;
+        var builder = Assert.IsType<WebApplicationBuilder>(factory.Invoke(null,
+            [configuration, new CompositionHealth(composition, new string('a', 32))]));
+        await using var app = builder.Build();
+        var content = Assert.IsType<PhysicalFileProvider>(
+            app.Services.GetRequiredService<IHostEnvironment>().ContentRootFileProvider);
+        // This supported setter refuses changes once a physical watcher has been initialized.
+        content.UsePollingFileWatcher = content.UsePollingFileWatcher;
+        var attempt = new CompositionAttempt(new(CompositionMode.Serve, "none", _ => { }));
+        attempt.BeginCleanup();
+        await new CompositionCallbackRunner(attempt).RunAsync(CompositionWork.Cleanup, _ => app.DisposeAsync(), token);
+    }
+
     [Theory]
     [InlineData(CompositionMode.Validate, 45, 35, 10)]
     [InlineData(CompositionMode.Prepare, 120, 105, 15)]

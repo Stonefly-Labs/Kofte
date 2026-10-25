@@ -8,6 +8,7 @@ namespace Kofte.Composition.TestModule.Modules;
 public interface IAlphaOperations { int Calculate(int input); }
 public interface IBetaOperations { int Calculate(int input); }
 public interface INoStorageOperations { int Calculate(int input); }
+public interface IAdditionalOperations { int Read(); }
 
 public static class BootModules
 {
@@ -15,6 +16,13 @@ public static class BootModules
     public const string Beta = "org.example.beta";
     public const string NoStorage = "org.example.no-storage";
     public static string AlphaServiceName { get; } = new('s', 128);
+    private static readonly Type[] additionalServices = Enumerable.Range(1, 126).Select(index =>
+    {
+        var marker = typeof(int);
+        for (var bit = 0; bit < 7; bit++)
+            marker = ((index & (1 << bit)) == 0 ? typeof(Zero<>) : typeof(One<>)).MakeGenericType(marker);
+        return typeof(AdditionalOperations<>).MakeGenericType(marker);
+    }).ToArray();
     public static IReadOnlyList<string> Owners { get; } = Array.AsReadOnly(new[] { Alpha, Beta, NoStorage });
 
     private static readonly ModuleConfigurationField alphaSeed = new("seed", ["seed"], ModuleSettingType.Number, true);
@@ -42,8 +50,10 @@ public static class BootModules
                     return new(new BetaRuntime((BetaOperations)services.GetRequiredService<IBetaOperations>(),
                         context.AttemptId), ModuleRuntimeOwnership.Attempt);
                 }),
-            new(Manifest(Alpha), [Claim(Alpha, typeof(IAlphaOperations))], [alphaSeed],
-                [typeof(IAlphaOperations), typeof(AlphaRuntime)], new AlphaValidator(),
+            new(Manifest(Alpha), [Claim(Alpha, typeof(IAlphaOperations)), .. additionalServices.Select((type, index) =>
+                new ContributionClaim(Alpha, "backend-service", $"service{index + 1:D3}",
+                    Mode: ContributionMode.Executable, ServiceType: type))], [alphaSeed],
+                [typeof(IAlphaOperations), typeof(AlphaRuntime), .. additionalServices], new AlphaValidator(),
                 (services, context) =>
                 {
                     AuthorProbe.Record(Alpha, "register", attemptId: context.AttemptId);
@@ -51,6 +61,12 @@ public static class BootModules
                     services.AddScoped<IAlphaOperations>(_ => new AlphaOperations(seed, context.AttemptId));
                     services.AddScoped<AlphaRuntime>(provider =>
                         new(provider.GetRequiredService<IAlphaOperations>(), context.AttemptId));
+                    for (var index = 0; index < additionalServices.Length; index++)
+                    {
+                        var value = index + 1;
+                        services.AddScoped(additionalServices[index], _ =>
+                            Activator.CreateInstance(additionalServices[value - 1], value)!);
+                    }
                 },
                 (services, _) => new(services.GetRequiredService<AlphaRuntime>(), ModuleRuntimeOwnership.Container)),
             new(Manifest(NoStorage), [Claim(NoStorage, typeof(INoStorageOperations))], [noStorageSeed],
@@ -102,6 +118,13 @@ public static class BootModules
     private sealed class AlphaValidator() : SeedValidator(Alpha, alphaSeed);
     private sealed class BetaValidator() : SeedValidator(Beta, betaSeed);
     private sealed class NoStorageValidator() : SeedValidator(NoStorage, noStorageSeed);
+
+    private sealed class Zero<T>;
+    private sealed class One<T>;
+    private sealed class AdditionalOperations<T>(int value) : IAdditionalOperations
+    {
+        public int Read() => value;
+    }
 
     private sealed class AlphaOperations : IAlphaOperations
     {
@@ -218,7 +241,16 @@ public static class BootModules
     {
         public override async ValueTask StartAsync(ModuleActivationContext context, CancellationToken token)
         {
-            var binding = context.Dependencies.Single();
+            if (context.Dependencies.Count != 127 || context.Dependencies.Any(binding =>
+                binding.Owner.Value != Alpha || binding.ContractVersion != 1 || binding.Version.ToString() != "1.0.0"))
+                throw new InvalidOperationException("composition_author_binding_count_invalid");
+            for (var index = 1; index <= 126; index++)
+            {
+                var exported = context.Dependencies.Single(binding => binding.ContractId == $"{Alpha}.service{index:D3}");
+                if (exported.Operations is not IAdditionalOperations additional || additional.Read() != index)
+                    throw new InvalidOperationException("composition_author_binding_operation_invalid");
+            }
+            var binding = context.Dependencies.Single(binding => binding.ContractId == Alpha + "." + AlphaServiceName);
             if (binding.Owner.Value != Alpha || binding.ContractId != Alpha + "." + AlphaServiceName ||
                 binding.ContractVersion != 1 || binding.Version.ToString() != "1.0.0" ||
                 binding.Operations is not IAlphaOperations alpha)
@@ -226,6 +258,7 @@ public static class BootModules
             operations.Prerequisite = alpha;
             AuthorProbe.Record(Beta, "dependency-bound", attemptId: context.AttemptId);
             AuthorProbe.Record(Beta, "boundary-dependency-bound", binding.ContractId.Length, context.AttemptId);
+            AuthorProbe.Record(Beta, "complete-dependencies-bound", context.Dependencies.Count, context.AttemptId);
             _ = operations.Calculate(5);
             if (AuthorProbe.HoldBeta)
             {

@@ -1466,3 +1466,207 @@ snapshot, before relocating this increment's final-check paragraph out of
 the T081 section. This published checkpoint preserves the earlier report
 verbatim; runtime/tests and measured results are unchanged by that editorial
 correction.
+
+## Convergence remediation T084-T085
+
+This **004 / implement** increment continues the original
+`feature/004-module-lifecycle` and open draft
+[PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), beginning once at
+`2026-10-25T13:40:45+00:00` from
+`004b34bb3a808b7fdb62f48f8ff8b097974af972`.
+Updated `origin/main` (`3a5deff380655e72eb6b08ebc1ef694ed5676f4a`) is an
+ancestor. No replacement branch/PR, dependency/lock change or later Spec Kit
+stage is part of this invocation. The explicit selected directory remains
+`specs/004-module-lifecycle`; requirements are 16/16 and reviewer-authorized
+quality criteria 36/36, with zero unchecked. No implementation hooks are
+configured. Approved intent, reviewer checklists, historical convergence and
+all preceding evidence remain intact.
+
+### T084: complete bounded executable exports and activation copies
+
+The actual host lifecycle count theory initially failed **0/4** at registration
+or activation; the public activation-copy theory failed **0/2**. Resolution's
+accepted bounds were not preserved: the coordinator copied at most 129 exports
+and rejected more than 128 globally, while activation copied only 64 services.
+
+The coordinator now enumerates at most 1,025 exports before refusal, accepts
+1,024 enabled total and enforces 128 per owner. Default export generation
+remains lazy until that bounded copy. Activation contexts copy up to 1,024
+prerequisite service bindings, rejecting at entry 1,025. The separate
+module-dependency bound is not a service-export bound. No accepted input is
+narrowed or silently truncated; exact owner-qualified identities, versions,
+operations, collision checks and native DI ownership remain unchanged.
+
+The corrected host theory passes **4/4**: 65 and 128 services from one
+prerequisite, 256 across two independent roots, and 1,024 across eight
+prerequisites. Each case requires actual registration, initialization, Start,
+health/readiness and cleanup; dependent cases compare every exact identity,
+version, operation instance/result and denied cross-owner DI lookup. Two
+additional cases reject owner 129/global 1,025 in preflight with zero registrar/
+runtime invocations. The platform theory passes **2/2**, additionally proving
+copied immutable backing storage and refusal of an infinite source after
+exactly 1,025 enumerated bindings.
+
+The separately compiled Alpha example exports its original 128-character
+local identity plus 126 additional unique services. Beta verifies all **127**
+exact bindings/versions and operations during actual supervised Start;
+Beta/NoStorage bring the global executable total to **129**. Alpha retains
+one of its 128 owned types for its container-owned runtime. Dedicated host
+tests separately prove the full 128/1,024 service limits. The consumer requires
+the author observation and reports mandatory
+`prerequisiteServiceComparisons: 127`; both C# and Python strict catalogs
+require it, including existing per-field omission/decrement rejection tests.
+All original disabled/no-storage/privacy and public scenarios remain.
+
+### T085: eliminate unused default file-watcher disposal
+
+The first broad run failed **103/106**: two public boot failures were an
+increment-local missing author-phase allowlist entry, subsequently corrected;
+PostgreSQL preservation independently failed normal host disposal. The next
+broad run failed **105/106**, with SQLite preservation reporting
+`composition_cleanup_incomplete_composition_host_dispose_incomplete_composition_deadline_exceeded`.
+Twelve isolated SQLite preservation executions passed unchanged, and are
+recorded only as diagnostic observations, not causal closure or retries that
+turn the broad failure into success.
+
+Temporary local, bounded type/method-only instrumentation established
+`CompositionUnstoppedException`, not an ordinary disposal exception. A third
+broad run failed **104/106**, now both provider preservation tests. Its
+disposal callback had entered, the thread pool had five threads and zero
+pending items, and no root DI disposer had begun. This local instrumentation
+and its exact scratch JSON were removed before the corrected build and gate;
+no reflection-based DI wrapper, raw exception, path, setting or diagnostic
+capture ships in production.
+
+Official installed-version framework source explains that boundary:
+[Host.DisposeAsync](https://github.com/dotnet/runtime/blob/v10.0.13/src/libraries/Microsoft.Extensions.Hosting/src/Internal/Host.cs)
+first disposes its content-root file provider, then DI.
+[The slim builder defaults](https://github.com/dotnet/aspnetcore/blob/v10.0.13/src/DefaultBuilder/src/WebApplicationBuilder.cs)
+start JSON reload watchers during construction.
+[PhysicalFileProvider.Dispose](https://github.com/dotnet/runtime/blob/v10.0.13/src/libraries/Microsoft.Extensions.FileProviders.Physical/src/PhysicalFileProvider.cs)
+disposes the retained watcher. Clearing configuration sources afterward does
+not remove that watcher. The composed host already rejects default app
+configuration in favor of its admitted snapshot, so this resource is unused.
+No particular native filesystem scheduling mechanism or historical failure
+outside this demonstrated boundary is asserted.
+
+A deterministic dedicated-host regression exercises the actual private worker
+builder without adding a public API or an internal-access grant. The public
+`PhysicalFileProvider.UsePollingFileWatcher` setter rejects changes once a
+watcher exists: it fails **0/1** before the correction, proving the unwanted
+watcher survived configuration clearing. The worker now supplies
+`--hostBuilder:reloadConfigOnChange=false` to builder construction, before
+defaults can create a watcher; sources are still cleared immediately
+afterward. The regression passes **1/1**, with no initialized watcher and
+actual host disposal through the unchanged bounded cleanup runner.
+
+The corrected, instrumentation-free broad run passes **106/106**, zero
+skipped, including both-provider three-cycle preservation, failure correction,
+HTTP stop, intentional uncooperative refusal, actual lost PostgreSQL authority,
+exact original records/history/inventory and verified owned root/descendant
+exit. The one-second cleanup action, ten-second cooperative reserve,
+five-second termination reserve and 15-second total bound are unchanged.
+Required incomplete/uncertain refusal remains intact. No retry, widened
+deadline, scenario/assertion removal or lowered test floor is used.
+
+The consumer's existing safe failure summary now includes a stopping
+deadline/cancellation code when the private records actually contain one.
+It invents neither an exception classification nor new product record fields.
+
+### Increment verification and acceptance mapping
+
+Commands use the existing .NET SDK 10.0.402/runtime 10.0.13, Node 24.22.0
+and npm 11.19.1 on macOS arm64:
+
+```bash
+export DOTNET_ROOT="$PWD/artifacts/toolchain/dotnet-10.0.402"
+export PATH="$DOTNET_ROOT:$PATH"
+export DOTNET_PROCESSOR_COUNT=4 DOTNET_CLI_TELEMETRY_OPTOUT=1
+export KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true
+```
+
+| Exact command / selection | Observed result |
+| --- | --- |
+| `dotnet test --project tests/unit/Kofte.Host.Tests --no-restore -c Release --filter-method '*CompleteExecutableCatalogSurvivesRegistrationBindingStartAndReadiness*' --minimum-expected-tests 4` | Red 0/4; green 4/4 actual count-bound lifecycle cases. |
+| `dotnet test --project tests/unit/Kofte.Platform.Tests --no-restore -c Release --filter-method '*ActivationCopiesEveryBoundedPrerequisiteServiceAndRejectsTheFirstOverflow*' --minimum-expected-tests 2` | Red 0/2; green 2/2 copied binding/overflow cases. |
+| `dotnet test --project tests/unit/Kofte.Host.Tests --no-build --no-restore -c Release --filter-class '*ModuleLifecycleTests' --minimum-expected-tests 25` | Passed 39/39, zero skipped, including both new one-over resolver cases. |
+| `dotnet test --project tests/unit/Kofte.Platform.Tests --no-build --no-restore -c Release --filter-class '*CompositionLifecycleContractTests' --minimum-expected-tests 4` | Passed 8/8, zero skipped. |
+| `dotnet test --project tests/unit/Kofte.Host.Tests --no-restore -c Release --filter-method '*ComposedHostDoesNotStartUnusedDefaultConfigurationWatchers*' --minimum-expected-tests 1` | Red 0/1 with initialized watcher; green 1/1 with no watcher and bounded actual disposal. |
+| `dotnet build Kofte.slnx --no-restore -c Release -warnaserror --verbosity quiet` | Passed with zero warnings/errors after corrections. One intermediate build correctly rejected a new test's missing xUnit cancellation token; fixed without suppressing the analyzer. |
+| `dotnet test --project tests/unit/Kofte.Host.Tests --no-build --no-restore -c Release --filter-method '*ExecutableOverflow*' --minimum-expected-tests 2` | An intermediate stale no-build selection ran zero tests and failed exit 8. It is not evidence of success; the rebuilt 39-case lifecycle class above executes both cases. |
+| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --filter-class '*Composition*' --minimum-expected-tests 106` | Investigative runs failed 103/106 (3m 30.368s), 105/106 (3m 27.447s), and 104/106 (3m 32.049s). Corrected run passed 106/106, zero skipped, 3m 27.852s. |
+| `dotnet run --project tests/contract/Kofte.Composition.Consumer --no-build -c Release -- --provider sqlite --scenario valid-dependency` | Passed after the author allowlist correction, requiring all 127 prerequisite operations. |
+| `dotnet run --project tests/contract/Kofte.Composition.Consumer --no-build -c Release -- --provider sqlite --scenario disable-reenable` | Passed once plus twelve standalone diagnostic executions before the watcher correction; not used to erase broad failures. |
+
+| Obligation | Evidence |
+| --- | --- |
+| T084; FR-004/006/008/019/020; US1.2; SC-001; R4/R5/R11 | Exact inclusive/one-over counts, bounded immutable copies, complete actual registration/Start/readiness, independent public 127-prerequisite/129-total example and mandatory strict measured evidence. |
+| T085; FR-012/013/015-017/020 evidence; US4.4/US5.3; SC-003/005; R9/R12 | Bounded causal boundary, demonstrated unused watcher red/green, corrected both-provider preservation/correction/stop, original inventory and actual root/descendant exit. |
+| SC-004/006; principles V/VI/X/XI | Retained lost-authority/uncooperative/incomplete refusal, private allowlisted diagnostics, no scheduling fallback or retries-as-success, unchanged process/deadline/provider assertions and historical failed evidence. |
+| Principles I-IV/VII-IX/XII | Existing modular/DI/type/identity/storage boundaries and test ownership retained; no package, business endpoint, permission/MCP expansion or new design decision; delivered contracts/guide/progress updated, later human acceptance remains separate. |
+
+Microsoft Learn/Context7 tools were not connected. Official versioned framework
+source was the fallback; actual installed API compilation and deterministic
+red/green tests verify the option and resource effect.
+
+### Complete local gate and handoff
+
+`python3 scripts/verify.py --suite all --disposable-postgres --warm-starts 10`
+**passed, exit 0: all ten reports and all 286 named steps passed**. Every
+report records `completeGate: true`. The previously failed attempts above
+remain failures; this is a new complete attempt after the demonstrated
+count/watcher corrections, not a narrowed rerun relabeled as complete.
+
+| Suite/provider | Safe report under `artifacts/verification/` | Passed / executed steps |
+| --- | --- | --- |
+| quality | `quality-none-703f9428767446d3a66df287768e99a0.json` | 20/20 |
+| unit | `unit-none-36468f66478f4420a22fdd2b681e5dab.json` | 14/14 |
+| integration / SQLite | `integration-sqlite-f8560fe9e6804632b92e8d66efc1c4ad.json` | 9/9 |
+| integration / PostgreSQL | `integration-postgres-6929d70b41384120ab3a65d104c46f5c.json` | 12/12 |
+| recovery / both | `recovery-both-855f7ed3707846dc8763c5741221bad0.json` | 43/43 |
+| contract / both | `contract-both-b2af402c93eb472a9e961f099f22d61f.json` | 101/101 |
+| browser | `browser-none-95e670bbd5d0460abc5c62425feeb82f.json` | 16/16 |
+| privacy / both | `privacy-both-1e4e622939394eebab2982ac86690cc0.json` | 41/41 |
+| startup | `startup-none-a074ba55e8cf43a780eaa67cae211889.json` | 12/12 |
+| failure propagation | `failure-propagation-none-9411d31a74ce48ff842222f484982e56.json` | 18/18 |
+
+The report revision is the precommit base `004b34b` plus this tested
+working-tree increment, not a claim that the old commit contains the fixes.
+All 24 composition guide commands and all 24 strict observation checks pass:
+eleven individual scenarios plus sequential `all` on each actual provider.
+This includes both-provider mandatory 127-service evidence and sequential
+preservation/correction/stop/privacy assertions. SQLite sequential `all`
+passes in 79.576s, PostgreSQL in 174.208s. No old failed SQLite sequential
+guide CI invocation is erased or retrospectively diagnosed by these passes.
+Startup additionally proves ten original-data warm cycles and two fresh
+composed-module cycles, with published modules, matching original fixtures,
+usable pages and verified cleanup within the unchanged work/total envelope.
+Both-provider recovery, captured privacy, browser/accessibility and all
+isolated failure-propagation exercises pass.
+
+Only T084/T085 markers are completed; the 83 preceding task descriptions/
+markers, approved spec/plan, reviewed checklists and historical convergence
+remain unchanged. README, related contributor/development/architecture docs
+and delivered contract/guide explanations describe the corrected behavior.
+No dependency, migration, configuration input, public endpoint or authority
+boundary changes.
+
+The driver completes only **implement** and selects **follow-up converge**,
+on the same original branch/draft PR #7 in a separate invocation. It does not
+run convergence/final review, accept feature 004, mark ready or request merge.
+Actual publication-head CI is inspected after commit/push and recorded in
+the PR; no historical CI run is claimed as evidence for unpublished changes.
+
+Final checks after task/documentation updates:
+
+| Exact command | Result |
+| --- | --- |
+| `python3 scripts/check_repository.py` | Passed repository assets, local links, MCP parity and driver state. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed 119/119, 2.137s. |
+| `git diff --check` | Passed. |
+| `npm run format:check` | Passed all configured Prettier inputs. |
+
+An integrity comparison additionally proves all 85 task descriptions, the first
+83 checked markers and the entire preceding implementation report are
+preserved. No approved specification/plan/research/model/analysis/convergence
+or reviewer-checklist file changes.

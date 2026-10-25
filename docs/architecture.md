@@ -378,7 +378,7 @@ remain recorded without claiming that this reproduction explains each occurrence
 No new architecture decision,
 dependency, public endpoint or privilege is introduced.
 
-The [current convergence](../specs/004-module-lifecycle/convergence.md) closes
+The [convergence after T082-T083](../specs/004-module-lifecycle/convergence.md) closes
 the disabled-state and binding-name findings, but retains two partial gaps.
 HIGH F4 shows 65 prerequisite service exports or 129 global executable
 exports fail after accepted resolution; complete runtime counts must match
@@ -386,8 +386,21 @@ the approved 128-per-owner/1,024-total contribution bounds. MEDIUM F3 remains
 open: two fresh normal paths fail host disposal despite passing incomplete-
 request HTTP-stop regressions. Only T084-T085 are appended; no product,
 contract, dependency, authority or approved architecture is changed.
-Implement is next on the same draft PR #7; the underlying disposal cause is
-not established or silently attributed to scheduling.
+That checkpoint selected implement on the same draft PR #7; it did not
+establish or silently attribute the disposal cause to scheduling.
+
+The [T084-T085 increment](../specs/004-module-lifecycle/implementation.md#convergence-remediation-t084-t085)
+preserves the existing contribution bounds through executable registration
+and activation: 128 per owner, 1,024 enabled total and up to 1,024 complete
+copied prerequisite service bindings, independently of module-dependency count.
+An actual-builder regression proves that unused default JSON reload watchers
+survived configuration-source clearing. The composed host now disables reload
+before slim-builder construction, retaining the admitted snapshot and avoiding
+that unnecessary file-provider disposal work. No polling fallback, widened
+budget, DI ownership change or success-shaped cleanup is introduced.
+The corrected both-provider composition selection passes 106/106; all failed
+evidence and complete-gate reconciliation are retained. Follow-up convergence,
+review and explicit human acceptance remain later separate gates.
 
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements

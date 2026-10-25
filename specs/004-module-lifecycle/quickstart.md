@@ -1,9 +1,9 @@
 # Validation Guide: 004 - Module Composition and Lifecycle
 
-**Status**: Follow-up convergence after T082-T083 records gaps; implement
-T084-T085 is next, not feature acceptance. Binding-name and disabled-state
-findings are closed, but valid service counts and normal host disposal remain
-incomplete; see the [current assessment](convergence.md).
+**Status**: T084-T085 implementation complete; follow-up converge, final
+review and explicit human acceptance remain separate gates. Complete accepted
+service counts and unused default JSON watcher cleanup are corrected; see
+the [increment evidence](implementation.md#convergence-remediation-t084-t085).
 All eleven scenarios and their sequential `all` composition are runnable,
 including interrupted migration, explicit recovery, correction, health, owned
 termination and private diagnostic capture. Historical assessed code head `267efc8`
@@ -14,18 +14,22 @@ preserves earlier failures and that original gate. The
 [T081 increment](implementation.md#convergence-remediation-t081)
 records its separate historical evidence. The
 [T082-T083 increment](implementation.md#convergence-remediation-t082-t083)
-records current red/green and the failed local all-suite attempt, narrowed
+records historical red/green and the failed local all-suite attempt, narrowed
 reconciliation evidence and historical causal limits. Do not relabel that
 attempt as a passing complete local gate.
-The current assessment adds only two remediation tasks, preserving all
-existing examples and runtime bounds. Fresh broad integration passes 104/106:
+That assessment added only two remediation tasks, preserving all
+existing examples and runtime bounds. Its fresh broad integration passed 104/106:
 SQLite preservation and PostgreSQL correction fail ordinary host disposal
 with safe `composition_host_dispose_incomplete` evidence, despite passing
-incomplete-request stop regressions. No underlying disposal cause is
+incomplete-request stop regressions. Its underlying disposal cause was not
 established. Separately, accepted sets with 65 prerequisite service bindings
-or 129 total executable exports fail lifecycle due to narrower runtime caps.
-Implement, follow-up convergence, final review and explicit human acceptance
-remain separate stages on the same draft PR.
+or 129 total executable exports failed lifecycle due to narrower runtime caps.
+The T084-T085 increment preserves the original failures, adds focused
+count/watcher red-green evidence and passes corrected both-provider composition
+106/106; its report records complete-gate reconciliation. The composed host
+disables unused JSON reload watchers before builder construction instead of
+retaining them after source clearing. Cleanup/termination limits and
+incomplete/uncertain refusal remain unchanged.
 
 ## Delivered validation, boot and relational preparation increment
 
@@ -44,6 +48,12 @@ requires its exact owner-qualified binding, contract/semantic versions and
 public operation result during actual supervised Start/readiness. Both the
 C# harness and Python verifier require `dependencyIdentityComparisons`;
 declaration acceptance or a shortened identity is insufficient.
+Alpha additionally exports 126 unique operations: Beta requires all 127 exact
+prerequisite bindings, versions and operation results during Start, while Beta
+and NoStorage bring the executable total to 129. Both strict harnesses require
+`prerequisiteServiceComparisons: 127`. The executable lifecycle retains the
+approved 128-per-owner/1,024-total bounds; service bindings are not capped by
+the separate module-dependency count.
 The separate relational example uses real owner-local initial/additive
 histories and original Alpha/Beta records. It executes validate, explicit stopped
 prepare and ordinary serving; current preparation/serving do not replay

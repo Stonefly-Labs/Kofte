@@ -98,11 +98,11 @@ public sealed class ModuleLifecycleCoordinator
         this.ensureAuthority = ensureAuthority ?? (_ => Task.CompletedTask);
         this.clock = clock ?? TimeProvider.System;
         Health = new(composition, attempt.TraceId, this.clock);
-        this.exports = Array.AsReadOnly((exports ?? composition.Contributions
+        this.exports = Array.AsReadOnly((exports?.AsEnumerable() ?? composition.Contributions
             .Where(c => c.Kind == "backend-service" && c.Mode == ContributionMode.Executable)
             .Select(c => new ModuleDependencyExport(c.Owner, c.Owner.Value + "." + c.LocalName, c.Version,
                 deployments[c.Owner].Claims.Single(claim => claim.Kind == "backend-service" &&
-                    claim.LocalName == c.LocalName).ServiceType!)).ToArray()).Take(129).ToArray());
+                    claim.LocalName == c.LocalName).ServiceType!))).Take(1025).ToArray());
     }
 
     public async Task RegisterAsync(IServiceCollection services, CancellationToken token)
@@ -113,7 +113,8 @@ public sealed class ModuleLifecycleCoordinator
         foreach (var owner in composition.Order)
             foreach (var type in deployments[owner].OwnedServiceTypes)
                 if (!AllowedType(type) || !declared.Add(type)) throw RegistrationFailed();
-        if (exports.Count > 128 || exports.Any(e => !composition.Enabled.Contains(e.Owner) ||
+        if (exports.Count > 1024 || exports.GroupBy(e => e.Owner).Any(group => group.Count() > 128) ||
+            exports.Any(e => !composition.Enabled.Contains(e.Owner) ||
             !deployments[e.Owner].OwnedServiceTypes.Contains(e.ServiceType)) ||
             exports.Select(e => (e.Owner, e.ContractId)).Distinct().Count() != exports.Count)
             throw RegistrationFailed();

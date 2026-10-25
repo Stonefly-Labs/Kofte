@@ -343,7 +343,7 @@ refusal and anonymous privacy. All 83 tasks are implemented. Historical
 failures and causal limits remain explicit; follow-up convergence, final review
 and explicit human acceptance remain separate on the same draft PR #7.
 
-**Current 004 / converge: gaps; implement T084-T085 is next.**
+**Historical 004 / converge after T082-T083: gaps.**
 The [assessment](../specs/004-module-lifecycle/convergence.md) checks all 46
 requirements/outcomes/scenarios, twelve plan decisions, 83 tasks and twelve
 principles. F1/T081 and F2/T082 are closed. HIGH F4 demonstrates narrower
@@ -353,6 +353,18 @@ The HTTP-stop regression passes but does not close the distinct disposal
 boundary. Only Phase 11/T084-T085 are appended; prior tasks, product/test
 source, approved intent, reviewed checklists and historical reports are
 preserved. Continue on the same draft PR #7, without an intermediate merge.
+
+**Current 004 / implement complete (T084-T085); follow-up converge is next.**
+The [report](../specs/004-module-lifecycle/implementation.md#convergence-remediation-t084-t085)
+records complete executable counts through actual Start/readiness: 128 per
+owner and 1,024 enabled total, plus a strict public 127-prerequisite/129-total
+example. A deterministic actual-builder regression proves unused default JSON
+watchers survived source clearing; disabling reload before construction
+removes them. Corrected both-provider composition passes 106/106 with unchanged
+cleanup budgets, incomplete/uncertain refusal, durable inventory and owned exit.
+Failed historical/diagnostic runs and complete-gate reconciliation remain
+explicit. Follow-up converge, review and explicit human acceptance remain
+separate stages on the same draft PR #7.
 
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.

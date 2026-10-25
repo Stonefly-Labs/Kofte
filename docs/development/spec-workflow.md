@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** **004 / converge records gaps after T082-T083; implement T084-T085 is next** after specify, clarify,
+**Current checkpoint:** **004 / implement complete (T084-T085); follow-up converge is next** after specify, clarify,
 plan, checklist, tasks and analyze completed on
 `feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
 The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the
@@ -278,7 +278,7 @@ retained in the report. The driver completes only **implement** and selects
 **follow-up converge** on the original branch/draft PR #7. It does not execute
 converge/review, accept the feature, mark ready or request a merge.
 
-**Current convergence after T082-T083:** The
+**Historical convergence after T082-T083:** The
 [assessment](../../specs/004-module-lifecycle/convergence.md) covers all 46
 requirements/outcomes/scenarios, twelve plan decisions, 83 tasks and twelve
 principles. F1/T081's disabled observations and F2/T082's owner-qualified
@@ -296,6 +296,18 @@ historical implementation/convergence reports are preserved. The driver
 completes only **converge / gaps**, selecting **implement** for the next
 separate invocation on the same branch/draft PR #7. No new design approval,
 review, acceptance, readiness or intermediate merge is implied.
+
+**T084-T085 implementation checkpoint:** The
+[increment](../../specs/004-module-lifecycle/implementation.md#convergence-remediation-t084-t085)
+preserves accepted executable/service-binding counts through actual lifecycle
+and independent public operation evidence. The unused default JSON watcher
+regression fails before and passes after disabling reload before worker-builder
+construction. Corrected both-provider composition passes 106/106 with unchanged
+budgets, refusal, inventory and owned-process assertions. The report preserves
+all failed diagnostic evidence and complete-gate reconciliation.
+Only implement is executed; follow-up converge, final review and explicit
+numbered-spec acceptance remain separate invocations on this branch/draft PR.
+Approved intent, reviewer checklists and historical convergence are unchanged.
 
 **003 acceptance checkpoint:** 003 is **explicitly human-accepted and
 human-merged** on its original `feature/003-storage-registry` and

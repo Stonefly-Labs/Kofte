@@ -265,7 +265,7 @@ path or setting is exposed. Historical failures cannot all be attributed
 retroactively to this demonstrated cause. All 83 then-existing tasks are
 implemented; that checkpoint selected follow-up converge on the same draft PR.
 
-The [current convergence](../../specs/004-module-lifecycle/convergence.md)
+The [convergence after T082-T083](../../specs/004-module-lifecycle/convergence.md)
 closes F1/T081 and F2/T082 but records **gaps**. Valid compositions with 65
 prerequisite services or 129 global executable exports fail later lifecycle
 stages (HIGH F4). Fresh broad integration passes 104/106: SQLite preservation
@@ -274,8 +274,20 @@ The private code is now `composition_host_dispose_incomplete`; its underlying
 cause is not established by the passing HTTP-stop regression or historical
 reruns/CI. Only T084-T085 are appended, preserving existing task bytes,
 product/test source, approved intent and reviewed checklists.
-**Implement is next** on the same draft PR #7. Commands and runtime bounds
-are unchanged; no complete local gate or feature acceptance is claimed here.
+That checkpoint selected implement on the same draft PR #7.
+
+The [T084-T085 increment](../../specs/004-module-lifecycle/implementation.md#convergence-remediation-t084-t085)
+preserves complete accepted service counts through registration/Start/readiness:
+128 per owner, 1,024 enabled total. The public `valid-dependency` scenario now
+requires 127 exact prerequisite bindings/operations and 129 global exports;
+both strict harnesses require the measured count. The composed host disables
+unused default JSON reload watchers before builder construction, rather than
+retaining them after configuration clearing. Its actual-builder regression
+has deterministic red/green evidence, and corrected both-provider composition
+passes 106/106. Commands, cleanup budgets and intentional incomplete/uncertain
+refusal are unchanged. The report retains failed runs and complete-gate
+reconciliation; follow-up converge, review and explicit human acceptance
+remain separate on the same draft PR #7.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).

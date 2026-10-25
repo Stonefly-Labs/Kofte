@@ -68,6 +68,10 @@ to 128 ASCII characters (maximum 382 with a 253-character owner). An unrelated
 owner's prefix cannot expand the bound. Owner and semantic version remain
 separate binding fields and collision keys; valid local names do not lose
 their inclusive 128-character limit when exported to a dependent.
+Executable exports retain all accepted claims: at most 128 per owner and
+1,024 enabled total. Activation contexts copy up to 1,024 prerequisite
+service bindings, not just 64 module identities; one prerequisite may export
+multiple services. No accepted binding is truncated or silently omitted.
 Arbitrary trusted code can violate supported conventions;
 these rules and scoped contexts are not hostile-code isolation.
 
@@ -111,6 +115,7 @@ No execution order is returned from a rejected graph.
 | Settings fields | 128 declared fields/module, fixed ASCII token ≤64 chars and JSON path ≤8 known segments; unknown keys reported only at known containing field |
 | Enabled graph | 1,024 edges maximum; per-module 002's 64 dependencies unchanged |
 | Contributions | 128/module, 1,024 total enabled; stable local ID ≤128 ASCII chars; canonical route ≤256 ASCII chars |
+| Executable prerequisite bindings | At most 1,024 copied service bindings per activation, within the same enabled contribution limits; 64 module dependencies is not a service-count cap |
 | Cleanup registrations | 32/module, 512/attempt; refusal is a stage failure, never silently dropped |
 | Diagnostics | At most 64 and 65,536 serialized UTF-8 bytes: emit the largest ordered prefix of at most 63 that fits with a reserved final `composition_diagnostics_truncated` marker when either limit would be exceeded |
 | Diagnostic text | Fixed code/guidance ≤64 ASCII chars, fixed message ≤256 chars; at most eight canonical related IDs, no raw invalid fields/values |

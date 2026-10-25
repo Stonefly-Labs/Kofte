@@ -261,7 +261,11 @@ internal static class CompositionWorker
 
     private static WebApplicationBuilder Builder(BootstrapConfiguration config, CompositionHealth health)
     {
-        var builder = WebApplication.CreateSlimBuilder();
+        // Disable unused JSON reload watchers before defaults create them; clearing sources is too late.
+        var builder = WebApplication.CreateSlimBuilder(new WebApplicationOptions
+        {
+            Args = ["--hostBuilder:reloadConfigOnChange=false"]
+        });
         builder.Configuration.Sources.Clear();
         builder.Configuration.AddInMemoryCollection();
         builder.Logging.ClearProviders();

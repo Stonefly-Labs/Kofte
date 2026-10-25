@@ -511,6 +511,131 @@ public sealed class ModuleLifecycleTests
     }
 
     [Theory]
+    [InlineData(65, 1, true)]
+    [InlineData(128, 1, true)]
+    [InlineData(128, 2, false)]
+    [InlineData(128, 8, true)]
+    public async Task CompleteExecutableCatalogSurvivesRegistrationBindingStartAndReadiness(
+        int servicesPerOwner, int roots, bool dependent)
+    {
+        var expected = new Dictionary<string, object>(StringComparer.Ordinal);
+        var entered = new List<string>();
+        var catalog = Enumerable.Range(0, roots).Select(root =>
+        {
+            var owner = $"org.test.root{root}";
+            var types = Enumerable.Range(root * servicesPerOwner, servicesPerOwner)
+                .Select(ExportType).ToArray();
+            var claims = types.Select((type, index) => new ContributionClaim(owner, "backend-service", $"service{index}",
+                Mode: ContributionMode.Executable, ServiceType: type)).ToArray();
+            var operations = types.Select((type, index) => Activator.CreateInstance(type, root * servicesPerOwner + index)!)
+                .ToArray();
+            for (var index = 0; index < operations.Length; index++)
+                expected.Add($"{owner}.service{index}", operations[index]);
+            var manifest = System.Text.Encoding.UTF8.GetBytes(System.Text.Encoding.UTF8.GetString(
+                HostCompositionTestData.Manifest(owner)).Replace("\"capabilities\":[]",
+                    "\"capabilities\":[{\"kind\":\"backend\",\"contractVersion\":\"1.0.0\"}]", StringComparison.Ordinal));
+            return new ModuleDeployment(manifest, claims, ownedServiceTypes: types,
+                configureServices: (services, _) =>
+                {
+                    for (var index = 0; index < types.Length; index++)
+                    {
+                        var operation = operations[index];
+                        services.AddScoped(types[index], _ => operation);
+                    }
+                },
+                createRuntime: (_, _) => new(new ActivationRuntime(context =>
+                {
+                    Assert.Empty(context.Dependencies);
+                    Assert.Equal(servicesPerOwner, context.Contributions.Count);
+                    entered.Add(owner);
+                }), ModuleRuntimeOwnership.Attempt));
+        }).ToList();
+        if (dependent)
+            catalog.Add(new(HostCompositionTestData.Manifest("org.test.dependent",
+                Enumerable.Range(0, roots).Select(root => $"org.test.root{root}").ToArray()),
+                createRuntime: (provider, _) => new(new ActivationRuntime(context =>
+                {
+                    Assert.Equal(expected.Count, context.Dependencies.Count);
+                    Assert.Equal(expected.Keys.Order(StringComparer.Ordinal),
+                        context.Dependencies.Select(binding => binding.ContractId).Order(StringComparer.Ordinal));
+                    foreach (var binding in context.Dependencies)
+                    {
+                        Assert.Equal(binding.Owner.Value + ".", binding.ContractId[..(binding.Owner.Value.Length + 1)]);
+                        Assert.Equal(1, binding.ContractVersion);
+                        Assert.Equal("1.0.0", binding.Version.ToString());
+                        Assert.Same(expected[binding.ContractId], binding.Operations);
+                        Assert.Null(provider.GetService(binding.Operations.GetType()));
+                    }
+                    Assert.Equal(Enumerable.Range(0, expected.Count),
+                        context.Dependencies.Select(binding => ((IExportOperation)binding.Operations).Read()).Order());
+                    entered.Add(context.Owner.Value);
+                }), ModuleRuntimeOwnership.Attempt)));
+        var coordinator = Create(catalog.ToArray());
+        IServiceCollection services = new ServiceCollection();
+        var token = TestContext.Current.CancellationToken;
+        await coordinator.RegisterAsync(services, token);
+        await using var provider = services.BuildServiceProvider(new ServiceProviderOptions
+        { ValidateScopes = true, ValidateOnBuild = true });
+        await coordinator.InitializeAsync(provider, token);
+        coordinator.MarkMigrated();
+        await coordinator.StartAsync(new Dictionary<ModuleId, IModuleStorage>(), token);
+        Assert.True(coordinator.Health.IsReady);
+        Assert.Equal(catalog.Count, entered.Count);
+        Assert.Equal(catalog.Count, coordinator.Health.Snapshot.Modules.Count(module =>
+            module.EffectiveHealth == ModuleHealth.Healthy));
+        if (dependent) Assert.Equal("org.test.dependent", entered[^1]);
+        await coordinator.CleanupAsync();
+        Assert.False(coordinator.Health.IsReady);
+    }
+
+    private static Type ExportType(int index)
+    {
+        var marker = typeof(ExportEnd);
+        do
+        {
+            marker = (index % 2 == 0 ? typeof(ExportZero<>) : typeof(ExportOne<>)).MakeGenericType(marker);
+            index /= 2;
+        } while (index != 0);
+        return typeof(ExportOperation<>).MakeGenericType(marker);
+    }
+    private sealed class ExportEnd;
+    private sealed class ExportZero<T>;
+    private sealed class ExportOne<T>;
+    private interface IExportOperation { int Read(); }
+    private sealed class ExportOperation<T>(int value) : IExportOperation
+    {
+        public int Read() => value;
+    }
+
+    [Theory]
+    [InlineData(129, 1)]
+    [InlineData(128, 9)]
+    public void ExecutableOverflowIsRejectedBeforeAnyRegistrarOrRuntime(int perOwner, int owners)
+    {
+        var callbacks = 0;
+        var catalog = Enumerable.Range(0, owners).Select(root =>
+        {
+            var count = root == 8 ? 1 : perOwner;
+            var owner = $"org.test.root{root}";
+            var types = Enumerable.Range(root * perOwner, count).Select(ExportType).ToArray();
+            var manifest = System.Text.Encoding.UTF8.GetBytes(System.Text.Encoding.UTF8.GetString(
+                HostCompositionTestData.Manifest(owner)).Replace("\"capabilities\":[]",
+                    "\"capabilities\":[{\"kind\":\"backend\",\"contractVersion\":\"1.0.0\"}]", StringComparison.Ordinal));
+            return new ModuleDeployment(manifest, types.Select((type, index) =>
+                new ContributionClaim(owner, "backend-service", $"service{index}",
+                    Mode: ContributionMode.Executable, ServiceType: type)), ownedServiceTypes: types,
+                configureServices: (_, _) => callbacks++,
+                createRuntime: (_, _) => { callbacks++; throw new InvalidOperationException(); });
+        }).ToArray();
+        var resolution = CompositionResolver.Resolve(catalog,
+            Enumerable.Range(0, owners).Select(root => new ModuleSelection($"org.test.root{root}", true)),
+            new("1.0.0"), TestContext.Current.CancellationToken);
+        var rejected = Assert.IsType<CompositionResolution.Rejected>(resolution);
+        Assert.Contains(rejected.Diagnostics, diagnostic => diagnostic.Code == "composition_input_limit");
+        Assert.Equal(0, callbacks);
+    }
+
+    [Theory]
     [InlineData("registration")]
     [InlineData("initialization")]
     [InlineData("activation")]

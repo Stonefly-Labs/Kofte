@@ -509,6 +509,7 @@ public sealed class CompositionFixture : IAsyncDisposable
                 if (owner is not ("org.example.alpha" or "org.example.beta" or "org.example.no-storage" or "org.example.probe") ||
                     phase is not ("validate" or "register" or "service-constructor" or "runtime-constructor" or
                         "initialize" or "cross-owner-denied" or "dependency-bound" or "boundary-dependency-bound" or
+                        "complete-dependencies-bound" or
                         "compute" or "start-held" or
                         "no-storage" or "start" or "health" or "stop" or "cleanup" or "dispose" or "migration" or
                         "descendant" or "callback-total" or "constructor-total" or "registrar-total" or "runtime-total" or

@@ -101,9 +101,9 @@ public abstract class ModuleActivationContext : ModuleRuntimeContext
         : base(owner, configuration, attemptId, resources)
     {
         if (storage is not null && !owner.Equals(storage.Owner)) throw new ArgumentException("Invalid storage owner.");
-        var bindings = CompositionCopies.Bounded(dependencies, 64);
+        var bindings = CompositionCopies.Bounded(dependencies, 1024);
         var claims = CompositionCopies.Bounded(contributions, 128);
-        if (bindings.Count > 64 || claims.Count > 128 || claims.Any(c => !owner.Equals(c.Owner)))
+        if (bindings.Count > 1024 || claims.Count > 128 || claims.Any(c => !owner.Equals(c.Owner)))
             throw new ArgumentException("Invalid activation catalog.");
         (Storage, Dependencies, Contributions) = (storage, bindings, claims);
     }

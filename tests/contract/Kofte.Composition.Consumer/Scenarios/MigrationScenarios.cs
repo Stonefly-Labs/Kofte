@@ -255,7 +255,13 @@ internal static class MigrationScenarios
             var boundary = records.Select(record => record.GetProperty("code").GetString()).LastOrDefault(value =>
                 value is "composition_host_stop_incomplete" or "composition_host_dispose_incomplete" or
                     "composition_services_dispose_incomplete" or "composition_storage_dispose_incomplete");
-            if (boundary is not null) return code + "_" + boundary;
+            if (boundary is not null)
+            {
+                var interruption = records.LastOrDefault(record => record.GetProperty("stage").GetString() == "stopping" &&
+                    record.GetProperty("code").GetString() is "composition_deadline_exceeded" or "composition_cancelled");
+                return code + "_" + boundary + (interruption.ValueKind == JsonValueKind.Object
+                    ? "_" + interruption.GetProperty("code").GetString() : "");
+            }
         }
         return code is "composition_deadline_exceeded" or "composition_output_failed" or "composition_cancelled" or
             "composition_cleanup_incomplete" or "composition_observation_invalid" or "composition_storage_rejected"

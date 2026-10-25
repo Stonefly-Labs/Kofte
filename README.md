@@ -35,7 +35,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 | 🔐 Explicit boundaries     | Team-scoped authorization, audited actions and module-owned storage                                   |
 
 > [!IMPORTANT]
-> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004's [follow-up convergence](specs/004-module-lifecycle/convergence.md) closes the disabled-state and binding-name findings but retains gaps in accepted service counts and ordinary host disposal. Implement T084-T085 is next on the same draft PR; final review and explicit human acceptance remain separate gates. Nothing here claims production readiness or MVP completion.
+> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004's [T084-T085 implementation increment](specs/004-module-lifecycle/implementation.md#convergence-remediation-t084-t085) preserves accepted service counts and removes unused default reload watchers from host disposal. Follow-up convergence, final review and explicit human acceptance remain separate gates on the same draft PR. Nothing here claims production readiness or MVP completion.
 
 ## 🧭 The shape of things to come
 
@@ -174,7 +174,7 @@ successful narrowed rechecks.
 All 83 then-existing tasks are implemented; that checkpoint selected follow-up
 converge on draft PR #7, not review, acceptance or an intermediate merge.
 
-**Current 004 convergence: gaps.** The
+**Historical 004 convergence after T082-T083: gaps.** The
 [assessment after T082-T083](specs/004-module-lifecycle/convergence.md) checks
 all 46 requirements/outcomes/scenarios, twelve plan decisions, 83 tasks and
 twelve principles. F1/T081 and F2/T082 are closed. New HIGH F4 reproduces
@@ -184,7 +184,20 @@ passes 104/106, with SQLite preservation and PostgreSQL correction reporting
 private `composition_host_dispose_incomplete`. The HTTP-stop correction passes
 but does not establish this disposal cause. Only T084-T085 are appended,
 preserving all prior tasks, approved intent, reviewer checklists and product/test
-source. **Implement is next** on the same draft PR #7; no intermediate merge.
+source. That checkpoint selected implement on the same draft PR #7.
+
+**T084-T085 implementation complete; follow-up converge is next.** Executable lifecycle now retains
+128 services per owner and 1,024 enabled total, including complete copied
+prerequisite bindings. The independent public example requires all 127 Alpha
+operations across 129 global exports. A deterministic regression proves that
+unused default JSON watchers survived configuration clearing; disabling reload
+before builder construction removes that disposal resource without widening
+deadlines. The corrected both-provider composition selection passes 106/106;
+the complete local gate passes all 286 steps. The
+[increment report](specs/004-module-lifecycle/implementation.md#convergence-remediation-t084-t085)
+retains all failed evidence and full reconciliation.
+Follow-up converge, review and explicit human acceptance remain separate
+stages on the same draft PR #7; no intermediate merge is requested.
 
 **Spec 003 is explicitly human-accepted and human-merged.**
 The [acceptance record](specs/003-storage-registry/acceptance.md) preserves the
