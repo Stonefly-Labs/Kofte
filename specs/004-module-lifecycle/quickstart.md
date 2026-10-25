@@ -1,10 +1,13 @@
 # Validation Guide: 004 - Module Composition and Lifecycle
 
 **Status**: T086 corrects disabled-catalog diagnostic metadata admission and all
-eleven code-head CI contexts pass. Implement remains blocked by a separate local
-complete-gate failure; T086 is unchecked. See the
-[T086 increment](implementation.md#final-review-remediation-t086).
-Resume implement before converge, final review and explicit human acceptance.
+eleven code-head CI contexts pass. Its implementation checkpoint is complete;
+the human explicitly deferred investigating a separate local anomaly after
+reviewing eight passes and one failure. See the
+[facts and disposition](implementation.md#human-directed-deferral-and-implementation-handoff).
+The failed local gate remains failed. Converge is next, before final review and
+explicit human acceptance; no product-test rerun or further investigation is
+performed for this documentation-only disposition.
 Complete accepted
 service counts and unused default JSON watcher cleanup are corrected; see
 the [increment evidence](implementation.md#convergence-remediation-t084-t085).

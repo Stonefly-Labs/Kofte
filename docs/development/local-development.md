@@ -318,8 +318,11 @@ module, preserving exact disabled observations, complete inventory and verified
 clean stop. No operator command, deadline or responsibility changes.
 Code-head CI passes all eleven contexts, but the local complete attempt fails
 a PostgreSQL migration-interruption test; isolated/local recovery passes do not
-erase it. Resume blocked implement on draft PR #7 before converge. T086 remains
-unchecked, and passing review and explicit human acceptance remain required.
+erase it. After reviewing eight passes and one failure, the human explicitly
+directed [documenting the facts and deferring investigation](../../specs/004-module-lifecycle/implementation.md#human-directed-deferral-and-implementation-handoff)
+as non-blocking for this checkpoint. No further investigation or product-test
+rerun is performed. T086 is complete; converge is next on draft PR #7.
+The failed local result, all tests and later review/acceptance gates remain.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).

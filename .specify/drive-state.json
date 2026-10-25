@@ -18,18 +18,10 @@
     },
     "004": {
       "directory": "specs/004-module-lifecycle",
-      "next_step": "implement"
+      "next_step": "converge"
     }
   },
-  "active": {
-    "spec": "004",
-    "step": "implement",
-    "directory": "specs/004-module-lifecycle",
-    "status": "blocked",
-    "branch": "feature/004-module-lifecycle",
-    "reason": "T086 code fix and focused red/green are published at c749acc; actual code-head CI passes all eleven contexts and 286 targeted steps. The required local all attempt failed PostgreSQL KilledLaterMigrationRetainsEarlierCommitAndOriginalDataUntilExplicitAcceptedRecovery; unchanged isolated1/1, local recovery and CI passes do not establish its original cause. Stopped the already-failed local attempt gracefully; no passing complete local gate. Preserve T086 unchecked and resume implement on the original branch/draft PR before converge.",
-    "started_at": "2026-10-25T20:42:03+00:00"
-  },
+  "active": null,
   "history": [
     {
       "spec": null,
@@ -1001,6 +993,24 @@
       "evidence_sha256": {
         "specs/004-module-lifecycle/tasks.md": "958525e41dbb0e6970793abe9369c2822589c38baaf73879ccc21436e4e440e0",
         "specs/004-module-lifecycle/review.md": "f9f79659b87e761003aa02a10b1fd02e58cbb6755b91651f88e62e74280ed4c3",
+        "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
+        "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "implement",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-25T20:42:03+00:00",
+      "completed_at": "2026-10-25T22:02:57+00:00",
+      "outcome": "pass",
+      "note": "T086 root-cause fix, focused red/green, both-provider public behavior and all eleven c749acc CI contexts are evidenced. The human explicitly directed documenting the eight-pass/one-failure PostgreSQL case snapshot, deferring investigation and moving on. This scoped non-blocking disposition completes implement only: the local all-suite remains failed/interrupted at 109/111 executed steps; its original assertion and cause remain unknown. No product rerun, test suppression, relaxed deadline, feature acceptance or later gate waiver. See implementation.md#human-directed-deferral-and-implementation-handoff for the exact human direction, reports and revisit guidance. Follow-up converge is next, not executed here.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "1edad3eee4b8e81d8490bc12591d65e9497517a1dc08fab9c98764ecdc595bda",
+        "specs/004-module-lifecycle/implementation.md": "8ee34a8221d9e14ce7c831f9203ee8c7c60860dbf28434ddc9161e3dee7a5029",
         "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
         "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
       }

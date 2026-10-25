@@ -1835,3 +1835,103 @@ An integrity comparison preserves all 86 task descriptions and markers,
 including unchecked T086, every prior implementation-report byte and the
 approved spec/plan/research/model/analysis/convergence/review/checklists.
 The follow-up checkpoint changes no product, test, script or dependency source.
+
+## Human-directed deferral and implementation handoff
+
+**Current disposition, 2026-10-25:** complete the T086 implementation checkpoint;
+retain the separate PostgreSQL test anomaly as **documented, investigation
+deferred, non-blocking for this checkpoint**. Follow-up converge is next.
+The blocked checkpoint above remains historical evidence, not current status.
+
+After reviewing the execution counts, the human explicitly directed:
+
+> ok bro we can just documet some facts so if we needed to, we coukld revisit and investigagte at a later date but for now, not ctually do the investigation and just move on?  know what I mean?
+
+This authorizes deferring investigation of this one observation and continuing
+stage progression. It does not diagnose or fix the anomaly, relabel the failed
+local attempt as passing, disable a test, relax deadlines/assertions, establish
+a general test waiver, accept feature 004 or waive later review/release gates.
+No product-test rerun or further investigation is performed for this disposition.
+
+### Deferred observation: exact facts and evidence
+
+The exact PostgreSQL case is
+`Kofte.Storage.IntegrationTests.Composition.PostgresCompositionAuthorityTests.KilledLaterMigrationRetainsEarlierCommitAndOriginalDataUntilExplicitAcceptedRecovery`,
+implemented in
+`tests/integration/Kofte.Storage.IntegrationTests/Composition/CompositionAuthorityTests.cs`.
+It deliberately kills a later migration and checks retained earlier commits,
+original unrelated data and explicit recovery. It uses direct storage/crash
+worker APIs, not the T086 diagnostic protocol or new disabled catalogs.
+
+The evidence snapshot used for this decision contains **eight passes and one
+failure in nine executions** of that exact PostgreSQL case:
+
+| Recorded selection | Passed | Failed |
+| --- | --- | --- |
+| Local `storage-integration-postgres` | 1 | 0 |
+| Local `composition-integration-postgres` | 0 | 1 |
+| Isolated diagnostic method selection | 1 | 0 |
+| Local `storage-recovery-postgres` and `composition-recovery-postgres` | 2 | 0 |
+| Fix-commit CI's two PostgreSQL integration selections | 2 | 0 |
+| Fix-commit CI's two PostgreSQL recovery selections | 2 | 0 |
+| **Total** | **8** | **1** |
+
+Counts include overlapping suite selectors, not nine full pipeline reruns.
+They cover this T086 attempt only, exclude the SQLite counterpart and older
+feature history, and exclude subsequent docs-only CI. They are an observed
+execution count, not an established statistical failure rate or proof of
+harmlessness. The exact selector commands are in `scripts/verify.py`;
+the isolated command and result are recorded above.
+
+The single failure is retained in
+`integration-postgres-fb12cfa1e3354655abd558c697f88410.json`, at
+`composition-integration-postgres`, exit 2, group duration 216.981s,
+failure correlation `ceef1e00d59e499d8ea7a5a2bbc40af8`.
+That report identifies the failed test but not its failing assertion or raw
+exception. **The cause remains unknown**; no scheduling, timing, storage
+corruption or confirmed flaky-test diagnosis is established.
+The local all-suite remains failed/interrupted: 109/111 executed steps,
+all six reports `completeGate: false`, as recorded above.
+
+Passing local evidence is in the same integration report's broader storage
+selection, `recovery-both-06e00f80cb9e48698de4cc90e099a92d.json`, and the
+isolated diagnostic result. Passing fix-commit CI evidence is in
+`integration-postgres-fe5ad98e79e54ab091584abfb909ea21.json` and
+`recovery-both-9d8c6a67f5064cde9c6a6ff858e45480.json`, from
+[run 40232738175](https://github.com/Stonefly-Labs/Kofte/actions/runs/40232738175)
+for `c749acc22345e4ab868dfc84e30c599208d953bd`.
+All eleven fix-commit CI contexts and all 286 targeted product steps pass.
+No subsequent docs-only result is substituted for this snapshot.
+
+### Revisit guidance and stage boundary
+
+If this case fails again or migration-interruption/recovery work is undertaken,
+revisit this observation with the report/correlation and unchanged test above.
+Capture the exact failing assertion and bounded safe phase evidence first;
+do not assume that another pass proves a cause or erase the original failure.
+Any investigation remains future work, not an open task in this invocation.
+
+Only T086's marker is completed, based on its implemented root-cause fix,
+focused red/green, real both-provider behavior, actual code-head CI and this
+explicit human-directed non-blocking disposition of the separate anomaly.
+All 85 preceding task descriptions/markers, original reports and reviewed
+checklists remain unchanged. Product/test/script source, dependencies and all
+test assertions/deadlines are unchanged.
+The driver completes only **implement** and selects **converge** on the same
+original branch/draft PR #7. Convergence is not executed here. Passing final
+review and explicit numbered-feature human acceptance remain separate.
+
+### Documentation-only checkpoint verification
+
+| Exact command | Observed result |
+| --- | --- |
+| `python3 scripts/check_repository.py` | Passed repository assets, links, MCP parity and driver state. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed 119/119, 2.273s. |
+| `npm run format:check` | Passed. |
+| `git diff --check` | Passed. |
+
+No `.specify/extensions.yml` exists; no before/after implementation hook is
+configured. The historical implementation report remains an exact byte prefix;
+all 86 task descriptions and preceding 85 task markers are unchanged.
+Only T086's completion marker, current progress documentation and driver state
+change. No product suites are rerun for this disposition.

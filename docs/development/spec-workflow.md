@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** **004 / T086 fix published; implement is blocked** after specify, clarify,
+**Current checkpoint:** **004 / T086 implement complete; converge is next** after specify, clarify,
 plan, checklist, tasks and analyze completed on
 `feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
 The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the
@@ -366,9 +366,21 @@ reviewed checklists remain historical evidence. Actual code-head CI passes all
 eleven contexts and 286 targeted steps. The required local complete attempt
 fails a PostgreSQL migration-interruption test and is then stopped gracefully;
 its isolated pass and local recovery pass do not establish the original cause.
-The driver records **blocked implement**, preserving T086 unchecked rather than
-completing the stage or selecting converge. Resume the same stage on its original
-branch/draft PR #7. No acceptance, intermediate merge or 005 work is authorized.
+The initial checkpoint recorded **blocked implement**, preserving T086 unchecked.
+That historical blocker was subsequently resolved by the explicit human
+direction below, not by relabeling the failed local result.
+
+**Human-directed deferral:** After reviewing the exact PostgreSQL case's
+eight passes and one failure, the human explicitly requested documentation
+for later investigation and progression now without further investigation.
+The [fact record and revisit guidance](../../specs/004-module-lifecycle/implementation.md#human-directed-deferral-and-implementation-handoff)
+retain commands/report identities, selector overlap, the unavailable original
+assertion, unknown cause and unchanged failed/interrupted local attempt.
+This is a non-blocking disposition for this implementation checkpoint only,
+not a general test waiver or feature acceptance. No test is disabled, deadline
+relaxed, new product run started or later gate skipped. Resume and complete
+only implement, mark T086 complete, publish on the same branch/draft PR #7 and
+stop with **converge next**. No intermediate merge or 005 work is authorized.
 
 **003 acceptance checkpoint:** 003 is **explicitly human-accepted and
 human-merged** on its original `feature/003-storage-registry` and

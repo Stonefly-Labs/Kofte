@@ -283,10 +283,13 @@ serve at the inclusive boundaries, with disabled callbacks forbidden, exact
 disabled observations, unchanged inventory, readiness and verified exit.
 All eleven code-head CI contexts pass, but the local complete attempt fails
 a PostgreSQL migration-interruption test. The isolated pass and subsequent
-local recovery pass do not establish its original cause. T086 remains unchecked
-and implement is blocked on the same draft PR #7; resume it before convergence.
-The historical review and reviewed checklists are preserved. Do not request
-an intermediate merge.
+local recovery pass do not establish its original cause. After reviewing the
+eight-pass/one-failure snapshot, the human explicitly directed
+[documentation and deferred investigation](specs/004-module-lifecycle/implementation.md#human-directed-deferral-and-implementation-handoff),
+non-blocking for this implementation checkpoint. T086 is complete; converge is
+next on the same draft PR #7. The failed local outcome is not relabeled passing,
+and no test or later feature gate is waived. Historical review and reviewed
+checklists are preserved; do not request an intermediate merge.
 
 The following paragraphs preserve the historical design-stage checkpoint.
 

@@ -387,7 +387,7 @@ checklists and product/test source. Acceptance is blocked until remediation,
 convergence and passing review on the same draft PR #7. No new design approval,
 readiness, intermediate merge or later-feature work is introduced.
 
-**Current 004 / T086 fix published; implement is blocked.**
+**Current 004 / T086 implement complete; investigation deferred.**
 The [increment](../specs/004-module-lifecycle/implementation.md#final-review-remediation-t086)
 corrects all-catalog diagnostic metadata admission to 2,048 prerequisites while
 preserving the 1,024 enabled-edge bound. Public resolution and actual
@@ -396,9 +396,12 @@ and an unrelated enabled owner, including exact disabled observations,
 unchanged inventory, readiness and verified clean stop. All eleven code-head
 CI contexts pass; a separate local complete-gate PostgreSQL
 migration-interruption failure remains unexplained despite isolated/local recovery passes.
-T086 stays unchecked. Resume blocked implement on draft PR #7 before convergence.
-Historical review, approved intent and reviewer-owned checklists remain unchanged;
-no acceptance, readiness or merge is requested.
+The human explicitly directed documenting its eight-pass/one-failure snapshot
+and deferring investigation as non-blocking for this implementation checkpoint.
+The [facts and revisit guidance](../specs/004-module-lifecycle/implementation.md#human-directed-deferral-and-implementation-handoff)
+preserve the failed local result and unknown cause. T086 is complete;
+follow-up converge is next on draft PR #7. Historical review, approved intent
+and reviewed checklists remain unchanged; no acceptance or merge is requested.
 
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.

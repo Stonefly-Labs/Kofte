@@ -430,8 +430,12 @@ Real both-provider boundary boots require no disabled callback/allocation,
 usable readiness, exact disabled observations, unchanged inventory and verified
 clean exit. All eleven code-head CI contexts pass. A separate local complete-gate
 PostgreSQL migration-interruption failure is retained without a causal
-diagnosis; implement remains blocked with T086 unchecked on draft PR #7.
-Convergence, passing final review and explicit human acceptance remain later.
+diagnosis. The human subsequently directed
+[fact documentation and deferred investigation](../specs/004-module-lifecycle/implementation.md#human-directed-deferral-and-implementation-handoff)
+as non-blocking for this implementation checkpoint, after reviewing eight passes
+and one failure. This changes no architecture, test assertion or recorded result.
+T086 is complete; converge is next on draft PR #7, before final review and
+explicit human acceptance.
 
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
