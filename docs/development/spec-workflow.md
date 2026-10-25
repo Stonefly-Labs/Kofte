@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** **004 / implement complete (T084-T085); follow-up converge is next** after specify, clarify,
+**Current checkpoint:** **004 / converge passes after T084-T085; review is next** after specify, clarify,
 plan, checklist, tasks and analyze completed on
 `feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
 The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the
@@ -308,6 +308,25 @@ all failed diagnostic evidence and complete-gate reconciliation.
 Only implement is executed; follow-up converge, final review and explicit
 numbered-spec acceptance remain separate invocations on this branch/draft PR.
 Approved intent, reviewer checklists and historical convergence are unchanged.
+
+**Convergence after T084-T085:** The
+[assessment](../../specs/004-module-lifecycle/convergence.md) now **passes**
+across all 46 requirements/outcomes/scenarios, twelve plan decisions, 85 tasks
+and twelve principles. F1/T081, F2/T082, F4/T084 and F3/T083/T085 are closed
+by actual source/assertions, fresh focused checks and independently inspected
+assessed-head CI. There are zero actionable missing/partial/contradicting/
+unrequested findings, and no new convergence phase or task.
+
+`tasks.md` is byte-for-byte unchanged, as are product/test/verifier source,
+approved intent, reviewed checklists and implementation evidence. The complete
+previous convergence report is preserved verbatim beneath the new assessment.
+Fresh quality/unit, both-provider composition 106/106 and strict-result 33/33
+checks pass. Retained complete local evidence and assessed-head CI each have
+286 passing steps; this invocation does not claim a new complete local gate.
+The driver completes only **converge / pass** and selects **review**, in a
+separate invocation on this original branch and draft PR #7. Final review
+and explicit numbered-feature human acceptance remain required; no PR readiness,
+intermediate merge or 005 work is authorized.
 
 **003 acceptance checkpoint:** 003 is **explicitly human-accepted and
 human-merged** on its original `feature/003-storage-registry` and

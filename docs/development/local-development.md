@@ -289,6 +289,15 @@ refusal are unchanged. The report retains failed runs and complete-gate
 reconciliation; follow-up converge, review and explicit human acceptance
 remain separate on the same draft PR #7.
 
+The [convergence after T084-T085](../../specs/004-module-lifecycle/convergence.md)
+now **passes** with zero actionable gaps across all 46 requirements/outcomes/
+scenarios, twelve plan decisions, 85 tasks and twelve principles. All F1-F4
+findings are closed; tasks and product/test code remain unchanged.
+Fresh quality/unit, 106/106 both-provider composition and 33/33 strict-result
+checks pass; inspected assessed-head CI retains all 286 product steps.
+No new full local gate is claimed. **Review is next** on the same draft PR #7,
+then explicit human acceptance; commands and operator responsibilities are unchanged.
+
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).
 Only trusted composition receives `StorageRegistry`/`StorageMaintenance`;

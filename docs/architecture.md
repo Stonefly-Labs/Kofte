@@ -402,6 +402,14 @@ The corrected both-provider composition selection passes 106/106; all failed
 evidence and complete-gate reconciliation are retained. Follow-up convergence,
 review and explicit human acceptance remain later separate gates.
 
+The [convergence after T084-T085](../specs/004-module-lifecycle/convergence.md)
+now **passes**: all 46 requirements/outcomes/scenarios, twelve plan decisions,
+85 tasks and twelve principles were assessed with zero actionable gaps.
+All F1-F4 findings are closed; task bytes, approved architecture, reviewed
+checklists and product/test code are unchanged. **Review is next**, separately
+on the same draft PR #7, before explicit human acceptance; no new architecture,
+readiness or intermediate merge is introduced.
+
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.

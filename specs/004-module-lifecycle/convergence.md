@@ -1,3 +1,256 @@
+# Convergence after T084-T085: 004 - Module Composition and Lifecycle
+
+**Result:** pass
+
+**Stage:** converge only; begun 2026-10-25T19:44:46+00:00.
+**Assessed revision:** `9d872a5e0c1ce4598f362e5148a21c32d74283ba`.
+**Branch / checkpoint:** `feature/004-module-lifecycle`,
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
+**Intent:** `spec.md`, `plan.md` and all 85 existing tasks, governed by
+constitution v2.0.1. Referenced model/contracts explain the approved decisions;
+implementation reports, checked markers and CI are evidence, not new intent.
+
+## Decision
+
+**Converged: no actionable gap remains in the specified scope.** F1/T081
+(disabled output), F2/T082 (qualified service identities), F4/T084 (complete
+executable counts) and F3/T083/T085 (normal stop/disposal) are closed by actual
+source, discriminating assertions and current execution evidence.
+
+All 20 functional requirements, six buildable outcomes, 20 acceptance
+scenarios, twelve plan decisions, 85 tasks and twelve principles were assessed.
+There are **zero missing, partial, contradicting or unrequested findings**;
+severity counts are CRITICAL 0, HIGH 0, MEDIUM 0 and LOW 0.
+`tasks.md` remains **byte-for-byte unchanged**: no empty convergence phase,
+new task, rewritten description or checkbox change.
+
+**Review is next**, in a separate invocation on this same branch/draft PR.
+This assessment does not execute final review, accept numbered feature 004,
+mark the PR ready, request an intermediate merge or begin 005.
+The entire previous convergence report is preserved verbatim below, including
+its failed commands and historical findings.
+
+## Findings summary
+
+| ID   | Gap type | Severity | Source                   | Evidence                                                                | Remaining work                                 |
+| ---- | -------- | -------- | ------------------------ | ----------------------------------------------------------------------- | ---------------------------------------------- |
+| None | None     | None     | Complete inventory below | Current source/assertions, fresh focused execution and assessed-head CI | None identified; proceed separately to review. |
+
+### Closure of the remaining findings
+
+**F4/T084: admitted counts now survive actual lifecycle.**
+`ModuleLifecycleCoordinator.cs:100-120` lazily copies at most 1,025 exports
+before enforcing 1,024 enabled total and 128 per owner. It retains complete
+owner-qualified identities, versions and service types; Start supplies the
+prerequisites' actual scoped operations (`:292-305`).
+`ModuleLifecycle.cs:104-108` copies up to 1,024 activation bindings and refuses
+the first overflow. Module-dependency counts are not service-export counts.
+
+The actual lifecycle theory in
+`tests/unit/Kofte.Host.Tests/Features/ModuleComposition/ModuleLifecycleTests.cs:513-590`
+checks 65/128 services from one prerequisite, 256 across independent roots
+and 1,024 across eight prerequisites. It requires registration, Initialize,
+Start, fresh healthy readiness and reverse cleanup, comparing every binding's
+identity/version/operation instance and denying cross-owner DI lookup.
+The two one-over cases (`:610-637`) reject before any registrar/runtime.
+`CompositionLifecycleContractTests.cs:17-44` proves immutable copied bindings
+and refusal after exactly 1,025 entries of an infinite source.
+
+The separately compiled public author exports 127 Alpha services, alongside
+Beta/NoStorage's two exports. Beta checks every binding and operation during
+supervised Start. `BootScenarios.cs:79-89` requires actual boundary identity
+and `prerequisiteServiceComparisons: 127`, rather than declaration acceptance
+or a positive generic count. Fresh both-provider integration executes that
+public example; C#/Python strict observations also require the evidence.
+Fresh 33/33 harness regressions reject omission/decrement of every required
+field for standalone and `all` results. No count is truncated or valid input
+narrowed to conceal the original defect.
+
+**F3/T083/T085: normal cleanup now has causal correction and passing evidence.**
+`CompositionWorker.cs:263-273` disables unused default JSON reload watchers
+before slim-builder construction, then clears default configuration sources.
+The actual-worker-builder regression in `CompositionBudgetTests.cs:15-36`
+proves that no watcher has been initialized and disposes the actual host
+through the unchanged bounded callback runner. The implementation report
+retains its discriminating red/green evidence and the observed pre-DI
+file-provider disposal boundary; an isolated successful retry alone is not
+the causal argument.
+
+The 500-ms internal HTTP drain remains inside the one-second cleanup action.
+`CompositionAttempt`/`CompositionCallbackRunner` retain the original work,
+cooperative-cleanup and termination reserves. `CompositionWorker` still
+reports private causal cleanup codes and terminal incomplete refusal;
+`CompositionSupervisor` still verifies owned exit rather than equating
+cancelled waiting or root exit with complete termination.
+
+Fresh broad integration passes **106/106**, zero skipped, including both
+providers' three-cycle preservation, named corrections, incomplete HTTP
+request stop and deliberate uncooperative/incomplete refusals, plus actual
+PostgreSQL authority loss and tracked-descendant exit. Exact original stores,
+history and inventories remain asserted. Assessed-head local complete-gate
+and Linux CI evidence also pass as distinguished below. This closes the
+current scoped cause/evidence gap without claiming that every historical
+failed invocation had the same cause or that future OS termination is guaranteed.
+
+F1/T081 remains closed by real explicit/omitted disabled records under fresh
+attempts, zero disabled effects and protocol tampering/omission refusal.
+F2/T082 remains closed by complete owner-qualified names, including a
+128-character local name and maximum-length accepted owner, through actual
+Start/readiness and the independent public example.
+
+## Complete intent assessment
+
+| Inventory                  | Assessed                                           | Result                                                                                         |
+| -------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Functional requirements    | 20/20                                              | Current source and positive/negative assertions satisfy the scoped obligations.                |
+| Buildable success criteria | 6/6                                                | Determinism, preservation, bounded failure/correction and private useful output are evidenced. |
+| Acceptance scenarios       | 20/20                                              | All five stories' four scenarios assessed, not inferred from checked tasks.                    |
+| Plan decisions             | 12/12                                              | R1-R12 implemented within the approved boundaries.                                             |
+| Existing tasks             | 85/85                                              | Original tasks and every corrective chain assessed against resulting behavior.                 |
+| Constitution principles    | 12/12                                              | Applicable invariants checked; later-feature duties remain scoped, not waived.                 |
+| Findings by type           | missing 0; partial 0; contradicts 0; unrequested 0 | No appended task.                                                                              |
+| Findings by severity       | CRITICAL 0; HIGH 0; MEDIUM 0; LOW 0                | No unresolved finding.                                                                         |
+
+### Requirements, scenarios and outcomes
+
+| Intent                                        | Current source and discriminating assertions                                                                                                                                                                                                                                                                                                               |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FR-001/002; US1.1-4; SC-001                   | Explicit `ModuleCompositionHost`/selection/catalog and resolver/worker; `BootScenarios` exercises real empty v0/v1 endpoints, independent operations, disabled/omitted observations, missing implementation and unchanged full inventories. F1/F2/F4 are closed as above.                                                                                  |
+| FR-003/004; US2.1-3; SC-002                   | Accepted version ranges, ordinal Kahn frontier, SCC diagnostics and bounded rejection in resolver/graph/diagnostic types; resolver/limit tests and the frozen public corpus compare independently expected orders/rejections across 100 repetitions, ten permutations, two actual cultures and author/host paths.                                          |
+| FR-005/006/007; US2.1-4                       | Strict original-byte selection and owner-only settings; contribution capability/version/owner/route reservations and unsupported execution; complete read-only physical/model/recipe preflight. Validation/preflight/recipe tests require zero mutating callbacks and exact unchanged inventories on refusal.                                              |
+| FR-008/011; US3.1/2, US5.1; SC-004            | Audited native registration, owner scopes and coordinator whole-phase barriers; actual per-owner migration progress and initial fresh health precede atomic publication. Lifecycle/progress tests and public migration/boot examples reject partial completion/readiness.                                                                                  |
+| FR-009/010; US3.1-4                           | Storage session/inspector/preparation/verification reuse accepted registry, binding and assigned migrations under held authority. Real migration/recipe/authority/recovery cases verify exact current histories, no serving writes, retained earlier commits and explicit uncertain-owner recovery. No-storage has no fabricated binding/migration.        |
+| FR-012/013; US4.1-4; SC-003                   | `PreservationScenarios` performs three complete fresh-process cycles per provider, comparing original assignments, rows, history/revision and unrelated state after each leg. Invalid dependent-disable refuses without cascade; separate owner-only upgrade tests verify only its requested changes.                                                      |
+| FR-014; US5.1/2; SC-005                       | Atomic current-attempt own/effective samples, individual 30-second freshness, serialized bounded sweeps and transitive impact/independent roots in `CompositionHealth`/coordinator. Health/observation tests and actual HTTP examples prove unchanged aggregate schema and no author callback on requests.                                                 |
+| FR-015/016; US3.3/4, US4.4, US5.3; SC-004/005 | Monotonic clipped budgets, authority checks, reverse partial-entry/LIFO cleanup, owned-process supervision and explicit reconciliation. Stop/correction/authority tests exercise seven ignoring-token boundaries, cancellation, real session loss, separate tracked-descendant proof and corrected fresh attempts. F3 is closed without weakening refusal. |
+| FR-017/018; US5.4; SC-006                     | Fixed-code records, current admission/attempt tokens, framed owner/field allowlists, useful guidance and storage durability links; six-channel privacy captures and bounded metrics/output tests require both safe evidence and zero seeded leaks. Bootstrap HTTP remains aggregate with no lifecycle-control route.                                       |
+| FR-019/020; all stories; SC-001-006           | Separate public author/consumer projects, eleven executable scenarios, C#/Python strict semantic observations and omission rejection; named verifier inventories retain foundation provider/recovery/privacy/browser/startup/failure gates and documented local/CI evidence. No full-reference-module or release claim.                                    |
+
+### Plan decisions and all tasks
+
+| Decision                            | Current mechanism and task coverage                                                                                                                                                         |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| R1 compiled discovery               | Copied inert explicit catalog, private selection and no disabled constructors/callbacks; T003/T006/T009/T028-T029/T033-T036/T081.                                                           |
+| R2 deterministic bounded resolution | Accepted manifests/ranges, SCCs, ordinal frontier and bounded ordered diagnostics; T015-T021/T025-T026.                                                                                     |
+| R3 owner configuration              | One strict immutable admitted snapshot, known field/type guidance and supervised pure validator; T007-T009/T017/T022/T052.                                                                  |
+| R4 honest contribution ownership    | Capability/owner/version/global route and local identity checks; inert future categories; complete executable counts; T006/T018/T023-T024/T059/T064/T082/T084.                              |
+| R5 native DI/phase barriers         | Descriptor audit, one provider, owner scopes/restricted services, versioned complete prerequisite bindings and partial-entry cleanup; T007/T027-T031/T037/T044/T051/T053/T082/T084.         |
+| R6 read-only/offline separation     | Complete inventory/all-recipe checks before mutation, retained read/exclusive authority, no provisioner credential in serving; T013-T014/T024/T038-T044.                                    |
+| R7 preserved stores/recovery        | Accepted assignments/current histories, exact original-state cycles and explicit interrupted/full-set recovery; T039-T057/T067.                                                             |
+| R8 fresh health                     | Current own/effective/disabled observations, individual expiry and snapshot-only aggregate health; T058-T059/T062-T066/T081.                                                                |
+| R9 actual bounded supervision       | Included reserves, sequential owned cleanup and verified process termination/refusal; T004/T012/T024/T032/T039/T041/T053/T060/T065/T068/T083/T085.                                          |
+| R10 useful private diagnostics      | Fixed records, allowlisted frames, correlation/durability and bounded safe telemetry; T010-T012/T061-T062/T065/T069-T071/T081/T083.                                                         |
+| R11 independent public proof        | Separate assemblies, frozen expectations and real typed operations with mandatory strict measured observations; T003-T005/T015/T025/T028/T034/T045-T046/T054/T066-T070/T074/T081-T082/T084. |
+| R12 retained evidence baseline      | Required verifier inventories, complete gate and actual CI, truthful failed-run history and delivered docs; T073-T080/T083/T085.                                                            |
+
+| Task set  | Resulting implementation/evidence assessed                                                                                                                               |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| T001-T005 | Existing approved ADR/analysis/reviewed checklist, separately reviewed DI edge/locks/notices, dedicated assemblies, owned fixtures and strict harness.                   |
+| T006-T014 | Copied public configuration/lifecycle/observation types, strict private file, record/protocol/budget primitives and read-only actual inventory/model inspection.         |
+| T015-T026 | Independent graph/limits/cultures, safe settings/claims and supervised whole-set no-effect validation/correction.                                                        |
+| T027-T036 | Audited native DI, public operations, empty/valid/disabled/missing boots and whole-set healthy publication.                                                              |
+| T037-T049 | Actual both-provider clean/additive/current assigned migrations, all-recipe barrier, contention/session loss/killed later owner and explicit recovery/serve guide.       |
+| T050-T057 | Exact three-cycle preservation, coherent dependent selection, reverse/partial cleanup and separate requested owner upgrade.                                              |
+| T058-T072 | Current/stale/dependency health, aggregate HTTP, actual bounded fault/correction/exit, useful six-channel private captures and strict result refusal.                    |
+| T073-T080 | Existing named targets/minima, all public-guide commands, retained complete local/CI and scope/dependency/ownership documentation; historical failed runs remain failed. |
+| T081-T082 | Actual disabled projection and full qualified identity boundaries, including independently consumed public evidence.                                                     |
+| T083-T085 | HTTP drain/private cleanup boundary plus complete executable counts, demonstrated unused-watcher correction and current successful broad provider/process evidence.      |
+
+### Constitutional assessment
+
+| Principle      | Applicable evidence / preserved boundary                                                                                                                                              |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| I              | MIT/brand and portable module-free core retained; no mandatory Hoard/cloud/IaC.                                                                                                       |
+| II             | Versioned trusted module contracts, complete validation/lifecycle, preserved disable data and honest failure/degraded states; no sandbox/hot-unload claim.                            |
+| III            | Native DI/direct handlers, minimal existing assemblies and dedicated test-project source; reviewed dependency edge/locks/licenses retained.                                           |
+| IV             | Accepted immutable registry/UNIQUE/collision/schema/file/path/physical-marker/history mechanisms reused and exercised on both actual providers.                                       |
+| V              | Owner-local earlier commits and interrupted intents survive later failure; explicit recovery, no cross-store ACID or automatic irreversible startup effects.                          |
+| VI             | Installation-only authority, owner settings/services/store, stripped serving credentials and safe useful private/public telemetry boundaries.                                         |
+| VII            | Inert namespaced MCP declarations/collision validation; executable tools rejected. Authentication/tool operations remain 007/013, not waived.                                         |
+| VIII           | Ephemeral lifecycle observations, not durable jobs/events/resources/realtime. Those runtimes and delivery/actor obligations remain later features.                                    |
+| IX             | No lifecycle page or remote JavaScript; existing aggregate schema/web adapter/browser/accessibility evidence retained.                                                                |
+| X              | Supported pinned local/Linux tooling, both providers, finite supervision and explicit recovery/operator responsibilities; no mandatory deployment platform.                           |
+| XI             | Actual provider/process/public/privacy assertions, focused corrective regressions and independently inspected retained full-gate/CI evidence. Unverifiable termination stays failure. |
+| XII/governance | 004 scope only, original branch/draft PR, unchanged approved intent/reviewer markers/tasks, one stage and separate review/explicit human acceptance/human merge.                      |
+
+## Fresh verification and retained full-gate evidence
+
+Commands use the existing repository-local .NET SDK 10.0.402/runtime 10.0.13,
+Node 24.22.0/npm 11.19.1 on macOS arm64. PostgreSQL is explicitly opted-in,
+fixture-owned disposable infrastructure, never developer/production storage:
+
+```bash
+export DOTNET_ROOT="$PWD/artifacts/toolchain/dotnet-10.0.402"
+export PATH="$DOTNET_ROOT:$PATH"
+export DOTNET_PROCESSOR_COUNT=4 DOTNET_CLI_TELEMETRY_OPTOUT=1
+export KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true
+```
+
+| Exact fresh command                                                                                                                                                        | Result                                                                                                                                                                                                 |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `python3 scripts/verify.py --suite quality`                                                                                                                                | Passed all 20 steps, 34.015s: locked restore/build, .NET format, Prettier/ESLint/TypeScript, contract generation and dependency reconciliation included.                                               |
+| `python3 scripts/verify.py --suite unit`                                                                                                                                   | Passed all 14 steps, 34.828s, including actual host/platform composition boundaries and retained unit suites.                                                                                          |
+| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-class '*Composition*' --minimum-expected-tests 106`               | Passed 106/106, zero failed/skipped, exit 0; test summary 3m 14.403s. Includes both providers' public boot/count, migration, preservation, correction, cleanup, authority, recovery and privacy cases. |
+| `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore -c Release --filter-class '*CompositionConsumerHarnessTests*' --minimum-expected-tests 33` | Passed 33/33, zero failed/skipped, exit 0; 848ms. Every mandatory standalone/`all` observation is omission/decrement tested.                                                                           |
+
+Fresh safe reports are
+`artifacts/verification/quality-none-dac13f26011749468bbf7c066f79c412.json`
+and `unit-none-182bdb2547184edd87aada262055074d.json`, both assessed at
+`9d872a5e0c1ce4598f362e5148a21c32d74283ba`, targeted/`completeGate: false`.
+This convergence does **not** claim a newly executed complete local all-suite,
+browser/startup gate or human usability study.
+
+The ten actual local reports named in the T084-T085 implementation increment
+were independently reopened: all **286 steps pass**, each `completeGate: true`.
+They accurately record precommit base `004b34b` plus the tested working-tree
+increment, not an assertion that the old commit contains its corrections.
+
+Actual assessed-head [Product checks 40207096791](https://github.com/Stonefly-Labs/Kofte/actions/runs/40207096791)
+and [Repository checks 40207096786](https://github.com/Stonefly-Labs/Kofte/actions/runs/40207096786)
+pass all eleven contexts at `9d872a5e0c1ce4598f362e5148a21c32d74283ba`.
+All ten safe product artifacts were independently downloaded and reconciled:
+quality 20, unit 14, integration SQLite 9/PostgreSQL 12, recovery 43, contract
+101, browser 16, privacy 41, startup 12 and failure propagation 18;
+**286/286 passed steps**. These CI reports remain targeted/`completeGate: false`,
+not a combined local gate.
+
+Their test checkout `83ff2a94b9fd1af571a49ad33084abe7df0ee920` has verified
+parents main `3a5deff380655e72eb6b08ebc1ef694ed5676f4a` and the exact assessed
+head. This is GitHub's synthetic test checkout, not a human merge.
+Contract evidence includes **24 actual guide commands plus 24 strict
+observation checks**, including both providers' sequential `all`:
+389,419 SQLite / 389,424 PostgreSQL assertions, all eleven scenarios.
+Each requires 127 prerequisite operations, two explicit/two omitted disabled
+observations, 84,000 deterministic comparisons, three preservation cycles,
+six fresh processes/attempts, twelve original assignment/data/history
+comparisons, six unrelated comparisons, five named corrections, seven verified
+timeout root exits, one tracked-descendant exit and six zero-leak channel checks.
+No historical failed invocation is erased, diagnosed by inference or retried
+into success by this assessment.
+
+## Persistence and handoff
+
+No `.specify/extensions.yml` exists; no before/after convergence hook is
+configured. The clean original branch/open draft PR and recorded completed
+implementation were verified before beginning converge exactly once.
+Every downstream command explicitly selects `specs/004-module-lifecycle`.
+
+The unchanged task SHA-256 remains
+`66dd9ff25d731ebf7de7de942040148af9d72d19286202028a1ea1207fabf9b3`;
+all 85 markers remain checked. Approved spec/plan/research/model/contracts/
+guide/analysis/ADR, implementation evidence and both reviewed checklists
+are unchanged. Product/test/verifier source, dependencies and generated
+contracts are untouched. Only this report, progress documentation and the
+driver checkpoint are published together after required repository/Python/
+whitespace/format checks; their exact outcomes are recorded in the PR.
+
+Complete only **converge / pass**, selecting **review** for a separate
+invocation on the same feature branch/draft PR. Final review and explicit
+human acceptance of numbered feature 004 remain required. No self-acceptance,
+PR readiness, merge request, later stage or new feature is implied.
+
+---
+
 # Convergence after T082-T083: 004 - Module Composition and Lifecycle
 
 **Result:** gaps

@@ -354,7 +354,7 @@ boundary. Only Phase 11/T084-T085 are appended; prior tasks, product/test
 source, approved intent, reviewed checklists and historical reports are
 preserved. Continue on the same draft PR #7, without an intermediate merge.
 
-**Current 004 / implement complete (T084-T085); follow-up converge is next.**
+**Historical 004 / implement checkpoint (T084-T085).**
 The [report](../specs/004-module-lifecycle/implementation.md#convergence-remediation-t084-t085)
 records complete executable counts through actual Start/readiness: 128 per
 owner and 1,024 enabled total, plus a strict public 127-prerequisite/129-total
@@ -365,6 +365,16 @@ cleanup budgets, incomplete/uncertain refusal, durable inventory and owned exit.
 Failed historical/diagnostic runs and complete-gate reconciliation remain
 explicit. Follow-up converge, review and explicit human acceptance remain
 separate stages on the same draft PR #7.
+
+**Current 004 / converge after T084-T085: pass; review is next.**
+The [assessment](../specs/004-module-lifecycle/convergence.md) covers all 46
+requirements/outcomes/scenarios, twelve plan decisions, 85 tasks and twelve
+principles with zero actionable gaps. F1-F4 are closed with fresh focused
+execution and inspected assessed-head CI. Task bytes, approved intent,
+reviewed checklists, product/test code and historical evidence are unchanged.
+Final review and explicit human acceptance remain separate on the same
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), without an
+intermediate merge or later-feature work.
 
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.

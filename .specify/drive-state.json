@@ -18,7 +18,7 @@
     },
     "004": {
       "directory": "specs/004-module-lifecycle",
-      "next_step": "converge"
+      "next_step": "review"
     }
   },
   "active": null,
@@ -961,6 +961,22 @@
         "specs/004-module-lifecycle/implementation.md": "f9915cfc09db2f0aafefb7db5634384d346b88fe83cc7c30d769762a04ec8270",
         "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
         "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "converge",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-25T19:44:46+00:00",
+      "completed_at": "2026-10-25T19:51:54+00:00",
+      "outcome": "pass",
+      "note": "Converge pass after T084-T085: assessed all 46 FR/outcome/scenario items, 12 plan decisions, 85 tasks and 12 principles with zero actionable gaps. F1-F4 closed by actual source/assertions, fresh quality 20/20, unit 14/14, both-provider composition 106/106 and strict result regressions 33/33; independently inspected assessed-head CI and retained local full-gate evidence each pass 286 steps. No new full local gate claimed. Tasks and approved intent unchanged; complete prior report preserved. Review is next on the same draft PR #7; no acceptance or intermediate merge.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "66dd9ff25d731ebf7de7de942040148af9d72d19286202028a1ea1207fabf9b3",
+        "specs/004-module-lifecycle/convergence.md": "914823652e2e7e831b8ee577f65d293cdc27309cd204c22efac402ac0b2ef8c6"
       }
     }
   ]

@@ -257,6 +257,14 @@ The report retains diagnostic failures and complete-gate reconciliation.
 Follow-up converge, final review and explicit human acceptance remain separate
 on the same draft PR #7; do not request an intermediate merge.
 
+The [004 convergence after T084-T085](specs/004-module-lifecycle/convergence.md)
+now **passes** across all 46 requirements/outcomes/scenarios, twelve plan
+decisions, 85 tasks and twelve principles. All F1-F4 findings are closed with
+zero actionable gaps; `tasks.md` remains byte-for-byte unchanged. Approved
+intent, reviewed checklists, product/test code and historical evidence are
+preserved. **Review is next**, separately on the same draft PR #7, before
+explicit human acceptance. No readiness or intermediate merge is implied.
+
 The following paragraphs preserve the historical design-stage checkpoint.
 
 Spec **003 / specify and clarify** establish the

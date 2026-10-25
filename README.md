@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-34d399?style=flat-square"></a>
-  <img alt="Status: module lifecycle remediation" src="https://img.shields.io/badge/status-module_lifecycle_remediation-a78bfa?style=flat-square">
+  <img alt="Status: module lifecycle review next" src="https://img.shields.io/badge/status-module_lifecycle_review_next-a78bfa?style=flat-square">
   <a href="docs/master-spec-inventory.md"><img alt="Built with Spec Kit" src="https://img.shields.io/badge/workflow-Spec_Kit-a78bfa?style=flat-square"></a>
 </p>
 
@@ -35,7 +35,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 | 🔐 Explicit boundaries     | Team-scoped authorization, audited actions and module-owned storage                                   |
 
 > [!IMPORTANT]
-> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004's [T084-T085 implementation increment](specs/004-module-lifecycle/implementation.md#convergence-remediation-t084-t085) preserves accepted service counts and removes unused default reload watchers from host disposal. Follow-up convergence, final review and explicit human acceptance remain separate gates on the same draft PR. Nothing here claims production readiness or MVP completion.
+> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004's [convergence after T084-T085](specs/004-module-lifecycle/convergence.md) passes with zero actionable gaps; all prior findings are closed and tasks remain unchanged. Final review is next, before explicit human acceptance on the same draft PR. Nothing here claims production readiness or MVP completion.
 
 ## 🧭 The shape of things to come
 
@@ -186,7 +186,7 @@ but does not establish this disposal cause. Only T084-T085 are appended,
 preserving all prior tasks, approved intent, reviewer checklists and product/test
 source. That checkpoint selected implement on the same draft PR #7.
 
-**T084-T085 implementation complete; follow-up converge is next.** Executable lifecycle now retains
+**T084-T085 implementation checkpoint (historical).** Executable lifecycle now retains
 128 services per owner and 1,024 enabled total, including complete copied
 prerequisite bindings. The independent public example requires all 127 Alpha
 operations across 129 global exports. A deterministic regression proves that
@@ -198,6 +198,15 @@ the complete local gate passes all 286 steps. The
 retains all failed evidence and full reconciliation.
 Follow-up converge, review and explicit human acceptance remain separate
 stages on the same draft PR #7; no intermediate merge is requested.
+
+**004 / convergence after T084-T085 passes; review is next.** The
+[assessment](specs/004-module-lifecycle/convergence.md) covers all 46
+requirements/outcomes/scenarios, twelve plan decisions, 85 tasks and twelve
+principles with zero actionable gaps. F1-F4 are closed by actual behavior and
+evidence; the task file is byte-for-byte unchanged. Approved intent, reviewed
+checklists, product/test code and historical reports are preserved. Final
+review and explicit human acceptance remain separate on
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7); no merge is requested.
 
 **Spec 003 is explicitly human-accepted and human-merged.**
 The [acceptance record](specs/003-storage-registry/acceptance.md) preserves the
