@@ -344,10 +344,21 @@ enabled-owner set and reject contradictory disabled frames. Version 1, frame/
 record limits, fixed guidance, owner allowlists and anonymous aggregate schema
 are unchanged; no new storage/configuration/runtime authority is introduced.
 Actual both-provider public hosts prove fresh explicit/omitted observations
-and zero disabled effects. All 81 tasks are implemented; **follow-up convergence
-is next** on the same draft PR. Historical reports, approved architecture/
-dependencies and reviewer-owned checklists are preserved; review and explicit
-human acceptance remain later gates.
+and zero disabled effects. All 81 then-existing tasks are implemented; that
+checkpoint selected follow-up convergence on the same draft PR. Historical
+reports, approved architecture/dependencies and reviewer-owned checklists are
+preserved; review and explicit human acceptance remain later gates.
+
+The [follow-up assessment](../specs/004-module-lifecycle/convergence.md)
+closes F1/T081, but records HIGH F2: contribution local IDs admit 128 characters,
+while the host prefixes the owner and supplies that combined ID to a public
+dependency binding capped at 128. Valid input therefore fails activation;
+T082 must reconcile composition without silently narrowing approved inputs.
+MEDIUM F3 requires establishing the cause of repeated unexpected normal-stop
+cleanup failures, not assuming a product timeout or relaxing fail-closed
+semantics. Broad integration passes 102/104; unchanged isolation passes 5/5.
+Exactly T082-T083 are appended; **implement is next** on draft PR #7.
+This assessment changes no architecture decision, source or approved contract.
 
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements

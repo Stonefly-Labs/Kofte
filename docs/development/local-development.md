@@ -238,10 +238,20 @@ absence of later callbacks is no longer the only disabled-state evidence.
 The both-provider `disabled-missing` example boots both selections in fresh
 processes and requires exact disabled observations, zero disabled callbacks/
 store effects and unchanged anonymous health. Commands, protocol version and
-all lifecycle/storage/output bounds remain unchanged. All 81 tasks are
-implemented; **follow-up convergence is next** on draft PR #7, separately
-before review and explicit human acceptance. Historical reports, approved
-intent and reviewer-owned checklists remain unchanged.
+all lifecycle/storage/output bounds remain unchanged. All 81 then-existing tasks
+are implemented; that checkpoint selected follow-up convergence on draft PR #7,
+separately before review and explicit human acceptance. Historical reports,
+approved intent and reviewer-owned checklists remain unchanged.
+
+The [follow-up assessment](../../specs/004-module-lifecycle/convergence.md)
+verifies F1/T081 but finds **gaps**, appending T082-T083 only. Valid executable
+local names can produce overlong dependency bindings and fail Start (HIGH F2).
+Fresh composition integration passes 102/104; PostgreSQL `disabled-missing`
+and `bounded-stop` unexpectedly report incomplete cleanup, while unchanged
+isolated cases pass 5/5 (MEDIUM F3). The cause is unestablished; do not treat
+reruns as a fix or weaken deadlines, cleanup refusal/assertions or floors.
+Commands and product/test source are unchanged by this stage.
+**Implement T082-T083 is next** on the same draft PR #7.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).

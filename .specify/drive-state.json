@@ -18,7 +18,7 @@
     },
     "004": {
       "directory": "specs/004-module-lifecycle",
-      "next_step": "converge"
+      "next_step": "implement"
     }
   },
   "active": null,
@@ -893,6 +893,22 @@
         "specs/004-module-lifecycle/implementation.md": "928b66fdd3e0082111bf37947a5dcf6b863f6bf230b5bda783e868a78f74496c",
         "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
         "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "converge",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-25T04:49:37+00:00",
+      "completed_at": "2026-10-25T04:59:50+00:00",
+      "outcome": "gaps",
+      "note": "Assessed 5bef3486813f9cd5a4d467f77c7098593f5954d4 against all 46 requirements/outcomes/scenarios, R1-R12, 81 tasks and 12 principles. F1/T081 is closed by actual private disabled projection and both-provider/strict evidence. HIGH partial F2 reproducibly fails valid public dependency activation at combined binding lengths over 128 (local 117 ready, 118/128 activation_failed under org.test.a). MEDIUM partial F3 retains recurring unexplained cleanup evidence failures: broad integration 102/104, unchanged isolated PostgreSQL 5/5. Fresh host units133, platform83, boot6 and harness33 passed; initial zero-test selector exit8 is not passing evidence. Append only Phase10 T082-T083; preserve original task bytes, report, history, source, approved intent and reviewer checklists. Next invocation implement on original draft PR7; no acceptance, readiness or intermediate merge.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "920177b47582976e5b1930b57d44f7ad532052d95a50f88f4d1652e0f9616afe",
+        "specs/004-module-lifecycle/convergence.md": "a9a27a5a4d33ec51989be134524884b9b4225b8cc5576cc0c373a41c8c2f5991"
       }
     }
   ]

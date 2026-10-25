@@ -210,9 +210,20 @@ now projects the existing disabled observations into bounded private records
 for explicitly false and omitted deployed owners. Both-provider public examples
 require real supervised output under two fresh attempts, zero disabled effects
 and unchanged anonymous health; protocol and strict-result omission/tampering
-checks cover the new evidence. All 81 tasks are implemented; **follow-up
-convergence is next** on the same draft PR. Historical convergence/analysis and
-reviewer-owned checklists are untouched; no feature acceptance is implied.
+checks cover the new evidence. All 81 then-existing tasks are implemented;
+that checkpoint selected follow-up convergence on the same draft PR.
+Historical convergence/analysis and reviewer-owned checklists are untouched;
+no feature acceptance is implied.
+
+The [follow-up 004 assessment](specs/004-module-lifecycle/convergence.md)
+closes F1/T081 but records **gaps**: HIGH F2 reproduces valid local service names
+failing activation because the host-generated owner-qualified binding exceeds
+the public limit; MEDIUM F3 requires causal reconciliation of recurring
+unexpected cleanup failures (broad integration 102/104, isolated PostgreSQL
+5/5). Only T082-T083 are appended under Phase 10; all 81 prior markers,
+approved intent, reviewer checklists and product/test source are preserved.
+**Implement is next**, separately on the original branch/draft PR #7,
+before follow-up convergence, final review and explicit human acceptance.
 
 The following paragraphs preserve the historical design-stage checkpoint.
 

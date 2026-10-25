@@ -35,7 +35,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 | 🔐 Explicit boundaries     | Team-scoped authorization, audited actions and module-owned storage                                   |
 
 > [!IMPORTANT]
-> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 now implements [T081's disabled-state correction](specs/004-module-lifecycle/implementation.md#convergence-remediation-t081), following its original 80 tasks and first convergence finding. Follow-up convergence is next on the same draft PR. Nothing here claims production readiness or MVP completion.
+> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 implements [T081's disabled-state correction](specs/004-module-lifecycle/implementation.md#convergence-remediation-t081). [Follow-up convergence](specs/004-module-lifecycle/convergence.md) verifies that fix but finds a valid dependency-binding length defect and unresolved cleanup-evidence failures; T082-T083 implementation is next on the same draft PR. Nothing here claims production readiness or MVP completion.
 
 ## 🧭 The shape of things to come
 
@@ -146,8 +146,18 @@ resolution projects the existing disabled snapshot into bounded private
 The actual SQLite/PostgreSQL host examples require both forms under fresh
 attempts, with zero disabled callbacks/store effects and unchanged anonymous
 health. The [implementation increment](specs/004-module-lifecycle/implementation.md#convergence-remediation-t081)
-records red/green evidence and retained regressions. **Follow-up convergence is
-next**; the historical finding/report and reviewer checklists remain unchanged.
+records red/green evidence and retained regressions. That checkpoint selected
+follow-up convergence; the historical finding/report and reviewer checklists
+remain unchanged.
+
+**Follow-up 004 convergence: gaps.** The
+[current assessment](specs/004-module-lifecycle/convergence.md) closes F1/T081,
+but accepted service names can produce overlong host-generated dependency IDs
+and fail activation (HIGH F2). Broad integration passes 102/104 with two
+unexpected cleanup failures; unchanged isolated cases pass, without establishing
+the cause (MEDIUM F3). Exactly T082-T083 are appended under Phase 10, preserving
+all 81 existing tasks and product/test source. **Implement is next** on the
+same draft PR #7; review and explicit human acceptance remain later gates.
 
 **Spec 003 is explicitly human-accepted and human-merged.**
 The [acceptance record](specs/003-storage-registry/acceptance.md) preserves the

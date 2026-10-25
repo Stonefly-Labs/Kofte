@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** **004 / implement T081 is complete; follow-up converge is next** after specify, clarify,
+**Current checkpoint:** **004 / follow-up converge records gaps; implement T082-T083 is next** after specify, clarify,
 plan, checklist, tasks and analyze completed on
 `feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
 The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the
@@ -237,7 +237,7 @@ next separate invocation, then follow-up convergence/review and explicit
 human acceptance. This stage implements nothing, accepts nothing and requests
 no intermediate merge. No convergence hooks are configured.
 
-**Current remediation checkpoint:** [T081 implementation](../../specs/004-module-lifecycle/implementation.md#convergence-remediation-t081)
+**T081 remediation checkpoint (historical):** [T081 implementation](../../specs/004-module-lifecycle/implementation.md#convergence-remediation-t081)
 now wires the existing disabled snapshot to actual bounded private operator
 output for both explicitly false and omitted deployments. Parent/worker
 protocols copy the admitted enabled set and reject forged disabled state;
@@ -248,6 +248,21 @@ strict omission/decrement rejection. All 81 tasks are implemented; historical
 analysis/convergence and reviewer-owned checklist markers stay unchanged.
 The ledger completes only implement and selects **follow-up converge** on the
 original branch/draft PR #7, not automatic review, acceptance or merge.
+
+**Current follow-up convergence checkpoint:** The
+[assessment](../../specs/004-module-lifecycle/convergence.md) checks all 46
+requirements/outcomes/scenarios, twelve plan decisions, 81 tasks and twelve
+principles, closing F1/T081. It records **gaps**: HIGH F2 reproducibly rejects
+valid public dependency activation when an owner-qualified service identity
+exceeds the binding's 128-character limit; MEDIUM F3 requires a causal
+explanation/fix for repeated unexpected normal-stop cleanup failures.
+Fresh broad integration passes 102/104 and unchanged isolated PostgreSQL
+cases pass 5/5; neither run proves the failures fixed. Only T082-T083 are
+appended under Phase 10, leaving every prior task byte/marker, product/test
+source, approved intent, reviewer checklist and historical report intact.
+The driver completes only **converge / gaps** and selects **implement** for
+the next invocation on the same branch/draft PR #7. No review, acceptance,
+readiness or intermediate merge is authorized here.
 
 **003 acceptance checkpoint:** 003 is **explicitly human-accepted and
 human-merged** on its original `feature/003-storage-registry` and
