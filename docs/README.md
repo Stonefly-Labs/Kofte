@@ -403,7 +403,7 @@ preserve the failed local result and unknown cause. T086 is complete;
 follow-up converge is next on draft PR #7. Historical review, approved intent
 and reviewed checklists remain unchanged; no acceptance or merge is requested.
 
-**Current 004 / converge passes after T086.** The
+**Historical 004 / converge passes after T086.** The
 [assessment](../specs/004-module-lifecycle/convergence.md) covers all 46
 requirements/outcomes/scenarios, twelve decisions, 86 tasks and twelve
 principles with no new actionable gaps. Review R1 is closed by actual bounded
@@ -412,6 +412,17 @@ code changes. The deferred PostgreSQL anomaly remains undiagnosed, with its
 failed local full-suite result preserved; this is not a new full-gate pass.
 **Review is next** on draft PR #7, before explicit human feature acceptance.
 No PR readiness or intermediate merge is requested.
+
+**Current 004 / final review passes after T086.** The
+[review](../specs/004-module-lifecycle/review.md) assesses all 46 requirements/
+outcomes/scenarios, twelve decisions, 86 tasks and twelve principles.
+R1/T086 and prior F1-F4 are closed; no new implementation defect or task remains.
+The human-deferred PostgreSQL observation remains undiagnosed and the latest
+local complete attempt stays failed/interrupted at 109/111 executed steps.
+Review does not replace that gate or waive release evidence.
+**Explicit human acceptance of numbered feature 004 is next**, separately on
+the same draft PR #7 with this limitation disclosed; no readiness or merge
+is requested.
 
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.

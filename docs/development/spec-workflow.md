@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** **004 / converge passes after T086; review is next** after specify, clarify,
+**Current checkpoint:** **004 / review passes after T086; explicit human acceptance is next** after specify, clarify,
 plan, checklist, tasks and analyze completed on
 `feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
 The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the
@@ -382,7 +382,7 @@ relaxed, new product run started or later gate skipped. Resume and complete
 only implement, mark T086 complete, publish on the same branch/draft PR #7 and
 stop with **converge next**. No intermediate merge or 005 work is authorized.
 
-**Current convergence after T086:** The
+**Historical convergence after T086:** The
 [assessment](../../specs/004-module-lifecycle/convergence.md) passes after
 checking all 46 requirements/outcomes/scenarios, twelve plan decisions,
 86 tasks and twelve principles against current source/assertions.
@@ -399,6 +399,30 @@ The driver completes only **converge / pass**, selecting **review** separately
 on the same branch/draft PR #7 with that limitation retained. No passing final
 review, numbered-feature acceptance, readiness, intermediate merge or 005 is
 implied.
+
+**Current final review after T086:** The
+[review](../../specs/004-module-lifecycle/review.md) passes across all 46
+requirements/outcomes/scenarios, twelve plan decisions, 86 tasks and twelve
+principles. The read-only `spec-review` agent inspected current implementation
+and discriminating assertions, closing R1/T086 and prior F1-F4 with no new
+high-confidence implementation defect or remediation task. The caller
+independently queried exact-fix CI, downloaded ten safe reports and reconciled
+286 passing targeted steps, 24 guide commands/observation pairs and synthetic
+checkout parents. This is retained execution evidence, not a new product run.
+
+**The latest local complete attempt stays failed/interrupted at 109/111
+executed steps.** The explicitly human-deferred PostgreSQL observation remains
+undiagnosed and is not rerun/investigated. Passing substantive review does not
+establish harmlessness, replace that failed gate or waive later release
+evidence. All task bytes, approved intent, reviewed checklists, product/test
+source and historical reports remain unchanged; the prior review is preserved
+verbatim. Only review is completed.
+
+**Explicit human acceptance of numbered feature 004 is next**, in a separate
+invocation on the same draft PR #7, presenting both the passing review and
+the residual failed-check limitation. No affirmative feature acceptance is
+inferred from the earlier request, human deferral, autopilot or checked tasks.
+Do not mark ready, request merge or begin 005.
 
 **003 acceptance checkpoint:** 003 is **explicitly human-accepted and
 human-merged** on its original `feature/003-storage-registry` and

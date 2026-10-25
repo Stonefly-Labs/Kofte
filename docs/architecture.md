@@ -446,6 +446,16 @@ undiagnosed, and the failed local complete attempt remains failed.
 **Review is next** on the same draft PR #7; no later gate or human acceptance
 is waived, and no intermediate merge is requested.
 
+The subsequent [final review after T086](../specs/004-module-lifecycle/review.md)
+passes across all 46 requirements/outcomes/scenarios, twelve design decisions,
+86 tasks and twelve principles. R1/T086 and prior F1-F4 are closed, with no new
+implementation defect, task or architecture change. The undiagnosed
+human-deferred PostgreSQL observation and failed/interrupted local complete
+attempt remain explicit limitations, not a full-gate pass or release waiver.
+**Explicit human acceptance of numbered feature 004 is next**, separately on
+the same draft PR #7 with those limits disclosed. No readiness or intermediate
+merge is requested.
+
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.

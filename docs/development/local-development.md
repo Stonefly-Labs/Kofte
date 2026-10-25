@@ -324,7 +324,7 @@ as non-blocking for this checkpoint. No further investigation or product-test
 rerun is performed. T086 is complete; converge is next on draft PR #7.
 The failed local result, all tests and later review/acceptance gates remain.
 
-**Current 004 / converge passes after T086.** The
+**Historical 004 / converge passes after T086.** The
 [assessment](../../specs/004-module-lifecycle/convergence.md) covers all 46
 requirements/outcomes/scenarios, twelve decisions, 86 tasks and twelve
 principles without new actionable gaps or task/code changes. Review R1 and
@@ -333,6 +333,16 @@ the deferred migration-interruption case is not rerun or investigated, and
 the failed local full-suite attempt stays failed. Supported commands,
 deadlines and recovery responsibilities are unchanged. **Review is next**
 on draft PR #7, retaining this limitation before explicit human acceptance.
+
+**Current 004 / final review passes after T086.** The
+[review](../../specs/004-module-lifecycle/review.md) finds no new implementation
+defect; R1/T086 and prior F1-F4 are closed and all 86 tasks remain unchanged.
+The local complete attempt remains failed/interrupted at 109/111 executed
+steps; the human-deferred PostgreSQL migration-interruption observation remains
+undiagnosed and is not rerun/investigated. Review is not an all-checks-green
+claim or release waiver. Supported commands, deadlines and recovery duties
+are unchanged. **Explicit human acceptance of numbered feature 004 is next**,
+separately on draft PR #7 with this limitation disclosed.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).

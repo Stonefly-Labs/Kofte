@@ -1,5 +1,223 @@
 # Final Review: Module Composition and Lifecycle
 
+**Result:** pass
+
+**Date:** 2026-10-25
+**Assessed head:** `4893c72a8ee219a84c451073e2f5639fcd29f16b`
+**Branch:** `feature/004-module-lifecycle`
+**Scope:** all 20 functional requirements, six outcomes, 20 acceptance scenarios,
+twelve plan decisions, 86 tasks and twelve constitutional principles.
+
+The read-only `spec-review` agent inspected current source and discriminating
+assertions against approved intent. **No new high-confidence implementation
+defect or remediation task remains.** Review R1/T086 and prior F1-F4/T081-T085
+are closed. The caller independently queried exact-code CI, downloaded all ten
+safe reports and reconciled their outcomes and revision attribution.
+
+**This is a substantive review pass, not an all-checks-green conclusion.**
+The latest complete local attempt remains **failed/interrupted at 109/111
+executed steps**. Its PostgreSQL migration-interruption failure is undiagnosed
+and expressly human-deferred. Neither focused passes nor CI replace that
+failed result or establish its cause. The residual limitation qualifies
+FR-010/015/020, US3.3, SC-004/006 and principle XI.
+
+Only review is executed. All 86 task bytes/markers, approved intent,
+reviewer-owned checklists, product/test/verifier source, dependencies and prior
+implementation/convergence reports remain unchanged. The complete previous
+review is preserved verbatim below. **Explicit human acceptance of numbered
+feature 004 is next**, separately on the same draft PR #7 with this limitation
+disclosed. No acceptance, readiness, merge request or 005 work is authorized.
+
+## Historical finding closure after T086
+
+Paths in the tables use these prefixes:
+**H** = `src/Kofte.Host/Features/ModuleComposition/`;
+**P** = `src/Kofte.Platform/Modules/Composition/`;
+**I** = `src/Kofte.Infrastructure/Composition/`;
+**UH** = `tests/unit/Kofte.Host.Tests/Features/ModuleComposition/`;
+**UP** = `tests/unit/Kofte.Platform.Tests/Modules/Composition/`;
+**S** = `tests/integration/Kofte.Storage.IntegrationTests/Composition/`;
+**C** = `tests/contract/Kofte.Composition.Consumer/Scenarios/`;
+**A** = `tests/contract/Kofte.Composition.TestModule/`.
+
+| Finding | Current behavior and discriminating evidence | Decision |
+| --- | --- | --- |
+| R1/T086: disabled prerequisite metadata shared enabled-edge budget | H`CompositionProtocol.cs:10,36-38` independently admits 2,048 catalog identities and checks the 2,049th overflow sentinel. P`CompositionResolver.cs:114-129` and P`CompositionGraph.cs:15-26` retain the separate enabled-only 1,024-edge cap. UH`CompositionDiagnosticTests.cs:19-68` asserts 1/1,024/1,025/2,048 boundaries, copied inputs, genuine missing-prerequisite transport, forgery refusal and bounded enumeration. | Closed; no published input limit reduced. |
+| R1 actual compiled-host parity | S`CompositionProviderTests.cs:13-101` covers five catalogs, both selection forms and both real providers, requiring readiness, exact disabled observations, unchanged inventory, empty stderr and verified exit. `tests/contract/Kofte.Composition.Consumer/DeploymentProgram.cs:206-216,233-260` makes disabled author execution fail the scenario. | Closed by actual host behavior, not resolver acceptance alone. |
+| F1/T081: absent disabled operator output | H`CompositionPreflight.cs:77-86`; C`BootScenarios.cs:120-181`; UH`CompositionDiagnosticTests.cs:142-170`: both false/omitted records, fresh attempts, zero disabled effects and contradictory-frame refusal. | Closed. |
+| F2/T082: qualified service-name truncation boundary | H`ModuleLifecycleCoordinator.cs:100-105,293-305`; `src/Kofte.Platform/Modules/Lifecycle/ModuleLifecycle.cs:78-89`; UH`ModuleLifecycleTests.cs:445-490`: full owner/local identity, actual binding/invocation/Start/readiness at accepted maxima. | Closed, without hashing or truncation. |
+| F4/T084: runtime narrowed service/binding counts | H`ModuleLifecycleCoordinator.cs:100-120`; `ModuleLifecycle.cs:104-108`; UH`ModuleLifecycleTests.cs:513-637`: complete 65/128/256/1,024 sets and one-over refusal. A`Modules/BootModules.cs:241-260` and C`BootScenarios.cs:79-89` require all 127 public prerequisite operations. | Closed; dependency count is not executable-service count. |
+| F3/T083/T085: demonstrated normal-stop causes | H`CompositionWorker.cs:263-280` disables unused JSON reload watchers before builder construction and bounds HTTP drain to 500ms. UH`CompositionBudgetTests.cs:15-36` and S`CompositionProviderTests.cs:104-139` distinguish the fixes. C`StopScenarios.cs:174-223` retains incomplete/uncertain refusal. | Closed for demonstrated causes only; not a diagnosis of the deferred migration observation. |
+
+H`CompositionProtocol.cs:99-141` retains current attempt/mode/snapshot,
+known-owner checks, restricted missing-prerequisite evidence, eight related
+IDs, fixed guidance and disabled-state consistency. No framing, copied
+allowlist, storage, cleanup or privacy guarantee is weakened.
+
+## Complete requirement and acceptance mapping
+
+“Supported” means actual implementation/assertions plus the attributed
+execution evidence below, not a claim that every local check passed.
+
+| Requirement; scenarios | Source and meaningful acceptance evidence |
+| --- | --- |
+| FR-001; US1.1/1.3 | H`ModuleCompositionHost.cs:8-17`, H`CompositionPreflight.cs:77-86`; C`BootScenarios.cs:14-42,120-181`, S`CompositionProviderTests.cs:13-101`: usable empty core, both disabled forms, zero activation and unchanged inventory. Supported. |
+| FR-002; US1.4/US2.1 | P`CompositionResolver.cs:39-113`; UP`CompositionResolverTests.cs:88-106`, C`ValidationScenarios.cs:99-115`, C`BootScenarios.cs:184-207`: invalid/duplicate/missing deployment never becomes empty success. Supported. |
+| FR-003; US2.2/2.3 | P`CompositionGraph.cs:15-97`; UP`CompositionResolverTests.cs:110-138`: missing/disabled/incompatible distinctions, accepted ranges and exact cycle members. Supported. |
+| FR-004; US2.3 | P`CompositionResolver.cs:39-63`, P`CompositionDiagnostic.cs:57-81`; UP`CompositionLimitTests.cs:14-213`, C`ValidationScenarios.cs:19-79`: deterministic order, finite bounds, ordered truncation and repeated real cultures. Supported. |
+| FR-005; US2.1/2.4 | H`CompositionPreflight.cs:22-86`, H`CompositionWorker.cs:51-94`, I`CompositionStorageInspector.cs:13-77`; S`CompositionPreflightTests.cs:40-70,143-287`: whole-set rejection before factories/allocation, exact inventory equality. Supported. |
+| FR-006; US2.4 | P`ContributionValidator.cs:25-141`; UP`ContributionClaimTests.cs:32-151`: ownership/version/capability, reserved/overlapping routes, permission ownership and future-execution refusal. Supported. |
+| FR-007; US2.4/US5.4 | H`ModuleSelectionReader.cs:45-206`, H`ModuleConfigurationValidator.cs:11-74`; UH`ModuleSelectionTests.cs:12-170`, UH`ModuleConfigurationTests.cs:13-84`: strict private copied settings and bounded sanitized validation. Supported. |
+| FR-008; US1.2/US3.1/US5.1 | H`ModuleLifecycleCoordinator.cs:108-330`, H`CompositionWorker.cs:95-135`; UH`ModuleLifecycleTests.cs:73-138`, S`CompositionProgressTests.cs:18-110`: actual entry/completion, phase barriers and owner progress. Supported. |
+| FR-009; US3.1/3.2 | I`CompositionStorageInspector.cs:30-94`, I`ModuleStorageRecipe.cs:43-101`; S`CompositionMigrationTests.cs:20-56,139-156`, C`MigrationScenarios.cs:87-99`: exact assignment/history and zero no-storage allocation/binding. Supported. |
+| FR-010; US3.1/3.3/3.4 | I`CompositionStorageSession.cs:29-104`, I`CompositionStoragePreparation.cs:10-62`, I`CompositionStorageVerification.cs:10-40`; S`CompositionMigrationTests.cs:62-136`, C`StopScenarios.cs:132-171`, C`MigrationFailureScenarios.cs:16-117`: stopped exclusive preparation, read-only serving, no replay/revision rewrite and explicit recovery. Deferred failed-check limitation retained. |
+| FR-011; US3.3/US5.1 | H`ModuleLifecycleCoordinator.cs:319-330`, H`CompositionHealth.cs:118-137`; UH`ModuleLifecycleTests.cs:194-236`, C`BootScenarios.cs:58-66`: held Start/unhealthy initial sweeps cannot publish readiness. Supported. |
+| FR-012; US4.1 | H`ModuleSelectionReader.cs:14-37`, H`CompositionPreflight.cs:77-86`; C`PreservationScenarios.cs:14-53`: three full fresh-process cycles compare original assignments/revisions/rows/history and unrelated state. Supported. |
+| FR-013; US4.2/4.3 | P`CompositionGraph.cs:19-26`, I`CompositionStorageInspector.cs:30-33`; C`PreservationScenarios.cs:24-68`, S`CompositionPreflightTests.cs:266-287`, S`CompositionUpgradePreservationTests.cs:13-66`: exact reuse, no cascade and owner-only explicit upgrade. Supported. |
+| FR-014; US5.1/5.2 | H`CompositionHealth.cs:34-85,103-137`, H`ModuleLifecycleCoordinator.cs:334-404`; UH`CompositionHealthTests.cs:15-73`, C`HealthScenarios.cs:63-139`: 30s freshness, transitive impact, independent roots and callback-free aggregate HTTP reads. Supported. |
+| FR-015; US4.4/US5.3 | H`ModuleLifecycleCoordinator.cs:407-482`, H`CompositionSupervisor.cs:89-170`; UH`ModuleLifecycleTests.cs:100-138,275-350`, C`CorrectionScenarios.cs:25-96`, C`MigrationFailureScenarios.cs:16-117`: reverse partial-entry/LIFO cleanup, preserved stores and fresh reconciled attempts. Deferred failed-check limitation retained. |
+| FR-016; US3.4/US5.3 | H`CompositionAttempt.cs:143-205`, H`CompositionCallbackRunner.cs:26-60`, H`CompositionSupervisor.cs:65-170`; UH`CompositionBudgetTests.cs:39-178`, C`StopScenarios.cs:13-96,101-171,202-223`: clipped budgets, seven uncooperative boundaries, tracked descendant exit and explicit unverified-exit refusal. Supported. |
+| FR-017; US5.4 | H`CompositionDiagnostics.cs:95-154`, H`CompositionProtocol.cs:63-141`; UH`CompositionDiagnosticTests.cs:19-68,173-350`, C`DiagnosticScenarios.cs:17-225`: useful bounded records, framing/rate refusal, real correlated telemetry and zero canary leaks. Supported. |
+| FR-018; US5.4 | H`CompositionSupervisor.cs:245-275`, H`CompositionWorker.cs:34-38`, `src/Kofte.Host/Features/Bootstrap/HealthHandler.cs:15-46`; `tests/integration/Kofte.Host.IntegrationTests/CompositionHealthEndpointTests.cs:57-153`, C`HealthScenarios.cs:105-139`: installation authority, stripped provisioning secrets, unchanged anonymous schema and absent management routes. Supported. |
+| FR-019; US1.2 | P`CompositionContracts.cs:19-111`, `src/Kofte.Platform/Modules/Lifecycle/ModuleLifecycle.cs:22-110`; A`Modules/BootModules.cs:32-84,241-260`, C`BootScenarios.cs:69-110`: independently compiled public operations and complete versioned dependency bindings. Supported. |
+| FR-020; all 20 scenarios | `scripts/verify.py:1057-1249`, `tests/contract/Kofte.Platform.ContractTests/Composition/CompositionConsumerHarnessTests.cs:35-112`, `scripts/tests/test_verify.py:122-195`: mandatory guide cases/observations and malformed/omitted/decremented/zero-case refusal. Targeted CI supported; latest complete local gate remains failed/interrupted. |
+| SC-001 | C`BootScenarios.cs:14-207`, UH`ModuleLifecycleTests.cs:451-490,518-590`, S`CompositionProviderTests.cs:13-101`: real empty/public/disabled behavior through admitted maxima. |
+| SC-002 | A`FrozenCompositionCorpus.cs:40-98`, C`ValidationScenarios.cs:19-79`: literal independent expectations, 100 repetitions by ten permutations by two real cultures through both public paths. |
+| SC-003 | C`PreservationScenarios.cs:22-53`, S`CompositionUpgradePreservationTests.cs:13-66`: three complete cycles/provider, exact original comparisons and separate explicit-upgrade exception. |
+| SC-004 | C`StopScenarios.cs:22-223`, UH`CompositionBudgetTests.cs:39-178`: outcome/budget/exit/refusal, never timeout-as-termination. Deferred migration-interruption failure remains contrary check evidence. |
+| SC-005 | C`CorrectionScenarios.cs:25-96`, C`MigrationFailureScenarios.cs:16-117`, C`HealthScenarios.cs:63-115`: named correction, fresh attempt, explicit recovery and current impact. |
+| SC-006 | C`DiagnosticScenarios.cs:103-152`: six actual captured channels, useful observations, bounded labels and zero leaks; attributed CI retains browser/startup/failure gates. No passing latest complete-local claim. |
+
+## Design, task and constitutional reconciliation
+
+Plan decision IDs below are distinct from historical review finding R1.
+
+| Plan decisions | Current implementation/evidence |
+| --- | --- |
+| R1 compiled discovery; R2 deterministic resolution | P`CompositionContracts.cs:19-49`, H`ModuleCompositionHost.cs:8-17`, P`CompositionResolver.cs:39-140`, P`CompositionGraph.cs:15-97`: copied inert catalog, private selection, ordinal graph and separate metadata/edge limits. |
+| R3 owner configuration; R4 contribution claims | H`ModuleSelectionReader.cs:14-37,45-206`, H`ModuleConfigurationValidator.cs:11-74`, P`ContributionValidator.cs:25-141`; configuration and contribution negatives above. |
+| R5 native DI/barriers | H`ModuleLifecycleCoordinator.cs:108-230,282-330,407-482`; UH`ModuleLifecycleTests.cs:100-138,299-350,451-637`: descriptor audit, one provider, owner scopes, complete bindings and reverse disposal. |
+| R6 prepare/serve authority; R7 preservation/recovery | I`CompositionStorageSession.cs:29-104`, I`CompositionStorageInspector.cs:13-94`, I`CompositionStoragePreparation.cs:31-59`; C`PreservationScenarios.cs:22-68`, C`MigrationFailureScenarios.cs:16-117`. Deferred observation retained. |
+| R8 health; R9 supervision | H`CompositionHealth.cs:34-85,103-162`, H`CompositionAttempt.cs:143-205`, H`CompositionSupervisor.cs:89-170`; freshness/termination assertions above. |
+| R10 observations; R11 independent proof | H`CompositionDiagnostics.cs:95-154`, H`CompositionProtocol.cs:19-141`; separate author/consumer projects, literal corpus and A`Modules/BootModules.cs:32-84,241-260`. |
+| R12 retained baseline | `scripts/verify.py:1057-1249`, `.github/workflows/product-checks.yml:13-65`; historical full success, targeted CI and latest failed local attempt remain separately attributed. |
+
+| Tasks assessed | Resulting evidence inspected |
+| --- | --- |
+| T001-T005 | Approved ADR/dependency adoption, separate public projects and strict owned harness (`docs/development/dependencies.md:22-47`; `tests/integration/Kofte.TestSupport/CompositionConsumerHarness.cs:11-103`). |
+| T006-T014 | Copied contracts, private configuration, bounded diagnostics/attempts and read-only storage inspection. |
+| T015-T026 | Independent corpus, exact graph/limit/configuration/contribution negatives and whole-set zero-effect preflight. |
+| T027-T036 | Native DI/barriers and actual empty/valid/disabled/missing compiled-host boots. |
+| T037-T049 | Assigned clean/additive/current preparation, progress, authority, interruption and explicit recovery. Latest failed-check limitation qualifies the verification claim. |
+| T050-T057 | Exact three-cycle original-data preservation, dependent-disable refusal, complete-set recovery and owner-only upgrades. |
+| T058-T072 | Current health/HTTP, correction, actual termination, bounded private captures and strict observations. |
+| T073-T077 | Verifier selectors/minima/guide commands, retained browser/startup/failure gates and truthful docs. |
+| T078-T080 | Historical full-gate/report/publication evidence; markers do not relabel the latest local failure. Current caller owns report/ledger/docs/publication checks. |
+| T081-T086 | Actual behavior and focused discriminating regressions in the closure table; no remaining task or new remediation. |
+
+| Principle | Assessment |
+| --- | --- |
+| I | Real optional empty host, Köfte branding and no mandatory Hoard/cloud/IaC. |
+| II | Stable versioned composition, whole-set validation, disable preservation and honest trusted-plugin/health semantics. |
+| III | Native DI/direct handlers, reviewed DI-abstractions edge and test source in dedicated test projects; no production-linked tests, mediator or mapper. |
+| IV | Accepted immutable registry/schema/file/marker/history paths reused. PostgreSQL UNIQUE/63-byte enforcement and assigned model/history remain tested on real providers. |
+| V | Earlier owner commits remain real; no global rollback or cross-owner table/transaction contract. Explicit complete-set recovery remains separate. |
+| VI | Installation-only authority, owner settings/services/stores, provisioning secrets stripped from serving and private diagnostics/aggregate-only anonymity. |
+| VII | Inert namespaced MCP claims/collisions checked; executable tools refuse. Authenticated MCP remains 007/013. |
+| VIII | Attempts/health are ephemeral, not durable jobs/events/resources or realtime runtime. Later obligations excluded, not waived. |
+| IX | No new lifecycle page or remote frontend code. Existing aggregate schema and attributed browser/accessibility checks retained. |
+| X | Both real providers, pinned portable tools, explicit stopped preparation, finite supervision and documented recovery responsibilities. No unsupported Windows/escaped-descendant guarantee. |
+| XI | Meaningful public/provider/process/privacy assertions and attributed evidence. Deferred failed local check remains failed/undiagnosed, not replaced by CI. |
+| XII | Scope remains 004/approved ADR 0006 on one branch/draft PR; review, acceptance and human merge remain distinct. |
+
+No new business REST/UI/MCP/job/provider/realtime operation requires actor/team
+authorization parity here; absence of anonymous lifecycle administration is
+tested instead. Future authentication/MCP/jobs, full reference-module,
+Kubernetes and post-MVP work are not demanded or claimed complete.
+
+## Independently attributed execution evidence
+
+No new product suite is needed for this report/ledger/docs-only stage.
+The preceding convergence's exact focused commands/results remain historical:
+protocol 50/50, limit 29/29, actual both-provider compiled-host 10/10 and strict
+harness/corpus 35/35, **124 passing cases**, zero skips. The provider selection
+requires all 40 validate/serve combinations and verified owned exit.
+These are not new executions by this review.
+
+The caller freshly queried
+[Product run 40232738175](https://github.com/Stonefly-Labs/Kofte/actions/runs/40232738175)
+and [Repository run 40232738167](https://github.com/Stonefly-Labs/Kofte/actions/runs/40232738167):
+all eleven contexts pass at exact fix commit
+`c749acc22345e4ab868dfc84e30c599208d953bd`.
+`gh run download 40232738175 --pattern 'verification-*' --dir <session-files>/review-ci`
+freshly retrieves ten safe reports outside the repository. JSON reconciliation
+requires every report and step to pass and every `completeGate` to remain false:
+quality 20, unit 14, SQLite integration 9, PostgreSQL integration 12, recovery 43,
+contract 101, browser 16, privacy 41, startup 12 and failure propagation 18:
+**286/286 targeted steps**, including 24 guide commands and 24 strict
+observation checks.
+
+Every report names checkout `81a5b26b9da97e1b1f30859a6c30a947a82181c1`.
+It is absent from the local object database; the caller verified its parents
+through GitHub's Git commit API instead: main
+`3a5deff380655e72eb6b08ebc1ef694ed5676f4a` plus exact fix `c749acc...`.
+A source/test/script/workflow/dependency/project-manifest diff against the
+assessed head is empty. The existing assessed-head docs-only CI was still
+running when first queried; it is not substituted for exact-fix evidence.
+Publication-head automatic checks are separate from this historical evidence.
+
+Fresh review-stage checks:
+
+| Exact command | Observed result |
+| --- | --- |
+| `python3 scripts/check_repository.py` | Passed assets, links, MCP parity and running review state; completed state rechecked before publication. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed 119/119, 3.013s. |
+| `npm run format:check` | Passed all configured files. |
+| `git diff --check` | Passed. |
+
+`git diff --cached --check` is also required before publication. Protected
+artifact comparison confirms unchanged intent/tasks/checklists and the exact
+historical-review suffix. No new full local/provider/browser gate is claimed.
+
+## Deferred failed observation and acceptance boundary
+
+Exact case:
+`PostgresCompositionAuthorityTests.KilledLaterMigrationRetainsEarlierCommitAndOriginalDataUntilExplicitAcceptedRecovery`.
+The safe local report
+`integration-postgres-fb12cfa1e3354655abd558c697f88410.json` records
+`composition-integration-postgres`, exit 2, duration 216.981s and failure
+correlation `ceef1e00d59e499d8ea7a5a2bbc40af8`.
+The failed/interrupted complete attempt passed 109/111 executed steps across
+six reports, all `completeGate: false`; it did not pass the full gate.
+
+The [explicit human direction and fact record](implementation.md#human-directed-deferral-and-implementation-handoff)
+retain eight passes/one failure in nine overlapping selections, not nine
+pipeline reruns or a statistical failure rate. **The original failing
+assertion and cause remain unavailable.** Isolated/local-recovery/CI passes
+neither diagnose the failure nor establish harmlessness.
+No broad integration/recovery/all-suite run or investigation of that case is
+performed in this review, respecting the documented human direction.
+
+This is an unresolved verification observation, not a demonstrated new
+implementation defect with a safe established fix. No speculative remediation
+task, scheduling explanation, assertion/deadline relaxation or test suppression
+is introduced. Progression with documented deferral is not a general waiver
+of later acceptance/release evidence. If the case fails again or relevant
+migration/recovery work begins, capture the exact failing assertion and safe
+phase evidence before assigning a cause.
+
+**Next stage: accept**, in a separate invocation. Present this passing
+substantive review **and the failed/undiagnosed local limitation** for explicit
+human acceptance of numbered feature 004. Silence, autopilot, checked tasks,
+the earlier acceptance request and a passing review are not acceptance.
+Keep the existing PR draft; do not request an intermediate merge.
+
+---
+
+# Historical final review before T086 (preserved verbatim)
+
+# Final Review: Module Composition and Lifecycle
+
 **Result:** changes
 
 **Date:** 2026-10-25

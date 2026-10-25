@@ -18,7 +18,7 @@
     },
     "004": {
       "directory": "specs/004-module-lifecycle",
-      "next_step": "review"
+      "next_step": "accept"
     }
   },
   "active": null,
@@ -1029,6 +1029,24 @@
       "evidence_sha256": {
         "specs/004-module-lifecycle/tasks.md": "1edad3eee4b8e81d8490bc12591d65e9497517a1dc08fab9c98764ecdc595bda",
         "specs/004-module-lifecycle/convergence.md": "f079990c57d297a2f132fff21991b50e4f609cd105dbfa8f35374ada72abda61"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "review",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-25T22:23:01+00:00",
+      "completed_at": "2026-10-25T22:30:15+00:00",
+      "outcome": "pass",
+      "note": "Final substantive review passes after T086 at assessed4893c72: read-only spec-review maps all46 FR/outcome/scenario items,12 plan decisions,86 tasks and12 principles to actual source/assertions. R1/T086 and priorF1-F4 closed; no new implementation defect or remediation task. Independently queried exactc749acc CI11 contexts,downloaded10 safe reports,reconciled286 passing targeted steps and24 guide/observation pairs,verified synthetic parents remotely and unchanged source applicability. No new product/full-local run: deferred PostgreSQL migration-interruption assertion/cause remains unknown; latest complete local109/111 remains failed/interrupted,not replaced by CI or a release waiver. Explicit human acceptance must disclose that residual limitation and remains next,separately on same draftPR7. Prior review exact suffix and all86 task bytes/intent/reviewedchecklists/historical evidence unchanged. Fresh repository/Python119/format/whitespace checks pass; completed ledger and staged diff rechecked before publication. No acceptance,readiness,merge or005.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "1edad3eee4b8e81d8490bc12591d65e9497517a1dc08fab9c98764ecdc595bda",
+        "specs/004-module-lifecycle/review.md": "94338254e2b0cb3bf6a3b6e983bde4fa1496024c8bd1f693eaf81a55b08ad922",
+        "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
+        "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
       }
     }
   ]
