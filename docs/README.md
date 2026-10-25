@@ -287,7 +287,7 @@ reviewed checklist artifacts remain unchanged.
 The read-only [analysis](../specs/004-module-lifecycle/analysis.md) passes:
 26/26 requirements/outcomes, 20/20 scenarios and all 80 tasks are covered,
 with 118 acyclic dependency edges and no actionable or constitutional finding.
-The analysis retains its historical assessed inputs. **Implement has resumed for final verification**
+The analysis retains its historical assessed inputs. **Implement is complete; converge is next**
 on the same branch and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
 The [implementation report](../specs/004-module-lifecycle/implementation.md)
@@ -296,14 +296,14 @@ owned strict harnesses, public no-storage/relational lifecycle, explicit
 interrupted-owner recovery and three exact preservation cycles per provider.
 All eleven public scenarios now include corrections, current health, actual
 owned termination and private diagnostic channels. Only evidenced tasks are
-marked. T001-T077 are evidenced, with all eleven CI contexts and 286 product
-steps passing at assessed code head `aaba315`, including every standalone and
-provider `all` command. Local full-gate PostgreSQL composition, public
-recovery/contracts and failure-propagation baseline failures remain historical
-failed evidence. The resumed stage has a causal fixture-timeout regression/fix
-and source-allowlisted public-failure diagnostics; T078-T080 and a complete
-post-fix local/CI reconciliation remain incomplete.
-No feature acceptance is claimed.
+marked. All 80 tasks are evidenced at assessed code head `267efc8`:
+ten complete local suite/provider reports and all 286 steps pass, alongside
+eleven CI contexts and 286 CI steps. Every standalone/provider `all` command,
+strict observation and isolated failure exercise is reconciled in the
+[final evidence](../specs/004-module-lifecycle/implementation.md#final-complete-gate-and-implementation-handoff).
+Historical failures remain distinct; fixture-only budget/workload repairs do
+not relax product deadlines, assertions or floors. Convergence, review and
+explicit human acceptance remain later stages; the PR stays draft.
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 

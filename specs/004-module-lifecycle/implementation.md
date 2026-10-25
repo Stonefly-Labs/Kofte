@@ -1,6 +1,6 @@
 # Implementation: 004 - Module Composition and Lifecycle
 
-**Stage:** implement, started 2026-10-24; resumed for final verification, not complete or feature acceptance.
+**Stage:** implement complete, started 2026-10-24; not feature acceptance.
 **Assessed starting revision:** `bac7bdc8c10d7c62394688d3e0364ff422cd3dfb`.
 **Branch / checkpoint:** `feature/004-module-lifecycle`,
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
@@ -731,11 +731,12 @@ admission after deadline/mode checks and sets its latch only when admission
 succeeds. Public boot and later story evidence remain separate obligations.
 
 The following mapping identifies delivered source and meaningful assertions.
-It does not turn an incomplete final gate into a passing gate. Test classes
+The current final gate is reconciled separately below; historical failed gates
+remain failed. Test classes
 below live in the dedicated unit, integration or public-contract projects under
 `tests/`; their owning named commands are recorded above and in the final gate
-report. Unfinished cross-cutting tasks remain unchecked until their executions
-and publication obligations actually finish.
+report. Task markers follow the actual execution and publication obligations,
+not artifact presence.
 
 ### Functional requirements
 
@@ -843,13 +844,15 @@ and publication obligations actually finish.
 | T050-T057 | US4 exact three-cycle preservation, dependency guard, partial stop and explicit isolated upgrade.                                                                                      |
 | T058-T072 | US5 health/aggregate/fault/termination/correction/six-channel privacy and executable documentation.                                                                                    |
 | T073      | Required-file/project/scenario manifests, focused trait selectors and Python missing/zero/provider/sum/output regressions; current-wiring quality and all owning CI suites pass.       |
-| T074-T076 | All 24 standalone/provider `all` executions with separate strict observations and all ten supported-CI suites pass; local failed evidence remains distinct and unresolved.              |
-| T077      | Reference/test-ownership/credential/ignored-artifact and interface/budget/guide audit; current docs consistently record the local block and assessed-code CI success.                      |
-| T078-T080 | Complete exact-code local gate/CI reconciliation, this acceptance mapping, mandatory repository checks, truthful ledger/markers and immediate push/draft-PR handoff; not yet complete. |
+| T074-T076 | All 24 standalone/provider `all` executions and strict observations, both providers, browser/startup/privacy and isolated positive/negative exercises pass locally and in CI. |
+| T077      | Reference/test-ownership/credential/ignored-artifact and interface/budget/guide audit; current docs distinguish implementation completion from later convergence/review/acceptance. |
+| T078      | Exact `267efc8` complete local all-suite: ten reports, 286 steps, `completeGate: true`; eleven exact-code CI contexts / 286 steps and every provider/scenario reconciled below. |
+| T079      | All 20 FRs, 20 story scenarios, six SCs, R1-R12, twelve principles and 80 tasks map to actual source/assertions, measured observations, supported targets and retained limitations. |
+| T080      | Mandatory repository/Python/diff checks, reviewed scoped documentation/evidence/task/ledger completion transaction and immediate push to the same draft PR; no next stage or acceptance. |
 
 ## Resumed verification: fixture administration and safe public failures
 
-The explicit instruction **"well finis hthat bish"** resumed the original
+Historical repair checkpoint (`cf42d82`): the explicit request to finish resumed the original
 004 / implement stage on its existing branch/draft PR. Its original start and
 history are preserved; reviewer checklists, approved intent and T001-T077 are
 unchanged. T078-T080 remain incomplete pending the complete post-fix gate.
@@ -975,12 +978,111 @@ quiet`, the repository checker, all 119 Python tests and `git diff --check`
 also passed. The complete final local gate and exact-candidate CI are still
 pending.
 
+## Final complete gate and implementation handoff
+
+T078-T079: the exact published code revision
+**`267efc8e6bc3c5a783c3962e66c5aca8b383e7b2`** passed:
+
+```bash
+python3 scripts/verify.py --suite all --disposable-postgres --warm-starts 10
+```
+
+The command exited **0**, from **2026-10-24T23:12:11.644752+00:00** to
+**2026-10-25T00:38:04.220314+00:00**. All ten expected suite/provider reports
+and **286 steps** passed, and every report records `scope: all`,
+the exact assessed revision and **`completeGate: true`**.
+There was no concurrent heavy local build/test command. Source and worktree
+were clean throughout this run; only this final documentation/evidence/ledger
+transaction follows it.
+
+The measured supported local target was macOS 26.5 / Darwin 25.5.0 arm64,
+18 logical CPUs and 64 GiB physical memory. The pinned SDK was 10.0.402,
+Node 24.22.0, npm 11.19.1 and Python 3.15.0. The explicit
+`DOTNET_PROCESSOR_COUNT=4` and disposable PostgreSQL opt-in remain recorded
+configuration, not a fixed universal performance profile.
+
+These exact safe reports remain under `artifacts/verification/`:
+
+| Report | Steps | Seconds |
+| --- | --- | --- |
+| `quality-none-6970e9e626554de6bca2c8b58755eb5b.json` | 20 | 28.921 |
+| `unit-none-2978a501992942a9939be1fccea1cc41.json` | 14 | 32.409 |
+| `integration-sqlite-1a9d9a0c07fd428f9fe8087518ebd3c7.json` | 9 | 445.889 |
+| `integration-postgres-cbb6dc2bb39e4092b98669991ba66210.json` | 12 | 774.920 |
+| `recovery-both-b383d7fb3e1a40bfa6f2b016c92df73a.json` | 43 | 1039.915 |
+| `contract-both-2474804016af4391bf35e5fbdcda6c79.json` | 101 | 1429.619 |
+| `browser-none-d875edfea5ae40f1b104c459d6cd9b43.json` | 16 | 48.276 |
+| `privacy-both-c5a354f0b96441d782779836845cf254.json` | 41 | 318.691 |
+| `startup-none-a4f663c642064528ae4d540819000f1f.json` | 12 | 34.626 |
+| `failure-propagation-none-f9936f71ee654511bf078583bd7fc159.json` | 18 | 999.209 |
+
+Both broad/focused native provider assemblies, real recovery, all public
+contracts, generated schema/HTTP adapters, browser/accessibility/status and
+private captures passed. All **24** actual published Release composition
+commands (eleven standalone plus `all` per provider) have separate successful
+strict observation records. In particular:
+
+```bash
+dotnet run --project tests/contract/Kofte.Composition.Consumer --no-build -c Release -- --provider sqlite --scenario all
+dotnet run --project tests/contract/Kofte.Composition.Consumer --no-build -c Release -- --provider postgres --scenario all
+```
+
+SQLite passed **389,385 assertions / 80.222 seconds**; PostgreSQL passed
+**389,390 / 189.866 seconds**. Each independently records exactly **84,000**
+deterministic comparisons, three complete preservation cycles/six distinct
+processes and attempts, twelve original assignment/data/history comparisons,
+six unrelated-state comparisons, five corrections, seven verified root exits,
+one verified fixture-descendant exit and six private channels/zero-leak
+comparisons. These counters were inspected beyond mere minimum acceptance.
+No synthetic positive result or missing standalone scenario substitutes for
+actual execution.
+
+Startup retains all ten empty-host cycles (maximum observed readiness
+**5.286005 seconds**) plus two separate configured-module/built-web cycles.
+Both configured cycles prove actual owner Start/publication, exact fixture
+data and total elapsed **0.933886 / 1.737759 seconds**, retaining the
+285/300-second envelope and existing budgets.
+Failure propagation's isolated quality, PostgreSQL and browser baselines all
+passed at this same exact revision; PostgreSQL took **836.038 seconds**.
+All five intended test/formatter/build/PostgreSQL/Chromium mutations failed
+at their responsible commands and were successfully recognized, not skipped
+or mistaken for a green baseline.
+
+The same branch head passed eleven supported-CI contexts:
+[product run 40141738445](https://github.com/Stonefly-Labs/Kofte/actions/runs/40141738445),
+all ten jobs / **286 steps**, and
+[repository run 40141738437](https://github.com/Stonefly-Labs/Kofte/actions/runs/40141738437).
+All ten safe product reports at
+`artifacts/ci/40141738445/verification-*/` record actual synthetic merge revision
+**`f48e19825224567a500a3280509159c7db74f7b8`**.
+That is the assessed PR merge, not a fabricated branch revision. The supported
+Ubuntu 24.04 x86_64 runner has four logical CPUs / approximately 16 GiB,
+with the same pinned SDK/Node/npm. Expected suite/provider sets, all 286 steps,
+24 Release guide commands and 24 strict observations were reconciled.
+CI provider `all` commands passed 389,385 / 389,390 assertions in
+161.236 / 250.068 seconds respectively.
+
+T080: required repository checks, all **119** Python tests, whitespace and
+applicable formatting pass; final task markers, this mapping and the driver
+completion are published together on the original branch/draft PR with the
+required co-author and immediate push. The completion records only implement
+and selects converge for a **separate invocation**. No extension hooks are
+configured. Approved intent, original stage start/history and both reviewed
+checklists remain unchanged. No product deadline, provider, observation,
+worker/round count, retry rule, assertion or floor was relaxed.
+
 ## Limitations and handoff
 
-Implementation has resumed, not completed: T001-T077 are evidenced, while
-T078-T080 require resolved local failures and a complete post-fix local/CI
-reconciliation. Passing earlier assessed-code CI does not replace that
-requirement. This same implementation stage remains active on
-`feature/004-module-lifecycle` and draft PR #7.
-Convergence, final review and explicit human acceptance remain separate later
-stages; no readiness or merge is requested.
+Implementation is complete with all 80 tasks evidenced. Earlier failed runs,
+discarded diagnostic setups and scoped fixes remain recorded, not rewritten
+as passes; not every historical transient is attributed to one proven cause.
+The current exact-code full local/CI gates pass without weakening product
+bounds or inherited assertions.
+
+Trusted code remains unsandboxed; owned-process proof does not guarantee
+termination of arbitrary escaped descendants. Observations are ephemeral,
+not a durable audit/settings/jobs product; future capabilities remain inert.
+This is not a full reference module, new human usability study, production
+certification or MVP release. Convergence, final review and explicit human
+acceptance are separate later stages on `feature/004-module-lifecycle` and
+draft PR #7. **Converge is next; no readiness or merge is requested.**

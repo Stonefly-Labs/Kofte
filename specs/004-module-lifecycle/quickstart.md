@@ -1,13 +1,14 @@
 # Validation Guide: 004 - Module Composition and Lifecycle
 
-**Status**: Implementation has resumed for final verification, not feature acceptance.
+**Status**: Implementation is complete; convergence is next, not feature acceptance.
 All eleven scenarios and their sequential `all` composition are runnable,
 including interrupted migration, explicit recovery, correction, health, owned
-termination and private diagnostic capture. Assessed code head `aaba315`
-passes all eleven CI contexts, including every guide command. Unresolved local
-full-gate failures and the required post-wiring complete local run remain
-implementation gates. The [implementation report](implementation.md) distinguishes
-executed evidence from the remaining acceptance targets below.
+termination and private diagnostic capture. Assessed code head `267efc8`
+passes the complete local gate: ten suite/provider reports, all 286 steps and
+all 24 guide commands/strict observations. Its eleven CI contexts and 286
+product steps also pass. The [implementation report](implementation.md#final-complete-gate-and-implementation-handoff)
+preserves earlier failures and exact final evidence. Convergence, final review
+and explicit human acceptance remain separate later stages on the same draft PR.
 
 ## Delivered validation, boot and relational preparation increment
 

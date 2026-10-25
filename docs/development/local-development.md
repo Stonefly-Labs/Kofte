@@ -180,7 +180,7 @@ unchecked. This is planned coverage, not measured module behavior.
 At that historical checkpoint, **implement was next** on `feature/004-module-lifecycle` and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
 
-**004 / implement has resumed for final verification** on that same branch/draft PR. Its
+**004 / implement is complete; converge is next** on that same branch/draft PR. Its
 [current guide](../../specs/004-module-lifecycle/quickstart.md) now runs
 validation, no-storage boots and real relational `ordered-migration` examples
 on SQLite and owned PostgreSQL. The relational example explicitly upgrades its
@@ -216,17 +216,18 @@ requires restoring failed diagnostics, inspecting preserved incomplete cleanup
 or verifying owned exit before retry. These are trusted-code observations, not
 a sandbox, durable audit/settings product or guaranteed termination of arbitrary
 escaped descendants. The [current guide](../../specs/004-module-lifecycle/quickstart.md)
-states exact bounds and limitations. T001-T077 are evidenced, including all
-eleven CI contexts and 286 product steps at assessed code head `aaba315`.
-Local full-gate PostgreSQL composition, public recovery/contracts and
-failure-propagation baseline failures remain unresolved. The
+states exact bounds and limitations. All 80 tasks are evidenced at assessed
+code head `267efc8`: ten complete local suite/provider reports and all 286
+steps pass, plus eleven CI contexts and 286 CI steps. The
 [implementation report](../../specs/004-module-lifecycle/implementation.md#blocked-local-gate-and-ci-reconciliation)
 records those historical failures and passing scoped reproductions. The
 [resumed verification](../../specs/004-module-lifecycle/implementation.md#resumed-verification-fixture-administration-and-safe-public-failures)
-now reproduces and fixes a fixture-administration timeout and closes the public
-failure-identity reporting omission. T078-T080, including a complete post-fix
-local/CI reconciliation, remain incomplete; not every earlier failure is yet
-explained. No feature acceptance is implied.
+records the fixture-administration regression/fix and safe public-failure
+identities. The [final reconciliation](../../specs/004-module-lifecycle/implementation.md#final-complete-gate-and-implementation-handoff)
+records unchanged contention workload isolation, all 24 actual guide commands/
+strict observations and passing isolated failure exercises. Historical failed
+runs are not rewritten. Convergence, review and explicit human acceptance are
+separate later stages; no product deadline or floor is weakened.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).

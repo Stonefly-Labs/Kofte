@@ -35,7 +35,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 | 🔐 Explicit boundaries     | Team-scoped authorization, audited actions and module-owned storage                                   |
 
 > [!IMPORTANT]
-> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. [004 / implementation](specs/004-module-lifecycle/implementation.md) now supplies all eleven lifecycle/provider/process/privacy examples; implementation has resumed for final local/CI verification after a reproduced fixture-only timeout fix. Nothing here claims production readiness or MVP completion.
+> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. [004 / implementation](specs/004-module-lifecycle/implementation.md) is complete, including all eleven lifecycle/provider/process/privacy examples, the full local gate and exact-code CI evidence. Convergence is next. Nothing here claims production readiness or MVP completion.
 
 ## 🧭 The shape of things to come
 
@@ -110,24 +110,22 @@ The read-only [analysis](specs/004-module-lifecycle/analysis.md) passes with
 The analysis preserves its historical assessed inputs; verified implementation
 markers and exact commands are recorded separately in the
 [implementation evidence](specs/004-module-lifecycle/implementation.md).
-**Implement has resumed for final verification** on this same branch and
+**Implement is complete; converge is next** on this same branch and
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
 The immutable contracts, deterministic validation, public no-storage boots and
 real relational clean/additive prepare/serve paths now have focused evidence.
-T001-T077 have component/public/CI evidence, including interrupted-migration
+All 80 tasks have implementation evidence, including interrupted-migration
 recovery, three-cycle exact preservation on both providers and correction,
-health/privacy examples. Assessed code head `aaba315` passes all eleven CI
-contexts and 286 product steps, including every standalone/provider `all`
-example. The local diagnostic all-suite failed PostgreSQL composition, public
-recovery/contracts and the failure-propagation baseline. A reproduced
-PostgreSQL fixture-administration timeout now has a causal regression and
-scoped fix; source-allowlisted public-test diagnostics close the prior
-reporting omission. These changes do not yet resolve every earlier failure.
-The unchanged twenty-by-ten registry contention workload now runs exclusively
-of unrelated hosted tests; the broad PostgreSQL assembly passes all 126 cases.
-T078-T080 remain incomplete, including
-the required post-wiring complete local gate. No convergence, feature
-acceptance or intermediate merge is implied.
+health/privacy examples. Assessed code head `267efc8` passes the complete
+local gate: ten suite/provider reports, all 286 steps and every delivered guide
+command, with `completeGate: true`. Its eleven CI contexts and 286 product
+steps also pass. Fixture administration has a separate bounded control-plane
+budget; the unchanged twenty-by-ten contention workload runs exclusively of
+unrelated hosted tests. Product deadlines, assertions and minima are unchanged.
+The [final reconciliation](specs/004-module-lifecycle/implementation.md#final-complete-gate-and-implementation-handoff)
+preserves earlier failures and exact current evidence. Convergence, final
+review and explicit human acceptance remain separate later stages; this PR
+stays draft and no intermediate merge is requested.
 The startup gate also exercises two configured-module/web restarts without
 replacing the ten retained empty-host warm cycles or extending their budgets.
 

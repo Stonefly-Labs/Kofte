@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** **004 / implement has resumed for final verification** after specify, clarify,
+**Current checkpoint:** **004 / implement is complete; converge is next** after specify, clarify,
 plan, checklist, tasks and analyze completed on
 `feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
 The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the
@@ -194,7 +194,7 @@ Actual DI graph/license/provenance adoption, both-provider/public/process/privac
 evidence, convergence, final review and explicit human acceptance remain later
 gates. No PR readiness, intermediate merge or new feature is authorized.
 
-**Current implementation checkpoint:** The resumed implementation remains on
+**Current implementation checkpoint:** The completed implementation remains on
 the original feature branch and draft PR. Its
 [evidence report](../../specs/004-module-lifecycle/implementation.md) records
 the separately reviewed DI edge, immutable public contracts, deterministic
@@ -203,17 +203,16 @@ inventory/recipe foundations. Markers change only for actually evidenced
 tasks; the approved spec, plan, reviewed checklists and historical analysis
 are not rewritten as implementation proof. Lifecycle, preservation, corrections,
 current health, actual owned process exit and private channels now have runnable
-public scenarios. T001-T077 are evidenced, including all eleven CI contexts
-and 286 product steps at assessed code head `aaba315`, with every standalone
-and provider `all` guide command. The local diagnostic all-suite failed
-PostgreSQL composition, public recovery/contracts and its failure-propagation
-baseline. Even the baseline cloned at `aaba315` failed one PostgreSQL preflight
-case. The resumed stage now has a causal fixture-administration timeout
-regression/fix and source-allowlisted public-failure diagnostics. T078-T080,
-including a complete post-fix local/CI reconciliation, remain incomplete.
-The driver records this same implementation stage as running, not complete;
-not every earlier failure is yet explained. No product bound or minimum has
-been weakened.
+public scenarios. All 80 tasks are evidenced at assessed code head `267efc8`:
+the complete local all-suite passes ten suite/provider reports and 286 steps,
+with `completeGate: true`, all 24 guide commands/strict observations and
+green isolated baselines plus the five required negative exercises. Eleven
+exact-code CI contexts and 286 product steps also pass.
+The [final reconciliation](../../specs/004-module-lifecycle/implementation.md#final-complete-gate-and-implementation-handoff)
+preserves earlier failures, causal fixture-administration evidence and unchanged
+contention-workload isolation; product bounds, retries, assertions and floors
+are unchanged. The driver completes only this original implementation stage
+and selects **converge for a separate invocation**.
 Convergence, final review and explicit feature acceptance are later invocations;
 no readiness or intermediate merge is requested.
 

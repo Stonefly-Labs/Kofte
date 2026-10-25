@@ -176,7 +176,7 @@ At that checkpoint, **implement was next**, in a separate invocation on this sam
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), not acceptance
 or a merge. Analysis adds no runtime or dependency adoption.
 
-**004 / implement has resumed for final verification** on that original branch/draft PR.
+**004 / implement is complete; converge is next** on that original branch/draft PR.
 The [implementation report](specs/004-module-lifecycle/implementation.md)
 records verified validation, public no-storage boots and actual relational
 clean/additive prepare/serve commands, including both-provider no-effect,
@@ -184,16 +184,15 @@ retained authority/interruption, original-data and unchanged-revision evidence.
 Explicit interrupted-owner recovery and three complete disable/re-enable cycles
 per provider now preserve exact original assignments/data/history and unrelated
 state. All eleven examples now include named corrections, actual health,
-uncooperative process boundaries and private captures. T001-T077 are evidenced:
-assessed code head `aaba315` passes all eleven CI contexts and 286 product steps,
-including all delivered guide commands. Local full-gate PostgreSQL composition,
-public recovery/contracts and failure-propagation baseline failures remain
-historical failed evidence. A reproduced fixture-administration timeout now
-has a causal regression and fixture-only fix, and public failures retain
-source-allowlisted identities. T078-T080 and a complete post-fix local/CI
-reconciliation remain incomplete; not every earlier failure is yet explained.
-Neither these
-increments nor passing component checks accept feature 004.
+uncooperative process boundaries and private captures. All 80 tasks are evidenced:
+assessed code head `267efc8` passes all 286 complete local steps across ten
+suite/provider reports, plus eleven CI contexts and 286 CI steps, including
+all delivered guide commands and isolated failure exercises.
+The [final reconciliation](specs/004-module-lifecycle/implementation.md#final-complete-gate-and-implementation-handoff)
+preserves historical failures, fixture-only repairs and exact outcomes.
+No product deadline, assertion, provider requirement or floor changed.
+Convergence, final review and explicit human acceptance remain separate later
+stages; implementation completion does not accept feature 004 or request merge.
 
 The following paragraphs preserve the historical design-stage checkpoint.
 

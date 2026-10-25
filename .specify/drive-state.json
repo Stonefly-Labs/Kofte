@@ -18,18 +18,10 @@
     },
     "004": {
       "directory": "specs/004-module-lifecycle",
-      "next_step": "implement"
+      "next_step": "converge"
     }
   },
-  "active": {
-    "spec": "004",
-    "step": "implement",
-    "directory": "specs/004-module-lifecycle",
-    "status": "running",
-    "branch": "feature/004-module-lifecycle",
-    "reason": "",
-    "started_at": "2026-10-24T12:59:06+00:00"
-  },
+  "active": null,
   "history": [
     {
       "spec": null,
@@ -847,6 +839,24 @@
       "note": "Executed read-only speckit-analyze at a6d93f283b6e4c446ffcf773faa480d4b80678ae on the original branch/draft PR #7 with explicit feature context. Persisted analysis.md: pass; zero actionable duplication, ambiguity, underspecification, constitutional conflict, coverage gap or ordering inconsistency. Semantic coverage includes 26/26 requirements/outcomes, 20/20 acceptance scenarios, all 80 tasks, R1-R12 and twelve principles; 118 explicit backward-only acyclic dependency edges and 22 conditional isolated-resource parallel markers. Verified observable positive/negative tests, six-phase preflight before effects, native DI/phase barriers, exact owner-local preparation/preservation, current health, actual owned exit, safe useful diagnostics and eleven mandatory public examples plus retained full gates. ADR0006 approval supersedes historical Proposed labels without new approval. No hooks. Original spec/plan/research/model/contracts/guide/approved ADR/both reviewed checklists and all historical ledger entries/hashes unchanged; all 80 tasks remain unchecked. Driver updates report/ledger/current progress docs only, not analyzed inputs, product/test code, dependencies/locks, runtime measurements or feature acceptance. Actual DI adoption and real provider/process/privacy evidence remain implementation requirements. Implement is next in a separate invocation on this same draft PR; no readiness or intermediate merge.",
       "evidence_sha256": {
         "specs/004-module-lifecycle/analysis.md": "d58c305e9a57493d44a6bf4a2948725e6f5aef1f4dd0ea6711f523674b1cdbd8",
+        "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
+        "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "implement",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-24T12:59:06+00:00",
+      "completed_at": "2026-10-25T00:42:54+00:00",
+      "outcome": "pass",
+      "note": "All 80 implementation tasks evidenced. Exact published code 267efc8e6bc3c5a783c3962e66c5aca8b383e7b2 passed python3 scripts/verify.py --suite all --disposable-postgres --warm-starts 10: ten completeGate=true reports / 286 steps, all 24 actual guide commands and strict observations, isolated baselines and five intended failures. Eleven exact-code CI contexts pass: product40141738445/repository40141738437, actual merge f48e19825224567a500a3280509159c7db74f7b8. Full FR/scenario/SC/design/principle/task mapping and historical failures preserved. Fixture-only administrative budget and unchanged contention workload isolation do not relax product limits. Repository checker,119 Python tests,npm format:check,diff check pass. Publish tasks/report/ledger together on original branch/draft PR7 with immediate push. Converge next separately; no acceptance/readiness/merge.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "d09285e4a8c2cbf8a6eb467ad9322935635af797d9f16fd4c56fc236bf357063",
+        "specs/004-module-lifecycle/implementation.md": "d10b2e4d83d2caca266b71c0c3842011882da2a1293b7f933f2e824db6f00517",
         "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
         "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
       }
