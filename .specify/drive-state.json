@@ -22,7 +22,7 @@
     },
     "005": {
       "directory": "specs/005-authentication-bootstrap",
-      "next_step": "plan"
+      "next_step": "checklist"
     }
   },
   "active": null,
@@ -1102,6 +1102,23 @@
       "note": "Executed installed speckit-clarify with explicit recorded feature directory on the original feature branch/draft PR #8. No critical ambiguities detected worth formal clarification: 0 questions asked/answered, no invented human decision and no spec section touched. All ten categories Clear: functional scope/behavior (Scope, US1-5, FR-001-015/021); domain/data (Key Entities, FR-003/009-014/016/017); interaction/UX (US1/3/4/5, FR-020, Experience); nonfunctional quality (FR-008/009/015-020, SC-002/005-007); integration/dependencies (accepted001-004, FR-001/007/016/019/021, Interfaces); edge/failure handling (Edge Cases, US1-5, FR-002/009-019); constraints/tradeoffs (Scope, Requirements-level defaults); terminology (Key Entities, stable issuer/subject versus display profile); completion (Required Validation maps22scenarios/22FRs/7SCs); miscellaneous/placeholders (no unresolved marker/conflict, explicit Planning choices). No Outstanding/Deferred requirements categories. Revalidated every author criterion:16/16 to16/16, no newly passing items, regressions or unchecked criteria; spec/checklist remain byte-for-byte unchanged and match specification evidence hashes. Exact protocol/session/API credential/enrollment/storage mechanisms, fields/origins, secret rotation, retention and finite budgets remain planning/ADR choices. No extensions.yml or pre/post clarification hooks. Preserved known prior-head PostgreSQL CI failure as unresolved, not a new pass or diagnosed cause. No product/dependency change, plan/tasks, reviewer-owned quality checklist, runtime proof or human acceptance. Plan next on same feature branch/draft PR; no intermediate merge.",
       "evidence_sha256": {
         "specs/005-authentication-bootstrap/spec.md": "321ed0ee2b04da4c060c5a6d498e6cc795bbe10d88e02f34affb113afc395d75"
+      }
+    },
+    {
+      "spec": "005",
+      "step": "plan",
+      "directory": "specs/005-authentication-bootstrap",
+      "status": "complete",
+      "branch": "feature/005-authentication-bootstrap",
+      "reason": "",
+      "started_at": "2026-10-26T14:43:54+00:00",
+      "completed_at": "2026-10-26T19:59:40+00:00",
+      "outcome": "pass",
+      "note": "Executed installed speckit-plan using the resolved project override and explicit recorded feature directory on the original branch/draft PR #8. Produced plan, research, data model, identity-v1 and operator-v1 contracts, future validation guide and Proposed ADR 0007. Twelve traced choices resolve confidential OIDC code+PKCE with explicit trust and disabled PAR/UserInfo/token saving, durable opaque server tickets and next-request revocation, exact same-origin Next adapters/optional ingress, actor-v1/default denial, nominated atomic one-time enrollment, verified platform format 2 and recovery-v2 quarantine/reconciliation, isolated loopback development, finite egress/state/session budgets, protected private key persistence, bounded retained security evidence and accessible independent protocol/provider/consumer/browser validation. Source-reviewed blanket health route guard and exact format-1 inventories are explicit compatibility work, not relaxed checks; module allocator/markers/history/privileges and existing startup/maintenance bounds remain. All twelve constitutional principles pass before research and after design; no canonical conflict or amendment. Official Microsoft/OIDC/Next web references verified by one bounded research agent because Learn/Context7 MCP unavailable. Exact OIDC/transitive license/provenance/locks/advisory review and human ADR approval remain before implementation, not package adoption here. Spec and 16/16 author checklist byte-for-byte unchanged. All 22 acceptance scenario rows and 22 FR traces covered; no extension hooks or later-stage artifacts. Repository checks, 121 Python tests and whitespace passed; initial ad-hoc coverage assertion exposed a missing explicit FR-022 guide trace, corrected and rechecked. No product/test/dependency change, runtime proof, quality checklist marking, tasks or human acceptance. Prior head dac20c1 observed 11/11 CI green; earlier undiagnosed failed runs remain preserved, not diagnosed or erased. Checklist next in a separate invocation on the same draft PR, generated unchecked for reviewer evaluation; no intermediate merge.",
+      "evidence_sha256": {
+        "specs/005-authentication-bootstrap/plan.md": "28cd58fd796ada5d915e7a3ae74709f67a93cd19ca511287066ca9570e764696",
+        "specs/005-authentication-bootstrap/research.md": "8e3108b6b1c6018b4c662648bbaa19b787e21302723183ef19830db6cff19df9",
+        "specs/005-authentication-bootstrap/quickstart.md": "08c294fb444d459dfe1be43abd35cd59602e336cf6ca53701441a6fdbd9faeca"
       }
     }
   ]

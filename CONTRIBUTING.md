@@ -329,7 +329,7 @@ That checkpoint required human merge before 005. PR #7 is now human-merged;
 004's accepted ledger and all five acceptance artifact hashes were verified
 on updated main before beginning the new feature.
 
-**005 / specify and clarify are complete; plan is next** on
+**005 / specify, clarify and plan are complete; checklist is next** on
 `feature/005-authentication-bootstrap`. Its
 [draft requirements](specs/005-authentication-bootstrap/spec.md) and
 [16/16 author checklist](specs/005-authentication-bootstrap/checklists/requirements.md)
@@ -340,9 +340,18 @@ protocol, browser and privacy evidence obligations. Clarification found all ten
 requirements categories clear with zero questions; the spec and author checklist
 remain byte-for-byte unchanged at 16/16. The
 [coverage assessment](docs/development/spec-workflow.md#invocation-and-current-progress)
-separates requirements from later protocol/session/enrollment/budget design.
+preserves the clarification evidence. The
+[plan](specs/005-authentication-bootstrap/plan.md), research, data model,
+identity/operator-v1 contracts and future guide now resolve twelve proposed
+design choices, including durable sessions, nominated atomic enrollment and
+verified platform/recovery format 2. Both constitutional design gates pass.
+[ADR 0007](docs/adr/0007-authentication-bootstrap-boundary.md) remains
+**Proposed** and needs human approval before implementation; exact dependency
+adoption and actual protocol/provider/browser/privacy evidence are later gates.
 Continue on this branch and [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8);
-no later stage, product package, implementation or feature acceptance is introduced.
+checklist generation/reviewer evaluation is the next separate stage. No product
+package, implementation, reviewed quality checklist or feature acceptance is
+introduced by planning.
 
 The following paragraphs preserve the historical design-stage checkpoint.
 

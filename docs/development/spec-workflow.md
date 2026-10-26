@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / clarify complete; plan is next**, on
+**Current checkpoint: 005 / plan complete; checklist is next**, on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 [specification](../../specs/005-authentication-bootstrap/spec.md) uses the exact
@@ -49,12 +49,12 @@ durations/sizes/rates/timeouts, security-record retention/access and storage
 migration design remain planning/ADR choices, not deferred requirements questions.
 There are no Outstanding or Deferred taxonomy categories.
 
-The driver records only this clarification stage after specification. Explicit
+The historical clarification stage followed specification. Explicit
 feature-path resolution targets `specs/005-authentication-bootstrap`; there is no
 `.specify/extensions.yml`, so no before/after clarification hook is configured.
-No authentication code, package adoption, plan, tasks, runtime proof, later
-reviewer-owned checklist or human feature acceptance is introduced.
-The next invocation performs **plan** on this same branch and
+That checkpoint introduced no authentication code, package adoption, plan,
+tasks, runtime proof, later reviewer-owned checklist or human feature acceptance.
+It selected plan on this same branch and
 [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8),
 not a new branch or intermediate merge.
 
@@ -64,7 +64,47 @@ The existing specification-head CI observation remains unresolved:
 scenario with `composition_cleanup_incomplete`/`composition_consumer_failed`.
 The original assertion and cause are not established. Clarification does not
 diagnose or remediate that unchanged-code failure, replace it with a rerun or
-call the historical matrix green. Current-head checks are recorded in the PR.
+call the historical matrix green. The subsequent clarification head `dac20c1`
+was observed passing all eleven CI contexts; that does not diagnose or erase
+the prior failure. New-head checks are recorded separately in the PR.
+
+**005 plan checkpoint:** The
+[plan](../../specs/005-authentication-bootstrap/plan.md),
+[research](../../specs/005-authentication-bootstrap/research.md),
+[data model](../../specs/005-authentication-bootstrap/data-model.md),
+[identity-v1 contract](../../specs/005-authentication-bootstrap/contracts/identity-v1.md),
+[operator-v1 contract](../../specs/005-authentication-bootstrap/contracts/operator-v1.md)
+and [future validation guide](../../specs/005-authentication-bootstrap/quickstart.md)
+resolve twelve traced choices: confidential OIDC code+PKCE, exact same-origin
+adapters, durable revocable server tickets, minimal actor/default denial,
+nominated atomic enrollment, explicit platform format 2, recovery-v2 quarantine/
+reconciliation, isolated local development, finite trusted configuration/egress/
+state budgets, safe retained security records, accessible identity states and
+independent protocol/provider/consumer/browser evidence.
+
+Source review identified the existing blanket health route guard and exact
+format-1 table/recovery inventory as deliberate implementation integration
+points, not permission to remove validation. Preserve unknown-route denial,
+anonymous safe health, module allocator/marker/history/privilege boundaries and
+all unrelated data. Add exact versioned format branches and explicit stopped
+preparation; ordinary serving performs no migration. Restore never promises
+rollback-proof administrator state or silently reopens a consumed ceremony.
+
+[ADR 0007](../adr/0007-authentication-bootstrap-boundary.md) is **Proposed** and
+requires explicit human approval before implementation. Before-research and
+after-design gates assess all twelve constitutional principles and pass at
+design level. Microsoft Learn/Context7 MCP are unavailable; official web
+references were verified instead. Exact new OIDC/transitive package identity,
+license/provenance/lock review remains a pre-adoption implementation gate,
+not a package installed or approved by planning.
+
+The specification and 16/16 author checklist remain byte-for-byte unchanged.
+No product/test source, package/lock change, task list, runtime proof or human
+feature acceptance is introduced. There is no `.specify/extensions.yml`; no
+before/after planning hook is configured. The ledger records only **plan** in
+this invocation and selects **checklist** on this same branch/draft PR.
+Generate that later reviewer-owned checklist unchecked and stop for reviewer
+evaluation; no assistant marking, intermediate merge or PR readiness is implied.
 
 **Historical 004 checkpoint:** **human acceptance recorded; renewed handoff required a fully green latest-head PR matrix** after specify, clarify,
 plan, checklist, tasks and analyze completed on

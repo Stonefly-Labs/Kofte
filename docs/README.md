@@ -440,7 +440,7 @@ successfully. PR #7 is now human-merged, and the accepted ledger plus all five
 acceptance hashes were verified on updated main before 005 began. Acceptance
 and merge are not new runtime results, release waivers or MVP completion.
 
-**005 / specify and clarify are complete; plan is next** on
+**005 / specify, clarify and plan are complete; checklist is next** on
 `feature/005-authentication-bootstrap`. The
 [draft specification](../specs/005-authentication-bootstrap/spec.md) and
 [16/16 built-in author checklist](../specs/005-authentication-bootstrap/checklists/requirements.md)
@@ -450,10 +450,21 @@ browser/API parity, development-only login and safe recovery. Five stories,
 evidence. Clarification found all ten requirements categories clear, with zero
 questions and no spec/checklist changes; author criteria remain 16/16. The
 [coverage assessment](development/spec-workflow.md#invocation-and-current-progress)
-records the distinction between clear requirements and later design choices.
-No product code, plan, task list, reviewer-owned checklist or
-authentication runtime proof is introduced; later stages continue on one draft
-feature PR without intermediate merge.
+preserves the requirements assessment. The
+[plan](../specs/005-authentication-bootstrap/plan.md),
+[research](../specs/005-authentication-bootstrap/research.md),
+[data model](../specs/005-authentication-bootstrap/data-model.md),
+[identity contract](../specs/005-authentication-bootstrap/contracts/identity-v1.md),
+[operator contract](../specs/005-authentication-bootstrap/contracts/operator-v1.md)
+and [future guide](../specs/005-authentication-bootstrap/quickstart.md)
+now propose the code+PKCE/session/actor/enrollment and platform/recovery design.
+Both constitutional design gates pass; the spec/16 author criteria are unchanged.
+[ADR 0007](adr/0007-authentication-bootstrap-boundary.md) is Proposed,
+not human-approved. No product source/package, task list, reviewer-owned
+checklist or authentication runtime proof is introduced. Next checklist
+generation leaves its markers unchecked; stages continue on the same
+[draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8) without
+intermediate merge or feature acceptance.
 
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.

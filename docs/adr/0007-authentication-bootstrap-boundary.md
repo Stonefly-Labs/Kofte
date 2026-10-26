@@ -1,0 +1,127 @@
+# 0007: Authentication, Sessions and Nominated Bootstrap
+
+**Status:** Proposed
+**Date:** 2026-10-26
+**Spec:** [005 - Authentication and bootstrap administration](../../specs/005-authentication-bootstrap/spec.md)
+
+## Context
+
+Accepted 001-004 provide a module-free host/web, strict routes/configuration,
+platform-owned registry, exact storage/recovery inventories and stopped
+maintenance authority. They do not implement authentication. Spec 005 requires
+provider-neutral production OIDC, stable issuer/subject identity, next-request
+session invalidation, nominated non-repeatable enrollment and real protocol/
+provider/browser evidence. Authentication is not granular authorization (006),
+MCP transport/client authorization (007), general auditing (009) or deployment
+packaging (022).
+
+Adding identity tables to the existing format-1 store without a format change
+would be rejected by `RegistryMigrationRunner.ReadInstallationAsync` and the
+complete-set recovery verifier. Merely adding endpoints would also be rejected
+by `HealthEndpoints.MapBootstrapHealth`'s blanket path guard. These are explicit
+integration requirements, not reasons to disable the old protections.
+
+## Decision
+
+1. Use maintained ASP.NET Core OIDC code+PKCE and cookie/antiforgery/Data
+   Protection primitives. One operator-configured exact HTTPS issuer/client
+   trust proves pluggability; no vendor-specific production dependency, local
+   production password, account linking or automatic claim-to-admin mapping.
+   Persist only verified issuer/subject plus minimal display data; provider
+   tokens never become API credentials or enter durable tickets.
+2. Use server-side tickets behind a protected HttpOnly opaque-reference cookie.
+   Check durable expiry/revocation and current identity mode/epoch on every
+   protected request. Browser/direct API share this credential and actor-v1;
+   no machine token issuance or bearer acceptance is added. No immediate
+   upstream-session revocation or provider-wide sign-out is promised.
+3. Preserve one public browser origin. Implement exact Next.js route adapters
+   for the enumerated identity/auth paths to the fixed configured host; an
+   operator-managed production ingress can instead route them directly.
+   Do not accept caller-selected upstreams, forward arbitrary headers/cookies,
+   trust client proxy/identity claims or turn the readiness adapter into a
+   credential proxy. Public absolute redirects use configured origin/trust.
+4. Replace the blanket health path guard only with endpoint-scoped guards,
+   explicit anonymous metadata and default-deny protected policies. Keep
+   anonymous safe health, environment-restricted OpenAPI, strict methods and
+   unknown-route denial. Apply the same registration in composed/empty hosts.
+5. Require a stopped installation-authorized nomination of exact production
+   issuer/subject and an expiring random one-use secret delivered to a private
+   file. The signed-in nominee completes enrollment through a CSRF-protected
+   endpoint. Consumption, unique initial designation and immutable security
+   record commit atomically in the host store. Configuration replay,
+   development identity and administrator unavailability never reopen it.
+6. Add provider-specific host SQL format 2 with exact verified tables,
+   constraints and append-only migration history; retain format-1 script bytes,
+   module allocator/marker rules and module-local EF/history boundaries.
+   Preparation is explicit and stopped, never ordinary startup/login.
+   Add recovery format 2 rather than loosening the format-1 artifact allowlist.
+7. Restore into quarantine under existing exclusive authority. Verify all
+   module artifacts and identity security state, revoke restored sessions/
+   pending authorization, provision new protected key material and require an
+   explicit operator reconciliation before exposure. Preserve consumed
+   bootstrap; a stale backup is not proof of historical non-enrollment.
+   Lost administrator access requires restoring the same IdP identity or a
+   separately reviewed recovery decision, not a second initial administrator.
+8. Development requires explicit environment/mode/opt-in and loopback-only
+   host/web/public/backend origins, irrespective of the unsafe-exposure flag.
+   Its namespace and sessions cannot authenticate in production or consume
+   production enrollment. It provides no implicit administrative grant.
+9. Adopt the finite budgets, exact endpoint/actor contracts and security-record
+   retention/capacity policy in the design artifacts. Require real independent
+   OIDC, both-provider races/crashes/recovery, browser parity/a11y/privacy and
+   retained complete gates. Review the exact new dependency closure before
+   adoption; planning does not approve packages or claim runtime evidence.
+
+The [plan](../../specs/005-authentication-bootstrap/plan.md),
+[research](../../specs/005-authentication-bootstrap/research.md),
+[identity contract](../../specs/005-authentication-bootstrap/contracts/identity-v1.md)
+and [operator contract](../../specs/005-authentication-bootstrap/contracts/operator-v1.md)
+are the detailed proposal. No constitutional amendment or scope waiver is
+proposed.
+
+## Alternatives
+
+- **Stateless browser tickets / browser-managed bearer tokens:** insufficient
+  next-request local revocation or unnecessary browser/token-issuance surface.
+- **Accept IdP tokens on the API:** needs a separate resource audience/delegation
+  design and is not required by this slice; an ID token is not an API token.
+- **Mandatory external BFF/IdP product or new local edge process:** increases
+  mandatory services/provider coupling without proving additional 005 value.
+- **Hand-written OIDC/JWT validation:** unnecessary cryptographic/protocol risk.
+- **First login/email/claim becomes admin:** violates explicit nominated,
+  non-repeatable enrollment.
+- **Add tables under unchanged format 1 / ignore unknown objects:** breaks
+  accepted ownership/physical inventory validation.
+- **New identity module database:** adds an artificial module/registry
+  dependency for explicitly host-owned identity and complicates local atomicity.
+- **Automatic bootstrap reset after restore or IdP loss:** cannot prove
+  historical safety and risks minting another administrator.
+
+## Consequences
+
+The host remains small and uses existing services, but gains durable
+authentication state and an explicit storage/recovery compatibility boundary.
+Old binaries refuse format 2; rollback requires a compatible complete recovery
+point, not a Down migration. Native local startup/verification fixtures must
+explicitly choose development or configured OIDC rather than get anonymous
+access by default. The safe health contract remains unchanged.
+
+Production operators own HTTPS/public origin, provider/network allowlists,
+secret references, private certificate-protected key persistence and restore
+reconciliation. Local development uses no production credentials. Current
+PostgreSQL fixture restrictions remain; remote production profile, HA and
+packaging are later deployment work, not promised by this ADR.
+
+Minimal critical security records are retained with installation identity
+state; bounded session/request evidence has a finite policy. Capacity and
+recording failures are explicit, never silently dropping a required durable
+event or pretending an uncertain commit is known. Public APIs never expose
+nominee, issuer/subject, secret material or other users.
+
+## Approval
+
+**Pending explicit human approval before implementation.** Neither invoking
+plan, autopilot, publication of draft PR #8, checklist generation nor the
+assistant's design assessment constitutes approval or numbered-feature
+acceptance. No runtime dependency, identity schema or authentication code is
+adopted in this stage.
