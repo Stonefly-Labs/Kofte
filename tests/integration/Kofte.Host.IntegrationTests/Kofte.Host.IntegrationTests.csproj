@@ -12,5 +12,6 @@
         <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />
         <ProjectReference Include="../../../src/Kofte.Host/Kofte.Host.csproj" />
         <ProjectReference Include="../Kofte.TestSupport/Kofte.TestSupport.csproj" />
+        <ProjectReference Include="../../contract/Kofte.Identity.Consumer/Kofte.Identity.Consumer.csproj" ReferenceOutputAssembly="false" />
     </ItemGroup>
 </Project>

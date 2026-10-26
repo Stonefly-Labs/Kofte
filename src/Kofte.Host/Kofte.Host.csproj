@@ -4,6 +4,7 @@
         <ProjectReference Include="../Kofte.Infrastructure/Kofte.Infrastructure.csproj" />
         <InternalsVisibleTo Include="Kofte.Host.IntegrationTests" />
         <InternalsVisibleTo Include="Kofte.TestSupport" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
         <PackageReference Include="Microsoft.Data.Sqlite" />
         <PackageReference Include="Npgsql" />

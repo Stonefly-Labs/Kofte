@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "reviewDate": "2026-10-22",
-  "scope": "Specs 001-003 reviewed locked dependency graph; not feature acceptance",
+  "reviewDate": "2026-10-26",
+  "scope": "Specs 001-005 reviewed locked dependency graph; not feature acceptance",
   "npm": {
     "@adobe/css-tools@4.5.0": {
       "name": "@adobe/css-tools",
@@ -3831,6 +3831,21 @@
       },
       "notices": {}
     },
+    "microsoft.aspnetcore.authentication.openidconnect@10.0.13": {
+      "name": "Microsoft.AspNetCore.Authentication.OpenIdConnect",
+      "version": "10.0.13",
+      "license": "MIT",
+      "source": "https://api.nuget.org/v3-flatcontainer/microsoft.aspnetcore.authentication.openidconnect/10.0.13/microsoft.aspnetcore.authentication.openidconnect.10.0.13.nupkg",
+      "integrity": "dlyqhtVS6t6IeVvpxV8RuTQzrAFedkKbDoIbKbwjSmTimR4X/OxKvt+jwKLk8Qw/lqvoSQUl8iHLCO9CUCCH8A==",
+      "notices": {
+        "THIRD-PARTY-NOTICES.TXT": "307d014f65d8482314f1400ddeae7a0cbabb96c2207bcc77f6233cc10588e5d9"
+      },
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "4099f83977f4d29604a9aeb971fb0a7bc1d5f699"
+      }
+    },
     "microsoft.aspnetcore.mvc.testing@10.0.13": {
       "name": "Microsoft.AspNetCore.Mvc.Testing",
       "version": "10.0.13",
@@ -3890,6 +3905,21 @@
       "notices": {
         "LICENSE.TXT": "d7a68596ab69b06f51ca278a6545148e4269a9381c26d597c13df5d88e08cf5b",
         "THIRD-PARTY-NOTICES.TXT": "a6344bfb229bc08d1071cec400eea216e307439f961c5943ec1b56d2245acb95"
+      }
+    },
+    "microsoft.bcl.cryptography@10.0.2": {
+      "name": "Microsoft.Bcl.Cryptography",
+      "version": "10.0.2",
+      "license": "MIT",
+      "source": "https://api.nuget.org/v3-flatcontainer/microsoft.bcl.cryptography/10.0.2/microsoft.bcl.cryptography.10.0.2.nupkg",
+      "integrity": "LG9Yll3B5aNpxv0+D47g6LiOiKBIlodhcHdQwcYzo8VeexFLGqx5ymetmA2aBRyo9cCcWsQWrFsdbsr8LvmWDw==",
+      "notices": {
+        "THIRD-PARTY-NOTICES.TXT": "6d15e10a101c6bfff2ab4429ed061bf76c456fc4b23ad6b03e0d0f8377148a21"
+      },
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/dotnet/dotnet",
+        "commit": "44525024595742ebe09023abe709df51de65009b"
       }
     },
     "microsoft.codecoverage@18.11.0": {
@@ -4462,6 +4492,84 @@
         "THIRD-PARTY-NOTICES.TXT": "6d15e10a101c6bfff2ab4429ed061bf76c456fc4b23ad6b03e0d0f8377148a21"
       }
     },
+    "microsoft.identitymodel.abstractions@8.19.2": {
+      "name": "Microsoft.IdentityModel.Abstractions",
+      "version": "8.19.2",
+      "license": "MIT",
+      "source": "https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.abstractions/8.19.2/microsoft.identitymodel.abstractions.8.19.2.nupkg",
+      "integrity": "HJbo/lnSfNHUfphPRT910poQc4T2/9+8svFLvzuaYHGAOJ2Tu+oEDqpX0BVP3BJ4OuUM1kylEKyaiX2fCAK3Cw==",
+      "notices": {},
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet",
+        "commit": "25d90ed3f48854036d444541a049089ccd198707"
+      }
+    },
+    "microsoft.identitymodel.jsonwebtokens@8.19.2": {
+      "name": "Microsoft.IdentityModel.JsonWebTokens",
+      "version": "8.19.2",
+      "license": "MIT",
+      "source": "https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.jsonwebtokens/8.19.2/microsoft.identitymodel.jsonwebtokens.8.19.2.nupkg",
+      "integrity": "ui3fuBT4fs8kdKfBthI4NzLYIBIneEVS8UrL1JVBzAn80UiKmngBBi0BEByE7n/9c+EElcfFlCMFFTqpkBSLNA==",
+      "notices": {},
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet",
+        "commit": "25d90ed3f48854036d444541a049089ccd198707"
+      }
+    },
+    "microsoft.identitymodel.logging@8.19.2": {
+      "name": "Microsoft.IdentityModel.Logging",
+      "version": "8.19.2",
+      "license": "MIT",
+      "source": "https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.logging/8.19.2/microsoft.identitymodel.logging.8.19.2.nupkg",
+      "integrity": "r5YLDIxGOnkVJHrqXv/iD1FM1CgGrQOdriXuvuWvTPmKbnGANhEysq9XKmN6IHjf2a+9bAGEpnoRBsAQlvJU5w==",
+      "notices": {},
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet",
+        "commit": "25d90ed3f48854036d444541a049089ccd198707"
+      }
+    },
+    "microsoft.identitymodel.protocols.openidconnect@8.19.2": {
+      "name": "Microsoft.IdentityModel.Protocols.OpenIdConnect",
+      "version": "8.19.2",
+      "license": "MIT",
+      "source": "https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.protocols.openidconnect/8.19.2/microsoft.identitymodel.protocols.openidconnect.8.19.2.nupkg",
+      "integrity": "1XOcyY36cVymzE3qKdzKaUEZ4Pzt7ZpSa14JZoPPK1NLFUkQDs85TCqpV6XDo0YjFXj6nVK00AfOHppjghjhtw==",
+      "notices": {},
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet",
+        "commit": "25d90ed3f48854036d444541a049089ccd198707"
+      }
+    },
+    "microsoft.identitymodel.protocols@8.19.2": {
+      "name": "Microsoft.IdentityModel.Protocols",
+      "version": "8.19.2",
+      "license": "MIT",
+      "source": "https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.protocols/8.19.2/microsoft.identitymodel.protocols.8.19.2.nupkg",
+      "integrity": "sGxSsSrZXNmca6D+jHH2rVRyo2nNRd/g4H9CFbPmLLq0xgoH1U0orLWE5minfijw7+zq49tBs7txenbfAErRoQ==",
+      "notices": {},
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet",
+        "commit": "25d90ed3f48854036d444541a049089ccd198707"
+      }
+    },
+    "microsoft.identitymodel.tokens@8.19.2": {
+      "name": "Microsoft.IdentityModel.Tokens",
+      "version": "8.19.2",
+      "license": "MIT",
+      "source": "https://api.nuget.org/v3-flatcontainer/microsoft.identitymodel.tokens/8.19.2/microsoft.identitymodel.tokens.8.19.2.nupkg",
+      "integrity": "GtPC1S02uH1gOO4fQ+zRysIicKmEXaYFP8PIkdJYXqMyruYhopre4ozVHp0XiDSA0+GJvOZH9prxCPvgBMg4Ww==",
+      "notices": {},
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet",
+        "commit": "25d90ed3f48854036d444541a049089ccd198707"
+      }
+    },
     "microsoft.net.test.sdk@18.11.0": {
       "name": "Microsoft.NET.Test.Sdk",
       "version": "18.11.0",
@@ -4786,6 +4894,19 @@
         "THIRD-PARTY-NOTICES.TXT": "6d15e10a101c6bfff2ab4429ed061bf76c456fc4b23ad6b03e0d0f8377148a21"
       }
     },
+    "system.identitymodel.tokens.jwt@8.19.2": {
+      "name": "System.IdentityModel.Tokens.Jwt",
+      "version": "8.19.2",
+      "license": "MIT",
+      "source": "https://api.nuget.org/v3-flatcontainer/system.identitymodel.tokens.jwt/8.19.2/system.identitymodel.tokens.jwt.8.19.2.nupkg",
+      "integrity": "gqhDC/icByKEutygpr+OFgAmjwTVowyzFjWB8K0q1ww8uFj5a1BQNL+QvijUl9uhq4p8OdDwcAIrjVC+eC9FVA==",
+      "notices": {},
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet",
+        "commit": "25d90ed3f48854036d444541a049089ccd198707"
+      }
+    },
     "system.security.accesscontrol@6.0.1": {
       "name": "System.Security.AccessControl",
       "version": "6.0.1",
@@ -4938,7 +5059,7 @@
     "nugetAuditVulnerabilities": 0,
     "npmVerifiedRegistrySignatures": 310,
     "npmVerifiedAttestations": 128,
-    "nugetVerifiedSignaturesLinux": 78,
+    "nugetVerifiedSignaturesLinux": 87,
     "nugetNativeMacVerification": "unsupported; failed platform trust chains, not bypassed",
     "linuxVerifier": "mcr.microsoft.com/dotnet/sdk@sha256:0d99ebf1ccad15037b5c98c9fe8979d6b8dbac23812feae2277a0b277b5c5ffa"
   },

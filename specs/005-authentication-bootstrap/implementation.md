@@ -1,6 +1,6 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** in progress; original source-provenance blocker resolved, T002 adoption pending.
+**Result:** in progress; T001-T010 complete (10/100), no working login yet.
 **Stage / date:** implement, 2026-10-26.
 **Assessed baseline:** `6df9eebdcfa6b273126b0c51c272d1b2c2f953e6`.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
@@ -9,8 +9,9 @@
 
 The initial blocked assessment below is retained as history. The
 [source-provenance follow-up](#t002-follow-up-source-provenance-resolved)
-resolves that blocker and resumes the original implement stage; it does not
-complete T002, adopt a package or implement authentication.
+resolves that blocker and resumes the original implement stage. The later
+adoption and setup sections record the actual code increments; authentication
+is not yet wired or accepted.
 
 ## T001: prerequisites and integration boundaries
 
@@ -337,3 +338,145 @@ failures, not converted into passes by this investigation.
 
 Publication and latest-head CI outcomes are recorded in the same draft PR #8.
 No readiness change or merge is requested.
+
+## T002: actual dependency adoption
+
+The subsequent implement invocation adopts the reviewed OIDC 10.0.13
+reference, seven IdentityModel 8.19.2 pins and Bcl.Cryptography 10.0.2.
+Exactly nine identities enter the restored graph; the complete reviewed union
+is now 403 npm / 87 NuGet. A separate byte comparison confirms every new
+restored `.nupkg` is identical to the source-reviewed, signature-verified
+candidate. Original archive notices remain intact and inventory-reconciled;
+no source copy or change to the existing source-copy notices is introduced.
+
+| Executed T002 command/check | Actual result |
+| --- | --- |
+| `dotnet restore Kofte.slnx --force-evaluate` | Passed; locks regenerated through NuGet. |
+| `dotnet restore Kofte.slnx --locked-mode` | Passed for all thirteen projects. |
+| `dotnet build Kofte.slnx -c Release --no-restore --nologo` | Passed; zero warnings/errors. |
+| `dotnet list Kofte.slnx package --vulnerable --include-transitive --format json --no-restore` | Passed; thirteen projects, zero vulnerable direct/transitive packages and no reported audit problems. |
+| `python3 scripts/check_dependencies.py --prepare-bundled-evidence` | Passed; complete 403 npm / 87 NuGet inventory, locks, provenance, archive integrity and notices. |
+| `dotnet test tests/unit/Kofte.Host.Tests/Kofte.Host.Tests.csproj -c Release --no-build --no-restore --nologo` | Passed: 192 tests, zero failures/skips. |
+| `dotnet format Kofte.slnx --verify-no-changes --no-restore --verbosity quiet` | Passed. |
+
+All .NET commands selected the existing isolated SDK 10.0.402/runtime 10.0.13.
+**T002 is complete.** This adds a package reference, not login, sessions,
+enrollment or any other authentication behavior. Dependent work may now begin;
+the active implement stage remains incomplete.
+
+## T003-T006: executable independent test setup
+
+The separately compiled identity consumer is in the solution and referenced
+only by test projects. Five actual invalid/unimplemented invocation cases
+exit nonzero with zero assertions and safe failure JSON; no public scenario
+is falsely implemented. Actor probing is the dependent T009 work.
+
+The independent HTTPS issuer has its own ephemeral private CA, RSA signing
+key, discovery/JWKS/code/token endpoints, confidential-client checks, PKCE,
+nonce-bound independently signed JWTs and consumed authorization codes.
+Its CA is trusted only by the fixture-created client handler; an ordinary
+client rejects it. Bad issuer/audience/signature/algorithm/time/nonce
+variants and safe operation observations are test-owned, not product flags.
+
+The process fixture reuses the accepted owned roots, provider scope and
+process/descendant cleanup. Private one-use files admit test children.
+A test-owned native .NET startup hook installs an observer on diagnostic
+commit phases; atomic private reached/release records avoid touching public
+routes or supervisor IPC. No test hook or control reader is referenced by
+production. Actual host-store commit/interruption evidence remains dependent
+foundation/story work, not a claim made by the fixture readiness probe.
+
+The independent C#/TypeScript corpora freeze route, credential, CSRF, exact
+return-path, signed-evidence, capacity, rate, size, lifetime and checked-counter
+expectations. These are acceptance inputs, not executed product cases.
+
+| Executed setup check | Actual result |
+| --- | --- |
+| Initial issuer tests before fixture implementation | Red: missing `OidcIssuer` compilation errors. |
+| Initial private barrier tests | Red: non-atomic publication let readers race a still-open reached file; fixed with private write/flush/close/atomic rename. |
+| `dotnet test tests/integration/Kofte.Host.IntegrationTests/Kofte.Host.IntegrationTests.csproj -c Release --no-restore --filter 'FullyQualifiedName~IdentityFixtureTests\|FullyQualifiedName~OidcIssuerTests' --nologo` | Passed: four tests, zero skips; actual HTTPS exchange, key signature/nonce, client/PKCE/replay refusal, private phase hold/release and verified real child exit before owned-root deletion. |
+| `dotnet build Kofte.slnx -c Release --no-restore --nologo` | Passed; fourteen projects, zero warnings/errors. |
+| `dotnet restore Kofte.slnx --locked-mode` | Passed; new test project locks reconciled, no new package identity. |
+| `./node_modules/.bin/tsc --strict --noEmit --skipLibCheck --types node --target ES2022 --moduleResolution bundler --module esnext tests/contract/identity-corpus.ts` | Passed. |
+| `./node_modules/.bin/prettier --check tests/contract/identity-corpus.ts` | Passed. |
+| `./node_modules/.bin/eslint tests/contract/identity-corpus.ts` | Passed. |
+
+An attempted `tsc -p tests/contract/tsconfig.json` did not run a type check
+because that file does not exist. The succeeding command above uses the
+documented package's existing compiler flags and the exact new file.
+
+### Additional published-head CI baseline evidence
+
+Run `40409807625`, integration-postgres job `121877224218`, failed in
+`composition-integration-postgres`; host/storage PostgreSQL phases passed.
+The preserved artifact identifies
+`PostgresCompositionPreflightTests.AdmissibleUnregisteredServingOwnerRequiresPreparationWithoutAllocating`
+with storage code `Busy`. Its assessed revision is GitHub's merge revision
+`967bd1e3fa4c3493bb3d6ddb901153c11a498e6e`, not new identity implementation.
+No retry or diagnosis converts this into a pass; the older private-diagnostics
+failure remains separately preserved.
+
+## T007-T010: configuration and public actor foundations
+
+The strict configuration component now requires explicit `oidc` or
+`development`, exact public origin/all-loopback internal topology, bounded
+UTF-8 JSON with duplicate/unknown-field rejection, private regular canonical
+no-symlink secret references and a separate key ring outside recovery data.
+Development requires the explicit Development environment and one to eight
+exact synthetic identities. OIDC requires exact HTTPS endpoints/network
+allowlists, private secret files and a matching RSA PEM certificate/private
+key. Neither parsing nor stopped revocation contacts discovery/the IdP.
+Revocation validates only its needed static subset when serving secrets are
+lost. The trust digest preserves exact issuer/client/network/public-origin
+trust and excludes rotatable secret values/display text.
+
+`KOFTE_AUTH_CONFIG_FILE` is the only new bootstrap environment key. Existing
+maintenance forwarding, including composed workers, carries it deliberately.
+This adds a component, **not startup/serving identity wiring** (T021).
+No stopped identity command or HTTP authentication route is delivered yet.
+
+Platform now exposes only the immutable actor-v1, its two-valued mode and
+read-only nullable current-actor interface. The separately compiled probe
+uses those public types; reflection/construction tests reject credential/
+permission payload, mutable properties, an empty user ID or unknown mode.
+It is a trusted in-process contract, never deserialized credential proof.
+
+| Executed foundation-component check | Actual result |
+| --- | --- |
+| Initial configuration and actor tests before production code | Red: missing host identity component and public actor types. |
+| `dotnet test tests/unit/Kofte.Host.Tests/Kofte.Host.Tests.csproj -c Release --no-restore --filter FullyQualifiedName~IdentityConfigurationTests --nologo` | Passed: 35 introduced configuration cases, zero skips. |
+| `dotnet test tests/unit/Kofte.Host.Tests/Kofte.Host.Tests.csproj -c Release --no-restore --nologo` | Passed: all 227 host unit tests, zero failures/skips. |
+| `dotnet test tests/contract/Kofte.Platform.ContractTests/Kofte.Platform.ContractTests.csproj -c Release --no-restore --filter FullyQualifiedName~ActorContractTests --nologo` | Passed: three actor cases, zero skips. |
+| Four fixture integration cases rerun after shared private-file extraction | Passed: four tests, zero skips. |
+| `python3 scripts/check_repository.py` | Passed. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed: all 121 tests. |
+| `git diff --check` | Passed. |
+
+No product schema, operator command, login, enrollment, session policy or web
+UI is claimed complete by these component results. The active implement stage
+and original draft PR remain open; T011-T100 are still required.
+
+### Publication quality correction and operation-subset regression
+
+The first `python3 scripts/verify.py --suite quality` attempt failed at
+`dotnet-format` on introduced test/fixture initializer whitespace. The SDK
+formatter corrected those files; Prettier restored the affected contract
+lock-file formatting. The SDK solution tool keeps the new consumer at the
+solution root, matching existing projects.
+
+The subsequent **full quality suite passed all twenty steps**, including
+repository/Python/whitespace checks, locked restore, .NET format/build,
+npm restore, Prettier, ESLint, TypeScript, contract generation, workspace
+builds and dependency review. This does not claim integration, browser or
+complete identity acceptance.
+
+A further focused regression validates bootstrap authorization's offline
+subset: it succeeds without the provider client secret, but refuses a
+mismatching private key or missing protection certificate. The exact focused
+configuration command above now passes **36 cases, zero skips**, and
+`dotnet format Kofte.slnx --verify-no-changes --no-restore --verbosity quiet`
+plus `git diff --check` pass after that addition. It exercises only the
+configuration component, not a delivered bootstrap authorization command.
+
+The complete host unit command above was then rerun: **228 tests passed,
+zero failures/skips**.

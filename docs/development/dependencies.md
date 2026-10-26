@@ -28,10 +28,35 @@ All nine candidate archives also passed `dotnet nuget verify --all` in the
 previously reviewed immutable Linux SDK image, with zero warnings/errors and
 normal online trust/revocation checks. Exact artifacts, source pins, hashes,
 checkout-byte handling and scope are recorded in the implementation report.
-This approves the investigated source/license evidence, not package adoption.
-The restored actual graph, pins/locks/inventory, current advisory audit and
-compatibility checks remain T002 work. No adopted dependency inventory,
-notice, package reference, version or runtime behavior changed.
+That investigation approved source/license evidence, not package adoption.
+The subsequent actual adoption below completes the remaining T002 gates.
+
+## Spec 005 OIDC dependency adoption
+
+**Review date:** 2026-10-26. The host now references
+`Microsoft.AspNetCore.Authentication.OpenIdConnect` 10.0.13, with all seven
+IdentityModel identities pinned to 8.19.2 and Bcl.Cryptography to 10.0.2.
+The actual restored union is **403 npm / 87 NuGet identities**: exactly the
+nine reviewed candidates above are added to the previous 78 NuGet identities.
+No minimum transitive version or unreviewed identity slipped into the graph.
+
+All nine restored signed archives are byte-identical to the candidates whose
+source/license and Linux signatures were verified. Original OIDC and
+Bcl.Cryptography notices remain in their restored archives and inventory,
+with the previously recorded hashes; the seven IdentityModel archives do not
+ship a separate notice file. Original Microsoft MIT source licenses and the
+source correspondence remain linked in the implementation report.
+No dependency source is copied into the repository, so the existing
+source-copy third-party notice file/checker remains unchanged.
+
+`dotnet restore Kofte.slnx --force-evaluate` and subsequent
+`dotnet restore Kofte.slnx --locked-mode` passed. The dependency checker
+reconciles all project locks, central pins, installed/archive provenance,
+integrity and notices. The actual direct/transitive vulnerability audit
+reports zero vulnerable packages across thirteen projects. The Release
+solution builds with zero warnings/errors, 192 existing host unit tests pass
+with zero skips, and solution formatting passes. This is dependency
+compatibility evidence, not implemented authentication or feature acceptance.
 
 ## Spec 002 project adoption
 

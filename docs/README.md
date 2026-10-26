@@ -14,14 +14,14 @@ The [technology-stack exploration](kofte-technology-stack-architecture.md) is hi
 
 ## Working in the repository
 
-**Current Spec Kit checkpoint: 005 / implement resumed; provenance blocker resolved.**
+**Current Spec Kit checkpoint: 005 / implement in progress, T001–T010 complete.**
 The [implementation evidence](../specs/005-authentication-bootstrap/implementation.md)
-traces the security-advisory-fork SourceLink to verified public source:
-275 net10.0 symbol-document entries match and all nine candidate signatures
-pass. No SSO change or version substitution was needed. Only T001 is complete;
-T002's actual adoption, locks, inventory and compatibility checks remain.
-No dependency or authentication code was adopted; 99 tasks remain unchecked.
-Continue this same stage/branch/draft PR.
+records reviewed OIDC adoption (403 npm / 87 NuGet), independent HTTPS/process
+fixtures and corpora, strict configuration and public actor-v1. The source
+proof remains preserved. There are 90 unchecked tasks; no working login,
+session/enrollment UI or identity recovery is claimed. All 228 host unit,
+three actor contract and four fixture integration cases pass.
+Continue this same stage/branch/draft PR, not converge or acceptance.
 The
 [requirements-quality checklist](../specs/005-authentication-bootstrap/checklists/quality.md)
 satisfies 36/36 criteria after explicitly requested assisted review, with

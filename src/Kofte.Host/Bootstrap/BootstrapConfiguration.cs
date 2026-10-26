@@ -12,8 +12,10 @@ public sealed record BootstrapConfiguration(
     [
         "KOFTE_PROFILE", "KOFTE_HOST_URL", "KOFTE_WEB_URL", "KOFTE_BACKEND_ORIGIN",
         "KOFTE_DATA_ROOT", "KOFTE_POSTGRES_CONNECTION", "KOFTE_ALLOW_UNSAFE_EXPOSURE",
-        "KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE", "KOFTE_MODULES_FILE"
+        "KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE", "KOFTE_MODULES_FILE", "KOFTE_AUTH_CONFIG_FILE"
     ];
+
+    public string? AuthenticationConfigurationFile { get; init; }
 
     public static BootstrapConfiguration FromEnvironment() => Parse(
         Environment.GetEnvironmentVariables().Cast<System.Collections.DictionaryEntry>()
@@ -80,7 +82,10 @@ public sealed record BootstrapConfiguration(
                 export.Scheme is not ("http" or "https") || export.UserInfo.Length != 0)
                 throw new BootstrapException(BootstrapError.ConfigurationInvalid);
         }
-        return new(profile, host, web, backend, Path.GetFullPath(root), connection, unsafeExposure, export);
+        return new(profile, host, web, backend, Path.GetFullPath(root), connection, unsafeExposure, export)
+        {
+            AuthenticationConfigurationFile = env.GetValueOrDefault("KOFTE_AUTH_CONFIG_FILE")
+        };
     }
 
     private static Uri Address(string value, bool allowUnsafe)

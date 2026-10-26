@@ -473,15 +473,18 @@ not one passing provider job. PR #7 is now human-merged; its accepted ledger
 and all five acceptance artifact hashes were verified on updated main before
 005 began. Historical failed checks and undiagnosed causes remain unchanged.
 
-**005 / implement has resumed after resolving its provenance blocker** on
+**005 / implement has completed T001–T010, not the feature**, on
 `feature/005-authentication-bootstrap`. The
 [implementation checkpoint](../specs/005-authentication-bootstrap/implementation.md)
-records the security-advisory-fork SourceLink, all 275 net10.0 source-document
-matches and passing cryptographic signatures for all nine candidates.
-No SSO change, package substitution, architecture decision or gate waiver was
-needed. Only T001 is complete; T002's actual adoption, locks, inventory and
-compatibility checks remain. No package or runtime code changed; 99 tasks
-remain unchecked.
+retains the source/signature investigation and records the adopted maintained
+OIDC dependency, independent test issuer/ownership/corpora, strict static
+configuration and public actor-v1. Actor identity is immutable and carries
+no credential, database handle or permission grant. Parsing admits only the
+documented configuration modes and private bounded references, with a
+trust digest excluding display text and rotatable secret material.
+Serving is not wired to identity yet: format-2 storage, default-deny policies,
+sessions, login/enrollment and recovery remain dependent work (90 tasks).
+The new component/fixture checks pass; no end-to-end authentication is claimed.
 
 The completed specify-through-analyze history below is retained on
 `feature/005-authentication-bootstrap`. Its

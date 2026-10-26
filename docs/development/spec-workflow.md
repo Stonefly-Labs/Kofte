@@ -6,18 +6,19 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement resumed; source-provenance blocker resolved**, on
+**Current checkpoint: 005 / implement in progress; T001–T010 complete (10/100)**, on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 [implementation record](../../specs/005-authentication-bootstrap/implementation.md)
-preserves the initial 404/SAML failures and resolves source provenance through
-the security-advisory-fork SourceLink, verified public source for all 275
-net10.0 document entries, and passing signatures for all nine candidate
-packages. No SSO change, version substitution or gate waiver was needed.
-The driver resumed the original stage; no second run or later stage began.
-Only T001 is complete; T002-T100 remain unchecked. T002 still requires actual
-adoption, locks, inventory, current advisories and compatibility checks before
-dependent tasks. No package or authentication code was adopted.
+preserves the initial 404/SAML failures and their resolved provenance proof.
+The actual OIDC package and closure are now adopted, centrally pinned,
+locked and inventory-reconciled at 403 npm / 87 NuGet. The independent HTTPS
+issuer, owned process/commit-barrier support, frozen acceptance corpora,
+strict configuration and immutable public actor-v1 are implemented.
+All 228 host unit tests, three actor contract cases and four fixture cases
+pass. These are component proofs, not functioning login, enrollment, UI or
+recovery. Ninety implementation tasks remain unchecked.
+The original stage is still running; no second run or later stage began.
 Use `SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap` on downstream
 commands, keep the same draft PR #8 and do not begin a second run or advance to
 converge. No intermediate merge or feature acceptance is requested.
