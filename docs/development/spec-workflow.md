@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement in progress; T001–T010 complete (10/100)**, on
+**Current checkpoint: 005 / implement blocked; T001–T013 complete (13/100)**, on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 [implementation record](../../specs/005-authentication-bootstrap/implementation.md)
@@ -15,10 +15,16 @@ The actual OIDC package and closure are now adopted, centrally pinned,
 locked and inventory-reconciled at 403 npm / 87 NuGet. The independent HTTPS
 issuer, owned process/commit-barrier support, frozen acceptance corpora,
 strict configuration and immutable public actor-v1 are implemented.
-All 228 host unit tests, three actor contract cases and four fixture cases
-pass. These are component proofs, not functioning login, enrollment, UI or
-recovery. Ninety implementation tasks remain unchecked.
-The original stage is still running; no second run or later stage began.
+Real SQLite/PostgreSQL format-2 migration and exact v1/v2 verification now
+preserve installation/module IDs, assignments, markers, populated EF history,
+module data and registry revision totals. Constraint/physical tampering,
+rollback, idempotence, v0/unknown formats and foreign scopes are tested.
+The next store-execution gate is blocked by reproduced one-second timeout
+incompatibility; rounding up with cancellation overran the SQLite budget.
+Resolve that engineering issue without a timeout waiver before T014.
+These are foundations, not functioning login, enrollment, UI or recovery.
+Eighty-seven tasks remain unchecked. The original stage is blocked, not
+completed; no second run or later stage began.
 Use `SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap` on downstream
 commands, keep the same draft PR #8 and do not begin a second run or advance to
 converge. No intermediate merge or feature acceptance is requested.

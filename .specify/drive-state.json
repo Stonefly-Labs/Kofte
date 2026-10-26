@@ -29,9 +29,9 @@
     "spec": "005",
     "step": "implement",
     "directory": "specs/005-authentication-bootstrap",
-    "status": "running",
+    "status": "blocked",
     "branch": "feature/005-authentication-bootstrap",
-    "reason": "",
+    "reason": "T014 cannot safely reuse the shared one-second store budget: CommandSeconds floors the first command to zero; rounding up to one second with cancellation took 1317 ms under a real SQLite exclusive lock. Implement and verify deadline-safe store execution under the unchanged one-second local/four-second callback limits before identity mutations or serving wiring. T001-T013 are complete; T014-T100 remain unchecked.",
     "started_at": "2026-10-26T21:30:18+00:00"
   },
   "history": [

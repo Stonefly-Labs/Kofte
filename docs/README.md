@@ -14,14 +14,16 @@ The [technology-stack exploration](kofte-technology-stack-architecture.md) is hi
 
 ## Working in the repository
 
-**Current Spec Kit checkpoint: 005 / implement in progress, T001–T010 complete.**
+**Current Spec Kit checkpoint: 005 / implement blocked, T001–T013 complete.**
 The [implementation evidence](../specs/005-authentication-bootstrap/implementation.md)
 records reviewed OIDC adoption (403 npm / 87 NuGet), independent HTTPS/process
-fixtures and corpora, strict configuration and public actor-v1. The source
-proof remains preserved. There are 90 unchecked tasks; no working login,
-session/enrollment UI or identity recovery is claimed. All 228 host unit,
-three actor contract and four fixture integration cases pass.
-Continue this same stage/branch/draft PR, not converge or acceptance.
+fixtures and corpora, strict configuration/public actor-v1, and both-provider
+format-2 migration with exact physical verification and real data/history
+preservation. The next store-execution gate is blocked by reproduced one-second
+timeout incompatibility; simple rounding/cancellation is not safe on SQLite.
+There are 87 unchecked tasks; no working login, operator preparation,
+session/enrollment UI or identity recovery is claimed.
+Resolve the deadline gate in the same stage/branch/draft PR, not converge or acceptance.
 The
 [requirements-quality checklist](../specs/005-authentication-bootstrap/checklists/quality.md)
 satisfies 36/36 criteria after explicitly requested assisted review, with

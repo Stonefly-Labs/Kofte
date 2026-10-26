@@ -473,7 +473,7 @@ not one passing provider job. PR #7 is now human-merged; its accepted ledger
 and all five acceptance artifact hashes were verified on updated main before
 005 began. Historical failed checks and undiagnosed causes remain unchanged.
 
-**005 / implement has completed T001–T010, not the feature**, on
+**005 / implement has completed T001–T013, not the feature**, on
 `feature/005-authentication-bootstrap`. The
 [implementation checkpoint](../specs/005-authentication-bootstrap/implementation.md)
 retains the source/signature investigation and records the adopted maintained
@@ -482,9 +482,19 @@ configuration and public actor-v1. Actor identity is immutable and carries
 no credential, database handle or permission grant. Parsing admits only the
 documented configuration modes and private bounded references, with a
 trust digest excluding display text and rotatable secret material.
-Serving is not wired to identity yet: format-2 storage, default-deny policies,
-sessions, login/enrollment and recovery remain dependent work (90 tasks).
-The new component/fixture checks pass; no end-to-end authentication is claimed.
+The stopped, caller-transaction-owned migration now evolves format-1 constraints
+and creates all eight identity tables without editing migration 1 or changing
+module assignments/revisions/history/data. Frozen OID-independent native-catalog
+fingerprints verify actual v1/v2 physical definitions, including constraints,
+collations, indexes, triggers, routines, defaults and generated objects.
+Existing reconciliation/composition inventory consumers share that verifier.
+Recovery-v1 is not broadened to accept format 2.
+Serving is not wired to identity yet. T014 is blocked: the shared one-second
+budget refuses its first command, while rounding up plus SQLite cancellation
+overran the budget in a real lock experiment. Deadline-safe store execution
+must preserve the approved one-second local/four-second callback limits.
+Metadata/operations, default denial, sessions, login/enrollment and recovery
+remain dependent work (87 tasks); no end-to-end authentication is claimed.
 
 The completed specify-through-analyze history below is retained on
 `feature/005-authentication-bootstrap`. Its

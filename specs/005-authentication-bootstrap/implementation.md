@@ -1,6 +1,6 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** in progress; T001-T010 complete (10/100), no working login yet.
+**Result:** blocked at T014's deadline integration gate; T001-T013 complete (13/100), no working login yet.
 **Stage / date:** implement, 2026-10-26.
 **Assessed baseline:** `6df9eebdcfa6b273126b0c51c272d1b2c2f953e6`.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
@@ -480,3 +480,136 @@ configuration component, not a delivered bootstrap authorization command.
 
 The complete host unit command above was then rerun: **228 tests passed,
 zero failures/skips**.
+
+## T011-T013: exact versioned identity storage format
+
+Provider-specific migration 2 creates the eight model tables, deterministic
+external keys, matching-mode user/session/designation foreign keys, checked
+counters, nullable-state combinations, bounded enums and indexes. A fixed
+`initial_user_mode = 'oidc'` FK component prevents a development user from
+becoming the production designation. Installation-retained evidence cannot
+be updated/deleted; session-class pruning remains later owner-operation work.
+
+The original installation/history version-1 CHECKs forbid a simple append.
+SQLite therefore transactionally rebuilds those two metadata tables, restoring
+the same final names and accepted triggers; PostgreSQL transactionally evolves
+the version constraints and restores the immutable installation trigger.
+All existing rows/IDs/timestamps survive. The original migration-1 sources
+remain byte-identical:
+
+| Provider | SHA-256 |
+| --- | --- |
+| SQLite | `5d33f7aaa2c2c1af379af08816fc67dce412f53f538709adb9c233ebc43a4809` |
+| PostgreSQL | `c129c9ab66618acd157ac7e4114073228463fa3880dbe1da4f863ce05648de6e` |
+
+`ApplyIdentityFormatAsync` requires the existing owned stopped scope and a
+caller-owned transaction. It preflights exact v1/v2, applies migration/history,
+verifies unchanged installation identity/module revision total, and leaves
+commit to its caller. This allows T017 to include initial identity metadata/
+disabled bootstrap in the same store transaction; no operator prepare command
+or usable identity key ring is delivered here.
+
+`RegistryPhysicalFormat` compares frozen OID/data-independent native-catalog
+fingerprints for each provider/version, not a learned runtime baseline.
+SQLite fingerprints actual table/index/trigger/view SQL; PostgreSQL includes
+relation/column definitions, types/collations/nullability/defaults/generation,
+PK/FK/UNIQUE/CHECK definitions/validation, indexes, internal/explicit trigger
+configuration, routines, rules and policies. Actual table inventories and
+ordered source digests are also checked separately. Foreign-key integrity and
+SQLite integrity/user version are verified. No arbitrary-extra-table fallback
+is introduced. Registration validation explicitly admits supported v1/v2 while
+module allocator/markers remain version 1. Existing reconciliation/composition
+inventory readers already share this runner, so no duplicate path is added.
+Recovery-v1 manifest validation still requires actual format 1.
+
+Preflight also refuses unowned objects in table-free v0 *before* allocating
+registry state. An independently inserted view remains intact after refusal.
+
+### Real-provider evidence
+
+The new tests exercise actual owned SQLite/PostgreSQL. They preserve exact
+installation/registration/allocation/marker/revision snapshots, execute the
+existing module-owned EF migrations `202610210001_Initial` and
+`202610210002_AddNote`, and verify their populated history plus exact retained
+row ID/payload/note after upgrade. They check rollback/idempotence, v0/unknown
+formats, foreign scope refusal and the exact eleven-table inventory.
+Independent SQL tests exercise case-sensitive keys, cross-mode FK refusal,
+Unicode display bounds/controls, invalid nullable states, checked overflow
+and installation-event immutability. Individual physical mutations remove
+CHECK/FK/UNIQUE/nullability/index guarantees or add a table/view/default/
+generated column/trigger/routine, or alter collation/history; each refuses
+without repair.
+
+| Command/check actually executed | Result |
+| --- | --- |
+| Initial `--filter FullyQualifiedName~IdentityFormatTests` before runner implementation | Red: missing `ApplyIdentityFormatAsync` compilation errors. |
+| Initial 20-case execution | 18 passed; two preservation assertions used reference equality for `StorageAssignment`; corrected to the existing complete value snapshot, not weakened to counts. |
+| `dotnet test tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj -c Release --no-restore --filter 'FullyQualifiedName~IdentityFormatTests\|FullyQualifiedName~RegistryFormatTests' --nologo` | Passed 44 cases, zero failures/skips, after adding independent physical/native constraint coverage. |
+| `dotnet test tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj -c Release --no-restore --filter 'FullyQualifiedName~IdentityFormatTests&FullyQualifiedName~UnknownVersion\|FullyQualifiedName~IdentityFormatTests&FullyQualifiedName~ForeignStoppedScope' --nologo` | Passed four further cases, zero failures/skips. |
+| `dotnet test tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj -c Release --no-restore --filter 'FullyQualifiedName~IdentityFormatTests.FormatTwoPreserves\|FullyQualifiedName~RegistryConstraintTests\|FullyQualifiedName~StorageMaintenanceDiagnosticsTests\|FullyQualifiedName~CompositionPreflightTests' --nologo` | Passed 74 cases, zero failures/skips; includes the strengthened nonempty EF-history/data preservation and dependent both-provider registry/composition/diagnostics regressions. |
+| `shasum -a 256 src/Kofte.Infrastructure/Storage/Registry/Migrations/Sqlite/001_registry.sql src/Kofte.Infrastructure/Storage/Registry/Migrations/Postgres/001_registry.sql` | Passed: the two immutable values above. |
+
+PostgreSQL commands explicitly set
+`KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true`; test ownership/cleanup is unchanged.
+Native catalog measurements used disposable owned databases; the temporary
+measurement harness was removed after freezing the reviewed catalog values.
+These results do not prove T022's complete foundation gate, working login,
+recovery-v2 or a delivered operator preparation workflow.
+
+## Current blocker: deadline-safe store execution before T014
+
+The approved local identity work budget is **one second**, within the unchanged
+four-second callback envelope. The accepted shared `OperationBudget.CommandSeconds`
+floors remaining seconds and refuses values below one. Since even a fresh
+one-second budget immediately has less than one second remaining, it rejects
+its first command; `StorageInstallation.OpenPlatformAsync` uses that helper.
+Reusing it would make every identity-store operation fail before useful work.
+
+Two actual disposable probes were executed with:
+
+```text
+dotnet test tests/unit/Kofte.Host.Tests/Kofte.Host.Tests.csproj -c Release --no-restore --filter FullyQualifiedName~IdentityBudgetProbeTests --nologo
+```
+
+The unmodified helper immediately threw `OperationCanceledException`.
+The alternative probe allowed a rounded one-second native command, after
+250 ms of the same one-second budget, while a separately owned SQLite
+connection held `BEGIN EXCLUSIVE`. Although cancellation fired at one second,
+the native command returned after **1,317 ms**. Rounding up plus cancellation
+therefore does not preserve the approved total budget.
+
+The probes deliberately failed to report those measurements, not to represent
+passing feature tests. Their temporary source was removed from the test project
+and retained only as a session investigation artifact; no probe is skipped,
+made falsely green or included in shipping tests. Both connections/transaction
+and their owned root were disposed. Product timeout code is unchanged.
+
+With Learn/Context7 MCP unavailable, official Microsoft documentation confirms
+[synchronous SQLite async APIs](https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/async)
+and [automatic busy retries/integer command timeouts](https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/database-errors).
+Zero means unbounded, not fail-fast. No timeout increase, background orphan
+operation, zero-timeout fallback, journal-mode change or speculative native
+adapter is adopted.
+
+**Implement is blocked, not complete.** Resolve and independently test a
+deadline-safe execution/transaction mechanism under the original one-second
+local/four-second callback limits, including real contention, rollback/commit
+uncertainty and cleanup, then resume T014 on this branch/PR. This is engineering
+work, not a credential, SSO or merge request. T014-T100 (87 tasks) remain
+unchecked. No later stage, human acceptance or working authentication is claimed.
+
+### Final blocked-checkpoint verification
+
+After removing the disposable probes, `python3 scripts/verify.py --suite quality`
+passed all twenty steps. The rebuilt shipping host unit assembly then passed
+`dotnet test tests/unit/Kofte.Host.Tests/Kofte.Host.Tests.csproj -c Release --no-build --no-restore --nologo`:
+**228 passed, zero failures/skips**, with neither investigation probe present.
+The final native-routine guard avoids trying to render an unexpected aggregate
+as a normal function; the fixed fingerprints for legitimate formats are
+unchanged. Its explicit function/aggregate refusal check,
+`dotnet test tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj -c Release --no-restore --filter FullyQualifiedName~UnexpectedNative --nologo`,
+passed two cases, zero skips. Final solution format verification passed.
+`python3 scripts/check_repository.py`, the exact required
+`python3 -m unittest discover -s scripts/tests -v` (**121 passed**) and
+`git diff --check` also passed. These green shipping-code checks do not erase
+the failed deadline experiments or complete the blocked identity-store work.

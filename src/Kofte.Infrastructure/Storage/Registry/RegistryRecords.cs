@@ -17,7 +17,7 @@ internal sealed record RegistrationRecord(ModuleId Owner, bool Relational, strin
 
     internal void Validate(InstallationRecord installation)
     {
-        if (Provider != installation.Provider || installation.Version != 1 || installation.Id == Guid.Empty ||
+        if (Provider != installation.Provider || installation.Version is not (1 or 2) || installation.Id == Guid.Empty ||
             installation.Revision < 0 || Revision < 1 ||
             State is not ("no_storage" or "reserved" or "ready" or "reconciliation_required") ||
             MigrationState is not ("none" or "in_progress" or "current" or "recovery_required") ||

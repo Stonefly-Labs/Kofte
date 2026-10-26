@@ -329,16 +329,19 @@ That checkpoint required human merge before 005. PR #7 is now human-merged;
 004's accepted ledger and all five acceptance artifact hashes were verified
 on updated main before beginning the new feature.
 
-**005 / implement is in progress with T001–T010 complete (10/100)**, on
+**005 / implement is blocked at bounded store execution, with T001–T013 complete (13/100)**, on
 `feature/005-authentication-bootstrap` and the same draft PR #8.
 The [implementation record](specs/005-authentication-bootstrap/implementation.md)
 preserves the provenance investigation and records actual reviewed OIDC
 adoption (403 npm / 87 NuGet), independent HTTPS/owned-process fixtures and
-corpora, strict configuration and immutable actor-v1. All 228 host unit tests,
-three actor contract cases and four fixture cases pass. Ninety tasks remain;
-storage preparation, serving policy, login/sessions, enrollment, web and
-recovery are not yet delivered. Continue the same implementation stage,
-without an intermediate merge or acceptance claim.
+corpora, strict configuration and immutable actor-v1, plus tested exact
+format-2 migration/v1-v2 verification on SQLite and PostgreSQL. Real module
+assignments, markers, populated EF history/data and registry totals survive.
+The shared timeout helper refuses its first one-second-budget command;
+rounding up with cancellation also exceeded that budget under an actual
+SQLite lock. Resolve deadline-safe execution before T014. Eighty-seven tasks
+remain; operator preparation, serving policy, login/sessions, enrollment,
+web and recovery are not delivered. Preserve the same stage/branch/draft PR.
 
 The completed specify-through-analyze history below remains applicable on
 `feature/005-authentication-bootstrap`. Its

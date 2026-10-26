@@ -16,21 +16,47 @@ internal sealed class RegistryMigrationRunner(StorageInstallation installation)
     private string History => Prefix + "__kofte_registry_migrations";
     private static readonly string[] ExpectedTables =
         ["__kofte_installation", "__kofte_module_registrations", "__kofte_registry_migrations"];
+    private static readonly string[] IdentityTables =
+        ["__kofte_identity_metadata", "__kofte_users", "__kofte_external_identities", "__kofte_login_attempts",
+         "__kofte_sessions", "__kofte_bootstrap", "__kofte_identity_events", "__kofte_identity_admission"];
 
-    internal string Script
+    internal string Script => MigrationScript(1);
+
+    private string MigrationScript(int version)
     {
-        get
+        var provider = installation.Provider == "postgresql" ? "Postgres" : "Sqlite";
+        var name = version switch
         {
-            var provider = installation.Provider == "postgresql" ? "Postgres" : "Sqlite";
-            using var resource = typeof(RegistryMigrationRunner).Assembly.GetManifestResourceStream(
-                $"Kofte.Infrastructure.Storage.Registry.Migrations.{provider}.001_registry.sql")
-                ?? throw new InvalidOperationException("storage_migration_resource_missing");
-            using var reader = new StreamReader(resource);
-            return reader.ReadToEnd();
-        }
+            1 => "001_registry",
+            2 => "002_identity",
+            _ => throw new StorageException(StorageCode.VersionUnsupported)
+        };
+        using var resource = typeof(RegistryMigrationRunner).Assembly.GetManifestResourceStream(
+            $"Kofte.Infrastructure.Storage.Registry.Migrations.{provider}.{name}.sql")
+            ?? throw new InvalidOperationException("storage_migration_resource_missing");
+        using var reader = new StreamReader(resource);
+        return reader.ReadToEnd();
     }
 
     internal string Digest => Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(Script)));
+
+    internal async Task ApplyIdentityFormatAsync(MaintenanceScope scope, DbConnection connection,
+        DbTransaction transaction, OperationBudget budget)
+    {
+        if (transaction.Connection != connection) throw new StorageException(StorageCode.RequestInvalid);
+        await scope.VerifyAsync(installation, budget);
+        var before = await ReadInstallationAsync(connection, budget, transaction);
+        if (before.Version == 2) return;
+        var script = MigrationScript(2);
+        await ExecuteAsync(connection, script, budget, transaction);
+        await ExecuteAsync(connection,
+            $"INSERT INTO {History} (version,sha256,applied_at_utc) VALUES (2,@digest,@created)",
+            budget, transaction, ("digest", Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(script)))),
+            ("created", DateTime.UtcNow));
+        var after = await ReadInstallationAsync(connection, budget, transaction);
+        if (after != before with { Version = 2 }) throw new StorageException(StorageCode.Corrupt);
+        await scope.VerifyAsync(installation, budget);
+    }
 
     internal async Task UpgradeAsync(MaintenanceScope scope, OperationBudget budget, MutationEvidence mutation)
     {
@@ -75,6 +101,9 @@ internal sealed class RegistryMigrationRunner(StorageInstallation installation)
             throw new StorageException(StorageCode.Corrupt);
         if (connection is SqliteConnection)
         {
+            if (await ScalarAsync(connection,
+                "SELECT EXISTS(SELECT 1 FROM sqlite_master WHERE name NOT LIKE 'sqlite_%')", budget) is 1L)
+                throw new StorageException(StorageCode.Corrupt);
             if (await ScalarAsync(connection, "PRAGMA user_version", budget) is not 0L)
                 throw new StorageException(StorageCode.VersionUnsupported);
             var modules = Path.Combine(installation.Root!, "modules");
@@ -83,7 +112,13 @@ internal sealed class RegistryMigrationRunner(StorageInstallation installation)
                 throw new StorageException(StorageCode.ReconciliationRequired);
         }
         else if (await ScalarAsync(connection, """
-            SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_namespace
+            SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c
+                JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='kofte_system')
+              OR EXISTS (SELECT 1 FROM pg_catalog.pg_proc p
+                JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='kofte_system')
+              OR EXISTS (SELECT 1 FROM pg_catalog.pg_type t
+                JOIN pg_catalog.pg_namespace n ON n.oid=t.typnamespace WHERE n.nspname='kofte_system')
+              OR EXISTS (SELECT 1 FROM pg_catalog.pg_namespace
               WHERE nspname !~ '^pg_' AND nspname NOT IN ('information_schema','public','kofte_system'))
               OR EXISTS (SELECT 1 FROM pg_catalog.pg_class c
                 JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public')
@@ -106,12 +141,13 @@ internal sealed class RegistryMigrationRunner(StorageInstallation installation)
             ("created", DateTime.UtcNow), ("digest", Digest));
     }
 
-    private async Task<List<string>> TablesAsync(DbConnection connection, OperationBudget budget)
+    private async Task<List<string>> TablesAsync(DbConnection connection, OperationBudget budget,
+        DbTransaction? transaction = null)
     {
         var query = installation.Provider == "postgresql"
             ? "SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname='kofte_system' ORDER BY tablename"
             : "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name";
-        await using var command = Command(connection, query, budget);
+        await using var command = Command(connection, query, budget, transaction);
         await using var reader = await command.ExecuteReaderAsync(budget.Token);
         var result = new List<string>();
         while (await reader.ReadAsync(budget.Token)) result.Add(reader.GetString(0));
@@ -121,12 +157,14 @@ internal sealed class RegistryMigrationRunner(StorageInstallation installation)
     internal async Task<bool> HasRegistryAsync(DbConnection connection, OperationBudget budget) =>
         (await TablesAsync(connection, budget)).Count != 0;
 
-    internal async Task<InstallationRecord> ReadInstallationAsync(DbConnection connection, OperationBudget budget)
+    internal async Task<InstallationRecord> ReadInstallationAsync(DbConnection connection, OperationBudget budget,
+        DbTransaction? transaction = null)
     {
-        if (!(await TablesAsync(connection, budget)).SequenceEqual(ExpectedTables.Order(StringComparer.Ordinal)))
+        var tables = await TablesAsync(connection, budget, transaction);
+        if (!tables.Contains("__kofte_installation", StringComparer.Ordinal))
             throw new StorageException(StorageCode.Corrupt);
         await using var command = Command(connection,
-            $"SELECT singleton_key, installation_id, provider, registry_version, registry_revision FROM {Metadata}", budget);
+            $"SELECT singleton_key, installation_id, provider, registry_version, registry_revision FROM {Metadata}", budget, transaction);
         InstallationRecord record;
         await using (var reader = await command.ExecuteReaderAsync(budget.Token))
         {
@@ -136,26 +174,35 @@ internal sealed class RegistryMigrationRunner(StorageInstallation installation)
             if (await reader.ReadAsync(budget.Token) || record.Id == Guid.Empty || record.Revision < 0 ||
                 record.Provider != installation.Provider)
                 throw new StorageException(StorageCode.Corrupt);
-            if (record.Version != 1) throw new StorageException(StorageCode.VersionUnsupported);
+            if (record.Version is not (1 or 2)) throw new StorageException(StorageCode.VersionUnsupported);
         }
-        await using var history = Command(connection, $"SELECT version, sha256 FROM {History}", budget);
+        var expected = record.Version == 1 ? ExpectedTables : ExpectedTables.Concat(IdentityTables);
+        if (!tables.SequenceEqual(expected.Order(StringComparer.Ordinal))) throw new StorageException(StorageCode.Corrupt);
+        await RegistryPhysicalFormat.VerifyAsync(connection, installation.Provider, record.Version, budget, transaction);
+        await using var history = Command(connection, $"SELECT version, sha256 FROM {History} ORDER BY version", budget, transaction);
         await using (var reader = await history.ExecuteReaderAsync(budget.Token))
         {
-            if (!await reader.ReadAsync(budget.Token) || reader.GetInt32(0) != 1 ||
-                reader.GetString(1) != Digest || await reader.ReadAsync(budget.Token))
-                throw new StorageException(StorageCode.Corrupt);
+            for (var version = 1; version <= record.Version; version++)
+                if (!await reader.ReadAsync(budget.Token) || reader.GetInt32(0) != version ||
+                    reader.GetString(1) != Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(MigrationScript(version)))))
+                    throw new StorageException(StorageCode.Corrupt);
+            if (await reader.ReadAsync(budget.Token)) throw new StorageException(StorageCode.Corrupt);
         }
         if (connection is SqliteConnection)
         {
-            if (await ScalarAsync(connection, "PRAGMA user_version", budget) is not 1L ||
-                await ScalarAsync(connection, "PRAGMA integrity_check", budget) is not "ok")
+            await using var version = Command(connection, "PRAGMA user_version", budget, transaction);
+            await using var integrity = Command(connection, "PRAGMA integrity_check", budget, transaction);
+            await using var foreignKeys = Command(connection, "PRAGMA foreign_key_check", budget, transaction);
+            if (Convert.ToInt64(await version.ExecuteScalarAsync(budget.Token), CultureInfo.InvariantCulture) != record.Version ||
+                await integrity.ExecuteScalarAsync(budget.Token) is not "ok" ||
+                await foreignKeys.ExecuteScalarAsync(budget.Token) is not null)
                 throw new StorageException(StorageCode.Corrupt);
         }
         var owners = new HashSet<string>(StringComparer.Ordinal);
         var keys = new HashSet<string>(StringComparer.Ordinal);
         var allocations = new HashSet<Guid>();
         long revision = 0;
-        await using var registrations = Command(connection, $"SELECT * FROM {Registrations}", budget);
+        await using var registrations = Command(connection, $"SELECT * FROM {Registrations}", budget, transaction);
         await using var rows = await registrations.ExecuteReaderAsync(budget.Token);
         while (await rows.ReadAsync(budget.Token))
         {
