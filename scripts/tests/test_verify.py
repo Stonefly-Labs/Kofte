@@ -178,6 +178,12 @@ class VerifyTests(unittest.TestCase):
             self.assertIn("*Composition*", selected.args[1])
             self.assertIn(f"Provider={provider}", selected.args[1])
             self.assertEqual(["--minimum-expected-tests", "50"], selected.args[1][-2:])
+            storage = next(call for call in command.call_args_list
+                           if call.args[0] == f"storage-integration-{provider}")
+            self.assertIn(f"Provider={provider}", storage.args[1])
+            excluded = storage.args[1].index("--filter-not-class")
+            self.assertEqual("*Composition*", storage.args[1][excluded + 1])
+            self.assertNotIn("--filter-not-class", selected.args[1])
         runner = verify.Runner(self.root, self.report("contract"), {})
         with self.assertRaisesRegex(verify.VerificationError, "command_failed"):
             runner.command("composition-zero-cases", ["python3", "-c", "raise SystemExit(8)"])

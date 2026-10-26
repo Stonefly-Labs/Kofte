@@ -162,7 +162,9 @@ internal static class DiagnosticScenarios
                         ready.CancelAfter(TimeSpan.FromSeconds(15));
                         while (true)
                         {
-                            if (running.IsCompleted) throw new ScenarioFailure("composition_test_private_host_exited");
+                            if (running.IsCompleted)
+                                throw new ScenarioFailure("composition_test_private_host_exited_" + catalog +
+                                    "_" + await running + "_" + MigrationScenarios.ExitReason(capture.Stdout[offset..]));
                             try
                             {
                                 using var response = await http.GetAsync("/health/ready", ready.Token);

@@ -350,13 +350,17 @@ affirmative decision after passing review and disclosure of the deferred
 PostgreSQL failure. The failed/interrupted local complete attempt and unknown
 cause remain; no runtime rerun/investigation or release waiver is implied.
 Supported commands, deadlines, recovery duties, review/tasks/checklists and
-product/.NET-test source are unchanged. PR #7 is now held draft after a distinct
+product source and .NET assertions are unchanged. PR #7 was returned to draft after a distinct
 SQLite CI boot-theory failure. The
 [follow-up evidence](../../specs/004-module-lifecycle/implementation.md#post-acceptance-sqlite-ci-failure-and-diagnostic-correction)
 records unchanged local passes and an unknown original cause, not a product fix.
 Verifier diagnostics now preserve allowlisted failed scenarios/assertion symbols
 from known failed tests' output, never raw exceptions, arguments or private data;
-isolated failure reports revalidate those fields. 005 waits for human merge
+isolated failure reports revalidate those fields. The
+[full-matrix follow-up](../../specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up)
+removes duplicate integration execution and requires all eleven latest-head
+checks to finish successfully before a renewed handoff. The PR records actual
+outcomes; historical failed runs are not relabeled. 005 waits for human merge
 and a later invocation from updated main.
 
 For the implemented storage examples, follow the
@@ -670,6 +674,14 @@ source-allowlisted test identities and closed diagnostic codes. Their private,
 bounded xUnit XML is deleted; raw assertions, arguments, output and stacks do
 not enter verification reports. Isolated failure-propagation evidence validates
 these fields again against the owning command.
+
+Integration verification partitions `Kofte.Storage.IntegrationTests` into
+disjoint selections: `storage-integration-PROVIDER` excludes `*Composition*`,
+and `composition-integration-PROVIDER` includes it with the unchanged minimum
+of 50 cases. Both retain the selected provider. Every case still runs once;
+running composition twice had made the isolated PostgreSQL baseline exceed
+its unchanged 900-second budget. This does not reduce contention rounds,
+skip tests, retry failures or relax product deadlines.
 
 ## Focused checks currently available
 

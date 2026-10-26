@@ -461,11 +461,15 @@ now records **"bro this human fugging accepts"** for numbered feature 004
 after that passing review, with its scope and deferred failed-check limitation
 retained. No architecture, product/test source or reviewed evidence changes.
 The local complete attempt stays failed and undiagnosed; acceptance is not
-a release waiver. The same PR #7 is now held draft after a distinct SQLite
+a release waiver. The same PR #7 was returned to draft after a distinct SQLite
 CI boot-theory failure. The
 [follow-up record](../specs/004-module-lifecycle/implementation.md#post-acceptance-sqlite-ci-failure-and-diagnostic-correction)
 preserves the unknown cause and unchanged local passes; only bounded verifier
-diagnostics change, not product architecture or behavior. Spec 005 remains
+diagnostics change, not product architecture or behavior. The
+[full-matrix follow-up](../specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up)
+removes duplicate integration execution while retaining every case and deadline.
+Renewed merge readiness requires all eleven latest-head checks to pass,
+not one passing provider job. Spec 005 remains
 blocked on that human merge and accepted evidence reaching updated main.
 
 The following paragraphs

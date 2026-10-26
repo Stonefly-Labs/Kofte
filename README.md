@@ -35,7 +35,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 | 🔐 Explicit boundaries     | Team-scoped authorization, audited actions and module-owned storage                                   |
 
 > [!IMPORTANT]
-> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md), but [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) is held draft after a new SQLite CI failure. The [failure record](specs/004-module-lifecycle/implementation.md#post-acceptance-sqlite-ci-failure-and-diagnostic-correction) preserves the unknown cause and safe-diagnostics correction; unchanged local passes do not diagnose it. The separate deferred PostgreSQL anomaly and failed local gate remain. Acceptance is not a release waiver, and 005 waits for human merge. Nothing here claims production readiness or MVP completion.
+> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md). After subsequent CI failures, [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) requires all eleven latest-head checks to pass before a renewed human merge handoff, not just a green SQLite job. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) records the failures, disjoint integration selections and retained unknown causes. The separate historical failed local gate remains failed. Acceptance is not a release waiver, and 005 waits for human merge. Nothing here claims production readiness or MVP completion.
 
 ## 🧭 The shape of things to come
 
@@ -262,11 +262,15 @@ disclosed; no readiness or merge is requested.
 decision **"bro this human fugging accepts"**, responding to the passing review
 and disclosed deferred PostgreSQL limitation. Review/tasks/checklists and
 historical evidence remain unchanged; the failed local attempt stays failed,
-not diagnosed or rerun. [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7)
-was marked ready, but is now **held draft after a new SQLite CI failure**.
+not diagnosed by later passing executions. [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7)
+was returned to draft after subsequent CI failures.
 The [follow-up evidence](specs/004-module-lifecycle/implementation.md#post-acceptance-sqlite-ci-failure-and-diagnostic-correction)
 records three and 155 unchanged passing local cases without an established
 cause; bounded failure diagnostics now preserve the case/assertion for recurrence.
+The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up)
+removes duplicate composition execution without dropping cases or raising
+deadlines. A renewed merge handoff requires **all eleven checks on the latest
+commit** to finish successfully; the PR records their actual outcomes.
 **005 waits for human merge** and a later invocation from updated main;
 acceptance starts no new feature and waives no release gate.
 

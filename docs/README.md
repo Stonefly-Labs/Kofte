@@ -429,11 +429,14 @@ is requested.
 **"bro this human fugging accepts"** after the passing review and disclosed
 deferred PostgreSQL limitation. Review/tasks/checklists remain unchanged;
 the failed local complete attempt stays failed and its cause unknown.
-The same PR #7 is now **held draft after a new SQLite CI failure**, despite
+The same PR #7 was returned to draft after a SQLite CI failure, despite
 unchanged passing local reproduction. The
 [failure record](../specs/004-module-lifecycle/implementation.md#post-acceptance-sqlite-ci-failure-and-diagnostic-correction)
 retains the unknown cause and bounded failure-diagnostic correction.
-No merge is requested while the follow-up is assessed. Spec 005 waits
+The [full-matrix follow-up](../specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up)
+also records a later PostgreSQL privacy failure and duplicated baseline timeout.
+No renewed merge handoff is allowed until all eleven latest-head checks finish
+successfully; actual current outcomes are recorded on the PR. Spec 005 waits
 for accepted evidence on updated main after that merge and a later invocation.
 Acceptance is not a new runtime result, release waiver or MVP completion.
 

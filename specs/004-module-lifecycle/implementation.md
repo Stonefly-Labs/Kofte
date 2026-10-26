@@ -2007,3 +2007,61 @@ symbols rather than assuming that the old failure was harmless. If it passes,
 the original failure still remains unexplained. The existing accepted ledger,
 review, acceptance, 86 tasks and reviewed checklists are unchanged; this is
 not another Spec Kit stage, a new acceptance decision or a release waiver.
+
+## Full-matrix CI follow-up
+
+The human subsequently requested **"test failed bro make sure fugging everything
+is green dude"**. A single passing SQLite job is not a passing matrix.
+The original branch and open PR #7 are retained; historical acceptance,
+review, tasks and reviewed checklists are not rewritten.
+
+At diagnostic head `5264bb6ae4e590f9d94286676341df212872b655`,
+[Product run 40259765143](https://github.com/Stonefly-Labs/Kofte/actions/runs/40259765143)
+has two demonstrated failures:
+
+| Job / step | Actual retained evidence |
+| --- | --- |
+| `integration-postgres` / `composition-integration-postgres` | Exit 2 after 232.227s; `PostgresCompositionPrivacyTests.ActualSixChannelPublicCaptureExcludesPrivateInputsAndRequiresUsefulFailureEvidence`, scenario `private-diagnostics`, codes `composition_consumer_failed` and `composition_test_private_host_exited`. |
+| `failure-propagation` / `baseline-postgres` | `failure_exercise_timeout` after 900.315s. This is the ordinary integration baseline, not an intentionally injected failure. |
+
+The normal PostgreSQL integration report takes 934.167s: 49.094s of host
+integration, 652.611s of broad storage integration, and 232.227s of the
+separate composition selection. The broad storage selection already includes
+every composition class; the last step executes those same cases again.
+That repeated work exceeds the isolated baseline's unchanged 900-second cap.
+
+The correction partitions the storage project into disjoint selections:
+`storage-integration-PROVIDER` excludes `*Composition*`, while the existing
+`composition-integration-PROVIDER` still includes it, intersects the requested
+provider, and retains its minimum of 50 cases. No case, assertion, contention
+round, named gate, timeout or provider is removed or relaxed. A focused
+selector regression checks both sides of this partition for both providers.
+
+An unchanged local execution of the exact PostgreSQL privacy method passes
+1/1 in 29.011s; it is not treated as a causal fix. Early private-host exits now
+include the fixed fixture catalog, actual exit and allowlisted terminal reason,
+instead of losing that context behind `composition_test_private_host_exited`.
+No raw output, exception details, paths or credentials are added to safe reports.
+The original SQLite assertion and this PostgreSQL early-exit cause remain
+unknown unless concrete later evidence establishes them.
+
+Post-correction local worktree evidence uses the existing pinned SDK
+10.0.402/runtime 10.0.13 with `DOTNET_PROCESSOR_COUNT=4`:
+
+| Exact command | Observed result |
+| --- | --- |
+| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-class '*Composition*' --minimum-expected-tests 100 --report-xunit-xml --report-xunit-xml-filename storage.xml --results-directory "$PWD/artifacts/verification/.private/all-green-composition"` | Passed 116/116 across both real providers, zero skipped; 3m30.856s summary. Disposable PostgreSQL was explicitly enabled. |
+| `python3 scripts/verify.py --suite integration --provider postgres --disposable-postgres` | Passed all 12 targeted steps in 663.126s, below the unchanged 900-second isolated baseline cap. Host/storage/composition steps take 49.507s / 412.895s / 200.410s. |
+| `dotnet format Kofte.slnx --verify-no-changes --no-restore --include tests/contract/Kofte.Composition.Consumer/Scenarios/DiagnosticScenarios.cs` | Passed. |
+
+Safe local report `integration-postgres-a62c897043504baca3898e66500beb86.json`
+retains `completeGate: false`; it is not a new complete local gate or a
+substitute for the isolated failure exercise and actual Ubuntu matrix.
+
+The renewed handoff requires every one of the eleven actual latest-head PR
+contexts to complete successfully. Running, failed, cancelled, missing or
+earlier-head contexts do not satisfy it. Exact post-change local results and
+the complete current-head matrix are recorded in PR #7's verification evidence.
+The historical failed local complete gate stays failed; new targeted or CI
+passes do not retroactively replace it. No 005 stage or assistant merge is
+authorized.

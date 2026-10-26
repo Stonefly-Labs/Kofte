@@ -1109,7 +1109,10 @@ def execute_suite(runner, suite, provider, arguments):
             environment=provider_environment(runner, arguments, provider),
         )
         runner.command(
-            f"storage-integration-{provider}", integration_command(provider, project=STORAGE_INTEGRATION),
+            f"storage-integration-{provider}", [
+                *integration_command(provider, project=STORAGE_INTEGRATION)[:-2],
+                "--filter-not-class", "*Composition*", "--minimum-expected-tests", "1",
+            ],
             environment=provider_environment(runner, arguments, provider),
         )
         runner.command(f"composition-integration-{provider}", [
