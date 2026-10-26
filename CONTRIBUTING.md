@@ -329,7 +329,7 @@ That checkpoint required human merge before 005. PR #7 is now human-merged;
 004's accepted ledger and all five acceptance artifact hashes were verified
 on updated main before beginning the new feature.
 
-**005 / specify, clarify, plan, checklist and tasks are complete; analyze is next** on
+**005 / specify, clarify, plan, checklist, tasks and analyze are complete; implement is next** on
 `feature/005-authentication-bootstrap`. Its
 [draft requirements](specs/005-authentication-bootstrap/spec.md) and
 [16/16 author checklist](specs/005-authentication-bootstrap/checklists/requirements.md)
@@ -362,8 +362,13 @@ explicit dependencies, paths, model constraints and acceptance coverage for all
 five stories, 22 scenarios, 22 requirements, seven outcomes and twelve decisions.
 Independent protocol/actor consumers, both-provider enrollment/crash/restart/
 upgrade/recovery, accessible states and privacy captures remain required evidence.
-**Analyze is next in a separate invocation**, before implementation. No product
-package/code, runtime proof, feature acceptance or intermediate merge is introduced.
+The read-only [analysis](specs/005-authentication-bootstrap/analysis.md) passes:
+29/29 requirements/outcomes and 22/22 scenarios have concrete coverage, all
+100 tasks are mapped, and 242 dependency edges are acyclic. No actionable
+or constitutional issue remains. Assessed inputs and reviewer markers are
+unchanged; every implementation task remains unchecked.
+**Implement is next in a separate invocation.** No product package/code,
+runtime proof, feature acceptance or intermediate merge is introduced.
 
 The following paragraphs preserve the historical design-stage checkpoint.
 

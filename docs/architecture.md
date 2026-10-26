@@ -473,7 +473,7 @@ not one passing provider job. PR #7 is now human-merged; its accepted ledger
 and all five acceptance artifact hashes were verified on updated main before
 005 began. Historical failed checks and undiagnosed causes remain unchanged.
 
-**005 / specify, clarify, plan, checklist and tasks are complete; analyze is next** on
+**005 / specify, clarify, plan, checklist, tasks and analyze are complete; implement is next** on
 `feature/005-authentication-bootstrap`. Its
 [draft requirements](../specs/005-authentication-bootstrap/spec.md) define
 host-owned production OIDC identity, explicit development limits, stable user
@@ -514,8 +514,13 @@ path-specific implementation and independent evidence, with explicit acyclic
 dependencies and model constraints. They retain exact platform/recovery versions,
 module ownership, default denial, separate stopped initialization and truthful
 filesystem/database partial effects; no new architecture decision is made.
-**Analyze is next in a separate invocation** on the same draft PR #8, before
-implementation, not an intermediate merge, runtime result or feature acceptance.
+The read-only [analysis](../specs/005-authentication-bootstrap/analysis.md)
+passes with concrete coverage of all 29 requirements/outcomes and 22 scenarios,
+100 mapped tasks and 242 acyclic dependency edges. No actionable or constitutional
+finding remains; all assessed inputs/reviewer markers are unchanged and every
+implementation task remains unchecked. **Implement is next in a separate
+invocation** on the same draft PR #8, not an intermediate merge, runtime result,
+new architecture decision or feature acceptance.
 
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements

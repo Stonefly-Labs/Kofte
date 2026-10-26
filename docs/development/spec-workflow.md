@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / tasks complete; analyze is next**, on
+**Current checkpoint: 005 / analyze complete; implement is next**, on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 [specification](../../specs/005-authentication-bootstrap/spec.md) uses the exact
@@ -182,7 +182,7 @@ Actual adoption/protocol/provider/browser/privacy evidence remains mandatory
 future work. Historical failed checks remain failed and undiagnosed, not cleared
 by requirements review. No extension hooks are configured.
 
-**005 tasks checkpoint:** Executed the installed `speckit-tasks` skill with
+**005 tasks checkpoint (historical):** Executed the installed `speckit-tasks` skill with
 the recorded explicit feature directory and resolved project task override.
 The [task list](../../specs/005-authentication-bootstrap/tasks.md) contains
 **100 unchecked tasks**: setup 6, foundation 16, US1 18, US2 15, US3 15,
@@ -211,6 +211,38 @@ configured. Historical failures remain failed/undiagnosed, not cleared by tasks.
 The helper completes **only tasks** and selects **analyze** in a separate
 invocation on the same branch/draft PR #8. Passing analysis must precede
 implementation; neither an intermediate merge nor PR readiness is requested.
+
+**005 analysis checkpoint:** Executed the installed `speckit-analyze` skill
+with the recorded explicit feature directory and prerequisite command. The
+read-only [report](../../specs/005-authentication-bootstrap/analysis.md) records
+**pass** against assessed revision `e6b136dc44be36f8b60f238c68c37110191a923f`.
+All 22 requirements, seven buildable outcomes, 22 scenarios, twelve design
+decisions and twelve constitutional principles were assessed against concrete
+task obligations. All 100 tasks are mapped and unchecked; 242 explicit dependency
+edges are acyclic, with no invalid/forward reference. The 22 parallel candidates
+remain conditional on their own prerequisites and isolated files/fixtures.
+
+No actionable duplication, ambiguity, underspecification, coverage gap,
+ordering/terminology inconsistency or constitutional conflict remains.
+Independent protocol/provider/actor/browser/privacy acceptance, exact format/
+recovery/key boundaries and truthful partial effects agree across artifacts.
+Historical Proposed labels are resolved by ADR 0007's later human approval;
+that approval does not adopt unchecked dependencies or accept feature 005.
+
+Specification, all planning artifacts, tasks, approved ADR, constitution and
+both reviewed checklists remain byte-for-byte unchanged. Reviewer counts remain
+16/16 and 36/36. The driver persists only analysis, its ledger transition and
+current progress docs; no remediation, authentication implementation, package
+adoption or product-runtime proof is introduced. No analysis hooks are configured.
+Historical failed/undiagnosed runtime observations remain explicit, not erased
+by design/task coverage.
+
+The helper completes **only analyze** and selects **implement** in a separate
+invocation on the original branch and
+[draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8).
+Keep its dependency-adoption and actual evidence gates; convergence, final review
+and explicit numbered-feature acceptance remain later. No intermediate merge
+or PR readiness is requested.
 
 **Historical 004 checkpoint:** **human acceptance recorded; renewed handoff required a fully green latest-head PR matrix** after specify, clarify,
 plan, checklist, tasks and analyze completed on

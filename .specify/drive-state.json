@@ -22,7 +22,7 @@
     },
     "005": {
       "directory": "specs/005-authentication-bootstrap",
-      "next_step": "analyze"
+      "next_step": "implement"
     }
   },
   "active": null,
@@ -1150,6 +1150,23 @@
       "note": "Executed installed speckit-tasks with the explicit recorded directory and resolved project override on original branch/draft PR #8. Generated 100 sequential unchecked path-specific tasks: setup6/foundation16/US1=18/US2=15/US3=15/US4=8/US5=14/cross-cutting8. Verified 242 explicit earlier-only acyclic dependency edges, 22 conditional parallel candidates, every task's story/path/FR/principle trace, and full 22FR/7SC/22scenario/12R coverage with valid links/references. Shared secure foundations precede production OIDC, nominated atomic enrollment, cross-interface actor/session denial, isolated development and operations/recovery; required independent protocol/consumer/real-provider/browser/privacy evidence includes twenty HTTP contenders, three fresh restarts, real commit barriers and exact identity/module preservation. Explicit format2 call sites include RegistryRecords' installation-version guard without changing allocator/marker1; local initialization remains separate stopped commands, not supervisor migration. Approved intent, six planning artifacts, approved ADR, reviewed16/16 and36/36 checklists, prior ledger history and all prior005 evidence hashes unchanged. No before/after extension hooks. Required repository checks,121 Python tests, changed-file Prettier and whitespace passed; initial two-file Markdown format warnings corrected and rechecked. No product/test/dependency/CI source change, runtime proof, analysis report or feature acceptance; historical failures remain undiagnosed, not waived. Tasks only completes; analyze next separately on same draftPR8, no intermediate merge/readiness.",
       "evidence_sha256": {
         "specs/005-authentication-bootstrap/tasks.md": "1429ceea187b6fedc55b15aa1524418cf7b05919e76684814bd75059b57dd059"
+      }
+    },
+    {
+      "spec": "005",
+      "step": "analyze",
+      "directory": "specs/005-authentication-bootstrap",
+      "status": "complete",
+      "branch": "feature/005-authentication-bootstrap",
+      "reason": "",
+      "started_at": "2026-10-26T21:22:56+00:00",
+      "completed_at": "2026-10-26T21:27:13+00:00",
+      "outcome": "pass",
+      "note": "Executed installed speckit-analyze read-only with explicit recorded directory and prerequisite resolution against e6b136dc44be36f8b60f238c68c37110191a923f. analysis.md records pass: all 22 FRs, seven buildable SCs, 22 scenarios, twelve R decisions and twelve principles have concrete task/design coverage; all 100 tasks mapped and unchecked, 242 explicit edges acyclic with no invalid/forward reference, 22 conditional parallel candidates. No actionable duplication, ambiguity, underspecification, coverage, inconsistency or constitutional finding. Verified unchanged spec/plan/research/model/contracts/guide/tasks/approved ADR/constitution and both checklists against assessed HEAD; reviewer counts remain 16/16 and 36/36. ADR later approval resolves historical Proposed labels without approving packages; exact owner format/recovery/key boundaries, bounded protocol/access/privacy evidence and retained complete local/actual CI remain implementation obligations. No hooks configured. Driver persists report/progress docs only; no product/test/dependency change, runtime proof, remediation, acceptance, readiness or merge. Historical failed/undiagnosed checks remain explicit. Only analyze completes; implement next in separate invocation on original branch/draft PR #8.",
+      "evidence_sha256": {
+        "specs/005-authentication-bootstrap/analysis.md": "620110ddd83e66f61b28c829c8b073e9f01edfabb4d12749cb1cbcb4c22f8648",
+        "specs/005-authentication-bootstrap/checklists/quality.md": "c169329a32af64d429d94ad29597a0c8560497e2599269962a6b3db2f0b868ca",
+        "specs/005-authentication-bootstrap/checklists/requirements.md": "26bdb3c100317600de5c4be50934873933b0942bf23b7913e49571dd2ce65adb"
       }
     }
   ]

@@ -37,7 +37,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 > [!IMPORTANT]
 > **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md) and [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) is now human-merged. Its accepted ledger and evidence were verified on updated main before 005 began. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) retains prior failures and unknown causes; the historical failed local gate remains failed, not waived by acceptance or merge. Spec 005 now has [draft authentication/bootstrap requirements](specs/005-authentication-bootstrap/spec.md), not working login. Nothing here claims production readiness or MVP completion.
 
-**Current stage: 005 / tasks complete; analyze is next.** The
+**Current stage: 005 / analyze complete; implement is next.** The
 [specification](specs/005-authentication-bootstrap/spec.md) and
 [16/16 author checklist](specs/005-authentication-bootstrap/checklists/requirements.md)
 cover production OIDC, explicitly limited development login, stable user mapping,
@@ -66,9 +66,14 @@ now trace all 22 requirements, seven outcomes, 22 scenarios and twelve design
 decisions to path-specific work and explicit dependencies. They include independent
 OIDC/actor evidence, twenty-way enrollment and three restarts per real provider,
 exact upgrade/recovery preservation, accessible UI and captured privacy.
-**Analyze is next in a separate invocation**, before implementation. No product
-code, dependency adoption, runtime proof or feature acceptance is introduced;
-no intermediate merge is requested.
+The read-only [analysis](specs/005-authentication-bootstrap/analysis.md) passes:
+29/29 requirements/outcomes and 22/22 scenarios have concrete task coverage,
+all 100 tasks are mapped, and 242 dependency edges are acyclic. No actionable
+or constitutional issue remains; assessed inputs and reviewer markers are
+unchanged and all implementation tasks remain unchecked.
+**Implement is next in a separate invocation.** No product code, dependency
+adoption, runtime proof or feature acceptance is introduced; no intermediate
+merge is requested.
 
 ## 🧭 The shape of things to come
 
