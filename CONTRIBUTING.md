@@ -325,8 +325,20 @@ without a speculative product fix. The
 separates storage/composition integration selections without removing cases
 or raising deadlines. All eleven latest-head checks must complete successfully
 before a renewed human merge handoff; current outcomes belong to the PR.
-Only human merge putting accepted evidence on updated main
-unlocks 005 in a later invocation; no new stage/feature is run here.
+That checkpoint required human merge before 005. PR #7 is now human-merged;
+004's accepted ledger and all five acceptance artifact hashes were verified
+on updated main before beginning the new feature.
+
+**005 / specify is complete; clarify is next** on
+`feature/005-authentication-bootstrap`. Its
+[draft requirements](specs/005-authentication-bootstrap/spec.md) and
+[16/16 author checklist](specs/005-authentication-bootstrap/checklists/requirements.md)
+define OIDC/development login, stable identity, one-time first-admin enrollment
+and browser/API boundaries, not working authentication. Five stories,
+22 scenarios, 22 requirements and seven outcomes retain both-provider,
+protocol, browser and privacy evidence obligations. Continue on this branch
+and its one draft PR; no later stage, product package or implementation is
+introduced by specification.
 
 The following paragraphs preserve the historical design-stage checkpoint.
 

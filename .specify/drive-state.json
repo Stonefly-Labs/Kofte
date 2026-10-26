@@ -19,6 +19,10 @@
     "004": {
       "directory": "specs/004-module-lifecycle",
       "next_step": "accepted"
+    },
+    "005": {
+      "directory": "specs/005-authentication-bootstrap",
+      "next_step": "clarify"
     }
   },
   "active": null,
@@ -1068,6 +1072,22 @@
         "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
       },
       "human_approval": "bro this human fugging accepts"
+    },
+    {
+      "spec": "005",
+      "step": "specify",
+      "directory": "specs/005-authentication-bootstrap",
+      "status": "complete",
+      "branch": "feature/005-authentication-bootstrap",
+      "reason": "",
+      "started_at": "2026-10-26T12:41:17+00:00",
+      "completed_at": "2026-10-26T12:46:58+00:00",
+      "outcome": "pass",
+      "note": "Executed speckit-specify with the exact inventory 005 fenced prompt and resolved project template after verifying human-merged PR #7, accepted 004 state and all five acceptance hashes on updated origin/main. Five independent stories, 22 Given/When/Then scenarios, 22 functional requirements and seven measurable outcomes define production OIDC, stable issuer/subject mapping, deliberately nominated one-time first-admin enrollment, browser/API access/session parity, explicit development-only identity and safe host-owned persistence/security evidence. All 16 built-in author checklist criteria satisfied; no material unresolved marker or configured before/after specification hook. Requirements-level defaults are explicit and distinct from later plan/ADR protocol/session/enrollment/budget choices; no human decision invented. Preserved historical failed/deferred 004 evidence and future 006/007/009 boundaries. No product code, dependencies, plan, tasks, reviewer-owned checklist, runtime proof or acceptance. Clarify is next on the same feature branch/draft PR; no intermediate merge.",
+      "evidence_sha256": {
+        "specs/005-authentication-bootstrap/spec.md": "321ed0ee2b04da4c060c5a6d498e6cc795bbe10d88e02f34affb113afc395d75",
+        "specs/005-authentication-bootstrap/checklists/requirements.md": "26bdb3c100317600de5c4be50934873933b0942bf23b7913e49571dd2ce65adb"
+      }
     }
   ]
 }

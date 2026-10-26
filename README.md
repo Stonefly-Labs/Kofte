@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-34d399?style=flat-square"></a>
-  <img alt="Status: module lifecycle human-accepted" src="https://img.shields.io/badge/status-module_lifecycle_accepted-a78bfa?style=flat-square">
+  <img alt="Status: authentication requirements drafted" src="https://img.shields.io/badge/status-authentication_specified-a78bfa?style=flat-square">
   <a href="docs/master-spec-inventory.md"><img alt="Built with Spec Kit" src="https://img.shields.io/badge/workflow-Spec_Kit-a78bfa?style=flat-square"></a>
 </p>
 
@@ -35,7 +35,16 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 | 🔐 Explicit boundaries     | Team-scoped authorization, audited actions and module-owned storage                                   |
 
 > [!IMPORTANT]
-> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md). After subsequent CI failures, [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) requires all eleven latest-head checks to pass before a renewed human merge handoff, not just a green SQLite job. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) records the failures, disjoint integration selections and retained unknown causes. The separate historical failed local gate remains failed. Acceptance is not a release waiver, and 005 waits for human merge. Nothing here claims production readiness or MVP completion.
+> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md) and [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) is now human-merged. Its accepted ledger and evidence were verified on updated main before 005 began. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) retains prior failures and unknown causes; the historical failed local gate remains failed, not waived by acceptance or merge. Spec 005 now has [draft authentication/bootstrap requirements](specs/005-authentication-bootstrap/spec.md), not working login. Nothing here claims production readiness or MVP completion.
+
+**Current stage: 005 / specify complete; clarify is next.** The
+[specification](specs/005-authentication-bootstrap/spec.md) and
+[16/16 author checklist](specs/005-authentication-bootstrap/checklists/requirements.md)
+cover production OIDC, explicitly limited development login, stable user mapping,
+one-time first-admin enrollment and browser/API boundaries. Five stories,
+22 acceptance scenarios, 22 requirements and seven outcomes define future
+evidence, not implementation. Continue on `feature/005-authentication-bootstrap`
+and its one draft PR; no intermediate merge or later stage is run here.
 
 ## 🧭 The shape of things to come
 
@@ -271,8 +280,10 @@ The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-ma
 removes duplicate composition execution without dropping cases or raising
 deadlines. A renewed merge handoff requires **all eleven checks on the latest
 commit** to finish successfully; the PR records their actual outcomes.
-**005 waits for human merge** and a later invocation from updated main;
-acceptance starts no new feature and waives no release gate.
+That historical checkpoint left **005 waiting for human merge**. PR #7 is
+now human-merged and its accepted evidence was verified on updated main;
+the current 005 specification checkpoint is described above. Acceptance itself
+started no new feature and waived no release gate.
 
 **Spec 003 is explicitly human-accepted and human-merged.**
 The [acceptance record](specs/003-storage-registry/acceptance.md) preserves the

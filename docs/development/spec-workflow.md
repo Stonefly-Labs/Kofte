@@ -6,7 +6,33 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** **004 / human acceptance recorded; renewed handoff requires a fully green latest-head PR matrix** after specify, clarify,
+**Current checkpoint: 005 / specify complete; clarify is next**, on
+`feature/005-authentication-bootstrap`, with recorded directory
+`specs/005-authentication-bootstrap`. The
+[specification](../../specs/005-authentication-bootstrap/spec.md) uses the exact
+fenced inventory 005 prompt and resolved project template. Five stories,
+22 Given/When/Then scenarios, 22 functional requirements and seven measurable
+outcomes cover production OIDC, stable identity, deliberate non-repeatable
+first-admin enrollment, browser/API access, limited development mode and safe
+operation/recovery. The
+[built-in author checklist](../../specs/005-authentication-bootstrap/checklists/requirements.md)
+satisfies 16/16 criteria; the later reviewer-owned checklist is not generated.
+
+Before beginning this new feature, PR #7 was verified human-merged, 004's
+accepted state was verified on updated `origin/main`, and all five acceptance
+artifact hashes matched. Its historical failed local gate and undiagnosed,
+human-deferred PostgreSQL observation remain explicit limitations; merge does
+not supply a new runtime result or release waiver.
+
+The driver records only this specification stage. There are no configured
+before/after specification hooks. No authentication code, package adoption,
+plan, tasks, runtime proof or human feature acceptance is introduced.
+The next invocation performs clarification on this same branch/draft PR,
+not a new branch or intermediate merge. Requirements-level defaults are
+visible in the spec; exact protocol/session/enrollment/storage mechanisms and
+finite budgets belong to later planning/ADR review.
+
+**Historical 004 checkpoint:** **human acceptance recorded; renewed handoff required a fully green latest-head PR matrix** after specify, clarify,
 plan, checklist, tasks and analyze completed on
 `feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
 The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the

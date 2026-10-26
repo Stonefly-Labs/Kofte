@@ -468,9 +468,22 @@ preserves the unknown cause and unchanged local passes; only bounded verifier
 diagnostics change, not product architecture or behavior. The
 [full-matrix follow-up](../specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up)
 removes duplicate integration execution while retaining every case and deadline.
-Renewed merge readiness requires all eleven latest-head checks to pass,
-not one passing provider job. Spec 005 remains
-blocked on that human merge and accepted evidence reaching updated main.
+That historical handoff required all eleven latest-head checks to pass,
+not one passing provider job. PR #7 is now human-merged; its accepted ledger
+and all five acceptance artifact hashes were verified on updated main before
+005 began. Historical failed checks and undiagnosed causes remain unchanged.
+
+**005 / specify is complete; clarify is next** on
+`feature/005-authentication-bootstrap`. Its
+[draft requirements](../specs/005-authentication-bootstrap/spec.md) define
+host-owned production OIDC identity, explicit development limits, stable user
+mapping, one-time nominated first-admin enrollment and shared browser/API
+boundaries. The [author checklist](../specs/005-authentication-bootstrap/checklists/requirements.md)
+satisfies 16/16 criteria. Five stories, 22 scenarios, 22 requirements and seven
+outcomes require real-provider/protocol/browser/privacy evidence later.
+This stage adopts no authentication library, protocol/session implementation,
+schema, public signature or ADR; granular authorization and MCP remain 006/007.
+No product code, later stage or feature acceptance is introduced.
 
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements

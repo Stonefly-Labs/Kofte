@@ -435,10 +435,21 @@ unchanged passing local reproduction. The
 retains the unknown cause and bounded failure-diagnostic correction.
 The [full-matrix follow-up](../specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up)
 also records a later PostgreSQL privacy failure and duplicated baseline timeout.
-No renewed merge handoff is allowed until all eleven latest-head checks finish
-successfully; actual current outcomes are recorded on the PR. Spec 005 waits
-for accepted evidence on updated main after that merge and a later invocation.
-Acceptance is not a new runtime result, release waiver or MVP completion.
+That historical handoff required all eleven latest-head checks to finish
+successfully. PR #7 is now human-merged, and the accepted ledger plus all five
+acceptance hashes were verified on updated main before 005 began. Acceptance
+and merge are not new runtime results, release waivers or MVP completion.
+
+**005 / specify is complete; clarify is next** on
+`feature/005-authentication-bootstrap`. The
+[draft specification](../specs/005-authentication-bootstrap/spec.md) and
+[16/16 built-in author checklist](../specs/005-authentication-bootstrap/checklists/requirements.md)
+cover production OIDC, safe first-admin bootstrap, stable identity,
+browser/API parity, development-only login and safe recovery. Five stories,
+22 scenarios, 22 requirements and seven outcomes describe future acceptance
+evidence. No product code, plan, task list, reviewer-owned checklist or
+authentication runtime proof is introduced; later stages continue on one draft
+feature PR without intermediate merge.
 
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
