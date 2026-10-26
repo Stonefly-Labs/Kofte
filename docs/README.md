@@ -14,14 +14,18 @@ The [technology-stack exploration](kofte-technology-stack-architecture.md) is hi
 
 ## Working in the repository
 
-**Current Spec Kit checkpoint: 005 / checklist review passes; tasks is next.** The
+**Current Spec Kit checkpoint: 005 / tasks complete; analyze is next.** The
 [requirements-quality checklist](../specs/005-authentication-bootstrap/checklists/quality.md)
 satisfies 36/36 criteria after explicitly requested assisted review, with
 per-item evidence and no unresolved requirements gap or new human decision.
 The same [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8) continues;
-tasks is a separate invocation, not run here. Specification, planning artifacts
-and the 16/16 author checklist remain unchanged. Actual dependency/runtime proof
-and feature acceptance remain later gates; no intermediate merge is requested.
+the [100 unchecked implementation tasks](../specs/005-authentication-bootstrap/tasks.md)
+now trace all five stories, requirements/outcomes/scenarios and design decisions
+to explicit dependencies, actual paths and mandatory independent validation.
+**Analyze is next**, separately before implementation. Specification, planning
+artifacts, approved ADR and both reviewed checklists remain unchanged.
+No product/dependency/runtime proof or feature acceptance is introduced;
+no intermediate merge is requested.
 See the [current workflow record](development/spec-workflow.md#invocation-and-current-progress).
 
 - [Contributing](../CONTRIBUTING.md): branch, change, checks, commit, push, PR and human merge.

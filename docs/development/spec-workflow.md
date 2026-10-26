@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / checklist review passes; tasks is next**, on
+**Current checkpoint: 005 / tasks complete; analyze is next**, on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 [specification](../../specs/005-authentication-bootstrap/spec.md) uses the exact
@@ -33,18 +33,18 @@ invented. `specs/005-authentication-bootstrap/spec.md` and its author checklist
 remain byte-for-byte unchanged: **16/16 to 16/16**, with no newly passing items,
 regressions or unchecked criteria. No spec section was touched.
 
-| Category | Status | Existing specification evidence |
-| -------- | ------ | ------------------------------- |
-| Functional scope and behavior | Clear | Scope/actors/exclusions, US1-5 and FR-001-015/021 distinguish production login, deliberate enrollment, local development and later authorization/MCP. |
-| Domain and data model | Clear | Key Entities, FR-003/009-014/016/017 and Data Ownership define issuer/subject uniqueness, stable internal users, session/ceremony states and owner-local atomicity. |
-| Interaction and UX flow | Clear | US1/3/4/5, FR-020 and Experience define entry/return, safe retry, sign-out, expired/dev/failure states, keyboard/focus/announcements, narrow width and enlarged text. |
-| Non-functional quality | Clear | FR-008/009/015-020 and SC-002/005-007 require finite budgets, twenty concurrent enrollments, three restarts, five-second post-return UI, WCAG 2.2 AA, safe evidence and honest recovery. |
-| Integration and dependencies | Clear | Accepted 001-004, FR-001/007/016/019/021, Interfaces and explicit exclusions define configured OIDC trust, shared actor/versioning and both-provider ownership without pulling 006/007/009 forward. |
-| Edge cases and failure handling | Clear | Edge Cases, US1-5 and FR-002/009-019 cover replay, request forgery, concurrent enrollment, commit uncertainty, outage, stale restore, secret rotation and bounded trusted requests. |
-| Constraints and tradeoffs | Clear | Scope and Requirements-level defaults explicitly choose one configured production trust, nominated first admin, no account linking/machine issuance and loopback-only development; granular permissions remain 006. |
-| Terminology and consistency | Clear | Key Entities consistently separate external identity, internal user, login/session, bootstrap ceremony, initial designation and security record; profile values are not identity keys. |
-| Completion signals | Clear | Required Validation maps all 22 scenarios, 22 requirements and seven outcomes to independent protocol/provider/browser/contract/privacy and retained regression evidence. |
-| Miscellaneous and placeholders | Clear | No unresolved clarification marker or canonical conflict; Planning choices explicitly assigns mechanisms and finite design budgets without leaving unanswered product intent. |
+| Category                        | Status | Existing specification evidence                                                                                                                                                                                     |
+| ------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functional scope and behavior   | Clear  | Scope/actors/exclusions, US1-5 and FR-001-015/021 distinguish production login, deliberate enrollment, local development and later authorization/MCP.                                                               |
+| Domain and data model           | Clear  | Key Entities, FR-003/009-014/016/017 and Data Ownership define issuer/subject uniqueness, stable internal users, session/ceremony states and owner-local atomicity.                                                 |
+| Interaction and UX flow         | Clear  | US1/3/4/5, FR-020 and Experience define entry/return, safe retry, sign-out, expired/dev/failure states, keyboard/focus/announcements, narrow width and enlarged text.                                               |
+| Non-functional quality          | Clear  | FR-008/009/015-020 and SC-002/005-007 require finite budgets, twenty concurrent enrollments, three restarts, five-second post-return UI, WCAG 2.2 AA, safe evidence and honest recovery.                            |
+| Integration and dependencies    | Clear  | Accepted 001-004, FR-001/007/016/019/021, Interfaces and explicit exclusions define configured OIDC trust, shared actor/versioning and both-provider ownership without pulling 006/007/009 forward.                 |
+| Edge cases and failure handling | Clear  | Edge Cases, US1-5 and FR-002/009-019 cover replay, request forgery, concurrent enrollment, commit uncertainty, outage, stale restore, secret rotation and bounded trusted requests.                                 |
+| Constraints and tradeoffs       | Clear  | Scope and Requirements-level defaults explicitly choose one configured production trust, nominated first admin, no account linking/machine issuance and loopback-only development; granular permissions remain 006. |
+| Terminology and consistency     | Clear  | Key Entities consistently separate external identity, internal user, login/session, bootstrap ceremony, initial designation and security record; profile values are not identity keys.                              |
+| Completion signals              | Clear  | Required Validation maps all 22 scenarios, 22 requirements and seven outcomes to independent protocol/provider/browser/contract/privacy and retained regression evidence.                                           |
+| Miscellaneous and placeholders  | Clear  | No unresolved clarification marker or canonical conflict; Planning choices explicitly assigns mechanisms and finite design budgets without leaving unanswered product intent.                                       |
 
 Exact provider fixture/library, login/session flow and API credential format,
 versioned fields/routes/origins, enrollment delivery, secrets/rotation, finite
@@ -181,6 +181,36 @@ runtime proof, feature acceptance, PR readiness or intermediate merge occurs.
 Actual adoption/protocol/provider/browser/privacy evidence remains mandatory
 future work. Historical failed checks remain failed and undiagnosed, not cleared
 by requirements review. No extension hooks are configured.
+
+**005 tasks checkpoint:** Executed the installed `speckit-tasks` skill with
+the recorded explicit feature directory and resolved project task override.
+The [task list](../../specs/005-authentication-bootstrap/tasks.md) contains
+**100 unchecked tasks**: setup 6, foundation 16, US1 18, US2 15, US3 15,
+US4 8, US5 14 and cross-cutting 8. All tasks have exact paths, requirement/
+principle traces and explicit prerequisites. Its **242 dependency edges are
+acyclic**; **22 parallel candidates** are conditional on their own prerequisites
+and separate files, not permission for concurrent stages.
+
+Coverage maps all **22 functional requirements, seven outcomes, 22 scenarios
+and twelve research/design decisions**. Shared foundations preserve explicit
+format-2 preparation, protected keys, owner-local records, default denial and
+safe health before real production login. Story increments then cover nominated
+atomic enrollment, direct/adapter/actor/session boundaries, isolated development
+and safe operations/recovery. Mandatory evidence includes independent HTTPS
+OIDC and actor consumers, twenty eligible HTTP contenders and three fresh
+restarts per provider, actual commit barriers, exact identity/module preservation,
+all-state browser accessibility/timing, channel canaries and retained full gates.
+Initialization remains a separate explicit stopped recipe; serving never migrates
+or silently replaces a missing key ring.
+
+The original spec, all six planning artifacts, approved ADR and both reviewed
+checklists remain unchanged, as does all prior ledger history. No product/test
+source, dependency/lock, authentication runtime proof, analysis report or human
+feature acceptance is introduced. No before/after tasks extension hook is
+configured. Historical failures remain failed/undiagnosed, not cleared by tasks.
+The helper completes **only tasks** and selects **analyze** in a separate
+invocation on the same branch/draft PR #8. Passing analysis must precede
+implementation; neither an intermediate merge nor PR readiness is requested.
 
 **Historical 004 checkpoint:** **human acceptance recorded; renewed handoff required a fully green latest-head PR matrix** after specify, clarify,
 plan, checklist, tasks and analyze completed on
