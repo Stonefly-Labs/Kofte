@@ -25,7 +25,15 @@
       "next_step": "implement"
     }
   },
-  "active": null,
+  "active": {
+    "spec": "005",
+    "step": "implement",
+    "directory": "specs/005-authentication-bootstrap",
+    "status": "blocked",
+    "branch": "feature/005-authentication-bootstrap",
+    "reason": "T002 blocks adoption: seven IdentityModel 8.19.2 nuspecs advertise upstream revision 25d90ed3f48854036d444541a049089ccd198707, but official tree/LICENSE/LICENSE.txt URLs returned HTTP 404 and authenticated commit/tag lookups returned HTTP 403 (organization SAML enforcement). Restore authorized exact-source access or independently verifiable official revision/license evidence, then resume this same implement stage and finish all dependency adoption gates. Only T001 is complete; no package/product code adopted or later stage run. Evidence: specs/005-authentication-bootstrap/implementation.md.",
+    "started_at": "2026-10-26T21:30:18+00:00"
+  },
   "history": [
     {
       "spec": null,

@@ -329,7 +329,16 @@ That checkpoint required human merge before 005. PR #7 is now human-merged;
 004's accepted ledger and all five acceptance artifact hashes were verified
 on updated main before beginning the new feature.
 
-**005 / specify, clarify, plan, checklist, tasks and analyze are complete; implement is next** on
+**005 / implement is active but blocked at T002**, on
+`feature/005-authentication-bootstrap` and the same draft PR #8.
+The [implementation record](specs/005-authentication-bootstrap/implementation.md)
+completes T001, preserves historical failures and documents unresolved exact
+IdentityModel source provenance (official URLs 404; authenticated lookup
+SAML-denied). No dependency/code was adopted; 99 tasks remain unchecked.
+Resolve exact-source access/evidence before resuming the recorded implement
+stage; do not replace the package or skip its prerequisite gate.
+
+The completed specify-through-analyze history below remains applicable on
 `feature/005-authentication-bootstrap`. Its
 [draft requirements](specs/005-authentication-bootstrap/spec.md) and
 [16/16 author checklist](specs/005-authentication-bootstrap/checklists/requirements.md)
@@ -357,7 +366,7 @@ request for assisted evaluation. No unresolved requirements gap or new human
 decision needs attention. This resolves the earlier reviewer-completion block;
 it is not inferred from ADR approval. Spec, planning artifacts and the 16/16
 author checklist are unchanged. The
-[100 unchecked tasks](specs/005-authentication-bootstrap/tasks.md) now provide
+[100 tasks](specs/005-authentication-bootstrap/tasks.md) provide
 explicit dependencies, paths, model constraints and acceptance coverage for all
 five stories, 22 scenarios, 22 requirements, seven outcomes and twelve decisions.
 Independent protocol/actor consumers, both-provider enrollment/crash/restart/
@@ -366,9 +375,9 @@ The read-only [analysis](specs/005-authentication-bootstrap/analysis.md) passes:
 29/29 requirements/outcomes and 22/22 scenarios have concrete coverage, all
 100 tasks are mapped, and 242 dependency edges are acyclic. No actionable
 or constitutional issue remains. Assessed inputs and reviewer markers are
-unchanged; every implementation task remains unchecked.
-**Implement is next in a separate invocation.** No product package/code,
-runtime proof, feature acceptance or intermediate merge is introduced.
+unchanged at that analysis checkpoint. Only T001 is now checked; implementation
+has not completed. No product package/code, runtime proof, feature acceptance
+or intermediate merge is introduced.
 
 The following paragraphs preserve the historical design-stage checkpoint.
 

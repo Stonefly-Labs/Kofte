@@ -473,7 +473,16 @@ not one passing provider job. PR #7 is now human-merged; its accepted ledger
 and all five acceptance artifact hashes were verified on updated main before
 005 began. Historical failed checks and undiagnosed causes remain unchanged.
 
-**005 / specify, clarify, plan, checklist, tasks and analyze are complete; implement is next** on
+**005 / implement is active but blocked at T002** on
+`feature/005-authentication-bootstrap`. The
+[implementation checkpoint](../specs/005-authentication-bootstrap/implementation.md)
+completes T001 and records unresolved exact IdentityModel source provenance:
+official source URLs return 404 and authenticated lookup is SAML-denied.
+No package, architecture decision or runtime code changed; 99 tasks remain
+unchecked. Resume this same stage only after exact-source evidence/access is
+resolved, without weakening the adoption gate.
+
+The completed specify-through-analyze history below is retained on
 `feature/005-authentication-bootstrap`. Its
 [draft requirements](../specs/005-authentication-bootstrap/spec.md) define
 host-owned production OIDC identity, explicit development limits, stable user
@@ -508,7 +517,7 @@ per-item evidence for identity/access, enrollment, host/module storage/recovery,
 UX and operability. No unresolved requirements gap, constitutional conflict
 or new human decision needs attention. The review changes no architecture
 decision or planning evidence and resolves the earlier checklist block.
-The [100 unchecked tasks](../specs/005-authentication-bootstrap/tasks.md) now
+The [100 tasks](../specs/005-authentication-bootstrap/tasks.md)
 map every requirement/outcome/scenario and all twelve design decisions to
 path-specific implementation and independent evidence, with explicit acyclic
 dependencies and model constraints. They retain exact platform/recovery versions,
@@ -517,10 +526,10 @@ filesystem/database partial effects; no new architecture decision is made.
 The read-only [analysis](../specs/005-authentication-bootstrap/analysis.md)
 passes with concrete coverage of all 29 requirements/outcomes and 22 scenarios,
 100 mapped tasks and 242 acyclic dependency edges. No actionable or constitutional
-finding remains; all assessed inputs/reviewer markers are unchanged and every
-implementation task remains unchecked. **Implement is next in a separate
-invocation** on the same draft PR #8, not an intermediate merge, runtime result,
-new architecture decision or feature acceptance.
+finding remains at that analysis checkpoint; assessed inputs/reviewer markers
+were unchanged. Only prerequisite-evidence T001 is now checked. The same draft
+PR #8 retains the blocked implementation, not an intermediate merge, runtime
+result, new architecture decision or feature acceptance.
 
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements

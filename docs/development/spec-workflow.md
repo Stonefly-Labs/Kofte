@@ -6,9 +6,22 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / analyze complete; implement is next**, on
+**Current checkpoint: 005 / implement blocked at T002**, on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
+[implementation record](../../specs/005-authentication-bootstrap/implementation.md)
+completes only T001 and preserves the exact-source dependency blocker: official
+IdentityModel revision/license URLs returned 404, while authenticated lookup
+was denied by organization SAML enforcement. No package or authentication code
+was adopted; T002-T100 remain unchecked. The default SDK selection issue was
+resolved using the existing pinned isolated SDK and is not the blocker.
+Resolve authorized exact-source access/evidence, then use the driver's
+`resume --branch feature/005-authentication-bootstrap` with
+`SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap`; do not begin a
+second run, skip T002 or advance to converge. Keep the same draft PR #8;
+no intermediate merge or feature acceptance is requested.
+
+The following preserves completed design-stage history. The
 [specification](../../specs/005-authentication-bootstrap/spec.md) uses the exact
 fenced inventory 005 prompt and resolved project template. Five stories,
 22 Given/When/Then scenarios, 22 functional requirements and seven measurable
