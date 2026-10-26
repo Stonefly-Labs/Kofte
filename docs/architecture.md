@@ -473,7 +473,7 @@ not one passing provider job. PR #7 is now human-merged; its accepted ledger
 and all five acceptance artifact hashes were verified on updated main before
 005 began. Historical failed checks and undiagnosed causes remain unchanged.
 
-**005 / specify, clarify and plan are complete; checklist is generated and blocked for reviewer completion** on
+**005 / specify, clarify, plan and checklist are complete; tasks is next** on
 `feature/005-authentication-bootstrap`. Its
 [draft requirements](../specs/005-authentication-bootstrap/spec.md) define
 host-owned production OIDC identity, explicit development limits, stable user
@@ -503,12 +503,13 @@ still needs actual adoption review. Granular authorization,
 MCP and general audit administration remain 006/007/009. No product code/package,
 tasks, runtime proof or feature acceptance is introduced by planning.
 The subsequent [requirements-quality checklist](../specs/005-authentication-bootstrap/checklists/quality.md)
-now has 36 unchecked criteria covering identity/access, enrollment, host/module
-storage and recovery, UX and operability. Generation evaluates no criterion
-and changes no architecture decision or planning evidence. The active checklist
-stage is blocked for reviewer completion; assisted marking requires an explicit
-reviewer request. Tasks remains a later stage on the same draft PR #8, not an
-intermediate merge or permission to implement.
+now satisfies 36/36 criteria after explicitly requested assisted review, with
+per-item evidence for identity/access, enrollment, host/module storage/recovery,
+UX and operability. No unresolved requirements gap, constitutional conflict
+or new human decision needs attention. The review changes no architecture
+decision or planning evidence and resolves the earlier checklist block.
+Tasks is next in a separate invocation on the same draft PR #8, not an
+intermediate merge, runtime result or permission to skip implementation gates.
 
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements

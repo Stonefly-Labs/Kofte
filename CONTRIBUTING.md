@@ -329,7 +329,7 @@ That checkpoint required human merge before 005. PR #7 is now human-merged;
 004's accepted ledger and all five acceptance artifact hashes were verified
 on updated main before beginning the new feature.
 
-**005 / specify, clarify and plan are complete; checklist is generated and blocked for reviewer completion** on
+**005 / specify, clarify, plan and checklist are complete; tasks is next** on
 `feature/005-authentication-bootstrap`. Its
 [draft requirements](specs/005-authentication-bootstrap/spec.md) and
 [16/16 author checklist](specs/005-authentication-bootstrap/checklists/requirements.md)
@@ -352,13 +352,13 @@ exact dependency adoption and actual protocol/provider/browser/privacy evidence
 remain later gates. Recording approval executes no stage.
 Continue on this branch and [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8);
 the [requirements-quality checklist](specs/005-authentication-bootstrap/checklists/quality.md)
-now has 36 unchecked criteria. No item has been evaluated or marked satisfied.
-Reviewer completion, or an explicit request for assisted evaluation/marking,
-must resolve the recorded checklist gate before tasks in a later invocation.
-ADR approval does not authorize checklist marking. Spec, planning artifacts
-and the 16/16 author checklist are unchanged; no product package, task list,
-implementation, runtime proof, feature acceptance or intermediate merge is
-introduced.
+now satisfies 36/36 criteria with per-item evidence under the reviewer's explicit
+request for assisted evaluation. No unresolved requirements gap or new human
+decision needs attention. This resolves the earlier reviewer-completion block;
+it is not inferred from ADR approval. Spec, planning artifacts and the 16/16
+author checklist are unchanged. Tasks is next in a separate invocation;
+no product package, task list, implementation, runtime proof, feature acceptance
+or intermediate merge is introduced.
 
 The following paragraphs preserve the historical design-stage checkpoint.
 

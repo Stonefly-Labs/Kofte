@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / checklist generated, blocked for reviewer completion**, on
+**Current checkpoint: 005 / checklist review passes; tasks is next**, on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 [specification](../../specs/005-authentication-bootstrap/spec.md) uses the exact
@@ -18,7 +18,8 @@ operation/recovery. The
 [built-in author checklist](../../specs/005-authentication-bootstrap/checklists/requirements.md)
 satisfies 16/16 criteria. The reviewer-owned
 [quality checklist](../../specs/005-authentication-bootstrap/checklists/quality.md)
-now has 36 unchecked criteria; no passing review is claimed by generation.
+now satisfies 36/36 criteria after explicitly requested assisted evaluation,
+with per-item evidence and no unresolved requirements gap or new human decision.
 
 Before beginning this new feature, PR #7 was verified human-merged, 004's
 accepted state was verified on updated `origin/main`, and all five acceptance
@@ -120,7 +121,7 @@ checklist evaluation, actual runtime evidence and explicit feature acceptance
 remain separate gates. Recording approval executes no stage: **checklist is
 still next**, with no active stage, on the same branch/draft PR #8.
 
-**005 checklist generation checkpoint:** Executed the installed
+**005 checklist generation checkpoint (historical):** Executed the installed
 `speckit-checklist` skill with explicit recorded feature-path and resolved
 checklist template. The driver supplies standard-depth reviewer/PR coverage
 for identity/access and nominated enrollment, storage/recovery, minimal UX and
@@ -129,13 +130,13 @@ and explicit exclusions, not a new runtime. No extra scope question or human
 decision was needed or invented.
 
 The new [quality checklist](../../specs/005-authentication-bootstrap/checklists/quality.md)
-contains **36 unchecked criteria, CHK001-CHK036**, grouped by completeness,
+originally contained **36 unchecked criteria, CHK001-CHK036**, grouped by completeness,
 clarity, consistency, acceptance quality, scenario/edge coverage, non-functional
 requirements, dependencies and ambiguities/conflicts. All items have source
 references. Generation does not evaluate them, identify a requirements defect
 or assert a passing quality result.
 
-**005 / checklist remains active and blocked for reviewer completion** on
+At that checkpoint, **005 / checklist remained active and blocked for reviewer completion** on
 `feature/005-authentication-bootstrap` and
 [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8).
 The reviewer must evaluate the criteria with evidence, or explicitly request
@@ -148,7 +149,38 @@ configured. Specification, planning artifacts, approved ADR, 16/16 author
 checklist and all historical ledger entries/hashes remain unchanged.
 Only the active checklist state, new checklist and progress documentation
 change. No product/test source, dependency/lock, task list, runtime proof,
-feature acceptance, PR readiness or intermediate merge is introduced.
+feature acceptance, PR readiness or intermediate merge was introduced by generation.
+
+**005 assisted checklist review checkpoint:** The reviewer explicitly requested
+**"review the hecklist and highlight what needs me attention"**. This authorizes
+evaluation/marking of the existing criteria, not checklist regeneration,
+dependency adoption or numbered-feature acceptance. The original blocked
+checklist stage was resumed on its recorded branch/directory.
+
+The [assisted assessment](../../specs/005-authentication-bootstrap/checklists/quality.md#assisted-review---2026-10-26)
+now satisfies **36/36 criteria**, from 0/36, with one evidence row per original
+question. All IDs/questions/references are preserved. Review covered the spec,
+plan, all twelve research decisions, eight-table model, both versioned
+contracts, future guide, approved ADR and constitution. It found no unresolved
+requirements gap, constitutional conflict, scope amendment or new human decision
+needing attention. No requirement or architecture artifact was amended.
+
+In particular, API 401/403/503 semantics remain distinct from necessary protocol
+redirects; direct/adapter parity prohibits accepting mixed credentials even
+when their unsupported header is not forwarded. Restored-copy uncertainty
+requires quarantine/reconciliation, not administrator reenrollment. ADR 0007's
+later Approval section resolves historical Proposed statements without inventing
+a new approval gate. These are existing requirements, not new design decisions.
+
+The helper completes only **005 / checklist**, retaining historical entries
+and selecting **tasks** with no active stage. Tasks is next in a separate
+invocation on the same branch/draft PR #8; none was generated here.
+Spec, planning artifacts, approved ADR and 16/16 author checklist remain
+byte-for-byte unchanged. No product/test/dependency change, authentication
+runtime proof, feature acceptance, PR readiness or intermediate merge occurs.
+Actual adoption/protocol/provider/browser/privacy evidence remains mandatory
+future work. Historical failed checks remain failed and undiagnosed, not cleared
+by requirements review. No extension hooks are configured.
 
 **Historical 004 checkpoint:** **human acceptance recorded; renewed handoff required a fully green latest-head PR matrix** after specify, clarify,
 plan, checklist, tasks and analyze completed on

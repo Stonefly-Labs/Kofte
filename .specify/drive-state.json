@@ -22,18 +22,10 @@
     },
     "005": {
       "directory": "specs/005-authentication-bootstrap",
-      "next_step": "checklist"
+      "next_step": "tasks"
     }
   },
-  "active": {
-    "spec": "005",
-    "step": "checklist",
-    "directory": "specs/005-authentication-bootstrap",
-    "status": "blocked",
-    "branch": "feature/005-authentication-bootstrap",
-    "reason": "Generated checklists/quality.md with 36 unchecked reviewer-owned requirements-quality criteria (CHK001-CHK036), standard-depth PR coverage of identity/access, nominated enrollment, host/module storage and recovery, UX and operability; MCP limited to future shared actor/authorization and scope exclusions. No criterion evaluated or marked; explicit reviewer evaluation or request for assisted evaluation/marking is required before checklist completion. ADR 0007 approval does not authorize marking. Spec, planning artifacts, approved ADR, 16/16 author checklist and all historical evidence remain unchanged. Resume this same checklist stage/branch/draft PR #8 to resolve review; tasks not run and no product/dependency/runtime/acceptance or intermediate merge.",
-    "started_at": "2026-10-26T20:55:37+00:00"
-  },
+  "active": null,
   "history": [
     {
       "spec": null,
@@ -1127,6 +1119,22 @@
         "specs/005-authentication-bootstrap/plan.md": "28cd58fd796ada5d915e7a3ae74709f67a93cd19ca511287066ca9570e764696",
         "specs/005-authentication-bootstrap/research.md": "8e3108b6b1c6018b4c662648bbaa19b787e21302723183ef19830db6cff19df9",
         "specs/005-authentication-bootstrap/quickstart.md": "08c294fb444d459dfe1be43abd35cd59602e336cf6ca53701441a6fdbd9faeca"
+      }
+    },
+    {
+      "spec": "005",
+      "step": "checklist",
+      "directory": "specs/005-authentication-bootstrap",
+      "status": "complete",
+      "branch": "feature/005-authentication-bootstrap",
+      "reason": "",
+      "started_at": "2026-10-26T20:55:37+00:00",
+      "completed_at": "2026-10-26T21:03:53+00:00",
+      "outcome": "pass",
+      "note": "Explicit reviewer request: 'review the hecklist and highlight what needs me attention'. Resumed original blocked checklist stage and evaluated all 36 existing questions against spec, plan, twelve research decisions, eight-table model, identity/operator contracts, guide, approved ADR 0007 and constitution. 0/36 to 36/36 satisfied with per-item evidence; IDs/questions/references preserved. No unresolved requirements gap, constitutional conflict, scope amendment or new human decision. API/protocol redirect distinctions, mixed-credential adapter parity and restore-history quarantine are already specified, not new decisions. Spec/design/ADR and 16/16 author checklist unchanged; historical failed checks not diagnosed or cleared. No regenerated criteria, product/dependency/runtime proof, tasks or feature acceptance. Tasks next in a separate invocation on same draft PR #8; no intermediate merge.",
+      "evidence_sha256": {
+        "specs/005-authentication-bootstrap/checklists/quality.md": "c169329a32af64d429d94ad29597a0c8560497e2599269962a6b3db2f0b868ca",
+        "specs/005-authentication-bootstrap/checklists/requirements.md": "26bdb3c100317600de5c4be50934873933b0942bf23b7913e49571dd2ce65adb"
       }
     }
   ]
