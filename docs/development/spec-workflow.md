@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** **004 / explicitly human-accepted; human merge of PR #7 is next** after specify, clarify,
+**Current checkpoint:** **004 / human acceptance recorded; PR #7 held draft after SQLite CI failure** after specify, clarify,
 plan, checklist, tasks and analyze completed on
 `feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
 The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the
@@ -446,6 +446,19 @@ permits marking PR #7 ready and requesting **human merge**, never assistant
 merge, closure, auto-merge or branch deletion. **005 waits for that merge**
 putting accepted ledger/evidence on updated main and a separate later invocation.
 No 005 stage, branch or artifact is created here.
+
+**Current delivery hold after acceptance:** The human reported a new SQLite
+failure in acceptance-head CI. PR #7 is returned to draft and the merge request
+is withdrawn while the follow-up is assessed. The
+[failure record and diagnostic correction](../../specs/004-module-lifecycle/implementation.md#post-acceptance-sqlite-ci-failure-and-diagnostic-correction)
+retain the exact run/method/report and missing original scenario/assertion.
+Unchanged local execution passes the three boot cases and all 155 SQLite cases;
+neither result establishes the Ubuntu failure's cause. Bounded safe diagnostics
+now preserve known failed scenarios/assertion symbols before private XML cleanup,
+including isolated-report validation. No product behavior, .NET test assertion,
+deadline, accepted ledger or historical acceptance/review is changed.
+Actual follow-up CI must be inspected; a pass still does not diagnose the old
+failure. The separate PostgreSQL deferral is unchanged. No 005 work is run.
 
 **003 acceptance checkpoint:** 003 is **explicitly human-accepted and
 human-merged** on its original `feature/003-storage-registry` and

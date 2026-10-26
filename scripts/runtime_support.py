@@ -49,13 +49,15 @@ class CommandDiagnostics:
     )
     storage_code = re.compile(rb"\b(?:StorageException|XunitException)\s*:\s*([A-Za-z_]{1,64})\b")
 
-    def __init__(self, kind, codes=(), tests=()):
+    def __init__(self, kind, codes=(), tests=(), *, scenarios=()):
         self.kind, self.codes = kind, frozenset(codes)
         self.tests = frozenset(tests)
+        self.scenarios = frozenset(scenarios)
         self.failures = Failures()
         self.sources, self.dependency_codes = set(), set()
         self.failed_tests, self.storage_codes = set(), set()
         self.failed_operations = set()
+        self.failed_scenarios = set()
         self.storage_report_code = None
         self.lock = threading.Lock()
         self.closed = False
@@ -87,7 +89,7 @@ class CommandDiagnostics:
                     return
                 if test and test[1].decode("ascii") in self.tests and len(self.failed_tests) < 32:
                     self.failed_tests.add(test[1].decode("ascii"))
-                if code and code[1].decode("ascii") in self.codes:
+                if code and code[1].decode("ascii") in self.codes and len(self.storage_codes) < 32:
                     self.storage_codes.add(code[1].decode("ascii"))
 
     def read(self, stream):
@@ -131,18 +133,51 @@ class CommandDiagnostics:
                 self.failed_tests.add(name)
             for message in test.findall("failure/message"):
                 text = message.text or ""
-                if text.strip() in self.codes:
-                    self.storage_codes.add(text.strip())
-                self.storage_codes.update(
+                found = {
                     code for code in re.findall(r"\b(?:storage|composition)_[a-z_]{1,60}\b", text)
                     if code in self.codes
-                )
+                }
+                if text.strip() in self.codes:
+                    found.add(text.strip())
+                self.storage_codes.update(sorted(found)[:max(0, 32 - len(self.storage_codes))])
                 self.failed_operations.update(
                     re.findall(r"\boperation=(acquire|register|setup)\b", text)
                 )
                 self.inspect(text.encode())
+            for output in test.findall("output"):
+                self.read_composition_output(output.text or "")
         if not self.failed_tests:
             self.storage_report_code = "no_known_failure"
+
+    def read_composition_output(self, output):
+        for line in output.splitlines():
+            if len(line) > 4096:
+                continue
+            try:
+                event = json.loads(line)
+            except ValueError:
+                continue
+            if (not isinstance(event, dict) or set(event) != {
+                    "schemaVersion", "eventCode", "attempt", "provider", "scenario", "status", "assertions",
+                } or type(event["schemaVersion"]) is not int or event["schemaVersion"] != 1
+                    or event["status"] != "failed"
+                    or type(event["assertions"]) is not int or event["assertions"] != 0
+                    or event["provider"] not in ("sqlite", "postgres")
+                    or not isinstance(event["scenario"], str) or event["scenario"] not in self.scenarios
+                    or not isinstance(event["attempt"], str)
+                    or re.fullmatch(r"[a-f0-9]{32}", event["attempt"]) is None
+                    or not isinstance(event["eventCode"], str) or len(event["eventCode"]) > 512):
+                continue
+            self.failed_scenarios.add(event["scenario"])
+            # Composite assertions retain fixed source symbols, never dynamic values.
+            candidates = [event["eventCode"]] if event["eventCode"] in self.codes else sorted(self.codes)
+            for code in candidates:
+                if len(self.storage_codes) >= 32:
+                    break
+                if code.startswith("composition_") and (
+                        code.endswith("_") and event["eventCode"].startswith(code)
+                        or re.search(r"(?<![a-z0-9])" + re.escape(code) + r"(?![a-z0-9])", event["eventCode"])):
+                    self.storage_codes.add(code)
 
     def safe_fields(self):
         with self.lock:
@@ -156,6 +191,7 @@ class CommandDiagnostics:
                     **({f"failed{prefix.title()}Tests": sorted(self.failed_tests)} if self.failed_tests else {}),
                     **({f"{prefix}FailureCodes": sorted(self.storage_codes)} if self.storage_codes else {}),
                     **({f"{prefix}FailureOperations": sorted(self.failed_operations)} if self.failed_operations else {}),
+                    **({f"{prefix}FailureScenarios": sorted(self.failed_scenarios)} if self.failed_scenarios else {}),
                     **({f"{prefix}DiagnosticCode": self.storage_report_code} if self.storage_report_code else {}),
                 }
             return {}
@@ -168,6 +204,7 @@ class CommandDiagnostics:
             self.failed_tests.clear()
             self.storage_codes.clear()
             self.failed_operations.clear()
+            self.failed_scenarios.clear()
             self.storage_report_code = None
 
 

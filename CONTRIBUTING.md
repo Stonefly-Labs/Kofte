@@ -316,8 +316,11 @@ disclosed. No acceptance, readiness or intermediate merge is implied.
 **"bro this human fugging accepts"** after passing review, retaining its scope
 and the deferred failed PostgreSQL observation. No review/task/checklist or
 product/test evidence is rewritten; acceptance does not make the failed local
-complete attempt pass or waive release evidence. The same PR #7 is ready for
-**human merge**. Only that merge putting accepted evidence on updated main
+complete attempt pass or waive release evidence. The same PR #7 was marked
+ready, but is now **held draft after a new SQLite CI failure**. Its
+[fact record and diagnostic correction](specs/004-module-lifecycle/implementation.md#post-acceptance-sqlite-ci-failure-and-diagnostic-correction)
+retain the unknown original scenario/assertion and unchanged local passes,
+without a speculative product fix. Only human merge putting accepted evidence on updated main
 unlocks 005 in a later invocation; no new stage/feature is run here.
 
 The following paragraphs preserve the historical design-stage checkpoint.

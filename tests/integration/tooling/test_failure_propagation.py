@@ -198,8 +198,9 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
                 test_key = f"failed{kind.title()}Tests"
                 code_key = f"{kind}FailureCodes"
                 operation_key = f"{kind}FailureOperations"
+                scenario_key = f"{kind}FailureScenarios"
                 report_key = f"{kind}DiagnosticCode"
-                if not any(key in step for key in (test_key, code_key, operation_key, report_key)):
+                if not any(key in step for key in (test_key, code_key, operation_key, scenario_key, report_key)):
                     continue
                 diagnostic = api.command_diagnostics(step["command"])
                 if diagnostic is None or diagnostic.kind != kind:
@@ -207,6 +208,7 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
                 for key, allowed in (
                     (test_key, diagnostic.tests), (code_key, diagnostic.codes),
                     (operation_key, diagnostic.storage_operations),
+                    (scenario_key, diagnostic.scenarios),
                 ):
                     if key not in step:
                         continue

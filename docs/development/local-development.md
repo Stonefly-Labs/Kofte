@@ -350,8 +350,14 @@ affirmative decision after passing review and disclosure of the deferred
 PostgreSQL failure. The failed/interrupted local complete attempt and unknown
 cause remain; no runtime rerun/investigation or release waiver is implied.
 Supported commands, deadlines, recovery duties, review/tasks/checklists and
-product/test source are unchanged. PR #7 is ready for human merge; 005 waits
-for that merge and a later invocation from updated main.
+product/.NET-test source are unchanged. PR #7 is now held draft after a distinct
+SQLite CI boot-theory failure. The
+[follow-up evidence](../../specs/004-module-lifecycle/implementation.md#post-acceptance-sqlite-ci-failure-and-diagnostic-correction)
+records unchanged local passes and an unknown original cause, not a product fix.
+Verifier diagnostics now preserve allowlisted failed scenarios/assertion symbols
+from known failed tests' output, never raw exceptions, arguments or private data;
+isolated failure reports revalidate those fields. 005 waits for human merge
+and a later invocation from updated main.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).

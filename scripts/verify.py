@@ -390,11 +390,15 @@ def command_diagnostics(command):
             "Incomplete", "ReconciliationRequired", "VersionUnsupported", "PrivilegeDenied",
             "Unavailable", "DeadlineExceeded", "Cancelled", "RequestInvalid",
         )
+        composition_codes = set()
+        for path in (ROOT / "tests/contract/Kofte.Composition.Consumer").rglob("*.cs"):
+            if not {"bin", "obj"}.intersection(path.relative_to(ROOT).parts):
+                composition_codes.update(re.findall(r'"(composition_[a-z0-9_]{1,160})"', path.read_text()))
         return runtime_support.CommandDiagnostics(kind, (
             *codes, *("storage_" + re.sub(r"(?<!^)(?=[A-Z])", "_", code).lower() for code in codes),
-            *(("composition_consumer_failed", "composition_consumer_output_limit",
-               "composition_consumer_result_invalid") if kind == "contract" else ()),
-        ), tests)
+            "composition_consumer_failed", "composition_consumer_output_limit", "composition_consumer_result_invalid",
+            *composition_codes,
+        ), tests, scenarios=(*COMPOSITION_OBSERVATIONS, "all"))
     return None
 
 

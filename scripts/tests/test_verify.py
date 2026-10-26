@@ -323,6 +323,39 @@ class VerifyTests(unittest.TestCase):
         self.assertNotIn("credential-canary", report.path.read_text())
         self.assertEqual(set(), diagnostic.sources)
 
+    def test_failed_composition_theory_preserves_safe_assertion_and_scenario_before_private_cleanup(self):
+        runner = verify.Runner(self.root, self.report("integration"), {})
+        diagnostic = verify.command_diagnostics([
+            "dotnet", "test", "--project", verify.STORAGE_INTEGRATION,
+        ])
+        name = ("Kofte.Storage.IntegrationTests.Composition.SqliteCompositionProviderTests."
+                "OwnedProviderBootPreservesInventoryAndExecutesOnlyItsIntendedPublicModules")
+        owner, method = name.rsplit(".", 1)
+        event = json.dumps({
+            "schemaVersion": 1, "eventCode": "composition_test_phase_barrier_wrong",
+            "attempt": "a" * 32, "provider": "sqlite", "scenario": "valid-dependency",
+            "status": "failed", "assertions": 0,
+        })
+        xml = (f'<assemblies><test type="{owner}" method="{method}" result="Fail" '
+               'name="credential-canary"><failure><message>composition_consumer_failed</message>'
+               '</failure><output><![CDATA[' + event + '\n/private/credential-canary'
+               ']]></output></test></assemblies>')
+        script = (
+            "import sys; from pathlib import Path; "
+            "directory=Path(sys.argv[sys.argv.index('--results-directory')+1]); "
+            f"(directory/'storage.xml').write_text({xml!r}); sys.exit(2)"
+        )
+        with self.assertRaisesRegex(verify.VerificationError, "command_failed"):
+            runner.command("storage-integration-sqlite", ["python3", "-c", script], diagnostics=diagnostic)
+        step = runner.report.data["steps"][-1]
+        self.assertEqual([name], step["failedStorageTests"])
+        self.assertEqual(["composition_consumer_failed", "composition_test_phase_barrier_wrong"],
+                         step["storageFailureCodes"])
+        self.assertEqual(["valid-dependency"], step["storageFailureScenarios"])
+        self.assertFalse(list((self.root / "artifacts/verification/.private").rglob("storage.xml")))
+        self.assertNotIn("credential", runner.report.path.read_text())
+        self.assertEqual(set(), diagnostic.storage_codes)
+
     def test_failed_public_contract_retains_nested_source_known_identity_without_private_output(self):
         runner = verify.Runner(self.root, self.report("contract"), {})
         diagnostic = verify.command_diagnostics([

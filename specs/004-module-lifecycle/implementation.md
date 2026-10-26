@@ -1935,3 +1935,75 @@ configured. The historical implementation report remains an exact byte prefix;
 all 86 task descriptions and preceding 85 task markers are unchanged.
 Only T086's completion marker, current progress documentation and driver state
 change. No product suites are rerun for this disposition.
+
+## Post-acceptance SQLite CI failure and diagnostic correction
+
+**2026-10-25 repository working date (2026-10-26 UTC): PR #7 is held draft;
+the original SQLite failure is not diagnosed or fixed by a passing retry.**
+Human acceptance remains recorded as its historical decision. The merge
+request is withdrawn while this follow-up is assessed; no 005 work begins.
+
+The human reported **"bruv integration sqlite failed"** after acceptance.
+[Product run 40257945747](https://github.com/Stonefly-Labs/Kofte/actions/runs/40257945747)
+at acceptance commit `141d358c703470d681e2fc2b5c2dbfe6a3be6efa` fails
+`integration-sqlite`, specifically `storage-integration-sqlite`.
+Safe report `integration-sqlite-5eea5f4e77104bb6acf3e179835b2d58.json`
+names synthetic checkout `e9c232c4a48ffaac4d79184fbb1fe47a87650a69`,
+exit 2, duration 314.685s and failure correlation
+`78e0102b4ba645989e295c094aa0bd6a`.
+Its failed method is
+`SqliteCompositionProviderTests.OwnedProviderBootPreservesInventoryAndExecutesOnlyItsIntendedPublicModules`.
+This theory has `empty-boot`, `valid-dependency` and `disabled-missing` cases.
+**The original report/log preserves neither the selected case nor its
+assertion**, so no scheduling, cleanup, database or flaky-test cause is known.
+This is distinct from the earlier deferred PostgreSQL migration observation.
+
+### Unchanged local reproduction
+
+The existing pinned SDK 10.0.402/runtime 10.0.13 was selected from the already
+installed ignored toolchain, with `DOTNET_PROCESSOR_COUNT=4`. No tool/package,
+product code, .NET test, input limit, timeout, assertion or selector was changed:
+
+| Exact command | Observed result |
+| --- | --- |
+| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-trait Provider=sqlite --filter-method '*OwnedProviderBootPreservesInventoryAndExecutesOnlyItsIntendedPublicModules' --minimum-expected-tests 3` | Passed all three cases, zero skipped; 4.692s summary. |
+| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-trait Provider=sqlite --minimum-expected-tests 1` | Passed 155/155, zero skipped; 4m15.751s summary. |
+
+These actual passes do not reproduce or explain the failed Ubuntu execution.
+No PostgreSQL test or previously deferred case is rerun by these commands.
+
+### Reproduced evidence-loss defect and bounded correction
+
+The verifier previously discarded known failed tests' captured output after
+reading only their generic exception. It also admitted
+`composition_consumer_failed` only for contract diagnostics, although this
+storage theory uses the same public consumer. That combination loses the
+safe consumer failure envelope before private XML cleanup.
+
+Focused regressions reproduce all three gaps: lost scenario/assertion
+metadata, missing storage-consumer failure code, and dropped isolated-report
+projection. Before correction, Python discovery runs 121 cases with exactly
+three errors. The correction changes only verification diagnostics:
+
+- Read the existing bounded XML output only for source-known failed tests,
+  not passing or unknown tests.
+- Admit the strict failed consumer envelope's fixed scenario and source-literal
+  assertion symbols. Composite assertions retain fixed prefixes/causal codes,
+  never dynamic exception values, private paths, arguments, payloads or stacks.
+- Bound emitted code/test sets to 32 and restrict scenario values to the
+  existing public catalog. Clear transient evidence with the existing capture.
+- Revalidate both storage/contract scenario fields against the same allowlist
+  inside isolated failure-propagation reports; reject unknown/duplicate values.
+
+All **121 Python tests pass** after correction (2.241s), including fake
+private-data, malformed-envelope, known/passing/unknown-test isolation,
+composite-cleanup and isolated-report regressions. A first green attempt
+exposed a redundant generic assertion-prefix projection; preferring an exact
+known code resolves it without weakening expectations.
+
+The follow-up must inspect actual publication-head CI before any renewed merge
+handoff. If the failure recurs, use the newly preserved scenario/assertion
+symbols rather than assuming that the old failure was harmless. If it passes,
+the original failure still remains unexplained. The existing accepted ledger,
+review, acceptance, 86 tasks and reviewed checklists are unchanged; this is
+not another Spec Kit stage, a new acceptance decision or a release waiver.

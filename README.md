@@ -35,7 +35,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 | 🔐 Explicit boundaries     | Team-scoped authorization, audited actions and module-owned storage                                   |
 
 > [!IMPORTANT]
-> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is now [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md) after its passing final review, with all 86 tasks unchanged. The human-deferred PostgreSQL anomaly remains undiagnosed and the failed local attempt stays failed; acceptance is not a release waiver. [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) awaits human merge before 005 may begin. Nothing here claims production readiness or MVP completion.
+> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md), but [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) is held draft after a new SQLite CI failure. The [failure record](specs/004-module-lifecycle/implementation.md#post-acceptance-sqlite-ci-failure-and-diagnostic-correction) preserves the unknown cause and safe-diagnostics correction; unchanged local passes do not diagnose it. The separate deferred PostgreSQL anomaly and failed local gate remain. Acceptance is not a release waiver, and 005 waits for human merge. Nothing here claims production readiness or MVP completion.
 
 ## 🧭 The shape of things to come
 
@@ -263,8 +263,12 @@ decision **"bro this human fugging accepts"**, responding to the passing review
 and disclosed deferred PostgreSQL limitation. Review/tasks/checklists and
 historical evidence remain unchanged; the failed local attempt stays failed,
 not diagnosed or rerun. [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7)
-is ready for human merge. **005 waits for that merge** and a later invocation
-from updated main; acceptance starts no new feature and waives no release gate.
+was marked ready, but is now **held draft after a new SQLite CI failure**.
+The [follow-up evidence](specs/004-module-lifecycle/implementation.md#post-acceptance-sqlite-ci-failure-and-diagnostic-correction)
+records three and 155 unchanged passing local cases without an established
+cause; bounded failure diagnostics now preserve the case/assertion for recurrence.
+**005 waits for human merge** and a later invocation from updated main;
+acceptance starts no new feature and waives no release gate.
 
 **Spec 003 is explicitly human-accepted and human-merged.**
 The [acceptance record](specs/003-storage-registry/acceptance.md) preserves the

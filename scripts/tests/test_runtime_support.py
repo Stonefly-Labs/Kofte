@@ -221,6 +221,55 @@ class RuntimeSupportTests(unittest.TestCase):
                 diagnostic.clear()
                 self.assertEqual({}, diagnostic.safe_fields())
 
+    def test_failed_composition_output_retains_only_known_scenario_and_assertion_symbols(self):
+        name = "Kofte.Storage.IntegrationTests.Composition.SqliteCompositionProviderTests.KnownCase"
+        owner, method = name.rsplit(".", 1)
+        codes = ["composition_consumer_failed", "composition_test_command_exit_expected_",
+                 "composition_cleanup_incomplete", "composition_host_dispose_incomplete"]
+        diagnostic = support.CommandDiagnostics(
+            "storage", codes, [name], scenarios=["empty-boot", "valid-dependency", "disabled-missing"],
+        )
+        event = {
+            "schemaVersion": 1, "eventCode": "composition_test_command_exit_expected_0_actual_1_"
+            "composition_cleanup_incomplete_composition_host_dispose_incomplete",
+            "attempt": "a" * 32, "provider": "sqlite", "scenario": "empty-boot",
+            "status": "failed", "assertions": 0,
+        }
+        output = "\n".join((
+            json.dumps(event | {"scenario": "credential-canary"}),
+            json.dumps(event | {"eventCode": "credential-canary", "extra": "/private/credential-canary"}),
+            json.dumps(event),
+            "/private/credential-canary arbitrary exception and stack",
+        ))
+        path = self.root / "storage.xml"
+        path.write_text(
+            f'<assemblies><test type="{owner}" method="{method}" result="Pass">'
+            '<output><![CDATA[' + json.dumps(event | {"scenario": "valid-dependency"}) + ']]></output></test>'
+            '<test type="unknown" method="unknown" result="Fail"><output><![CDATA['
+            + json.dumps(event | {"scenario": "disabled-missing"}) + ']]></output></test>'
+            f'<test type="{owner}" method="{method}" result="Fail">'
+            '<failure><message>composition_consumer_failed</message></failure>'
+            '<output><![CDATA[' + output + ']]></output></test></assemblies>'
+        )
+        diagnostic.read_storage_report(path)
+        self.assertEqual({
+            "failedStorageTests": [name],
+            "storageFailureCodes": sorted(codes),
+            "storageFailureScenarios": ["empty-boot"],
+        }, diagnostic.safe_fields())
+        self.assertNotIn("credential", json.dumps(vars(diagnostic), default=str))
+        diagnostic.clear()
+        self.assertEqual({}, diagnostic.safe_fields())
+
+        codes = [f"composition_test_case_{chr(97 + index // 26)}{chr(97 + index % 26)}" for index in range(40)]
+        diagnostic = support.CommandDiagnostics("storage", codes, [name])
+        path.write_text(
+            f'<assemblies><test type="{owner}" method="{method}" result="Fail">'
+            '<failure><message>' + "\n".join(codes) + '</message></failure></test></assemblies>'
+        )
+        diagnostic.read_storage_report(path)
+        self.assertEqual(codes[:32], diagnostic.safe_fields()["storageFailureCodes"])
+
     def test_runtime_capture_overflow_and_reader_failure_fail_closed(self):
         capture = support.OutputCapture(self.failures, [], limit=3)
         capture.read(io.BytesIO(b"oversized output"))

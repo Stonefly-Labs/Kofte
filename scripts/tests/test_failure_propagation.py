@@ -140,6 +140,7 @@ class FailurePropagationTests(unittest.TestCase):
             command=command, failedStorageTests=[name], storageFailureCodes=["Busy"],
             storageDiagnosticCode="unavailable",
             storageFailureOperations=["acquire"],
+            storageFailureScenarios=["valid-dependency"],
         )
 
         def checked():
@@ -152,6 +153,7 @@ class FailurePropagationTests(unittest.TestCase):
         self.assertEqual(["Busy"], result["steps"][0]["storageFailureCodes"])
         self.assertEqual("unavailable", result["steps"][0]["storageDiagnosticCode"])
         self.assertEqual(["acquire"], result["steps"][0]["storageFailureOperations"])
+        self.assertEqual(["valid-dependency"], result["steps"][0]["storageFailureScenarios"])
         self.assertNotIn("credential-canary", json.dumps(result))
         for key, value in (
             ("failedStorageTests", ["credential-canary"]),
@@ -161,6 +163,8 @@ class FailurePropagationTests(unittest.TestCase):
             ("storageFailureCodes", []),
             ("storageDiagnosticCode", "credential-canary"),
             ("storageFailureOperations", ["credential-canary"]),
+            ("storageFailureScenarios", ["credential-canary"]),
+            ("storageFailureScenarios", ["valid-dependency", "valid-dependency"]),
         ):
             with self.subTest(key=key, value=value):
                 evidence["steps"][0][key] = value
