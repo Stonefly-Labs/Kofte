@@ -14,6 +14,16 @@ The [technology-stack exploration](kofte-technology-stack-architecture.md) is hi
 
 ## Working in the repository
 
+**Current Spec Kit checkpoint: 005 / checklist generated, blocked for reviewer
+completion.** The
+[requirements-quality checklist](../specs/005-authentication-bootstrap/checklists/quality.md)
+has 36 unchecked criteria; no item has been evaluated. Reviewers own completion
+and may explicitly request assisted evaluation. ADR 0007's approval is separate
+from this gate. The same [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8)
+continues after review; tasks is later, with no intermediate merge. The
+specification, planning artifacts and 16/16 author checklist remain unchanged.
+See the [current workflow record](development/spec-workflow.md#invocation-and-current-progress).
+
 - [Contributing](../CONTRIBUTING.md): branch, change, checks, commit, push, PR and human merge.
 - [Assistant tooling](development/assistant-tooling.md): shared MCP servers, trust and smoke checks.
 - [Spec workflow](development/spec-workflow.md): state, stage gates, recovery and acceptance.

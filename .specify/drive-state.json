@@ -25,7 +25,15 @@
       "next_step": "checklist"
     }
   },
-  "active": null,
+  "active": {
+    "spec": "005",
+    "step": "checklist",
+    "directory": "specs/005-authentication-bootstrap",
+    "status": "blocked",
+    "branch": "feature/005-authentication-bootstrap",
+    "reason": "Generated checklists/quality.md with 36 unchecked reviewer-owned requirements-quality criteria (CHK001-CHK036), standard-depth PR coverage of identity/access, nominated enrollment, host/module storage and recovery, UX and operability; MCP limited to future shared actor/authorization and scope exclusions. No criterion evaluated or marked; explicit reviewer evaluation or request for assisted evaluation/marking is required before checklist completion. ADR 0007 approval does not authorize marking. Spec, planning artifacts, approved ADR, 16/16 author checklist and all historical evidence remain unchanged. Resume this same checklist stage/branch/draft PR #8 to resolve review; tasks not run and no product/dependency/runtime/acceptance or intermediate merge.",
+    "started_at": "2026-10-26T20:55:37+00:00"
+  },
   "history": [
     {
       "spec": null,

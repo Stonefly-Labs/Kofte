@@ -37,7 +37,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 > [!IMPORTANT]
 > **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md) and [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) is now human-merged. Its accepted ledger and evidence were verified on updated main before 005 began. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) retains prior failures and unknown causes; the historical failed local gate remains failed, not waived by acceptance or merge. Spec 005 now has [draft authentication/bootstrap requirements](specs/005-authentication-bootstrap/spec.md), not working login. Nothing here claims production readiness or MVP completion.
 
-**Current stage: 005 / plan complete; checklist is next.** The
+**Current stage: 005 / checklist generated; blocked for reviewer completion.** The
 [specification](specs/005-authentication-bootstrap/spec.md) and
 [16/16 author checklist](specs/005-authentication-bootstrap/checklists/requirements.md)
 cover production OIDC, explicitly limited development login, stable user mapping,
@@ -54,10 +54,15 @@ format-2 upgrades. [ADR 0007](docs/adr/0007-authentication-bootstrap-boundary.md
 is now **human-approved for implementation**, recording **"ok, I approve it"**.
 Historical planning artifacts remain unchanged; no login code, package adoption,
 runtime proof or feature acceptance is introduced by recording this decision.
-Continue on `feature/005-authentication-bootstrap`
+The [requirements-quality checklist](specs/005-authentication-bootstrap/checklists/quality.md)
+now contains **36 unchecked criteria** for identity/access, nominated enrollment,
+storage/recovery, UX and operability. Generation is not a passing review:
+reviewer evaluation or an explicit request for assisted evaluation is required
+before marking satisfied items. The spec, planning evidence and 16/16 author
+checklist are unchanged. Continue on `feature/005-authentication-bootstrap`
 and [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8);
-the next checklist is generated unchecked for reviewer evaluation, not an
-intermediate merge.
+checklist remains active until review is complete. Tasks is the later stage,
+not run here; no intermediate merge or feature acceptance is implied.
 
 ## 🧭 The shape of things to come
 

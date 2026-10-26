@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / plan complete; checklist is next**, on
+**Current checkpoint: 005 / checklist generated, blocked for reviewer completion**, on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 [specification](../../specs/005-authentication-bootstrap/spec.md) uses the exact
@@ -16,7 +16,9 @@ outcomes cover production OIDC, stable identity, deliberate non-repeatable
 first-admin enrollment, browser/API access, limited development mode and safe
 operation/recovery. The
 [built-in author checklist](../../specs/005-authentication-bootstrap/checklists/requirements.md)
-satisfies 16/16 criteria; the later reviewer-owned checklist is not generated.
+satisfies 16/16 criteria. The reviewer-owned
+[quality checklist](../../specs/005-authentication-bootstrap/checklists/quality.md)
+now has 36 unchecked criteria; no passing review is claimed by generation.
 
 Before beginning this new feature, PR #7 was verified human-merged, 004's
 accepted state was verified on updated `origin/main`, and all five acceptance
@@ -117,6 +119,36 @@ entries/hashes remain unchanged. Exact dependency adoption, reviewer-owned
 checklist evaluation, actual runtime evidence and explicit feature acceptance
 remain separate gates. Recording approval executes no stage: **checklist is
 still next**, with no active stage, on the same branch/draft PR #8.
+
+**005 checklist generation checkpoint:** Executed the installed
+`speckit-checklist` skill with explicit recorded feature-path and resolved
+checklist template. The driver supplies standard-depth reviewer/PR coverage
+for identity/access and nominated enrollment, storage/recovery, minimal UX and
+operability. MCP is limited to the shared actor/future authorization boundary
+and explicit exclusions, not a new runtime. No extra scope question or human
+decision was needed or invented.
+
+The new [quality checklist](../../specs/005-authentication-bootstrap/checklists/quality.md)
+contains **36 unchecked criteria, CHK001-CHK036**, grouped by completeness,
+clarity, consistency, acceptance quality, scenario/edge coverage, non-functional
+requirements, dependencies and ambiguities/conflicts. All items have source
+references. Generation does not evaluate them, identify a requirements defect
+or assert a passing quality result.
+
+**005 / checklist remains active and blocked for reviewer completion** on
+`feature/005-authentication-bootstrap` and
+[draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8).
+The reviewer must evaluate the criteria with evidence, or explicitly request
+assisted evaluation/marking, before the stage can complete. ADR 0007's approval
+does not authorize marking. Resume this recorded stage only when resolving
+that gate; tasks is the later stage, not run by this invocation.
+
+There is no `.specify/extensions.yml`; no before/after checklist hook is
+configured. Specification, planning artifacts, approved ADR, 16/16 author
+checklist and all historical ledger entries/hashes remain unchanged.
+Only the active checklist state, new checklist and progress documentation
+change. No product/test source, dependency/lock, task list, runtime proof,
+feature acceptance, PR readiness or intermediate merge is introduced.
 
 **Historical 004 checkpoint:** **human acceptance recorded; renewed handoff required a fully green latest-head PR matrix** after specify, clarify,
 plan, checklist, tasks and analyze completed on

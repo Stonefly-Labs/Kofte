@@ -473,7 +473,7 @@ not one passing provider job. PR #7 is now human-merged; its accepted ledger
 and all five acceptance artifact hashes were verified on updated main before
 005 began. Historical failed checks and undiagnosed causes remain unchanged.
 
-**005 / specify, clarify and plan are complete; checklist is next** on
+**005 / specify, clarify and plan are complete; checklist is generated and blocked for reviewer completion** on
 `feature/005-authentication-bootstrap`. Its
 [draft requirements](../specs/005-authentication-bootstrap/spec.md) define
 host-owned production OIDC identity, explicit development limits, stable user
@@ -501,7 +501,14 @@ decision **"ok, I approve it"**; historical planning artifacts/ledger are unchan
 and no stage is executed by recording approval. The new OIDC dependency closure
 still needs actual adoption review. Granular authorization,
 MCP and general audit administration remain 006/007/009. No product code/package,
-later quality checklist, tasks, runtime proof or feature acceptance is introduced.
+tasks, runtime proof or feature acceptance is introduced by planning.
+The subsequent [requirements-quality checklist](../specs/005-authentication-bootstrap/checklists/quality.md)
+now has 36 unchecked criteria covering identity/access, enrollment, host/module
+storage and recovery, UX and operability. Generation evaluates no criterion
+and changes no architecture decision or planning evidence. The active checklist
+stage is blocked for reviewer completion; assisted marking requires an explicit
+reviewer request. Tasks remains a later stage on the same draft PR #8, not an
+intermediate merge or permission to implement.
 
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
