@@ -38,7 +38,7 @@ public sealed class AssignedMigrationsAssembly : IMigrationsAssembly
             {
                 snapshot = Activator.CreateInstance(type.AsType()) as AssignedModelSnapshot ??
                     throw new StorageException(StorageCode.RequestInvalid);
-                ((AssignedModelSnapshot)snapshot).Bind(context.Storage);
+                ((AssignedModelSnapshot)snapshot).Bind(context.Boundary);
             }
             snapshotRead = true;
             return snapshot;
@@ -53,7 +53,7 @@ public sealed class AssignedMigrationsAssembly : IMigrationsAssembly
         if (!Migrations.Values.Contains(migrationClass) ||
             Activator.CreateInstance(migrationClass.AsType()) is not AssignedMigration migration)
             throw new StorageException(StorageCode.RequestInvalid);
-        migration.Bind(context.Storage);
+        migration.Bind(context.Boundary);
         migration.ActiveProvider = activeProvider;
         return migration;
     }

@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="../../../src/Kofte.Platform/Kofte.Platform.csproj" />
+        <ProjectReference Include="../../../src/Kofte.Infrastructure/Kofte.Infrastructure.csproj" />
+    </ItemGroup>
+</Project>

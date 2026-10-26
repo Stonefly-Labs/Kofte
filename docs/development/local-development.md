@@ -140,9 +140,228 @@ existing review scope and limits. Supported commands, product/test code,
 tasks, reviewed checklists and prior evidence are unchanged. No new local
 product suite, usability study or runtime measurement is claimed by this
 decision-only stage. The same
-[PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6) is ready for human merge
-after publication; **004 waits for that human merge** and accepted evidence
-on updated main. Acceptance does not start it.
+[PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6) was human-merged.
+The accepted ledger and all five acceptance hashes were verified on updated
+main before 004 began; acceptance itself did not start the next feature.
+
+**004 / specify, clarify, plan, checklist, tasks and analyze are complete**, not a module loader implementation.
+The [draft requirements](../../specs/004-module-lifecycle/spec.md) and
+[16/16 author checklist](../../specs/004-module-lifecycle/checklists/requirements.md)
+cover empty/public-test-module boot, preflight, dependency-ordered migrations,
+data-preserving disable/re-enable and safe health/failure diagnostics.
+Supported commands, product code and dependencies remain unchanged; future
+validation is not an executed product check. Clarification found no material
+requirements ambiguity, asked zero questions and left the spec and 16/16 author
+checklist unchanged. The [plan](../../specs/004-module-lifecycle/plan.md),
+versioned author/operator contracts and
+[future validation guide](../../specs/004-module-lifecycle/quickstart.md) now
+propose a compiled trusted catalog, private selection, whole-set preflight,
+explicit stopped preparation and supervised serving/health.
+`KOFTE_MODULES_FILE`, `--modules` commands and composition test projects in
+those artifacts **do not exist yet**. Existing commands/toolchain remain
+unchanged. [ADR 0006](../adr/0006-module-composition-lifecycle.md) is now
+**human-approved for implementation** by **"yeah approved"**; dependency adoption
+and runtime evidence remain future gates. The
+[quality checklist](../../specs/004-module-lifecycle/checklists/quality.md)
+now satisfies **36/36 criteria** after explicit reviewer authorization for
+assisted evaluation, with per-item evidence and no blocking requirements gap
+or new human decision. Spec, plan and 16/16 author checklist remain unchanged;
+DI dependency adoption and actual runtime proof remain future gates.
+The [80 unchecked implementation tasks](../../specs/004-module-lifecycle/tasks.md)
+now specify dependency-ordered paths, all eleven executable guide examples,
+exact both-provider migrations/three-cycle preservation, owned process
+termination, private diagnostic captures and retained local/CI gates.
+No task was executed; no new command, dependency or product behavior is introduced.
+The read-only [analysis](../../specs/004-module-lifecycle/analysis.md) passes
+with 26/26 requirements/outcomes and 20/20 scenarios covered, all 80 tasks
+mapped, 118 acyclic dependency edges and no actionable or constitutional
+finding. Assessed inputs/checklist markers are unchanged; every task remains
+unchecked. This is planned coverage, not measured module behavior.
+At that historical checkpoint, **implement was next** on `feature/004-module-lifecycle` and
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
+
+**004 / original implementation checkpoint completed all 80 tasks** on that same branch/draft PR. Its
+[current guide](../../specs/004-module-lifecycle/quickstart.md) now runs
+validation, no-storage boots and real relational `ordered-migration` examples
+on SQLite and owned PostgreSQL. The relational example explicitly upgrades its
+new fixture registry, validates the full set, prepares while stopped, writes
+owner-local original records and serves using only runtime authority.
+An admissible pending target requires explicit preparation; ordinary startup
+does not migrate, upgrade, rewrite revisions or receive CREATE authority.
+Initialize repeats for each fresh attempt and has no store/business access.
+Interrupted owner-local writes preserve earlier commits and require the accepted
+explicit inspection/recovery path, not deleting a row/file/history/lock or
+restoring only the platform database. The delivered migration example now
+interrupts the later owner, proves unchanged retry refusal, explicitly recovers
+it and starts a fresh process while preserving the earlier commit and original
+records. Both-provider recovery tests include disabled owners in complete-set
+backup/restore and refuse legacy platform-only operations. A deliberately
+selected older complete set restores only into a fresh owned target, with
+explicit responsibility for losing newer data; the newer source is preserved.
+The delivered `disable-reenable` example performs three complete stopped-file
+cycles per provider. Six distinct supervised roots/workers/attempts preserve
+both original assignments/revisions, records, histories and complete unrelated
+state after every leg. Disabled owners have zero measured callbacks; leaving a
+dependent enabled while disabling its prerequisite refuses unchanged, without
+cascade, uninstall or hot unload. Stop reverses entered owners and LIFO cleanup,
+then owner scopes and provider; failed cleanup remains incomplete. A separately
+prepared additive release may advance only its selected owner's target, not
+silently change an ordinary re-enable. No lifecycle administration route/page
+or tool exists; edit the private file only after verified process exit.
+All eleven public examples and sequential `all` are now implemented, including
+five named corrections, current-attempt/transitive/stale health, seven actual
+uncooperative boundaries and six-channel private captures. Anonymous health
+keeps its schema and never executes author health callbacks. Fixed guidance
+requires restoring failed diagnostics, inspecting preserved incomplete cleanup
+or verifying owned exit before retry. These are trusted-code observations, not
+a sandbox, durable audit/settings product or guaranteed termination of arbitrary
+escaped descendants. The [current guide](../../specs/004-module-lifecycle/quickstart.md)
+states exact bounds and limitations. All 80 tasks are evidenced at assessed
+code head `267efc8`: ten complete local suite/provider reports and all 286
+steps pass, plus eleven CI contexts and 286 CI steps. The
+[implementation report](../../specs/004-module-lifecycle/implementation.md#blocked-local-gate-and-ci-reconciliation)
+records those historical failures and passing scoped reproductions. The
+[resumed verification](../../specs/004-module-lifecycle/implementation.md#resumed-verification-fixture-administration-and-safe-public-failures)
+records the fixture-administration regression/fix and safe public-failure
+identities. The [final reconciliation](../../specs/004-module-lifecycle/implementation.md#final-complete-gate-and-implementation-handoff)
+records unchanged contention workload isolation, all 24 actual guide commands/
+strict observations and passing isolated failure exercises. Historical failed
+runs are not rewritten; no product deadline or floor is weakened.
+
+The historical [004 convergence assessment](../../specs/004-module-lifecycle/convergence.md)
+found missing explicit disabled operator output and appended T081. The
+[implemented correction](../../specs/004-module-lifecycle/implementation.md#convergence-remediation-t081)
+now adds a private `discovered / disabled / composition_disabled` record with
+`edit_selection_while_stopped` guidance for each explicitly false or omitted
+deployment, under the current attempt. Existing discovery records remain;
+absence of later callbacks is no longer the only disabled-state evidence.
+The both-provider `disabled-missing` example boots both selections in fresh
+processes and requires exact disabled observations, zero disabled callbacks/
+store effects and unchanged anonymous health. Commands, protocol version and
+all lifecycle/storage/output bounds remain unchanged. All 81 then-existing tasks
+are implemented; that checkpoint selected follow-up convergence on draft PR #7,
+separately before review and explicit human acceptance. Historical reports,
+approved intent and reviewer-owned checklists remain unchanged.
+
+The [follow-up assessment](../../specs/004-module-lifecycle/convergence.md)
+verifies F1/T081 but finds **gaps**, appending T082-T083 only. Valid executable
+local names can produce overlong dependency bindings and fail Start (HIGH F2).
+Fresh composition integration passes 102/104; PostgreSQL `disabled-missing`
+and `bounded-stop` unexpectedly report incomplete cleanup, while unchanged
+isolated cases pass 5/5 (MEDIUM F3). The cause is unestablished; do not treat
+reruns as a fix or weaken deadlines, cleanup refusal/assertions or floors.
+Commands and product/test source are unchanged by this stage.
+That checkpoint selected implement on the same draft PR #7.
+
+The [T082-T083 increment](../../specs/004-module-lifecycle/implementation.md#convergence-remediation-t082-t083)
+now preserves full owner-qualified dependency bindings, including the public
+example's 128-character local service name. A normal stop with an incomplete
+HTTP request reproduced failure on both providers; the composed HTTP host
+now uses a 500-ms internal drain budget inside the unchanged one-second
+cleanup action and 15-second total stop limit. Fixed private `stopping /
+incomplete` codes distinguish host stop/dispose, services disposal and storage
+disposal; final `cleanup` remains terminal and fail-closed. No raw exception,
+path or setting is exposed. Historical failures cannot all be attributed
+retroactively to this demonstrated cause. All 83 then-existing tasks are
+implemented; that checkpoint selected follow-up converge on the same draft PR.
+
+The [convergence after T082-T083](../../specs/004-module-lifecycle/convergence.md)
+closes F1/T081 and F2/T082 but records **gaps**. Valid compositions with 65
+prerequisite services or 129 global executable exports fail later lifecycle
+stages (HIGH F4). Fresh broad integration passes 104/106: SQLite preservation
+and PostgreSQL correction still fail ordinary host disposal (MEDIUM F3).
+The private code is now `composition_host_dispose_incomplete`; its underlying
+cause is not established by the passing HTTP-stop regression or historical
+reruns/CI. Only T084-T085 are appended, preserving existing task bytes,
+product/test source, approved intent and reviewed checklists.
+That checkpoint selected implement on the same draft PR #7.
+
+The [T084-T085 increment](../../specs/004-module-lifecycle/implementation.md#convergence-remediation-t084-t085)
+preserves complete accepted service counts through registration/Start/readiness:
+128 per owner, 1,024 enabled total. The public `valid-dependency` scenario now
+requires 127 exact prerequisite bindings/operations and 129 global exports;
+both strict harnesses require the measured count. The composed host disables
+unused default JSON reload watchers before builder construction, rather than
+retaining them after configuration clearing. Its actual-builder regression
+has deterministic red/green evidence, and corrected both-provider composition
+passes 106/106. Commands, cleanup budgets and intentional incomplete/uncertain
+refusal are unchanged. The report retains failed runs and complete-gate
+reconciliation; follow-up converge, review and explicit human acceptance
+remain separate on the same draft PR #7.
+
+The [convergence after T084-T085](../../specs/004-module-lifecycle/convergence.md)
+now **passes** with zero actionable gaps across all 46 requirements/outcomes/
+scenarios, twelve plan decisions, 85 tasks and twelve principles. All F1-F4
+findings are closed; tasks and product/test code remain unchanged.
+Fresh quality/unit, 106/106 both-provider composition and 33/33 strict-result
+checks pass; inspected assessed-head CI retains all 286 product steps.
+No new full local gate is claimed. **Review is next** on the same draft PR #7,
+then explicit human acceptance; commands and operator responsibilities are unchanged.
+
+The subsequent [final review](../../specs/004-module-lifecycle/review.md)
+records **changes**: valid omitted/explicitly disabled catalogs can fail
+validate/serve with `composition_observation_invalid` when their distinct
+prerequisite metadata exceeds 1,024, even with zero enabled edges. A
+session-only public-host probe confirms 16/16 cases before callbacks/storage;
+existing green gates do not cover this combination. Exactly T086 is appended
+for the bounded protocol correction and actual both-provider regressions.
+**Implement T086 is next** on the same draft PR #7; acceptance remains blocked
+pending remediation, convergence and passing review. No command, deadline,
+operator responsibility or product/test implementation changes here.
+
+The [T086 increment](../../specs/004-module-lifecycle/implementation.md#final-review-remediation-t086)
+now admits valid disabled-catalog prerequisite metadata through its full
+2,048-identity bound, separately from the unchanged 1,024 enabled dependency
+edges. Both-provider regressions exercise actual validate and usable serving
+for omitted/explicit-false selections and an unrelated enabled no-storage
+module, preserving exact disabled observations, complete inventory and verified
+clean stop. No operator command, deadline or responsibility changes.
+Code-head CI passes all eleven contexts, but the local complete attempt fails
+a PostgreSQL migration-interruption test; isolated/local recovery passes do not
+erase it. After reviewing eight passes and one failure, the human explicitly
+directed [documenting the facts and deferring investigation](../../specs/004-module-lifecycle/implementation.md#human-directed-deferral-and-implementation-handoff)
+as non-blocking for this checkpoint. No further investigation or product-test
+rerun is performed. T086 is complete; converge is next on draft PR #7.
+The failed local result, all tests and later review/acceptance gates remain.
+
+**Historical 004 / converge passes after T086.** The
+[assessment](../../specs/004-module-lifecycle/convergence.md) covers all 46
+requirements/outcomes/scenarios, twelve decisions, 86 tasks and twelve
+principles without new actionable gaps or task/code changes. Review R1 and
+prior F1-F4 are closed. Focused actual both-provider metadata boots pass;
+the deferred migration-interruption case is not rerun or investigated, and
+the failed local full-suite attempt stays failed. Supported commands,
+deadlines and recovery responsibilities are unchanged. **Review is next**
+on draft PR #7, retaining this limitation before explicit human acceptance.
+
+**Historical 004 / final review passes after T086.** The
+[review](../../specs/004-module-lifecycle/review.md) finds no new implementation
+defect; R1/T086 and prior F1-F4 are closed and all 86 tasks remain unchanged.
+The local complete attempt remains failed/interrupted at 109/111 executed
+steps; the human-deferred PostgreSQL migration-interruption observation remains
+undiagnosed and is not rerun/investigated. Review is not an all-checks-green
+claim or release waiver. Supported commands, deadlines and recovery duties
+are unchanged. **Explicit human acceptance of numbered feature 004 is next**,
+separately on draft PR #7 with this limitation disclosed.
+
+**Current 004 / explicitly human-accepted.** The
+[acceptance](../../specs/004-module-lifecycle/acceptance.md) records the exact
+affirmative decision after passing review and disclosure of the deferred
+PostgreSQL failure. The failed/interrupted local complete attempt and unknown
+cause remain; no runtime rerun/investigation or release waiver is implied.
+Supported commands, deadlines, recovery duties, review/tasks/checklists and
+product source and .NET assertions are unchanged. PR #7 was returned to draft after a distinct
+SQLite CI boot-theory failure. The
+[follow-up evidence](../../specs/004-module-lifecycle/implementation.md#post-acceptance-sqlite-ci-failure-and-diagnostic-correction)
+records unchanged local passes and an unknown original cause, not a product fix.
+Verifier diagnostics now preserve allowlisted failed scenarios/assertion symbols
+from known failed tests' output, never raw exceptions, arguments or private data;
+isolated failure reports revalidate those fields. The
+[full-matrix follow-up](../../specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up)
+removes duplicate integration execution and requires all eleven latest-head
+checks to finish successfully before a renewed handoff. The PR records actual
+outcomes; historical failed runs are not relabeled. 005 waits for human merge
+and a later invocation from updated main.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).
@@ -437,6 +656,33 @@ refused, not replaced. Cleanup revalidates exact database/role/container/volume/
 network ownership; missing proof preserves resources and fails explicitly.
 These are verification fixtures, not production database administration commands.
 
+Privileged fixture administration has a separate 30-second linked budget for
+connection plus command, still clipped by caller cancellation and the outer
+fixture/cleanup limits. Exported runtime and provisioning connections retain
+their three-second connection/query limits; product acquisition, lifecycle and
+probe deadlines are unchanged. A controlled pause of an owned disposable
+service exercises this distinction without retries or shared-service mutation.
+
+The registry's twenty-round, ten-connection/process contention tests run in an
+exclusive xUnit collection. Their intended ten-way workload is unchanged, but
+unrelated hosted lifecycle fixtures do not compete with that benchmark's fixed
+acquisition budgets. Worker counts, rounds, retry rules and product deadlines
+are not reduced or relaxed.
+
+Failed native storage and public platform-contract commands retain only
+source-allowlisted test identities and closed diagnostic codes. Their private,
+bounded xUnit XML is deleted; raw assertions, arguments, output and stacks do
+not enter verification reports. Isolated failure-propagation evidence validates
+these fields again against the owning command.
+
+Integration verification partitions `Kofte.Storage.IntegrationTests` into
+disjoint selections: `storage-integration-PROVIDER` excludes `*Composition*`,
+and `composition-integration-PROVIDER` includes it with the unchanged minimum
+of 50 cases. Both retain the selected provider. Every case still runs once;
+running composition twice had made the isolated PostgreSQL baseline exceed
+its unchanged 900-second budget. This does not reduce contention rounds,
+skip tests, retry failures or relax product deadlines.
+
 ## Focused checks currently available
 
 Run the repository checks and the smallest affected product commands:
@@ -514,16 +760,16 @@ before any child; single-provider runs exclude the other provider's trait
 without excluding provider-neutral manifest/harness tests. Startup verification
 also builds `Kofte.Storage.Consumer` before its timed browser exercise.
 
-| Suite | Underlying runner |
-| --- | --- |
-| unit | `dotnet test --project tests/unit/Kofte.Host.Tests --no-restore -c Release --minimum-expected-tests 1`; web and shared-contract `test:unit`; complete Python discovery |
-| integration, each provider | `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore -c Release --filter-trait Provider=PROVIDER --minimum-expected-tests 1` |
-| recovery, each provider | Same integration project with `--filter-query "/[(Suite=recovery)&(Provider=PROVIDER)]" --minimum-expected-tests 1`, then `npm run test --workspace tests/e2e -- recovery.spec.ts --workers=1 --output PRIVATE_DIRECTORY` |
-| contract, each provider | Same integration project with `--filter-class "*OpenApiTests" --filter-trait Provider=PROVIDER --minimum-expected-tests 1`, then `npm run test --workspace tests/contract -- --no-file-parallelism bootstrap.test.ts adapter.test.ts` |
-| browser | `npm run test --workspace tests/e2e -- accessibility.spec.ts bootstrap.spec.ts recovery.spec.ts` against owned SQLite; one configured worker |
-| privacy, each provider | `npm run test --workspace tests/contract -- --no-file-parallelism privacy.test.ts`; E2E `privacy.spec.ts --workers=1 --output PRIVATE_DIRECTORY`; then `python3 scripts/run_python_tests.py --pattern test_dev_output.py` |
-| startup | `npm run test --workspace tests/e2e -- startup.spec.ts --output tests/e2e/test-results/verify-startup-UUID`, with `BOOTSTRAP_WARM_STARTS` set to the requested 2-10 cycles |
-| failure-propagation | `tests/integration/tooling/test_failure_propagation.py` exercises the actual wrapper in an isolated no-hardlinks checkout, never the working checkout |
+| Suite                      | Underlying runner                                                                                                                                                                                                                     |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| unit                       | `dotnet test --project tests/unit/Kofte.Host.Tests --no-restore -c Release --minimum-expected-tests 1`; web and shared-contract `test:unit`; complete Python discovery                                                                |
+| integration, each provider | `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore -c Release --filter-trait Provider=PROVIDER --minimum-expected-tests 1`                                                                             |
+| recovery, each provider    | Same integration project with `--filter-query "/[(Suite=recovery)&(Provider=PROVIDER)]" --minimum-expected-tests 1`, then `npm run test --workspace tests/e2e -- recovery.spec.ts --workers=1 --output PRIVATE_DIRECTORY`             |
+| contract, each provider    | Same integration project with `--filter-class "*OpenApiTests" --filter-trait Provider=PROVIDER --minimum-expected-tests 1`, then `npm run test --workspace tests/contract -- --no-file-parallelism bootstrap.test.ts adapter.test.ts` |
+| browser                    | `npm run test --workspace tests/e2e -- accessibility.spec.ts bootstrap.spec.ts recovery.spec.ts` against owned SQLite; one configured worker                                                                                          |
+| privacy, each provider     | `npm run test --workspace tests/contract -- --no-file-parallelism privacy.test.ts`; E2E `privacy.spec.ts --workers=1 --output PRIVATE_DIRECTORY`; then `python3 scripts/run_python_tests.py --pattern test_dev_output.py`             |
+| startup                    | `npm run test --workspace tests/e2e -- startup.spec.ts --output tests/e2e/test-results/verify-startup-UUID`, with `BOOTSTRAP_WARM_STARTS` set to the requested 2-10 cycles                                                            |
+| failure-propagation        | `tests/integration/tooling/test_failure_propagation.py` exercises the actual wrapper in an isolated no-hardlinks checkout, never the working checkout                                                                                 |
 
 `PROVIDER` is the requested `sqlite` or `postgres`, never a substitute fallback.
 Each owned runtime builds the Release solution and web first, then launches
@@ -537,12 +783,12 @@ cleanup failures fail the suite. Only safe named results are persisted.
 The required script inventory is explicit, so `--if-present` cannot silently
 remove coverage:
 
-| Workspace | Required scripts |
-| --- | --- |
-| root | `format:check`, `contract:check`, `dependencies:check` |
-| `apps/web` | `build`, `lint`, `typecheck`, `test:unit`, `start` |
-| `packages/bootstrap-contract` | `generate`, `build`, `lint`, `typecheck`, `test:unit` |
-| `tests/contract`, `tests/e2e` | `lint`, `typecheck`, `test` |
+| Workspace                     | Required scripts                                       |
+| ----------------------------- | ------------------------------------------------------ |
+| root                          | `format:check`, `contract:check`, `dependencies:check` |
+| `apps/web`                    | `build`, `lint`, `typecheck`, `test:unit`, `start`     |
+| `packages/bootstrap-contract` | `generate`, `build`, `lint`, `typecheck`, `test:unit`  |
+| `tests/contract`, `tests/e2e` | `lint`, `typecheck`, `test`                            |
 
 Safe ignored reports under `artifacts/verification/` retain revision, environment,
 tool versions, start/end/duration, suite, exact commands, outcomes and safe

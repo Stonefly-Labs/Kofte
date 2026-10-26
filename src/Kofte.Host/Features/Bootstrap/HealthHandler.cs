@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Kofte.Host.Bootstrap;
+using Kofte.Host.Features.ModuleComposition;
 using Microsoft.Data.Sqlite;
 using Npgsql;
 
@@ -7,7 +8,7 @@ namespace Kofte.Host.Features.Bootstrap;
 
 public sealed record BootstrapStatus(string Version, string State, string Component, string CorrelationId);
 
-public sealed class HealthHandler(IPlatformStore store)
+public sealed class HealthHandler(IPlatformStore store, CompositionHealth? composition = null)
 {
     public static BootstrapStatus Live() => new("1", "live", "host", BootstrapDiagnostics.CorrelationId());
 
@@ -25,6 +26,13 @@ public sealed class HealthHandler(IPlatformStore store)
         try
         {
             await Task.Run(() => store.ProbeAsync(budget.Token), budget.Token).WaitAsync(budget.Token);
+            if (composition is not null && !composition.IsReady)
+            {
+                activity?.SetTag("component", "host");
+                activity?.SetTag("event.code", "composition_unavailable");
+                activity?.SetStatus(ActivityStatusCode.Error);
+                return new("1", "unavailable", "host", BootstrapDiagnostics.CorrelationId());
+            }
             activity?.SetTag("event.code", "storage_ready");
             return new("1", "ready", "storage", BootstrapDiagnostics.CorrelationId());
         }

@@ -13,7 +13,8 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U kofte_admin -d postgres"]
+      # The entrypoint's temporary initialization server accepts Unix sockets only.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U kofte_admin -d postgres"]
       interval: 1s
       timeout: 3s
       retries: 60

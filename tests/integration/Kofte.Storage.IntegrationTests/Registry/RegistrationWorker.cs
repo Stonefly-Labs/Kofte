@@ -12,6 +12,8 @@ public static class RegistrationWorker
 {
     public static async Task<int> Main(string[] args)
     {
+        if (args is ["--storage-crash-worker", _, "compose", _])
+            return await Composition.CompositionPreparationCrashWorker.RunAsync(args);
         if (args.FirstOrDefault() == "--storage-crash-worker")
             return await StorageCrashWorker.RunAsync(args, ModuleFixture.AlphaFactory);
         if (args.FirstOrDefault() is "--registration-worker" or "--registration-probe")

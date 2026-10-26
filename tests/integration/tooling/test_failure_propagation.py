@@ -194,15 +194,21 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
                 if not isinstance(code, str) or code not in api.check_dependencies.FAILURE_CODES:
                     raise error("failure_child_report_unsafe")
                 selected["dependencyFailureCode"] = code
-            if any(key in step for key in (
-                "failedStorageTests", "storageFailureCodes", "storageFailureOperations", "storageDiagnosticCode",
-            )):
+            for kind in ("storage", "contract"):
+                test_key = f"failed{kind.title()}Tests"
+                code_key = f"{kind}FailureCodes"
+                operation_key = f"{kind}FailureOperations"
+                scenario_key = f"{kind}FailureScenarios"
+                report_key = f"{kind}DiagnosticCode"
+                if not any(key in step for key in (test_key, code_key, operation_key, scenario_key, report_key)):
+                    continue
                 diagnostic = api.command_diagnostics(step["command"])
-                if diagnostic is None or diagnostic.kind != "storage":
+                if diagnostic is None or diagnostic.kind != kind:
                     raise error("failure_child_report_unsafe")
                 for key, allowed in (
-                    ("failedStorageTests", diagnostic.tests), ("storageFailureCodes", diagnostic.codes),
-                    ("storageFailureOperations", diagnostic.storage_operations),
+                    (test_key, diagnostic.tests), (code_key, diagnostic.codes),
+                    (operation_key, diagnostic.storage_operations),
+                    (scenario_key, diagnostic.scenarios),
                 ):
                     if key not in step:
                         continue
@@ -212,11 +218,11 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
                             or len(set(values)) != len(values)):
                         raise error("failure_child_report_unsafe")
                     selected[key] = values
-                if "storageDiagnosticCode" in step:
-                    code = step["storageDiagnosticCode"]
+                if report_key in step:
+                    code = step[report_key]
                     if not isinstance(code, str) or code not in diagnostic.storage_report_codes:
                         raise error("failure_child_report_unsafe")
-                    selected["storageDiagnosticCode"] = code
+                    selected[report_key] = code
         result["steps"].append(selected)
     failed = [step for step in steps if step["outcome"] == "failed"]
     code = None

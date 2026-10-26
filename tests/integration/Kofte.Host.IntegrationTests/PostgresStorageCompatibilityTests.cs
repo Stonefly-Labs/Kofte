@@ -17,8 +17,7 @@ public sealed class PostgresStorageCompatibilityTests
         using var unusedRoot = new TempRoot();
         await using (var host = await StartupFixture.StartAsync(unusedRoot.Path, token, postgres: database.ConnectionString))
         {
-            using var ready = await host.Client.GetAsync("/health/ready", token);
-            Assert.True(ready.IsSuccessStatusCode);
+            await StorageCompatibilityTests.AssertCoreSurfaceAsync(host, token);
         }
         var installation = StorageInstallation.PostgreSql(database.ConnectionString);
         await StorageReconciliation.ValidateStartupAsync(installation, token);
@@ -29,8 +28,7 @@ public sealed class PostgresStorageCompatibilityTests
             "storage_ready", "ready", "retry_same_request", "postgresql");
         await using (var host = await StartupFixture.StartAsync(unusedRoot.Path, token, postgres: database.ConnectionString))
         {
-            using var ready = await host.Client.GetAsync("/health/ready", token);
-            Assert.True(ready.IsSuccessStatusCode);
+            await StorageCompatibilityTests.AssertCoreSurfaceAsync(host, token);
         }
         Assert.Equal(0, (await StartupFixture.RunExitAsync(unusedRoot.Path,
             ["--registry", "upgrade"], token, postgres: database.ConnectionString)).ExitCode);

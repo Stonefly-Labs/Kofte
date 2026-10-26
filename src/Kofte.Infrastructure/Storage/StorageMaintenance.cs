@@ -5,9 +5,12 @@ namespace Kofte.Infrastructure.Storage;
 
 public sealed class StorageMaintenance(StorageInstallation installation) : IStorageMaintenance
 {
-    public async Task<IStorageMaintenanceScope> AcquireAsync(CancellationToken cancellationToken = default)
+    public Task<IStorageMaintenanceScope> AcquireAsync(CancellationToken cancellationToken = default) =>
+        AcquireWithinAsync(OperationBudget.Acquire, cancellationToken);
+
+    internal async Task<IStorageMaintenanceScope> AcquireWithinAsync(TimeSpan maximum, CancellationToken cancellationToken)
     {
-        try { return await MaintenanceScope.AcquireAsync(installation, cancellationToken); }
+        try { return await MaintenanceScope.AcquireAsync(installation, cancellationToken, maximum); }
         catch (Exception error)
         {
             var code = StorageDiagnostics.MaintenanceFailure(StorageOperation.Acquire, installation.Provider,

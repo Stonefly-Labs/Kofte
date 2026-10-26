@@ -18,12 +18,15 @@ class VerifyTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory(dir=base)
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name).resolve()
-        for name in (*verify.PLATFORM_REQUIRED_FILES, *verify.STORAGE_REQUIRED_FILES):
+        for name in (*verify.PLATFORM_REQUIRED_FILES, *verify.STORAGE_REQUIRED_FILES, *verify.COMPOSITION_REQUIRED_FILES):
             path = self.root / name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text("required platform fixture")
         (self.root / "tests/integration/Kofte.TestSupport/StorageScenarioCatalog.cs").write_text(
             " ".join(json.dumps(name) for name in verify.STORAGE_SCENARIOS))
+        (self.root / "tests/integration/Kofte.TestSupport/CompositionScenarioCatalog.cs").write_text(
+            "\n".join(f'["{name}"] = Required()' for name in verify.COMPOSITION_OBSERVATIONS))
+        (self.root / "Kofte.slnx").write_text("\n".join(verify.COMPOSITION_REQUIRED_FILES))
         for workspace, scripts in verify.REQUIRED_SCRIPTS.items():
             path = self.root / workspace / "package.json"
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -84,6 +87,107 @@ class VerifyTests(unittest.TestCase):
                 runner.command(name, ["python3", "-c", f"raise SystemExit({exit_code})"])
             self.assertEqual("failed", runner.report.data["steps"][-1]["outcome"])
 
+    def test_composition_inventory_requires_every_project_capture_case_and_quality_build_edge(self):
+        verify.composition_inventory(self.root)
+        for name in verify.COMPOSITION_REQUIRED_FILES:
+            path = self.root / name
+            original = path.read_text()
+            path.unlink()
+            with self.subTest(name=name), self.assertRaisesRegex(
+                    verify.VerificationError, "composition_target_missing"):
+                verify.composition_inventory(self.root)
+            path.write_text(original)
+        catalog = self.root / "tests/integration/Kofte.TestSupport/CompositionScenarioCatalog.cs"
+        catalog.write_text(catalog.read_text().replace('"private-diagnostics"', '"omitted"'))
+        with self.assertRaisesRegex(verify.VerificationError, "composition_scenario_missing"):
+            verify.composition_inventory(self.root)
+        catalog.write_text("\n".join(f'["{name}"] = Required()' for name in verify.COMPOSITION_OBSERVATIONS))
+        solution = self.root / "Kofte.slnx"
+        solution.write_text(solution.read_text().replace(
+            "tests/contract/Kofte.Composition.TestModule/Kofte.Composition.TestModule.csproj", "omitted"))
+        with self.assertRaisesRegex(verify.VerificationError, "composition_build_target_missing"):
+            verify.composition_inventory(self.root)
+
+    @staticmethod
+    def composition_payload(scenario="all"):
+        selected = verify.COMPOSITION_OBSERVATIONS if scenario == "all" else {
+            scenario: verify.COMPOSITION_OBSERVATIONS[scenario]}
+        return {
+            "schemaVersion": 1, "eventCode": "composition_scenarios_passed", "attempt": "a" * 32,
+            "provider": "sqlite", "scenario": scenario, "status": "passed", "assertions": len(selected),
+            "scenarios": {name: {"assertions": 1, "observations": dict(required)}
+                          for name, required in selected.items()},
+        }
+
+    def test_composition_results_require_every_semantic_field_case_and_exact_assertion_sum(self):
+        for scenario in (*verify.COMPOSITION_OBSERVATIONS, "all"):
+            payload = self.composition_payload(scenario)
+            self.assertEqual(payload["assertions"], verify.composition_result(
+                json.dumps(payload).encode(), b"", "sqlite", scenario)["assertions"])
+            for name, case in payload["scenarios"].items():
+                omitted = json.loads(json.dumps(payload))
+                del omitted["scenarios"][name]
+                self.require_invalid_composition(omitted, scenario)
+                for field, minimum in case["observations"].items():
+                    for value in (None, minimum - 1, True, 2_147_483_648):
+                        changed = json.loads(json.dumps(payload))
+                        if value is None:
+                            del changed["scenarios"][name]["observations"][field]
+                        else:
+                            changed["scenarios"][name]["observations"][field] = value
+                        self.require_invalid_composition(changed, scenario)
+            payload["assertions"] += 1
+            self.require_invalid_composition(payload, scenario)
+        payload = self.composition_payload()
+        for case in payload["scenarios"].values():
+            case["assertions"] = 2_147_483_647
+        payload["assertions"] = sum(case["assertions"] for case in payload["scenarios"].values())
+        self.require_invalid_composition(payload)
+
+    def require_invalid_composition(self, payload, scenario="all"):
+        with self.assertRaisesRegex(verify.VerificationError, "^composition_result_invalid$"):
+            verify.composition_result(json.dumps(payload).encode(), b"", "sqlite", scenario)
+
+    def test_composition_capture_rejects_other_provider_bad_envelopes_stderr_duplicate_and_oversize(self):
+        for field, value in (("provider", "postgres"), ("schemaVersion", True), ("attempt", "private-canary"),
+                             ("unknown", "private-canary"), ("status", "failed")):
+            payload = self.composition_payload()
+            payload[field] = value
+            self.require_invalid_composition(payload)
+        valid = json.dumps(self.composition_payload()).encode()
+        for output, error in ((b"{}", b""), (valid, b"private-canary"),
+                              (valid.replace(b'"schemaVersion": 1', b'"schemaVersion": 1,"schemaVersion": 1'), b""),
+                              (valid + b" " * 65536, b"")):
+            with self.assertRaisesRegex(verify.VerificationError, "^composition_result_invalid$"):
+                verify.composition_result(output, error, "sqlite", "all")
+        capture = verify.CompositionGuideCapture()
+        capture.read_channel(io.BytesIO(b"x" * 65537), "stdout")
+        with self.assertRaisesRegex(verify.runtime_support.RuntimeFailure, "composition_output_limit"):
+            capture.result("sqlite", "all")
+        capture.clear()
+        self.assertFalse(any(capture.channels.values()))
+
+    def test_composition_selectors_intersect_provider_and_suite_and_reject_zero_native_cases(self):
+        for provider in ("sqlite", "postgres"):
+            runner = verify.Runner(self.root, self.report("integration"), {})
+            with patch.object(runner, "versions"), patch.object(runner, "command") as command:
+                verify.execute_suite(runner, "integration", provider, Mock(
+                    disposable_postgres=True, postgres_connection=None))
+            selected = next(call for call in command.call_args_list
+                            if call.args[0] == f"composition-integration-{provider}")
+            self.assertIn("*Composition*", selected.args[1])
+            self.assertIn(f"Provider={provider}", selected.args[1])
+            self.assertEqual(["--minimum-expected-tests", "50"], selected.args[1][-2:])
+            storage = next(call for call in command.call_args_list
+                           if call.args[0] == f"storage-integration-{provider}")
+            self.assertIn(f"Provider={provider}", storage.args[1])
+            excluded = storage.args[1].index("--filter-not-class")
+            self.assertEqual("*Composition*", storage.args[1][excluded + 1])
+            self.assertNotIn("--filter-not-class", selected.args[1])
+        runner = verify.Runner(self.root, self.report("contract"), {})
+        with self.assertRaisesRegex(verify.VerificationError, "command_failed"):
+            runner.command("composition-zero-cases", ["python3", "-c", "raise SystemExit(8)"])
+
     def test_storage_selectors_retain_provider_intersection_and_fail_on_zero_selected_cases(self):
         for provider in ("sqlite", "postgres"):
             for suite in ("recovery", "privacy"):
@@ -92,6 +196,12 @@ class VerifyTests(unittest.TestCase):
                 self.assertIn(f"/[(Suite={suite})&(Provider={provider})]", command)
                 self.assertEqual(["--minimum-expected-tests", "1"], command[-2:])
                 self.assertEqual(command, verify.safe_command(command))
+                focused = verify.integration_command(
+                    provider, suite, project=verify.STORAGE_INTEGRATION, feature="composition")
+                self.assertIn(f"/[(Suite={suite})&(Provider={provider})&(Feature=composition)]", focused)
+                self.assertNotIn("--filter-class", focused)
+                self.assertNotIn("--filter-trait", focused)
+                self.assertEqual(focused, verify.safe_command(focused))
 
     def test_actual_child_failure_is_named_nonzero_and_output_is_not_saved(self):
         memory_bytes = verify.os.sysconf("SC_PHYS_PAGES") * verify.os.sysconf("SC_PAGE_SIZE")
@@ -218,6 +328,69 @@ class VerifyTests(unittest.TestCase):
         self.assertNotIn("sourceLocations", report.data["steps"][-1])
         self.assertNotIn("credential-canary", report.path.read_text())
         self.assertEqual(set(), diagnostic.sources)
+
+    def test_failed_composition_theory_preserves_safe_assertion_and_scenario_before_private_cleanup(self):
+        runner = verify.Runner(self.root, self.report("integration"), {})
+        diagnostic = verify.command_diagnostics([
+            "dotnet", "test", "--project", verify.STORAGE_INTEGRATION,
+        ])
+        name = ("Kofte.Storage.IntegrationTests.Composition.SqliteCompositionProviderTests."
+                "OwnedProviderBootPreservesInventoryAndExecutesOnlyItsIntendedPublicModules")
+        owner, method = name.rsplit(".", 1)
+        event = json.dumps({
+            "schemaVersion": 1, "eventCode": "composition_test_phase_barrier_wrong",
+            "attempt": "a" * 32, "provider": "sqlite", "scenario": "valid-dependency",
+            "status": "failed", "assertions": 0,
+        })
+        xml = (f'<assemblies><test type="{owner}" method="{method}" result="Fail" '
+               'name="credential-canary"><failure><message>composition_consumer_failed</message>'
+               '</failure><output><![CDATA[' + event + '\n/private/credential-canary'
+               ']]></output></test></assemblies>')
+        script = (
+            "import sys; from pathlib import Path; "
+            "directory=Path(sys.argv[sys.argv.index('--results-directory')+1]); "
+            f"(directory/'storage.xml').write_text({xml!r}); sys.exit(2)"
+        )
+        with self.assertRaisesRegex(verify.VerificationError, "command_failed"):
+            runner.command("storage-integration-sqlite", ["python3", "-c", script], diagnostics=diagnostic)
+        step = runner.report.data["steps"][-1]
+        self.assertEqual([name], step["failedStorageTests"])
+        self.assertEqual(["composition_consumer_failed", "composition_test_phase_barrier_wrong"],
+                         step["storageFailureCodes"])
+        self.assertEqual(["valid-dependency"], step["storageFailureScenarios"])
+        self.assertFalse(list((self.root / "artifacts/verification/.private").rglob("storage.xml")))
+        self.assertNotIn("credential", runner.report.path.read_text())
+        self.assertEqual(set(), diagnostic.storage_codes)
+
+    def test_failed_public_contract_retains_nested_source_known_identity_without_private_output(self):
+        runner = verify.Runner(self.root, self.report("contract"), {})
+        diagnostic = verify.command_diagnostics([
+            "dotnet", "test", "--project", "tests/contract/Kofte.Platform.ContractTests",
+        ])
+        self.assertIsNotNone(diagnostic)
+        name = ("Kofte.Platform.ContractTests.Composition.CompositionPublicContractTests"
+                "+PostgresCompositionPublicContractTests."
+                "AllRequiresEveryActualStandaloneScenarioAndItsCompleteSemanticEvidence")
+        owner, method = name.rsplit(".", 1)
+        xml = (f'<assemblies><test type="{owner}" method="{method}" result="Fail" '
+               'name="credential-canary"><failure><message>composition_consumer_failed</message>'
+               '<stack-trace>/private/credential-canary</stack-trace></failure></test>'
+               '<test type="credential-canary" method="unknown" result="Fail"/></assemblies>')
+        script = (
+            "import sys; from pathlib import Path; "
+            "directory=Path(sys.argv[sys.argv.index('--results-directory')+1]); "
+            f"(directory/'storage.xml').write_text({xml!r}); "
+            "print('/private/credential-canary'); sys.exit(2)"
+        )
+        with self.assertRaisesRegex(verify.VerificationError, "command_failed"):
+            runner.command("composition-public-contracts", ["python3", "-c", script],
+                           diagnostics=diagnostic)
+        step = runner.report.data["steps"][-1]
+        self.assertEqual([name], step["failedContractTests"])
+        self.assertEqual(["composition_consumer_failed"], step["contractFailureCodes"])
+        self.assertFalse(list((self.root / "artifacts/verification/.private").rglob("storage.xml")))
+        self.assertNotIn("credential", runner.report.path.read_text())
+        self.assertEqual(set(), diagnostic.failed_tests)
 
     def test_missing_tool_and_timeout_fail_instead_of_skipping(self):
         report = self.report()
@@ -448,8 +621,10 @@ class VerifyTests(unittest.TestCase):
             yield Mock(environment={"SELECTED_PROVIDER": provider}, directory=self.root, check=lambda: None)
 
         with patch.object(runner, "versions"), patch.object(runner, "command") as command, \
+                patch.object(runner, "composition_guide") as guide, \
                 patch.object(verify, "runtime", side_effect=owned_runtime):
             verify.execute_suite(runner, "recovery", "both", arguments)
+        guide.assert_not_called()
         self.assertEqual(["sqlite", "postgres"], selected)
         native = [call for call in command.call_args_list if call.args[0].endswith("-native")]
         self.assertEqual(2, len(native))
@@ -482,6 +657,7 @@ class VerifyTests(unittest.TestCase):
         for suite in ("contract", "privacy"):
             runner = verify.Runner(self.root, self.report(suite), {})
             with patch.object(runner, "versions"), patch.object(runner, "command") as command, \
+                    patch.object(runner, "composition_guide") as guide, \
                     patch.object(verify, "runtime", side_effect=owned_runtime):
                 verify.execute_suite(runner, suite, "both", arguments)
             http = [call for call in command.call_args_list if call.args[0].endswith("-http")]
@@ -496,11 +672,16 @@ class VerifyTests(unittest.TestCase):
                     self.assertIn("privacy.test.ts", call.args[1])
                     self.assertTrue(call.kwargs["environment"]["BOOTSTRAP_PRIVACY_CANARY"])
             if suite == "privacy":
+                guide.assert_not_called()
                 capture = next(call for call in command.call_args_list
                                if call.args[0] == "privacy-supervisor-capture")
                 self.assertIn("scripts/run_python_tests.py", capture.args[1])
                 self.assertIn("test_dev_output.py", capture.args[1])
             else:
+                self.assertEqual(
+                    [(provider, scenario) for provider in ("sqlite", "postgres")
+                     for scenario in (*verify.COMPOSITION_OBSERVATIONS, "all")],
+                    [call.args[:2] for call in guide.call_args_list])
                 public = next(call for call in command.call_args_list
                               if call.args[0] == "platform-public-contracts")
                 self.assertEqual(["--minimum-expected-tests", "1"], public.args[1][-2:])
@@ -540,6 +721,7 @@ class VerifyTests(unittest.TestCase):
             yield Mock(environment={}, directory=self.root, check=lambda: None)
 
         with patch.object(runner, "versions"), patch.object(runner, "command") as command, \
+                patch.object(runner, "composition_guide") as guide, \
                 patch.object(verify, "runtime", side_effect=owned_runtime):
             verify.execute_suite(runner, "contract", "sqlite", Mock(
                 disposable_postgres=False, postgres_connection=None,
@@ -554,6 +736,7 @@ class VerifyTests(unittest.TestCase):
         self.assertIn("--filter-not-trait", public.args[1])
         self.assertIn("Provider=postgres", public.args[1])
         self.assertNotIn("KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE", public.kwargs["environment"])
+        self.assertEqual(["sqlite"] * 12, [call.args[0] for call in guide.call_args_list])
 
     def test_normal_browser_does_not_run_privacy_without_its_seeded_capture_session(self):
         directory = self.root / "tests/e2e"
@@ -672,9 +855,10 @@ class VerifyTests(unittest.TestCase):
             group.stop()
         group.stop()
 
-    def startup_samples(self):
+    def startup_samples(self, composition=False):
         return [
-            {"cycle": cycle, "readySeconds": cycle / 10, "pageSeconds": cycle / 100, "fixtureMatches": True}
+            {"cycle": cycle, "readySeconds": cycle / 10, "pageSeconds": cycle / 100, "fixtureMatches": True,
+             **({"totalSeconds": cycle / 5, "modulesPublished": True} if composition else {})}
             for cycle in (1, 2)
         ]
 
@@ -688,18 +872,23 @@ class VerifyTests(unittest.TestCase):
 
         def child(name, command, **kwargs):
             commands.append(name)
-            if name == "startup-storage-fixture-build":
-                self.assertIn("tests/contract/Kofte.Storage.Consumer", command)
+            if name in ("startup-storage-fixture-build", "startup-composition-fixture-build"):
+                self.assertIn("tests/contract/Kofte." + (
+                    "Composition" if "composition" in name else "Storage") + ".Consumer", command)
                 runner.operation(name, lambda _: None, command)
                 return
             def produce(_):
                 directory = Path(command[command.index("--output") + 1])
                 outputs.append(directory)
                 self.assertEqual([], list(directory.iterdir()))
-                self.assertEqual("2", kwargs["environment"]["BOOTSTRAP_WARM_STARTS"])
-                path = directory / "actual-startup-test/startup-observations.json"
+                composition = name == "startup-composition-restarts"
+                if not composition:
+                    self.assertEqual("2", kwargs["environment"]["BOOTSTRAP_WARM_STARTS"])
+                self.assertIn("--grep" if composition else "--grep-invert", command)
+                filename = "composition-startup-observations.json" if composition else "startup-observations.json"
+                path = directory / "actual-startup-test" / filename
                 path.parent.mkdir()
-                path.write_text(json.dumps(self.startup_samples()))
+                path.write_text(json.dumps(self.startup_samples(composition)))
             runner.operation(name, produce, command)
 
         with patch.object(runner, "versions"), patch.object(runner, "build_runtime"), \
@@ -710,12 +899,57 @@ class VerifyTests(unittest.TestCase):
         self.assertEqual("passed", step["outcome"])
         self.assertEqual(2, step["configuredCycles"])
         self.assertEqual(self.startup_samples(), step["observations"])
+        composition = next(step for step in persisted["steps"] if step["name"] == "startup-composition-observations")
+        self.assertEqual("passed", composition["outcome"])
+        self.assertEqual(self.startup_samples(True), composition["observations"])
         self.assertIn(runner.report.path, list((self.root / "artifacts/verification").glob("*.json")))
         self.assertNotIn("credential-canary", runner.report.path.read_text())
         self.assertNotIn(str(self.root), runner.report.path.read_text())
         self.assertTrue((outputs[0] / "actual-startup-test/startup-observations.json").is_file())
         self.assertEqual("credential-canary /private/old-results", stale.read_text())
         self.assertLess(commands.index("startup-storage-fixture-build"), commands.index("startup-warm-restarts"))
+        self.assertLess(commands.index("startup-composition-fixture-build"), commands.index("startup-composition-restarts"))
+
+    def test_composition_startup_requires_its_own_samples_and_total_with_cleanup(self):
+        directory = self.root / "composition-startup"
+        directory.mkdir()
+        (directory / "startup-observations.json").write_text(json.dumps(self.startup_samples()))
+        with self.assertRaisesRegex(verify.VerificationError, "startup_observations_missing"):
+            verify.startup_observations(directory, 2, composition=True)
+        path = directory / "composition-startup-observations.json"
+        path.write_text(json.dumps(self.startup_samples(True)))
+        self.assertEqual(self.startup_samples(True),
+                         verify.startup_observations(directory, 2, composition=True))
+        for total in (None, 300, 0.01, True):
+            samples = self.startup_samples(True)
+            if total is None:
+                del samples[0]["totalSeconds"]
+            else:
+                samples[0]["totalSeconds"] = total
+            path.write_text(json.dumps(samples))
+            with self.subTest(total=total), \
+                    self.assertRaisesRegex(verify.VerificationError, "startup_observations_invalid"):
+                verify.startup_observations(directory, 2, composition=True)
+        samples = self.startup_samples(True)
+        samples[0]["modulesPublished"] = False
+        path.write_text(json.dumps(samples))
+        with self.assertRaisesRegex(verify.VerificationError, "startup_observations_invalid"):
+            verify.startup_observations(directory, 2, composition=True)
+
+    def test_startup_cannot_pass_with_only_empty_host_warm_observations(self):
+        runner = verify.Runner(self.root, self.report("startup"), {})
+
+        def child(name, command, **_kwargs):
+            if name == "startup-warm-restarts":
+                directory = Path(command[command.index("--output") + 1])
+                (directory / "startup-observations.json").write_text(json.dumps(self.startup_samples()))
+
+        with patch.object(runner, "versions"), patch.object(runner, "build_runtime"), \
+                patch.object(runner, "command", side_effect=child), \
+                self.assertRaisesRegex(verify.VerificationError, "startup_observations_missing"):
+            verify.execute_suite(runner, "startup", None, Mock(warm_starts=2))
+        self.assertEqual("startup-composition-observations", runner.report.data["steps"][-1]["name"])
+        self.assertEqual("failed", runner.report.data["steps"][-1]["outcome"])
 
     def test_startup_requires_exact_sample_count_sequence_fields_and_fixture_matches(self):
         directory = self.root / "observations"
@@ -815,7 +1049,7 @@ class VerifyTests(unittest.TestCase):
         runner = verify.Runner(self.root, self.report("startup"), {})
 
         def child(name, command, **_kwargs):
-            if name == "startup-storage-fixture-build":
+            if name in ("startup-storage-fixture-build", "startup-composition-fixture-build"):
                 runner.operation(name, lambda _: None, command)
                 return
             def fail(_):

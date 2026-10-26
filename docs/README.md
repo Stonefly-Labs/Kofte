@@ -245,9 +245,201 @@ now records **"this human accesspts 003"** for numbered feature 003, with the
 passing review's scope and limits retained. Product/test code, tasks,
 reviewed checklists and prior evidence remain unchanged; no new product
 measurement or usability study is claimed. The same
-[PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6) is ready for human merge
-after publication. **004 waits for that human merge** and accepted evidence
-on updated main; acceptance does not start it.
+[PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6) was human-merged.
+The accepted ledger and all five acceptance hashes were verified on updated
+main before 004 began; acceptance itself did not start the next feature.
+
+**004 / specify, clarify, plan, checklist, tasks and analyze are complete** on `feature/004-module-lifecycle`.
+The [draft specification](../specs/004-module-lifecycle/spec.md) and
+[16/16 author checklist](../specs/004-module-lifecycle/checklists/requirements.md)
+define five stories, 20 scenarios, 20 requirements and six outcomes for trusted
+composition/lifecycle, safe preflight/migrations, data-preserving disable and
+health/recovery diagnostics. The exact inventory input and project template
+remain authoritative. Clarification found all ten requirements categories clear,
+with zero questions; the spec and 16/16 author checklist remain unchanged.
+The [coverage assessment](development/spec-workflow.md#invocation-and-current-progress)
+distinguishes requirements from the then-open planning choices. The
+[plan](../specs/004-module-lifecycle/plan.md),
+[research](../specs/004-module-lifecycle/research.md),
+[data model](../specs/004-module-lifecycle/data-model.md),
+[author contract](../specs/004-module-lifecycle/contracts/composition-v1.md),
+[operator contract](../specs/004-module-lifecycle/contracts/operator-v1.md) and
+[future guide](../specs/004-module-lifecycle/quickstart.md) now resolve those
+choices: explicit trusted composition, bounded whole-set preflight, offline
+preparation, supervised lifecycle and private current-attempt health.
+[ADR 0006](adr/0006-module-composition-lifecycle.md) is now **human-approved for
+implementation**, recording **"yeah approved"** without changing its design,
+historical planning artifacts or ledger. Both constitutional design checks
+pass, not runtime tests or dependency adoption. The
+[quality checklist](../specs/004-module-lifecycle/checklists/quality.md) is now
+reviewed at the reviewer's explicit request: **36/36 criteria satisfied**
+with per-item evidence and no blocking requirements gap or new human decision.
+Spec, plan and 16/16 author checklist are unchanged; actual DI dependency
+adoption is separately reviewed; complete provider/process/privacy proof remains
+an implementation gate.
+The [80-task list](../specs/004-module-lifecycle/tasks.md) now maps all five
+stories, 20 scenarios, 20 requirements, six outcomes and twelve plan decisions
+to explicit dependencies and path-specific implementation/validation.
+Safe preflight precedes startup within P1; real provider migration/preservation,
+process termination, privacy, all public examples and retained baseline/full
+gates remain mandatory. Generated tasks were initially unstarted; design and
+reviewed checklist artifacts remain unchanged.
+The read-only [analysis](../specs/004-module-lifecycle/analysis.md) passes:
+26/26 requirements/outcomes, 20/20 scenarios and all 80 tasks are covered,
+with 118 acyclic dependency edges and no actionable or constitutional finding.
+The analysis retains its historical assessed inputs. **The original implementation completed all 80 tasks**
+on the same branch and
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
+The [implementation report](../specs/004-module-lifecycle/implementation.md)
+records the reviewed DI edge, immutable contracts, deterministic resolution,
+owned strict harnesses, public no-storage/relational lifecycle, explicit
+interrupted-owner recovery and three exact preservation cycles per provider.
+All eleven public scenarios now include corrections, current health, actual
+owned termination and private diagnostic channels. Only evidenced tasks are
+marked. All 80 tasks are evidenced at assessed code head `267efc8`:
+ten complete local suite/provider reports and all 286 steps pass, alongside
+eleven CI contexts and 286 CI steps. Every standalone/provider `all` command,
+strict observation and isolated failure exercise is reconciled in the
+[final evidence](../specs/004-module-lifecycle/implementation.md#final-complete-gate-and-implementation-handoff).
+Historical failures remain distinct; fixture-only budget/workload repairs do
+not relax product deadlines, assertions or floors. That checkpoint selected
+convergence; the PR stays draft.
+
+The historical [004 convergence assessment](../specs/004-module-lifecycle/convergence.md)
+records **gaps** across all 46 requirements/outcomes/scenarios, twelve plan
+decisions, 80 original tasks and twelve principles. One HIGH partial finding
+reproduces the actual configured host's missing explicit disabled-state operator
+output, despite a correct in-memory snapshot. Exactly T081 is appended unchecked;
+all original task bytes/markers, product/test code, approved intent, historical
+reports and reviewed checklists remained unchanged. That selected implement
+on the same draft PR #7, followed separately by convergence/review and explicit
+human acceptance. No intermediate merge is requested.
+
+The [T081 increment](../specs/004-module-lifecycle/implementation.md#convergence-remediation-t081)
+now delivers the missing private disabled records, derived from the existing
+snapshot for explicit/omitted deployments and validated against the copied
+enabled-owner set. Both-provider actual-host/strict-harness regressions require
+fresh attempts, zero disabled effects and unchanged anonymous privacy.
+All 81 then-existing tasks are implemented; that checkpoint selected follow-up
+convergence on draft PR #7.
+Historical convergence/analysis and reviewed checklists remain untouched.
+
+**Historical 004 / follow-up converge: gaps.**
+The [current assessment](../specs/004-module-lifecycle/convergence.md) verifies
+F1/T081's actual disabled observations, but valid service names can exceed the
+host-generated dependency-binding limit and fail activation (HIGH F2).
+Recurring expected-success cleanup failures remain causally unexplained
+(MEDIUM F3): broad integration passes 102/104, unchanged isolated PostgreSQL
+cases 5/5. Exactly two tasks are appended under Phase 10, preserving all 81
+prior tasks, historical evidence and product/test source.
+
+**Historical 004 / T082-T083 implementation checkpoint.**
+The [increment](../specs/004-module-lifecycle/implementation.md#convergence-remediation-t082-t083)
+retains accepted dependency identity bounds through actual public binding/
+Start, and reproduces/fixes normal-stop failure with incomplete HTTP requests
+on both providers. An internal 500-ms drain preserves external cleanup/stop
+limits; fixed private causal codes retain intentional incomplete/uncertain
+refusal and anonymous privacy. All 83 tasks are implemented. Historical
+failures and causal limits remain explicit; follow-up convergence, final review
+and explicit human acceptance remain separate on the same draft PR #7.
+
+**Historical 004 / converge after T082-T083: gaps.**
+The [assessment](../specs/004-module-lifecycle/convergence.md) checks all 46
+requirements/outcomes/scenarios, twelve plan decisions, 83 tasks and twelve
+principles. F1/T081 and F2/T082 are closed. HIGH F4 demonstrates narrower
+runtime service-count limits rejecting valid compositions; MEDIUM F3 retains
+two normal host-disposal failures in fresh 104/106 broad integration.
+The HTTP-stop regression passes but does not close the distinct disposal
+boundary. Only Phase 11/T084-T085 are appended; prior tasks, product/test
+source, approved intent, reviewed checklists and historical reports are
+preserved. Continue on the same draft PR #7, without an intermediate merge.
+
+**Historical 004 / implement checkpoint (T084-T085).**
+The [report](../specs/004-module-lifecycle/implementation.md#convergence-remediation-t084-t085)
+records complete executable counts through actual Start/readiness: 128 per
+owner and 1,024 enabled total, plus a strict public 127-prerequisite/129-total
+example. A deterministic actual-builder regression proves unused default JSON
+watchers survived source clearing; disabling reload before construction
+removes them. Corrected both-provider composition passes 106/106 with unchanged
+cleanup budgets, incomplete/uncertain refusal, durable inventory and owned exit.
+Failed historical/diagnostic runs and complete-gate reconciliation remain
+explicit. Follow-up converge, review and explicit human acceptance remain
+separate stages on the same draft PR #7.
+
+**Historical 004 / converge after T084-T085: pass.**
+The [assessment](../specs/004-module-lifecycle/convergence.md) covers all 46
+requirements/outcomes/scenarios, twelve plan decisions, 85 tasks and twelve
+principles with zero actionable gaps. F1-F4 are closed with fresh focused
+execution and inspected assessed-head CI. Task bytes, approved intent,
+reviewed checklists, product/test code and historical evidence are unchanged.
+Final review and explicit human acceptance remain separate on the same
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), without an
+intermediate merge or later-feature work.
+
+**Historical 004 / final review: changes; implement T086 was next.**
+The [review](../specs/004-module-lifecycle/review.md) covers all 46
+requirements/outcomes/scenarios, twelve plan decisions, 85 existing tasks and
+twelve principles. HIGH R1 reproduces valid disabled-catalog prerequisite
+metadata being rejected by the enabled-edge protocol bound in 16/16 actual
+public-host probe cases. Prior F1-F4 remain closed. Exactly T086 is appended
+unchecked, preserving all prior task bytes/markers, approved intent, reviewed
+checklists and product/test source. Acceptance is blocked until remediation,
+convergence and passing review on the same draft PR #7. No new design approval,
+readiness, intermediate merge or later-feature work is introduced.
+
+**Historical 004 / T086 implement complete; investigation deferred.**
+The [increment](../specs/004-module-lifecycle/implementation.md#final-review-remediation-t086)
+corrects all-catalog diagnostic metadata admission to 2,048 prerequisites while
+preserving the 1,024 enabled-edge bound. Public resolution and actual
+both-provider validate/serve cover full disabled catalogs, both selection forms
+and an unrelated enabled owner, including exact disabled observations,
+unchanged inventory, readiness and verified clean stop. All eleven code-head
+CI contexts pass; a separate local complete-gate PostgreSQL
+migration-interruption failure remains unexplained despite isolated/local recovery passes.
+The human explicitly directed documenting its eight-pass/one-failure snapshot
+and deferring investigation as non-blocking for this implementation checkpoint.
+The [facts and revisit guidance](../specs/004-module-lifecycle/implementation.md#human-directed-deferral-and-implementation-handoff)
+preserve the failed local result and unknown cause. T086 is complete;
+follow-up converge is next on draft PR #7. Historical review, approved intent
+and reviewed checklists remain unchanged; no acceptance or merge is requested.
+
+**Historical 004 / converge passes after T086.** The
+[assessment](../specs/004-module-lifecycle/convergence.md) covers all 46
+requirements/outcomes/scenarios, twelve decisions, 86 tasks and twelve
+principles with no new actionable gaps. Review R1 is closed by actual bounded
+protocol/public-host behavior; prior F1-F4 stay closed. No task or product/test
+code changes. The deferred PostgreSQL anomaly remains undiagnosed, with its
+failed local full-suite result preserved; this is not a new full-gate pass.
+**Review is next** on draft PR #7, before explicit human feature acceptance.
+No PR readiness or intermediate merge is requested.
+
+**Historical 004 / final review passes after T086.** The
+[review](../specs/004-module-lifecycle/review.md) assesses all 46 requirements/
+outcomes/scenarios, twelve decisions, 86 tasks and twelve principles.
+R1/T086 and prior F1-F4 are closed; no new implementation defect or task remains.
+The human-deferred PostgreSQL observation remains undiagnosed and the latest
+local complete attempt stays failed/interrupted at 109/111 executed steps.
+Review does not replace that gate or waive release evidence.
+**Explicit human acceptance of numbered feature 004 is next**, separately on
+the same draft PR #7 with this limitation disclosed; no readiness or merge
+is requested.
+
+**Current 004 / explicitly human-accepted.** The
+[acceptance record](../specs/004-module-lifecycle/acceptance.md) preserves
+**"bro this human fugging accepts"** after the passing review and disclosed
+deferred PostgreSQL limitation. Review/tasks/checklists remain unchanged;
+the failed local complete attempt stays failed and its cause unknown.
+The same PR #7 was returned to draft after a SQLite CI failure, despite
+unchanged passing local reproduction. The
+[failure record](../specs/004-module-lifecycle/implementation.md#post-acceptance-sqlite-ci-failure-and-diagnostic-correction)
+retains the unknown cause and bounded failure-diagnostic correction.
+The [full-matrix follow-up](../specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up)
+also records a later PostgreSQL privacy failure and duplicated baseline timeout.
+No renewed merge handoff is allowed until all eleven latest-head checks finish
+successfully; actual current outcomes are recorded on the PR. Spec 005 waits
+for accepted evidence on updated main after that merge and a later invocation.
+Acceptance is not a new runtime result, release waiver or MVP completion.
+
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
 

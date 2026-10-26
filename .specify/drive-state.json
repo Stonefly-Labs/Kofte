@@ -15,6 +15,10 @@
     "003": {
       "directory": "specs/003-storage-registry",
       "next_step": "accepted"
+    },
+    "004": {
+      "directory": "specs/004-module-lifecycle",
+      "next_step": "accepted"
     }
   },
   "active": null,
@@ -742,6 +746,328 @@
         "specs/003-storage-registry/checklists/requirements.md": "4117d3e96c325fdcea8bd02bbf4bda0638a5dd3d53d2b8af9ae884ac887f2135"
       },
       "human_approval": "this human accesspts 003"
+    },
+    {
+      "spec": "004",
+      "step": "specify",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-23T02:36:40+00:00",
+      "completed_at": "2026-10-23T02:43:14+00:00",
+      "outcome": "pass",
+      "note": "004 specify authored from the exact fenced inventory prompt and resolved project template after verifying human-merged PR #6 and accepted 003 evidence on updated main. Five independently testable stories, 20 Given/When/Then scenarios, 20 functional requirements and six measurable outcomes cover module-free/trusted-test-module boot, bounded deterministic manifest/dependency/configuration/contribution preflight, dependency-ordered lifecycle and admitted owner-local migrations, data-preserving controlled-restart disable/re-enable, honest health/failure/recovery and safe operator diagnostics. Accepted 002/003 contracts, installation authority, provider isolation and future interface/runtime exclusions remain explicit. All 16 built-in author requirements criteria satisfy the reviewed spec; no unresolved clarification marker, pre/post hook, reviewer-owned quality checklist, plan, task artifact, runtime change or self-acceptance. Local feature context explicitly targets specs/004-module-lifecycle. Clarify is next on the same feature branch/draft PR, not executed here.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/spec.md": "f1a4b1ccec8dc0a0f606a6ec1724cb5f52861a31334f9c866eed213cff16a0f5",
+        "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "clarify",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-23T03:00:49+00:00",
+      "completed_at": "2026-10-23T03:01:44+00:00",
+      "outcome": "pass",
+      "note": "Executed speckit-clarify using the explicitly recorded specs/004-module-lifecycle path and adopted constitution v2.0.1. No critical ambiguities detected worth formal clarification; 0 questions asked or answered, no invented human decisions, and spec.md remains byte-for-byte unchanged. All ten requirements-level taxonomy categories are Clear: scope/behavior (Scope, US1-5, FR-001-003/011-013/019/020); domain/data (Key Entities, FR-008-015, immutable IDs/assignments and desired-versus-observed state); interaction/UX (US1-5, operational states and no new visual surface); nonfunctional quality (FR-004/014/016-018, SC-001-006 and retained startup/maintenance envelopes); integration/dependencies (accepted 002/003, explicit interfaces and later-runtime exclusions); edge cases/failures (US2-5, FR-005/010/013/015/016, contention, uncertain effects, cleanup and corrected retry); constraints/tradeoffs (trusted code, controlled restart, fail-closed composition, no implicit cascade/global rollback); terminology (Key Entities and consistent naming); completion signals (Required Validation maps all 20 scenarios, 20 requirements and six outcomes); miscellaneous/placeholders (no unresolved material marker). Revalidated built-in author checklist: 16/16 to 16/16, no newly passing items, regressions or unchecked criteria; its bytes remain unchanged. Exact discovery/packaging, public signatures, state representation, deterministic tie rule, finite admitted bounds, per-stage budgets, health freshness and cleanup supervision remain explicitly assigned to plan/ADR, not unanswered product intent. Coverage evidence is in docs/development/spec-workflow.md. No before/after clarification hooks configured. No product/design/task changes, reviewer-owned checklist marking, implementation or human acceptance. Plan is next on the same feature branch/draft PR #7, not executed here; no intermediate merge.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/spec.md": "f1a4b1ccec8dc0a0f606a6ec1724cb5f52861a31334f9c866eed213cff16a0f5"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "plan",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-23T03:15:09+00:00",
+      "completed_at": "2026-10-23T03:29:52+00:00",
+      "outcome": "pass",
+      "note": "Executed speckit-plan on the original feature/004-module-lifecycle and draft PR #7 with explicit specs/004-module-lifecycle context and resolved project template. Produced plan, source-backed twelve-decision research, data model, versioned composition/author and operator contracts, future executable validation guide and Proposed ADR 0006. Both constitutional design gates pass across all twelve principles; mappings cover all 20 requirements, 20 scenarios and six outcomes. Design selects compiled trusted deployments, private persistent desired selection, bounded deterministic whole-set preflight, native DI with per-owner scopes, separate admitted stopped preparation and unprivileged serving, owner-bound 003 migrations/history, three-cycle data preservation, honest supervised exit/cleanup, current-attempt dependency health and safe aggregate/diagnostic projection. Accepted 002 grammar/ranges/category metadata and 003 mappings/privileges/format/deadlines/recovery are unchanged. Official Microsoft references resolve DI/cancellation/process constraints; Microsoft Learn/Context7 MCP unavailable, not fabricated. No before/after plan hooks. Spec and 16/16 author checklist remain byte-for-byte unchanged; no product/test source, package installation/lock change, tasks, reviewer-owned quality marking or feature acceptance. ADR 0006 requires human approval and DI dependency-edge adoption review before implementation. Checklist is next, generated unchecked for reviewer-owned evaluation on this same branch/draft PR; not executed here and no intermediate merge.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/plan.md": "fb30c0d493e87dfef4d8d697428914202c6f125524d4772dd3b655b796407939",
+        "specs/004-module-lifecycle/research.md": "063d125c357ab42b8095b286436849b87283dd1f98dd3978070f7068652a3c19",
+        "specs/004-module-lifecycle/quickstart.md": "af39664af78efb10b53c5fd329e131e8e224b3c4ea6308cadf9848234b3c05d9"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "checklist",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-23T04:01:29+00:00",
+      "completed_at": "2026-10-23T11:51:07+00:00",
+      "outcome": "pass",
+      "note": "Completed the existing 004 checklist stage after resuming its original branch/draft PR #7 under explicit reviewer authorization: \"bro, you review the checklist and lmk what I need eyes on\". Evaluated all 36 original requirements-quality criteria against spec, plan/research, model, versioned author/operator contracts, future guide, accepted 002/003 boundaries, approved ADR 0006 and constitution v2.0.1. All 36 criteria satisfy the written intent with separate per-item evidence; markers 0/36 to 36/36, no regressions/unchecked items, new criterion, blocking gap, constitutional conflict or new human decision. Historical generation notes preserved. Spec, plan/research/model/contracts/guide, 16/16 author checklist, approved ADR and prior ledger history/hashes unchanged. Human-attention section preserves actual DI dependency-edge lock/license/provenance review, real both-provider/three-cycle/termination/privacy evidence and later explicit human feature acceptance as future gates, not checklist achievements. No hooks, product/test source, dependency/lock changes, runtime proof, tasks, implementation, feature acceptance or merge. Tasks is next in a separate invocation on this same draft PR; not run here.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
+        "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "tasks",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-23T12:06:49+00:00",
+      "completed_at": "2026-10-23T12:14:32+00:00",
+      "outcome": "pass",
+      "note": "Executed speckit-tasks on the recorded explicit directory and resolved project task-template override. Generated 80 sequential unchecked path-specific tasks: setup5, foundations9, US2 preflight12, US1 startup10, US3 preparation13, US4 preservation8, US5 health/failure15, cross-cutting8; 22 genuine parallel markers with explicit earlier-task dependencies and an acyclic graph. US2 precedes US1 within shared P1 because whole-set safety is a startup prerequisite. Semantic coverage includes all five stories,20 scenarios,20FRs,sixSCs,R1-R12 and twelve principles: verbatim entity constraints, strict bounded config/graph/claims, audited native DI/phase barriers, read-only complete inventory/recipe preflight, stopped assigned migrations and unprivileged serving, exact three fresh-process preservation cycles/provider, actual owned termination, safe failed-boundary/telemetry captures, eleven mandatory public guide cases and retained full baseline/local/CI gates. Existing ADR0006 approval and reviewer gates are preserved, not repeated; actual DI graph/lock/license adoption and runtime evidence remain implementation tasks. Original spec/plan/research/model/contracts/guide/ADR/checklists and prior ledger history/hashes unchanged; no before/after tasks hooks. README/related progress docs updated; no product/test source, dependency adoption, task execution, analysis report or acceptance. Analyze is next separately on original feature branch/draftPR7; no intermediate merge/readiness.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "17d64c09b71ef68ff7c77caaba7cabe2494ddf1f300f0b4853cca2745a5044c9"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "analyze",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-24T02:04:30+00:00",
+      "completed_at": "2026-10-24T02:10:36+00:00",
+      "outcome": "pass",
+      "note": "Executed read-only speckit-analyze at a6d93f283b6e4c446ffcf773faa480d4b80678ae on the original branch/draft PR #7 with explicit feature context. Persisted analysis.md: pass; zero actionable duplication, ambiguity, underspecification, constitutional conflict, coverage gap or ordering inconsistency. Semantic coverage includes 26/26 requirements/outcomes, 20/20 acceptance scenarios, all 80 tasks, R1-R12 and twelve principles; 118 explicit backward-only acyclic dependency edges and 22 conditional isolated-resource parallel markers. Verified observable positive/negative tests, six-phase preflight before effects, native DI/phase barriers, exact owner-local preparation/preservation, current health, actual owned exit, safe useful diagnostics and eleven mandatory public examples plus retained full gates. ADR0006 approval supersedes historical Proposed labels without new approval. No hooks. Original spec/plan/research/model/contracts/guide/approved ADR/both reviewed checklists and all historical ledger entries/hashes unchanged; all 80 tasks remain unchecked. Driver updates report/ledger/current progress docs only, not analyzed inputs, product/test code, dependencies/locks, runtime measurements or feature acceptance. Actual DI adoption and real provider/process/privacy evidence remain implementation requirements. Implement is next in a separate invocation on this same draft PR; no readiness or intermediate merge.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/analysis.md": "d58c305e9a57493d44a6bf4a2948725e6f5aef1f4dd0ea6711f523674b1cdbd8",
+        "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
+        "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "implement",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-24T12:59:06+00:00",
+      "completed_at": "2026-10-25T00:42:54+00:00",
+      "outcome": "pass",
+      "note": "All 80 implementation tasks evidenced. Exact published code 267efc8e6bc3c5a783c3962e66c5aca8b383e7b2 passed python3 scripts/verify.py --suite all --disposable-postgres --warm-starts 10: ten completeGate=true reports / 286 steps, all 24 actual guide commands and strict observations, isolated baselines and five intended failures. Eleven exact-code CI contexts pass: product40141738445/repository40141738437, actual merge f48e19825224567a500a3280509159c7db74f7b8. Full FR/scenario/SC/design/principle/task mapping and historical failures preserved. Fixture-only administrative budget and unchanged contention workload isolation do not relax product limits. Repository checker,119 Python tests,npm format:check,diff check pass. Publish tasks/report/ledger together on original branch/draft PR7 with immediate push. Converge next separately; no acceptance/readiness/merge.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "d09285e4a8c2cbf8a6eb467ad9322935635af797d9f16fd4c56fc236bf357063",
+        "specs/004-module-lifecycle/implementation.md": "d10b2e4d83d2caca266b71c0c3842011882da2a1293b7f933f2e824db6f00517",
+        "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
+        "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "converge",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-25T03:15:15+00:00",
+      "completed_at": "2026-10-25T03:33:05+00:00",
+      "outcome": "gaps",
+      "note": "Assessed all 20 FRs, six outcomes, 20 scenarios, twelve plan decisions, 80 original tasks and twelve principles at faa4dfe. One HIGH partial finding F1 reproduces missing explicit disabled operator output from the real configured host; appended only Phase 9/T081, preserving the original task byte prefix, approved intent, reviewer checklists and product/test/verifier source. Recorded convergence.md and current progress docs. Fresh quality 20/20, unit 14/14, composition integration 104/104 and repository/119 Python/format/whitespace checks pass. Broad composition contracts retain 83/84 with one PostgreSQL cleanup-incomplete failure; unchanged isolated preservation rerun passes both providers (2/2), cause unestablished. Independently reconciled ten existing assessed-head CI artifacts/286 passed steps. Next invocation implements T081 on the same branch/draft PR #7; no acceptance or merge.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "a3945ed4a9f25f516df2074f312c8ab2e42575628a025fff79b6c3e7f7ccf2c3",
+        "specs/004-module-lifecycle/convergence.md": "165a1b81ea2c3300921fd6de44e94392b1cf4ef67dd409fc0d1b05b22f24f03f"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "implement",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-25T04:27:23+00:00",
+      "completed_at": "2026-10-25T04:47:02+00:00",
+      "outcome": "pass",
+      "note": "Implemented T081/F1 from c6d587e: project existing disabled snapshots into actual bounded private discovered/disabled records for explicit and omitted owners; parent/worker protocols copy enablement and reject contradictory frames. Original failing actual-host regression now passes with 35 assertions/provider and fresh explicit/omitted observations, zero disabled effects and unchanged anonymous schema. All 81 tasks complete; approved intent, prior convergence/analysis and reviewer checklists unchanged. Quality 20/20 and unit 14/14 steps, targeted host 53/53, public/harness/boot/preservation contracts 53/53, isolated both-provider preservation 2/2, repository/119 Python/format/whitespace pass. Broad integration retains 103/104 with one cleanup-incomplete failure; PostgreSQL all first failed similarly, unchanged isolated reruns pass. All eleven public scenarios pass SQLite 389417/PostgreSQL 389422 assertions with strict Python result validation. No cleanup cause/fix or fresh complete local gate claimed. Published docs/interface/evidence align; follow-up converge is next on the same draft PR #7, not acceptance or merge.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "f1aa919bdafbd1237dbd29701d467ad004fae584c3955a52ede4d49cdbc3a76c",
+        "specs/004-module-lifecycle/implementation.md": "928b66fdd3e0082111bf37947a5dcf6b863f6bf230b5bda783e868a78f74496c",
+        "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
+        "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "converge",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-25T04:49:37+00:00",
+      "completed_at": "2026-10-25T04:59:50+00:00",
+      "outcome": "gaps",
+      "note": "Assessed 5bef3486813f9cd5a4d467f77c7098593f5954d4 against all 46 requirements/outcomes/scenarios, R1-R12, 81 tasks and 12 principles. F1/T081 is closed by actual private disabled projection and both-provider/strict evidence. HIGH partial F2 reproducibly fails valid public dependency activation at combined binding lengths over 128 (local 117 ready, 118/128 activation_failed under org.test.a). MEDIUM partial F3 retains recurring unexplained cleanup evidence failures: broad integration 102/104, unchanged isolated PostgreSQL 5/5. Fresh host units133, platform83, boot6 and harness33 passed; initial zero-test selector exit8 is not passing evidence. Append only Phase10 T082-T083; preserve original task bytes, report, history, source, approved intent and reviewer checklists. Next invocation implement on original draft PR7; no acceptance, readiness or intermediate merge.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "920177b47582976e5b1930b57d44f7ad532052d95a50f88f4d1652e0f9616afe",
+        "specs/004-module-lifecycle/convergence.md": "a9a27a5a4d33ec51989be134524884b9b4225b8cc5576cc0c373a41c8c2f5991"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "implement",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-25T05:05:00+00:00",
+      "completed_at": "2026-10-25T07:01:02+00:00",
+      "outcome": "pass",
+      "note": "Implemented T082-T083 with actual dependency-boundary Start/readiness and independent public identity evidence, plus both-provider incomplete-HTTP-request shutdown red/green and fixed private causal cleanup records. Focused process regressions pass 16/16. The local all-suite attempt retains two failures (251/253 steps); unchanged narrowed integration/recovery pass 52/52, supplying passing evidence across all 286 named steps without claiming a new complete local gate or retroactive causal certainty. Approved intent/checklists and historical reports are unchanged. Follow-up converge is next on the same draft feature PR; no review, acceptance or merge.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "2263a9f592bde7f7c76870daaadb9088e1916e085ce08a0ef4575463463dc3cf",
+        "specs/004-module-lifecycle/implementation.md": "17f916bb843eaedf77f81f7a7dc45a0289d7f43fd193327f18613ef15ed12edd",
+        "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
+        "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "converge",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-25T12:55:02+00:00",
+      "completed_at": "2026-10-25T13:04:14+00:00",
+      "outcome": "gaps",
+      "note": "Assessed all 46 requirements/outcomes/scenarios, 12 plan decisions, 83 tasks and 12 principles at 74074f9. F1/T081 and F2/T082 close; F4 reproduces accepted 65-binding/129-export failures; F3 retains two normal host-disposal failures in fresh 104/106 integration. Appended only Phase 11 T084-T085; preserved original tasks, report history, intent and reviewer checklists. Fresh unit/public selections pass 136/136, 87/87 and 39/39; repository checks and 119 Python tests pass. Converge gaps selects implement for a separate invocation on the same draft PR #7; no review, acceptance or merge.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "4dd5efb00f4b9078cfbf29976a913531dd97f8e3977057746a4605030bc276f6",
+        "specs/004-module-lifecycle/convergence.md": "b983d725e6bd1a70fc14b2b1f31b156a683f1366bfb5eca93825a45ed43e9f34"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "implement",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-25T13:40:45+00:00",
+      "completed_at": "2026-10-25T15:27:53+00:00",
+      "outcome": "pass",
+      "note": "Implemented only T084-T085: bounded lazy executable exports preserve 128 per owner/1024 enabled total and copied prerequisite bindings; actual count boundary and independent 127-service/129-total evidence. Demonstrated unused default JSON watcher survives source clearing; disable reload before worker builder creation, with deterministic red/green and unchanged disposal/stop/refusal bounds. Corrected both-provider composition 106/106; complete local all-suite passes all ten reports/286 steps with completeGate true, 24 guide commands/strict checks and ten warm/two composed starts. Repository checks, 119 Python tests, format and whitespace pass. Historical failures, approved intent, first 83 markers and reviewed checklists preserved. Actual publication-head CI is checked after push and recorded in existing draft PR7. Follow-up converge is next in a separate invocation; no acceptance or merge.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "66dd9ff25d731ebf7de7de942040148af9d72d19286202028a1ea1207fabf9b3",
+        "specs/004-module-lifecycle/implementation.md": "f9915cfc09db2f0aafefb7db5634384d346b88fe83cc7c30d769762a04ec8270",
+        "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
+        "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "converge",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-25T19:44:46+00:00",
+      "completed_at": "2026-10-25T19:51:54+00:00",
+      "outcome": "pass",
+      "note": "Converge pass after T084-T085: assessed all 46 FR/outcome/scenario items, 12 plan decisions, 85 tasks and 12 principles with zero actionable gaps. F1-F4 closed by actual source/assertions, fresh quality 20/20, unit 14/14, both-provider composition 106/106 and strict result regressions 33/33; independently inspected assessed-head CI and retained local full-gate evidence each pass 286 steps. No new full local gate claimed. Tasks and approved intent unchanged; complete prior report preserved. Review is next on the same draft PR #7; no acceptance or intermediate merge.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "66dd9ff25d731ebf7de7de942040148af9d72d19286202028a1ea1207fabf9b3",
+        "specs/004-module-lifecycle/convergence.md": "914823652e2e7e831b8ee577f65d293cdc27309cd204c22efac402ac0b2ef8c6"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "review",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-25T20:28:43+00:00",
+      "completed_at": "2026-10-25T20:37:52+00:00",
+      "outcome": "changes",
+      "note": "Final spec-review assessed all20FRs,six outcomes,20scenarios,R1-R12,85 existing tasks and twelve principles at55d2f735. One HIGH reviewR1: all-catalog disabled prerequisite metadata incorrectly consumes1024 enabled-edge protocol bound. Caller compiled public-host probe confirms16/16 resolver-accepted omitted/false,unrelated enabled and max32 catalog inputs fail actual validate/serve with composition_observation_invalid before worker/callback/storage. Appended only uncheckedT086, preserving every byte/marker of prior85 tasks,approved intent,checklists,implementation/convergence and product/test/verifier source. PriorF1-F4 remain closed. Fresh quality20/unit14 pass; actual assessed-head CI11 contexts and all10 downloaded targeted reports286 steps independently verified,synthetic618ff04 parentsmain3a5deff+55d2f735;24 guide commands+24 strict observations. Green existing evidence missesR1; no new full local/provider/browser gate claimed. Review changes selects implementT086 separately on original draftPR7. Acceptance request cannot bypass missing passingreview; no acceptance,readiness,merge or005.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "958525e41dbb0e6970793abe9369c2822589c38baaf73879ccc21436e4e440e0",
+        "specs/004-module-lifecycle/review.md": "f9f79659b87e761003aa02a10b1fd02e58cbb6755b91651f88e62e74280ed4c3",
+        "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
+        "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "implement",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-25T20:42:03+00:00",
+      "completed_at": "2026-10-25T22:02:57+00:00",
+      "outcome": "pass",
+      "note": "T086 root-cause fix, focused red/green, both-provider public behavior and all eleven c749acc CI contexts are evidenced. The human explicitly directed documenting the eight-pass/one-failure PostgreSQL case snapshot, deferring investigation and moving on. This scoped non-blocking disposition completes implement only: the local all-suite remains failed/interrupted at 109/111 executed steps; its original assertion and cause remain unknown. No product rerun, test suppression, relaxed deadline, feature acceptance or later gate waiver. See implementation.md#human-directed-deferral-and-implementation-handoff for the exact human direction, reports and revisit guidance. Follow-up converge is next, not executed here.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "1edad3eee4b8e81d8490bc12591d65e9497517a1dc08fab9c98764ecdc595bda",
+        "specs/004-module-lifecycle/implementation.md": "8ee34a8221d9e14ce7c831f9203ee8c7c60860dbf28434ddc9161e3dee7a5029",
+        "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
+        "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "converge",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-25T22:11:30+00:00",
+      "completed_at": "2026-10-25T22:16:14+00:00",
+      "outcome": "pass",
+      "note": "Converge pass after T086: assessed 46 FR/outcome/scenario items, 12 plan decisions, all 86 tasks and 12 principles against current source/assertions; zero new actionable gaps and no task changes. Review R1/T086 closed by bounded 2048-entry diagnostic metadata plus fresh protocol50/limits29/both-provider compiled-host10/strict-corpus35 passing cases (124 total, zero skips). Independently downloaded exact c749acc CI: 11 contexts, 10 safe reports, 286 targeted steps, 24 guide commands and 24 observation checks; synthetic checkout parents verified and present source applicability confirmed. Prior F1-F4 remain closed. Human-deferred separate PostgreSQL anomaly remains undiagnosed and uninvestigated; failed/interrupted local109/111 is still failed, not a new full-gate pass or later-gate waiver. Entire historical convergence preserved, protected intent/checklists/review/implementation/tasks unchanged. Review is next on same draft PR7; no acceptance, readiness, intermediate merge or005.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "1edad3eee4b8e81d8490bc12591d65e9497517a1dc08fab9c98764ecdc595bda",
+        "specs/004-module-lifecycle/convergence.md": "f079990c57d297a2f132fff21991b50e4f609cd105dbfa8f35374ada72abda61"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "review",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-25T22:23:01+00:00",
+      "completed_at": "2026-10-25T22:30:15+00:00",
+      "outcome": "pass",
+      "note": "Final substantive review passes after T086 at assessed4893c72: read-only spec-review maps all46 FR/outcome/scenario items,12 plan decisions,86 tasks and12 principles to actual source/assertions. R1/T086 and priorF1-F4 closed; no new implementation defect or remediation task. Independently queried exactc749acc CI11 contexts,downloaded10 safe reports,reconciled286 passing targeted steps and24 guide/observation pairs,verified synthetic parents remotely and unchanged source applicability. No new product/full-local run: deferred PostgreSQL migration-interruption assertion/cause remains unknown; latest complete local109/111 remains failed/interrupted,not replaced by CI or a release waiver. Explicit human acceptance must disclose that residual limitation and remains next,separately on same draftPR7. Prior review exact suffix and all86 task bytes/intent/reviewedchecklists/historical evidence unchanged. Fresh repository/Python119/format/whitespace checks pass; completed ledger and staged diff rechecked before publication. No acceptance,readiness,merge or005.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "1edad3eee4b8e81d8490bc12591d65e9497517a1dc08fab9c98764ecdc595bda",
+        "specs/004-module-lifecycle/review.md": "94338254e2b0cb3bf6a3b6e983bde4fa1496024c8bd1f693eaf81a55b08ad922",
+        "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
+        "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
+      }
+    },
+    {
+      "spec": "004",
+      "step": "accept",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-26T02:11:00+00:00",
+      "completed_at": "2026-10-26T02:11:56+00:00",
+      "outcome": "pass",
+      "note": "Explicit human acceptance of numbered feature 004 follows the passing final review and disclosure of the deferred PostgreSQL failure. Exact decision is preserved in acceptance.md and human_approval. Accepted scope retains all 86 tasks, reviewed checklists and historical evidence unchanged. The local complete attempt remains failed/interrupted at 109/111 executed steps; the original assertion/cause remains unknown and investigation deferred, not a full-gate pass or release waiver. All eleven PR contexts at review checkpoint a673667 were verified passing; no new product run or investigation occurs. Publish acceptance and mark the same PR #7 ready for human merge only. Spec 005 requires that human merge and accepted evidence on updated main in a later invocation; no later stage is executed.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "1edad3eee4b8e81d8490bc12591d65e9497517a1dc08fab9c98764ecdc595bda",
+        "specs/004-module-lifecycle/review.md": "94338254e2b0cb3bf6a3b6e983bde4fa1496024c8bd1f693eaf81a55b08ad922",
+        "specs/004-module-lifecycle/acceptance.md": "842627ebfe0ac305e48059517ce4029ddf4a1c3f553e2e016cfdaeadd86e6f37",
+        "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
+        "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
+      },
+      "human_approval": "bro this human fugging accepts"
     }
   ]
 }

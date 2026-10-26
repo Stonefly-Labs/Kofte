@@ -233,6 +233,13 @@
           "xunit.v3.runner.common": "[4.0.2]"
         }
       },
+      "kofte.composition.testmodule": {
+        "type": "Project",
+        "dependencies": {
+          "Kofte.Infrastructure": "[1.0.0, )",
+          "Kofte.Platform": "[1.0.0, )"
+        }
+      },
       "kofte.host": {
         "type": "Project",
         "dependencies": {
@@ -258,7 +265,10 @@
         }
       },
       "kofte.platform": {
-        "type": "Project"
+        "type": "Project",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.0.13, )"
+        }
       },
       "kofte.testsupport": {
         "type": "Project",

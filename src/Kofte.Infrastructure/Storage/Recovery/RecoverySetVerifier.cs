@@ -255,7 +255,7 @@ public static class RecoverySetVerifier
         }
     }
 
-    private static SqliteConnection OpenReadOnly(string path)
+    internal static SqliteConnection OpenReadOnly(string path)
     {
         UnixStorePaths.ValidateRoot(Path.GetDirectoryName(path)!, allowMissing: false);
         UnixStorePaths.ValidateFile(path);
@@ -274,7 +274,7 @@ public static class RecoverySetVerifier
         catch { connection.Dispose(); throw; }
     }
 
-    private static async Task<RecoveryInventory> ReadInventoryAsync(StorageInstallation installation,
+    internal static async Task<RecoveryInventory> ReadInventoryAsync(StorageInstallation installation,
         OperationBudget budget)
     {
         await using var platform = installation.Provider == "sqlite"

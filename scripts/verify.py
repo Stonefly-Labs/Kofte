@@ -79,6 +79,65 @@ STORAGE_SCENARIOS = (
     "clean-install", "no-storage", "same-id-retry", "collision", "path-rejection",
     "interrupted-provisioning", "corrected-retry", "isolated-upgrade", "stopped-restore",
 )
+COMPOSITION_OBSERVATIONS = {
+    "empty-boot": {"coreEndpoints": 2, "emptyInventoryComparisons": 2},
+    "valid-dependency": {"publicServiceComparisons": 2, "phaseOrderComparisons": 1, "dependencyIdentityComparisons": 1,
+                         "prerequisiteServiceComparisons": 127,
+                         "ownerHistoryComparisons": 2, "prepublicationComparisons": 1},
+    "disabled-missing": {"disabledCallbackComparisons": 1, "missingRefusals": 1, "unchangedInventories": 1,
+                         "explicitDisabledObservations": 2, "omittedDisabledObservations": 2, "freshDisabledAttempts": 2},
+    "invalid-composition": {"manifestRefusals": 3, "dependencyRefusals": 5, "settingsRefusals": 1,
+                            "claimRefusals": 4, "limitRefusals": 1, "zeroEffectComparisons": 1},
+    "deterministic-corpus": {"repetitionsPerPermutation": 100, "permutations": 10, "cultures": 2,
+                             "publicConsumerPaths": 2, "exactDecisionComparisons": 4000},
+    "ordered-migration": {"cleanHistoryComparisons": 2, "upgradeHistoryComparisons": 2,
+                          "originalDataComparisons": 2, "wholeSetPreflightComparisons": 1,
+                          "noStorageComparisons": 1, "unchangedServingRevisions": 2},
+    "disable-reenable": {"completeCycles": 3, "distinctProcesses": 6, "distinctAttempts": 6,
+                         "originalAssignmentComparisons": 12, "originalDataComparisons": 12,
+                         "originalHistoryComparisons": 12, "unrelatedStateComparisons": 6,
+                         "dependentDisableRefusals": 1},
+    "failure-correction": {"configurationCorrections": 1, "initializeCorrections": 1,
+                           "startCorrections": 1, "healthCorrections": 1, "migrationCorrections": 1,
+                           "freshAttemptComparisons": 5, "verifiedExits": 5, "retainedCommitComparisons": 1,
+                           "explicitRecoveryComparisons": 1},
+    "health-impact": {"ownStateComparisons": 4, "freshnessComparisons": 1, "transitiveImpactComparisons": 1,
+                      "independentRootComparisons": 1, "aggregateResponseComparisons": 2, "anonymousPrivacyComparisons": 1},
+    "bounded-stop": {"ignoringTokenBoundaries": 7, "cancellationBoundaries": 2, "authorityRefusals": 2,
+                     "reverseCleanupComparisons": 1, "verifiedRootExits": 1, "verifiedDescendantExits": 1,
+                     "unverifiedTerminationRefusals": 1, "elapsedBudgetComparisons": 1},
+    "private-diagnostics": {"capturedChannels": 6, "usefulRecordComparisons": 1, "zeroLeakComparisons": 1,
+                            "invalidFrameRefusals": 3, "outputLimitRefusals": 2, "sinkFailureRefusals": 1,
+                            "storageDurabilityComparisons": 1, "boundedLabelComparisons": 1},
+}
+COMPOSITION_REQUIRED_FILES = (
+    "tests/contract/Kofte.Composition.Consumer/Kofte.Composition.Consumer.csproj",
+    "tests/contract/Kofte.Composition.Consumer/Program.cs",
+    "tests/contract/Kofte.Composition.TestModule/Kofte.Composition.TestModule.csproj",
+    "tests/contract/Kofte.Composition.TestModule/StorageRecipes.cs",
+    "tests/contract/Kofte.Composition.TestModule/FrozenCompositionCorpus.cs",
+    "tests/integration/Kofte.TestSupport/CompositionScenarioCatalog.cs",
+    "tests/integration/Kofte.TestSupport/CompositionConsumerHarness.cs",
+    *(f"tests/contract/Kofte.Composition.Consumer/Scenarios/{name}.cs" for name in (
+        "ValidationScenarios", "BootScenarios", "MigrationScenarios", "MigrationFailureScenarios",
+        "PreservationScenarios", "HealthScenarios", "StopScenarios", "CorrectionScenarios",
+        "DiagnosticScenarios", "CompositionCapture",
+    )),
+    *(f"tests/contract/Kofte.Platform.ContractTests/Composition/{name}.cs" for name in (
+        "CompositionConsumerHarnessTests", "CompositionPublicContractTests", "CompositionBootContractTests",
+        "CompositionMigrationContractTests", "CompositionHealthContractTests", "CompositionFailureContractTests",
+        "CompositionPrivacyContractTests",
+    )),
+    *(f"{STORAGE_INTEGRATION}/Composition/{name}.cs" for name in (
+        "CompositionPreflightTests", "CompositionMigrationTests", "CompositionProviderTests", "CompositionAuthorityTests",
+        "CompositionRecoveryTests", "CompositionPreservationTests", "CompositionSelectionTests",
+        "CompositionUpgradePreservationTests", "CompositionDeadlineTests", "CompositionPrivacyTests",
+    )),
+    "tests/integration/Kofte.Host.IntegrationTests/CompositionHealthEndpointTests.cs",
+    "tests/unit/Kofte.Host.Tests/Features/ModuleComposition/CompositionHealthTests.cs",
+    "tests/unit/Kofte.Host.Tests/Features/ModuleComposition/ModuleLifecycleTests.cs",
+    "tests/unit/Kofte.Platform.Tests/Modules/Composition/CompositionResolverTests.cs",
+)
 STORAGE_REQUIRED_FILES = (
     "src/Kofte.Infrastructure/Kofte.Infrastructure.csproj",
     "src/Kofte.Platform/Modules/Storage/StorageContracts.cs",
@@ -140,7 +199,7 @@ def utcnow():
 def child_environment(environment):
     return {
         key: value for key, value in environment.items()
-        if not key.startswith(("KOFTE_", "OTEL_", "NEXT_PUBLIC_", "BOOTSTRAP_"))
+        if not key.startswith(("KOFTE_", "OTEL_", "NEXT_PUBLIC_", "BOOTSTRAP_", "COMPOSITION_TEST_"))
         and key not in ("NODE_OPTIONS", "ASPNETCORE_URLS", "DOTNET_STARTUP_HOOKS")
     } | {"NEXT_TELEMETRY_DISABLED": "1", "DOTNET_CLI_TELEMETRY_OPTOUT": "1"}
 
@@ -160,6 +219,86 @@ def storage_inventory(root):
     catalog = (root / "tests/integration/Kofte.TestSupport/StorageScenarioCatalog.cs").read_text()
     if not set(STORAGE_SCENARIOS).issubset(set(re.findall(r'"([a-z-]+)"', catalog))):
         raise VerificationError("storage_scenario_missing")
+
+def composition_inventory(root):
+    if any(not (root / path).is_file() for path in COMPOSITION_REQUIRED_FILES):
+        raise VerificationError("composition_target_missing")
+    catalog = (root / "tests/integration/Kofte.TestSupport/CompositionScenarioCatalog.cs").read_text()
+    if set(re.findall(r'\["([a-z-]+)"\] = Required', catalog)) != set(COMPOSITION_OBSERVATIONS):
+        raise VerificationError("composition_scenario_missing")
+    solution = (root / "Kofte.slnx").read_text()
+    if any(path not in solution for path in COMPOSITION_REQUIRED_FILES[:4] if path.endswith(".csproj")):
+        raise VerificationError("composition_build_target_missing")
+
+
+def composition_result(stdout, stderr, provider, scenario):
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError
+            result[key] = value
+        return result
+
+    def keys(value, expected):
+        if type(value) is not dict or set(value) != set(expected):
+            raise ValueError
+
+    try:
+        if provider not in ("sqlite", "postgres") or scenario not in (*COMPOSITION_OBSERVATIONS, "all"):
+            raise ValueError
+        if len(stdout) > 65536 or stderr.strip():
+            raise ValueError
+        root = json.loads(stdout, object_pairs_hook=unique)
+        keys(root, ("schemaVersion", "eventCode", "attempt", "provider", "scenario", "status", "assertions", "scenarios"))
+        if (type(root["schemaVersion"]) is not int or root["schemaVersion"] != 1
+                or root["eventCode"] != "composition_scenarios_passed" or root["provider"] != provider
+                or root["scenario"] != scenario or root["status"] != "passed"
+                or not isinstance(root["attempt"], str) or not re.fullmatch("[a-f0-9]{32}", root["attempt"])):
+            raise ValueError
+        expected = COMPOSITION_OBSERVATIONS if scenario == "all" else {scenario: COMPOSITION_OBSERVATIONS[scenario]}
+        keys(root["scenarios"], expected)
+        cases = {}
+        for name, required in expected.items():
+            case = root["scenarios"][name]
+            keys(case, ("assertions", "observations"))
+            if type(case["assertions"]) is not int or not 0 < case["assertions"] <= 2_147_483_647:
+                raise ValueError
+            keys(case["observations"], required)
+            if any(type(case["observations"][field]) is not int or not minimum <= case["observations"][field] <= 2_147_483_647
+                   for field, minimum in required.items()):
+                raise ValueError
+            cases[name] = {"assertions": case["assertions"], "observations": dict(case["observations"])}
+        if (type(root["assertions"]) is not int or not 0 < root["assertions"] <= 2_147_483_647
+                or root["assertions"] != sum(case["assertions"] for case in cases.values())):
+            raise ValueError
+        return {"assertions": root["assertions"], "scenarios": cases}
+    except (ValueError, TypeError, KeyError, UnicodeError, RecursionError) as error:
+        raise VerificationError("composition_result_invalid") from error
+
+
+class CompositionGuideCapture:
+    def __init__(self):
+        self.channels = {"stdout": bytearray(), "stderr": bytearray()}
+        self.failures = runtime_support.Failures()
+
+    def read_channel(self, stream, channel):
+        try:
+            while block := stream.read(4096):
+                if len(self.channels[channel]) + len(block) > 65536:
+                    self.failures.fail("composition_output_limit")
+                elif self.failures.code is None:
+                    self.channels[channel].extend(block)
+        finally:
+            stream.close()
+
+    def result(self, provider, scenario):
+        self.failures.check()
+        return composition_result(bytes(self.channels["stdout"]), bytes(self.channels["stderr"]), provider, scenario)
+
+    def clear(self):
+        for channel in self.channels.values():
+            channel.clear()
 
 
 def groups(suite, provider=None):
@@ -182,7 +321,8 @@ def safe_command(command):
     """Only repository-relative arguments and plain options may enter reports."""
     result = []
     for item in map(str, command):
-        query = re.fullmatch(r"/\[\(Suite=(recovery|privacy)\)&\(Provider=(sqlite|postgres)\)\]", item)
+        query = re.fullmatch(
+            r"/\[\(Suite=(recovery|privacy)\)&\(Provider=(sqlite|postgres)\)(?:&\(Feature=composition\))?\]", item)
         if (item.startswith("/") and not query or ".." in Path(item).parts or len(item) > 180
                 or not re.fullmatch(r"[-a-zA-Z0-9_./:=*]+", item)
                 and not query
@@ -225,26 +365,40 @@ def command_diagnostics(command):
         ["npm", "run", "dependencies:check"], ["python3", "scripts/check_dependencies.py"],
     ):
         return runtime_support.CommandDiagnostics("dependency", check_dependencies.FAILURE_CODES)
-    if list(command[:4]) == ["dotnet", "test", "--project", STORAGE_INTEGRATION]:
+    native_projects = {
+        STORAGE_INTEGRATION: ("storage", "Kofte.Storage.IntegrationTests"),
+        "tests/contract/Kofte.Platform.ContractTests": ("contract", "Kofte.Platform.ContractTests"),
+    }
+    if (len(command) > 3 and list(command[:3]) == ["dotnet", "test", "--project"]
+            and command[3] in native_projects):
+        project = command[3]
+        kind, prefix = native_projects[project]
         tests = set()
-        for path in (ROOT / STORAGE_INTEGRATION).rglob("*.cs"):
+        for path in (ROOT / project).rglob("*.cs"):
             if {"bin", "obj"}.intersection(path.relative_to(ROOT).parts):
                 continue
             source = path.read_text()
-            namespace = re.search(r"^namespace (Kofte\.Storage\.IntegrationTests(?:\.[A-Za-z0-9_]+)*);",
+            namespace = re.search(r"^namespace (" + re.escape(prefix) + r"(?:\.[A-Za-z0-9_]+)*);",
                                   source, re.MULTILINE)
             if namespace:
                 classes = re.findall(r"public (?:(?:abstract|sealed|partial|static) )*class ([A-Za-z0-9_]+)", source)
+                owners = (*classes, *(f"{outer}+{inner}" for outer in classes for inner in classes if outer != inner))
                 methods = re.findall(r"public (?:async )?(?:Task(?:<[^<>]+>)?|void) ([A-Za-z0-9_]+)\(", source)
-                tests.update(f"{namespace[1]}.{owner}.{method}" for owner in classes for method in methods)
+                tests.update(f"{namespace[1]}.{owner}.{method}" for owner in owners for method in methods)
         codes = (
             "Busy", "Conflict", "TargetReserved", "PathRejected", "OwnerMismatch", "Missing", "Corrupt",
             "Incomplete", "ReconciliationRequired", "VersionUnsupported", "PrivilegeDenied",
             "Unavailable", "DeadlineExceeded", "Cancelled", "RequestInvalid",
         )
-        return runtime_support.CommandDiagnostics("storage", (
+        composition_codes = set()
+        for path in (ROOT / "tests/contract/Kofte.Composition.Consumer").rglob("*.cs"):
+            if not {"bin", "obj"}.intersection(path.relative_to(ROOT).parts):
+                composition_codes.update(re.findall(r'"(composition_[a-z0-9_]{1,160})"', path.read_text()))
+        return runtime_support.CommandDiagnostics(kind, (
             *codes, *("storage_" + re.sub(r"(?<!^)(?=[A-Z])", "_", code).lower() for code in codes),
-        ), tests)
+            "composition_consumer_failed", "composition_consumer_output_limit", "composition_consumer_result_invalid",
+            *composition_codes,
+        ), tests, scenarios=(*COMPOSITION_OBSERVATIONS, "all"))
     return None
 
 
@@ -256,9 +410,12 @@ class OwnedProcesses:
         self.stopped = False
         self.read_failures = runtime_support.Failures()
 
-    def read(self, stream):
+    def read(self, stream, channel="stdout"):
         try:
-            (self.capture.read if self.capture else discard)(stream)
+            if self.capture and (reader := getattr(self.capture, "read_channel", None)):
+                reader(stream, channel)
+            else:
+                (self.capture.read if self.capture else discard)(stream)
         except Exception:
             self.read_failures.fail("owned_output_read_failed")
 
@@ -270,9 +427,9 @@ class OwnedProcesses:
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True,
         )
         self.children.append(child)
-        for stream in (child.stdout, child.stderr):
+        for channel, stream in (("stdout", child.stdout), ("stderr", child.stderr)):
             reader = threading.Thread(
-                target=self.read, args=(stream,), daemon=True,
+                target=self.read, args=(stream, channel), daemon=True,
             )
             reader.start()
             self.readers.append(reader)
@@ -450,7 +607,7 @@ class Runner:
 
         def execute(step):
             diagnostic = diagnostics or command_diagnostics(command)
-            if diagnostic and diagnostic.kind == "storage":
+            if diagnostic and diagnostic.kind in ("storage", "contract"):
                 with private_root(self.root) as directory:
                     step["command"] = safe_command([
                         *command, "--report-xunit-xml",
@@ -481,6 +638,19 @@ class Runner:
                     raise VerificationError("tool_version_invalid")
                 self.report.data["toolVersions"][tool] = expected
             self.operation(f"{tool}-version", probe, [tool, "--version"])
+
+    def composition_guide(self, provider, scenario, environment):
+        capture = CompositionGuideCapture()
+        name = f"composition-guide-{provider}-{scenario}"
+        try:
+            self.command(name, [
+                "dotnet", "run", "--project", "tests/contract/Kofte.Composition.Consumer",
+                "--no-build", "-c", "Release", "--", "--provider", provider, "--scenario", scenario,
+            ], environment=environment, timeout=600, capture=capture)
+            self.operation(name + "-observations", lambda step: step.update(
+                composition=capture.result(provider, scenario)))
+        finally:
+            capture.clear()
 
     def build_runtime(self):
         self.command("runtime-host-build", [
@@ -806,7 +976,7 @@ def browser_specs(root):
     )
 
 
-def startup_observations(directory, cycles):
+def startup_observations(directory, cycles, *, composition=False):
     def unique_fields(pairs):
         result = {}
         for name, value in pairs:
@@ -819,7 +989,8 @@ def startup_observations(directory, cycles):
         if (type(cycles) is not int or not 2 <= cycles <= 10
                 or directory.resolve() != directory.absolute() or not directory.is_dir()):
             raise ValueError
-        candidates = list(directory.rglob("startup-observations.json"))
+        candidates = list(directory.rglob(
+            "composition-startup-observations.json" if composition else "startup-observations.json"))
         if not candidates:
             raise VerificationError("startup_observations_missing")
         if len(candidates) != 1:
@@ -839,18 +1010,23 @@ def startup_observations(directory, cycles):
             values = json.loads(content, object_pairs_hook=unique_fields)
         if not isinstance(values, list) or len(values) != cycles:
             raise ValueError
-        fields = ("cycle", "readySeconds", "pageSeconds", "fixtureMatches")
+        fields = ("cycle", "readySeconds", "pageSeconds", "fixtureMatches") + (
+            ("totalSeconds", "modulesPublished") if composition else ())
         samples = []
         for cycle, sample in enumerate(values, 1):
             if (not isinstance(sample, dict) or set(sample) != set(fields)
                     or type(sample["cycle"]) is not int or sample["cycle"] != cycle
                     or sample["fixtureMatches"] is not True):
                 raise ValueError
-            for name, limit in (("readySeconds", 285), ("pageSeconds", 2)):
+            for name, limit in (("readySeconds", 285), ("pageSeconds", 2)) + (
+                    (("totalSeconds", 300),) if composition else ()):
                 duration = sample[name]
                 if (isinstance(duration, bool) or not isinstance(duration, (int, float))
                         or not 0 <= duration < limit or not math.isfinite(duration)):
                     raise ValueError
+            if composition and (sample["modulesPublished"] is not True or
+                                sample["totalSeconds"] < sample["readySeconds"] + sample["pageSeconds"]):
+                raise ValueError
             samples.append({name: sample[name] for name in fields})
         return samples
     except (OSError, ValueError, TypeError) as error:
@@ -870,9 +1046,10 @@ def provider_environment(runner, arguments, provider):
     return environment
 
 
-def integration_command(provider, suite=None, project=INTEGRATION):
+def integration_command(provider, suite=None, project=INTEGRATION, feature=None):
+    feature_query = f"&(Feature={feature})" if feature else ""
     selector = (
-        ["--filter-query", f"/[(Suite={suite})&(Provider={provider})]"] if suite
+        ["--filter-query", f"/[(Suite={suite})&(Provider={provider}){feature_query}]"] if suite
         else ["--filter-trait", f"Provider={provider}"]
     )
     return [
@@ -885,6 +1062,7 @@ def execute_suite(runner, suite, provider, arguments):
     runner.operation("workspace-inventory", lambda _: workspace_inventory(runner.root))
     if suite in ("quality", "unit", "integration", "recovery", "contract", "privacy"):
         runner.operation("storage-inventory", lambda _: storage_inventory(runner.root))
+        runner.operation("composition-inventory", lambda _: composition_inventory(runner.root))
     if suite in ("quality", "unit", "contract"):
         def platform_inventory(_):
             if any(not (runner.root / path).is_file() for path in PLATFORM_REQUIRED_FILES):
@@ -909,6 +1087,17 @@ def execute_suite(runner, suite, provider, arguments):
             "dotnet", "test", "--project", "tests/unit/Kofte.Platform.Tests",
             "--no-restore", "-c", "Release", "--minimum-expected-tests", "1",
         ])
+        runner.command("composition-host-unit", [
+            "dotnet", "test", "--project", "tests/unit/Kofte.Host.Tests", "--no-restore", "-c", "Release",
+            "--filter-class", "*Composition*", "--filter-class", "*ModuleLifecycleTests",
+            "--filter-class", "*ModuleConfigurationTests", "--filter-class", "*ModuleSelectionTests",
+            "--minimum-expected-tests", "80",
+        ])
+        runner.command("composition-platform-unit", [
+            "dotnet", "test", "--project", "tests/unit/Kofte.Platform.Tests", "--no-restore", "-c", "Release",
+            "--filter-class", "*Composition*", "--filter-class", "*ContributionClaimTests",
+            "--minimum-expected-tests", "83",
+        ])
         for workspace in ("apps/web", "packages/bootstrap-contract"):
             runner.command(f"{workspace}-unit", ["npm", "run", "test:unit", "--workspace", workspace])
         runner.command("python-tests", [
@@ -920,9 +1109,16 @@ def execute_suite(runner, suite, provider, arguments):
             environment=provider_environment(runner, arguments, provider),
         )
         runner.command(
-            f"storage-integration-{provider}", integration_command(provider, project=STORAGE_INTEGRATION),
+            f"storage-integration-{provider}", [
+                *integration_command(provider, project=STORAGE_INTEGRATION)[:-2],
+                "--filter-not-class", "*Composition*", "--minimum-expected-tests", "1",
+            ],
             environment=provider_environment(runner, arguments, provider),
         )
+        runner.command(f"composition-integration-{provider}", [
+            *integration_command(provider, project=STORAGE_INTEGRATION)[:-2],
+            "--filter-class", "*Composition*", "--minimum-expected-tests", "50",
+        ], environment=provider_environment(runner, arguments, provider))
     elif suite in ("recovery", "contract", "privacy"):
         if suite == "contract":
             public_environment = provider_environment(
@@ -939,10 +1135,19 @@ def execute_suite(runner, suite, provider, arguments):
                 "dotnet", "build", "tests/contract/Kofte.Storage.Consumer",
                 "--no-restore", "-c", "Release", "-warnaserror",
             ])
+            for project in ("Kofte.Composition.TestModule", "Kofte.Composition.Consumer"):
+                runner.command("composition-build-" + project, [
+                    "dotnet", "build", "tests/contract/" + project, "--no-restore", "-c", "Release", "-warnaserror",
+                ])
             runner.command("platform-public-contracts", [
                 "dotnet", "test", "--project", "tests/contract/Kofte.Platform.ContractTests",
-                "--no-restore", "-c", "Release", *public_selector,
+                "--no-restore", "-c", "Release", *public_selector, "--filter-not-class", "*Composition*",
                 "--minimum-expected-tests", "1",
+            ], environment=public_environment)
+            runner.command("composition-public-contracts", [
+                "dotnet", "test", "--project", "tests/contract/Kofte.Platform.ContractTests",
+                "--no-restore", "-c", "Release", *public_selector, "--filter-class", "*Composition*",
+                "--minimum-expected-tests", "84" if provider == "both" else "1",
             ], environment=public_environment)
             runner.command("module-manifest-schema", [
                 "npm", "run", "test", "--workspace", "tests/contract", "--", "module-manifest.test.ts",
@@ -973,6 +1178,19 @@ def execute_suite(runner, suite, provider, arguments):
                     "--no-restore", "-c", "Release", "--filter-query",
                     f"/[(Suite={suite})&(Provider={selected})]", "--minimum-expected-tests", "1",
                 ], environment=environment)
+                runner.command(f"composition-{suite}-{selected}", [
+                    *integration_command(selected, suite, project=STORAGE_INTEGRATION,
+                                         feature="composition")[:-2],
+                    "--minimum-expected-tests", "4" if suite == "recovery" else "1",
+                ], environment=environment)
+                runner.command(f"composition-public-{suite}-{selected}", [
+                    *integration_command(selected, suite, project="tests/contract/Kofte.Platform.ContractTests",
+                                         feature="composition")[:-2],
+                    "--minimum-expected-tests", "4" if suite == "recovery" else "1",
+                ], environment=environment)
+            if suite == "contract":
+                for scenario in (*COMPOSITION_OBSERVATIONS, "all"):
+                    runner.composition_guide(selected, scenario, provider_environment(runner, arguments, selected))
             canary = f"bootstrap-privacy-canary-{uuid.uuid4().hex}" if suite == "privacy" else None
             with runtime(
                 runner, selected, arguments.disposable_postgres,
@@ -1013,17 +1231,30 @@ def execute_suite(runner, suite, provider, arguments):
             "dotnet", "build", "tests/contract/Kofte.Storage.Consumer",
             "--no-restore", "-c", "Release", "-warnaserror",
         ])
+        runner.command("startup-composition-fixture-build", [
+            "dotnet", "build", "tests/contract/Kofte.Composition.Consumer",
+            "--no-restore", "-c", "Release", "-warnaserror",
+        ])
         output_root = owned_directory(runner.root, "tests/e2e/test-results")
         directory = output_root / f"verify-startup-{uuid.uuid4().hex}"
         directory.mkdir(mode=0o700)
         runner.command("startup-warm-restarts", [
             "npm", "run", "test", "--workspace", "tests/e2e", "--", "startup.spec.ts",
-            "--output", str(directory),
+            "--grep-invert", "configured-modules", "--output", str(directory),
         ], environment=dict(runner.environment, BOOTSTRAP_WARM_STARTS=str(arguments.warm_starts)),
             timeout=arguments.warm_starts * 320 + 60)
         runner.operation("startup-observations", lambda step: step.update(
             configuredCycles=arguments.warm_starts,
             observations=startup_observations(directory, arguments.warm_starts),
+        ))
+        directory = output_root / f"verify-composition-startup-{uuid.uuid4().hex}"
+        directory.mkdir(mode=0o700)
+        runner.command("startup-composition-restarts", [
+            "npm", "run", "test", "--workspace", "tests/e2e", "--", "startup.spec.ts",
+            "--grep", "configured-modules", "--output", str(directory),
+        ], environment=runner.environment, timeout=700)
+        runner.operation("startup-composition-observations", lambda step: step.update(
+            configuredCycles=2, observations=startup_observations(directory, 2, composition=True),
         ))
     elif suite == "failure-propagation":
         def failure_opt_in(_):

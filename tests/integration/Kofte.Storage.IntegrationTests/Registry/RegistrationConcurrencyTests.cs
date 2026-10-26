@@ -8,6 +8,10 @@ using Kofte.TestSupport;
 
 namespace Kofte.Storage.IntegrationTests.Registry;
 
+[CollectionDefinition("registration_concurrency", DisableParallelization = true)]
+public sealed class RegistrationConcurrencyCollection;
+
+[Collection("registration_concurrency")]
 public abstract class RegistrationConcurrencyTests
 {
     protected abstract string Provider { get; }

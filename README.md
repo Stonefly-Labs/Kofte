@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-34d399?style=flat-square"></a>
-  <img alt="Status: storage isolation accepted" src="https://img.shields.io/badge/status-storage_isolation_accepted-34d399?style=flat-square">
+  <img alt="Status: module lifecycle human-accepted" src="https://img.shields.io/badge/status-module_lifecycle_accepted-a78bfa?style=flat-square">
   <a href="docs/master-spec-inventory.md"><img alt="Built with Spec Kit" src="https://img.shields.io/badge/workflow-Spec_Kit-a78bfa?style=flat-square"></a>
 </p>
 
@@ -26,16 +26,16 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 
 **Köfte is being designed for both.** Its planned interfaces share the same operations and permissions, whether you work in a browser, call an API, or use an MCP-enabled coding assistant.
 
-| Ingredient | What we're working toward |
-| --- | --- |
-| 🧩 Deep composability | Modules contributing backend features, UI, resources, events, workflows, permissions and MCP tools |
-| 🏠 Self-hosted freedom | A lightweight SQLite profile, PostgreSQL for shared installations, and first-class Kubernetes support |
-| 🤖 Assistant-native access | Early authenticated MCP tools, not a privileged side door |
-| ✨ Thoughtful experience | A fast, accessible Next.js console with clear loading, empty, error and permission states |
-| 🔐 Explicit boundaries | Team-scoped authorization, audited actions and module-owned storage |
+| Ingredient                 | What we're working toward                                                                             |
+| -------------------------- | ----------------------------------------------------------------------------------------------------- |
+| 🧩 Deep composability      | Modules contributing backend features, UI, resources, events, workflows, permissions and MCP tools    |
+| 🏠 Self-hosted freedom     | A lightweight SQLite profile, PostgreSQL for shared installations, and first-class Kubernetes support |
+| 🤖 Assistant-native access | Early authenticated MCP tools, not a privileged side door                                             |
+| ✨ Thoughtful experience   | A fast, accessible Next.js console with clear loading, empty, error and permission states             |
+| 🔐 Explicit boundaries     | Team-scoped authorization, audited actions and module-owned storage                                   |
 
 > [!IMPORTANT]
-> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are now [explicitly human-accepted](specs/003-storage-registry/acceptance.md), with human merge pending. Nothing here claims production readiness or MVP completion.
+> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md). After subsequent CI failures, [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) requires all eleven latest-head checks to pass before a renewed human merge handoff, not just a green SQLite job. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) records the failures, disjoint integration selections and retained unknown causes. The separate historical failed local gate remains failed. Acceptance is not a release waiver, and 005 waits for human merge. Nothing here claims production readiness or MVP completion.
 
 ## 🧭 The shape of things to come
 
@@ -68,16 +68,222 @@ The constitution's initial v1.0.0 was human-merged; its [v2.0.0 workflow amendme
 
 **Spec 001 is explicitly human-accepted and merged.** The [acceptance record](specs/001-repository-bootstrap/acceptance.md) preserves the exact decision, scope and limits. The [final review](specs/001-repository-bootstrap/review.md) independently traces all 17 functional requirements, six success criteria, 15 acceptance scenarios and twelve constitutional principles to source/tests, with no acceptance defect. Its complete local gate passes all 170 named steps and actual assessed-head Ubuntu CI has matching coverage. Human T056/T059 attestations and reference-machine limitations remain explicit. The earlier [convergence assessment](specs/001-repository-bootstrap/convergence.md), human-approved [ADR 0002](docs/adr/0002-bootstrap-development-baseline.md), [dependency adoption](docs/development/dependencies.md), [implementation evidence](specs/001-repository-bootstrap/implementation.md) and .NET test-source correction remain in force. [PR #4](https://github.com/Stonefly-Labs/Kofte/pull/4) was human-merged with its accepted ledger/evidence on main.
 
-**Spec 003 is explicitly human-accepted; human merge is pending.**
+**004 / specify, clarify, plan, checklist, tasks and analyze are complete** on `feature/004-module-lifecycle`, freshly based
+on updated main after spec 003's human merge. The
+[draft specification](specs/004-module-lifecycle/spec.md) uses the exact inventory
+prompt and resolved project template. Five stories, 20 acceptance scenarios,
+20 functional requirements and six outcomes cover empty/valid module boot,
+dependency/configuration/contribution preflight, ordered lifecycle/migrations,
+data-preserving disable/re-enable and safe health/failure diagnostics.
+The [built-in author checklist](specs/004-module-lifecycle/checklists/requirements.md)
+satisfies 16/16 criteria. Clarification found all ten requirements categories
+clear, with zero questions and no spec/checklist changes; the
+[coverage assessment](docs/development/spec-workflow.md#invocation-and-current-progress)
+records the clarification evidence. The [implementation plan](specs/004-module-lifecycle/plan.md),
+research, data model, versioned author/operator contracts and future validation
+guide now propose a compiled trusted catalog, whole-set preflight, explicit
+offline preparation, supervised ordered lifecycle and safe aggregate health.
+[ADR 0006](docs/adr/0006-module-composition-lifecycle.md) is now **human-approved
+for implementation**, recording the explicit decision **"yeah approved"**.
+The earlier planning artifacts retain their historical Proposed status; this
+approval changes no design or Spec Kit stage. Both constitutional design gates
+passed at planning; design evidence alone is not runtime proof.
+**Checklist review passes** under the reviewer's explicit request:
+the [requirements-quality checklist](specs/004-module-lifecycle/checklists/quality.md)
+now satisfies **36/36 criteria**, with per-item evidence for composition/lifecycle,
+storage/recovery, authority, privacy and retained interface boundaries.
+No blocking requirements gap or new human decision remains. Actual DI dependency
+adoption is separately recorded in the dependency guide; full provider/process/privacy
+proof remains mandatory, not satisfied by checklist marking. The spec, plan and
+16/16 author checklist are unchanged.
+The [80-task implementation list](specs/004-module-lifecycle/tasks.md) now
+orders safe preflight (US2) before startup (US1), then actual assigned
+preparation (US3), three-cycle preservation (US4) and health/failure/privacy
+(US5). Tasks are path-specific and explicitly dependency-linked;
+all 20 scenarios, 20 requirements, six outcomes and twelve design decisions
+have task coverage. Independent public consumers, exact both-provider state,
+owned termination, private captures and retained full gates remain mandatory
+evidence, not results claimed by generation.
+The read-only [analysis](specs/004-module-lifecycle/analysis.md) passes with
+26/26 requirements/outcomes and 20/20 scenarios covered, all 80 tasks mapped,
+118 acyclic dependency edges and no actionable or constitutional finding.
+The analysis preserves its historical assessed inputs; verified implementation
+markers and exact commands are recorded separately in the
+[implementation evidence](specs/004-module-lifecycle/implementation.md).
+**The original implementation checkpoint completed all 80 tasks** on this same branch and
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7).
+The immutable contracts, deterministic validation, public no-storage boots and
+real relational clean/additive prepare/serve paths now have focused evidence.
+All 80 tasks have implementation evidence, including interrupted-migration
+recovery, three-cycle exact preservation on both providers and correction,
+health/privacy examples. Assessed code head `267efc8` passes the complete
+local gate: ten suite/provider reports, all 286 steps and every delivered guide
+command, with `completeGate: true`. Its eleven CI contexts and 286 product
+steps also pass. Fixture administration has a separate bounded control-plane
+budget; the unchanged twenty-by-ten contention workload runs exclusively of
+unrelated hosted tests. Product deadlines, assertions and minima are unchanged.
+The [final reconciliation](specs/004-module-lifecycle/implementation.md#final-complete-gate-and-implementation-handoff)
+preserves earlier failures and exact implementation evidence. Final
+review and explicit human acceptance remain separate later stages; this PR
+stays draft and no intermediate merge is requested.
+The startup gate also exercises two configured-module/web restarts without
+replacing the ten retained empty-host warm cycles or extending their budgets.
+
+**First 004 convergence checkpoint (historical): gaps.** The
+[assessment](specs/004-module-lifecycle/convergence.md) checks all 46
+requirements/outcomes/scenarios, twelve plan decisions, 80 original tasks and
+twelve principles. One HIGH partial finding reproduces disabled owners appearing
+only as `discovered/passed` in the actual configured host's operator output;
+the explicit disabled state exists only in an unprojected in-memory snapshot.
+Exactly T081 is appended, preserving every original task byte and marker,
+product/test source, approved intent and reviewer-owned checklists.
+That checkpoint selected implement on the same draft PR #7. No data-loss,
+disabled-callback execution, new design decision or feature acceptance is claimed.
+
+**T081 now implements explicit disabled operator output.** Successful composition
+resolution projects the existing disabled snapshot into bounded private
+`composition_disabled` records for explicitly false and omitted deployments.
+The actual SQLite/PostgreSQL host examples require both forms under fresh
+attempts, with zero disabled callbacks/store effects and unchanged anonymous
+health. The [implementation increment](specs/004-module-lifecycle/implementation.md#convergence-remediation-t081)
+records red/green evidence and retained regressions. That checkpoint selected
+follow-up convergence; the historical finding/report and reviewer checklists
+remain unchanged.
+
+**Historical follow-up 004 convergence: gaps.** The
+[current assessment](specs/004-module-lifecycle/convergence.md) closes F1/T081,
+but accepted service names can produce overlong host-generated dependency IDs
+and fail activation (HIGH F2). Broad integration passes 102/104 with two
+unexpected cleanup failures; unchanged isolated cases pass, without establishing
+the cause (MEDIUM F3). Exactly T082-T083 are appended under Phase 10, preserving
+all 81 existing tasks and product/test source. That checkpoint selected
+implement on the same draft PR #7.
+
+**T082-T083 now implement both scoped corrections.** Full owner-qualified
+dependency bindings preserve the accepted 128-character local-name boundary;
+actual both-provider public examples require the exact identity and Start.
+An incomplete HTTP request reproduced normal-stop failure on both providers.
+The composed host now drains within an internal 500-ms budget, preserving the
+one-second cleanup action and 15-second total stop bound. Fixed private codes
+identify infrastructure cleanup failures without raw error details; intentional
+incomplete/uncertain refusal remains enforced. The
+[increment evidence](specs/004-module-lifecycle/implementation.md#convergence-remediation-t082-t083)
+retains all failed runs and the limits of historical causal attribution.
+The local all-suite attempt's two failures remain explicit, not erased by
+successful narrowed rechecks.
+All 83 then-existing tasks are implemented; that checkpoint selected follow-up
+converge on draft PR #7, not review, acceptance or an intermediate merge.
+
+**Historical 004 convergence after T082-T083: gaps.** The
+[assessment after T082-T083](specs/004-module-lifecycle/convergence.md) checks
+all 46 requirements/outcomes/scenarios, twelve plan decisions, 83 tasks and
+twelve principles. F1/T081 and F2/T082 are closed. New HIGH F4 reproduces
+accepted compositions failing at 65 prerequisite service bindings or 129
+global executable exports. MEDIUM F3 remains open: fresh broad integration
+passes 104/106, with SQLite preservation and PostgreSQL correction reporting
+private `composition_host_dispose_incomplete`. The HTTP-stop correction passes
+but does not establish this disposal cause. Only T084-T085 are appended,
+preserving all prior tasks, approved intent, reviewer checklists and product/test
+source. That checkpoint selected implement on the same draft PR #7.
+
+**T084-T085 implementation checkpoint (historical).** Executable lifecycle now retains
+128 services per owner and 1,024 enabled total, including complete copied
+prerequisite bindings. The independent public example requires all 127 Alpha
+operations across 129 global exports. A deterministic regression proves that
+unused default JSON watchers survived configuration clearing; disabling reload
+before builder construction removes that disposal resource without widening
+deadlines. The corrected both-provider composition selection passes 106/106;
+the complete local gate passes all 286 steps. The
+[increment report](specs/004-module-lifecycle/implementation.md#convergence-remediation-t084-t085)
+retains all failed evidence and full reconciliation.
+Follow-up converge, review and explicit human acceptance remain separate
+stages on the same draft PR #7; no intermediate merge is requested.
+
+**004 / convergence after T084-T085 passes (historical checkpoint).** The
+[assessment](specs/004-module-lifecycle/convergence.md) covers all 46
+requirements/outcomes/scenarios, twelve plan decisions, 85 tasks and twelve
+principles with zero actionable gaps. F1-F4 are closed by actual behavior and
+evidence; the task file is byte-for-byte unchanged. Approved intent, reviewed
+checklists, product/test code and historical reports are preserved. Final
+review and explicit human acceptance remain separate on
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7); no merge is requested.
+
+**004 / final review records changes (historical checkpoint).** The
+[review](specs/004-module-lifecycle/review.md) assesses all 46
+requirements/outcomes/scenarios, twelve plan decisions, 85 existing tasks and
+twelve principles. One HIGH finding R1 reproduces valid disabled-catalog
+metadata exceeding an incorrect protocol bound: 16/16 public-host probe cases
+fail validate/serve despite accepted resolution and zero enabled edges.
+Exactly T086 is appended unchecked, preserving all prior task bytes/markers,
+approved intent, reviewer checklists and product/test source. Acceptance is
+blocked pending remediation, convergence and passing final review on the same
+draft PR #7; no intermediate merge is requested.
+
+**004 / T086 implement complete; separate investigation deferred.** The
+[increment](specs/004-module-lifecycle/implementation.md#final-review-remediation-t086)
+retains all-catalog diagnostic prerequisites up to 2,048 identities, independently
+of the unchanged 1,024 enabled-edge limit. Protocol overflow/copy/identity checks,
+public resolution and actual validate/serve regressions cover omitted and
+explicit-false selections, full disabled catalogs and an unrelated enabled
+module on both providers. Inventory, disabled observations, usable readiness
+and owned clean exit pass. All eleven code-head CI contexts and 286 targeted
+steps pass. The local complete attempt separately fails a PostgreSQL
+migration-interruption test; its isolated pass does not erase that failure.
+The human explicitly authorized documenting the eight-pass/one-failure snapshot
+and deferring that investigation without blocking this implementation checkpoint.
+The [facts and revisit guidance](specs/004-module-lifecycle/implementation.md#human-directed-deferral-and-implementation-handoff)
+retain the failed local outcome and unknown cause. T086 is complete;
+that implementation checkpoint selected follow-up converge on draft PR #7. Historical review
+and acceptance remain unchanged, and no merge is requested.
+
+**Historical 004 / converge passes after T086.** The
+[assessment](specs/004-module-lifecycle/convergence.md) covers all 46
+requirements/outcomes/scenarios, twelve plan decisions, 86 tasks and twelve
+principles with no new actionable gap or appended task. Actual protocol,
+resolver and both-provider compiled-host evidence closes review R1; prior
+F1-F4 remain closed. The deferred PostgreSQL observation and failed local
+full-suite result remain unchanged, not diagnosed or rerun here.
+**Review is next** on the same draft PR #7, with that limitation retained;
+no feature acceptance, readiness or intermediate merge is implied.
+
+**Historical 004 / final review passes after T086.** The
+[review](specs/004-module-lifecycle/review.md) covers all 46 requirements/
+outcomes/scenarios, twelve decisions, 86 tasks and twelve principles.
+R1/T086 and prior F1-F4 are closed; no new implementation defect or task remains.
+The failed/interrupted local 109/111 attempt and human-deferred PostgreSQL
+observation remain explicit, undiagnosed and not rerun. Review is not a
+full-gate pass or release waiver. **Explicit human acceptance of numbered
+feature 004 is next**, separately on
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), with that limitation
+disclosed; no readiness or merge is requested.
+
+**Current 004 / explicitly human-accepted.** The
+[acceptance record](specs/004-module-lifecycle/acceptance.md) preserves the exact
+decision **"bro this human fugging accepts"**, responding to the passing review
+and disclosed deferred PostgreSQL limitation. Review/tasks/checklists and
+historical evidence remain unchanged; the failed local attempt stays failed,
+not diagnosed by later passing executions. [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7)
+was returned to draft after subsequent CI failures.
+The [follow-up evidence](specs/004-module-lifecycle/implementation.md#post-acceptance-sqlite-ci-failure-and-diagnostic-correction)
+records three and 155 unchanged passing local cases without an established
+cause; bounded failure diagnostics now preserve the case/assertion for recurrence.
+The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up)
+removes duplicate composition execution without dropping cases or raising
+deadlines. A renewed merge handoff requires **all eleven checks on the latest
+commit** to finish successfully; the PR records their actual outcomes.
+**005 waits for human merge** and a later invocation from updated main;
+acceptance starts no new feature and waives no release gate.
+
+**Spec 003 is explicitly human-accepted and human-merged.**
 The [acceptance record](specs/003-storage-registry/acceptance.md) preserves the
 exact decision, **"this human accesspts 003"**, and the passing review's scope
 and limits. The [review](specs/003-storage-registry/review.md) covers all 40
 requirements/outcomes/scenarios, fourteen plan decisions, 83 tasks and twelve
 principles with no remaining finding. Acceptance changes no product/test code,
 tasks, reviewed checklists or prior evidence and adds no runtime measurement.
-The same [PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6) is ready for
-human merge after publication. **004 must wait for that human merge** and
-accepted evidence on updated main; it is not started here.
+The same [PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6) was human-merged.
+Before starting 004, the accepted ledger and all five acceptance evidence hashes
+were verified on updated `origin/main`; acceptance itself did not start 004.
 
 The following paragraphs preserve the implementation and earlier stage history.
 The initial implementation checkpoint followed completed
@@ -275,18 +481,18 @@ projects may mirror feature ownership; see the human-approved
 
 ## 📚 Project bookshelf
 
-| Read | Why |
-| --- | --- |
-| [Product charter](docs/product-charter.md) | Mandate, boundaries and required outcomes |
-| [Product vision](docs/product-vision.md) | People, experience and long-term direction |
-| [Technical architecture](docs/architecture.md) | Canonical architecture requirements and proposals |
-| [Constitution](.specify/memory/constitution.md) | Product principles and delivery gates; v2.0.1 clarifies .NET test-source ownership |
-| [Master spec inventory](docs/master-spec-inventory.md) | Ordered prompts; **001–024 MVP**, **025–038 post-MVP** |
-| [Contributing](CONTRIBUTING.md) | Fresh branches, checks, commits, pushes and PR handoffs |
-| [Local development](docs/development/local-development.md) | Current bootstrap startup, prerequisites, checks and remaining limits |
-| [Assistant tooling](docs/development/assistant-tooling.md) | Microsoft Learn, Context7, Next.js, shadcn/ui and Playwright |
-| [Spec workflow](docs/development/spec-workflow.md) | One-stage driver, checkpoints and human acceptance |
-| [Architecture decisions](docs/adr/README.md) | Recording consequential choices without silently changing invariants |
+| Read                                                       | Why                                                                                |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| [Product charter](docs/product-charter.md)                 | Mandate, boundaries and required outcomes                                          |
+| [Product vision](docs/product-vision.md)                   | People, experience and long-term direction                                         |
+| [Technical architecture](docs/architecture.md)             | Canonical architecture requirements and proposals                                  |
+| [Constitution](.specify/memory/constitution.md)            | Product principles and delivery gates; v2.0.1 clarifies .NET test-source ownership |
+| [Master spec inventory](docs/master-spec-inventory.md)     | Ordered prompts; **001–024 MVP**, **025–038 post-MVP**                             |
+| [Contributing](CONTRIBUTING.md)                            | Fresh branches, checks, commits, pushes and PR handoffs                            |
+| [Local development](docs/development/local-development.md) | Current bootstrap startup, prerequisites, checks and remaining limits              |
+| [Assistant tooling](docs/development/assistant-tooling.md) | Microsoft Learn, Context7, Next.js, shadcn/ui and Playwright                       |
+| [Spec workflow](docs/development/spec-workflow.md)         | One-stage driver, checkpoints and human acceptance                                 |
+| [Architecture decisions](docs/adr/README.md)               | Recording consequential choices without silently changing invariants               |
 
 The [older stack exploration](docs/kofte-technology-stack-architecture.md) is background, not authority over the charter, architecture or exact inventory scope.
 

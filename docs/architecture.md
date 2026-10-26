@@ -48,28 +48,28 @@ The diagram is conceptual: MCP may be hosted in the same ASP.NET Core process; t
 
 The following is a **proposed stack** for implementation, not a claim that every package is already selected. Prefer current supported stable versions during repository initialization, pin versions, and confirm licensing before adoption.
 
-| Layer | Proposed choice | Purpose / rationale |
-|---|---|---|
-| Core API | ASP.NET Core (.NET current supported LTS), C# | Mature hosting, middleware, DI, testing, performance |
-| Application style | Modular monolith, VSA, minimal endpoints/route groups | Independent slices without needless mediator abstraction |
-| Frontend | Next.js App Router, React, TypeScript | Polished portal, SSR/server components where useful |
-| UI components | Tailwind CSS, shadcn/ui, Radix primitives, Lucide icons | Fast, accessible, customizable visual system |
-| Frontend state/data | TanStack Query for interactive server state; Zod + React Hook Form for forms | Optimistic UX, validation, consistent caching |
-| Data | EF Core with Npgsql and SQLite providers | Managed relational models/migrations, flexible deployment |
-| PostgreSQL | Database with one dedicated **named schema per module** | Ownership/isolation, migrations, permissions |
-| SQLite | One **database file per module** | Small installs with physically separated data |
-| Realtime | ASP.NET Core SignalR | Provider-neutral push to UI; avoid mandatory Azure Web PubSub |
-| Jobs | Custom minimal persisted job abstractions built on hosted workers; evaluate library later | Durable states/retries without forcing heavy orchestrator |
-| Events | In-process pub/sub abstraction, durable outbox when side effects require it | Decoupled modules, future transport flexibility |
-| MCP | .NET MCP server SDK (verify stable package/API) | Tools and resource discovery for assistants |
-| AuthN | ASP.NET Core authentication integration + pluggable OIDC | No required identity vendor; optional local/dev auth |
-| AuthZ | Central RBAC/permission service + resource/team scope | Same policy for UI/API/jobs/MCP |
-| Validation | FluentValidation or equivalent permissively licensed validation | Validation local to each vertical slice |
-| Telemetry | OpenTelemetry, structured logging, health checks | Vendor-neutral traces, logs, metrics |
-| API contract | OpenAPI/JSON Schema; typed client generation optional | Stable external/SDK/module experience |
-| Local orchestration | .NET Aspire or Docker Compose (assess lowest-friction path) | Reproducible multi-service development |
-| Container/deploy | OCI images, Helm/Kustomize templates for Kubernetes | First-class portable K8s operation |
-| CI / testing | GitHub Actions, xUnit or equivalent, Playwright, Testcontainers | Contract, integration and UI verification |
+| Layer               | Proposed choice                                                                           | Purpose / rationale                                           |
+| ------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Core API            | ASP.NET Core (.NET current supported LTS), C#                                             | Mature hosting, middleware, DI, testing, performance          |
+| Application style   | Modular monolith, VSA, minimal endpoints/route groups                                     | Independent slices without needless mediator abstraction      |
+| Frontend            | Next.js App Router, React, TypeScript                                                     | Polished portal, SSR/server components where useful           |
+| UI components       | Tailwind CSS, shadcn/ui, Radix primitives, Lucide icons                                   | Fast, accessible, customizable visual system                  |
+| Frontend state/data | TanStack Query for interactive server state; Zod + React Hook Form for forms              | Optimistic UX, validation, consistent caching                 |
+| Data                | EF Core with Npgsql and SQLite providers                                                  | Managed relational models/migrations, flexible deployment     |
+| PostgreSQL          | Database with one dedicated **named schema per module**                                   | Ownership/isolation, migrations, permissions                  |
+| SQLite              | One **database file per module**                                                          | Small installs with physically separated data                 |
+| Realtime            | ASP.NET Core SignalR                                                                      | Provider-neutral push to UI; avoid mandatory Azure Web PubSub |
+| Jobs                | Custom minimal persisted job abstractions built on hosted workers; evaluate library later | Durable states/retries without forcing heavy orchestrator     |
+| Events              | In-process pub/sub abstraction, durable outbox when side effects require it               | Decoupled modules, future transport flexibility               |
+| MCP                 | .NET MCP server SDK (verify stable package/API)                                           | Tools and resource discovery for assistants                   |
+| AuthN               | ASP.NET Core authentication integration + pluggable OIDC                                  | No required identity vendor; optional local/dev auth          |
+| AuthZ               | Central RBAC/permission service + resource/team scope                                     | Same policy for UI/API/jobs/MCP                               |
+| Validation          | FluentValidation or equivalent permissively licensed validation                           | Validation local to each vertical slice                       |
+| Telemetry           | OpenTelemetry, structured logging, health checks                                          | Vendor-neutral traces, logs, metrics                          |
+| API contract        | OpenAPI/JSON Schema; typed client generation optional                                     | Stable external/SDK/module experience                         |
+| Local orchestration | .NET Aspire or Docker Compose (assess lowest-friction path)                               | Reproducible multi-service development                        |
+| Container/deploy    | OCI images, Helm/Kustomize templates for Kubernetes                                       | First-class portable K8s operation                            |
+| CI / testing        | GitHub Actions, xUnit or equivalent, Playwright, Testcontainers                           | Contract, integration and UI verification                     |
 
 **Dependency rule:** Do not introduce MediatR or commercially encumbered mediator/framework dependencies by default. Ordinary DI, direct handlers and small in-house dispatch contracts are sufficient. All dependency licenses should be reviewed in CI.
 
@@ -252,9 +252,226 @@ now records **"this human accesspts 003"** for feature 003 and its documented
 scope/limits. No architecture, product/test source, dependency, task, reviewed
 checklist or prior evidence changes. Acceptance adds no product measurement,
 production-readiness claim or later-scope waiver. The same
-[PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6) is ready for human merge
-after publication. **004 waits for that human merge** and accepted evidence
-on updated main; no new feature is started by acceptance.
+[PR #6](https://github.com/Stonefly-Labs/Kofte/pull/6) was human-merged.
+Its accepted ledger and all five acceptance hashes were verified on updated
+main before 004 began; acceptance itself started no new feature.
+
+**004 / specify, clarify, plan, checklist, tasks and analyze are complete** on `feature/004-module-lifecycle`.
+The [draft requirements](../specs/004-module-lifecycle/spec.md) and
+[16/16 author checklist](../specs/004-module-lifecycle/checklists/requirements.md)
+define trusted module composition, dependency/configuration/contribution
+preflight, ordered initialization/migrations, data-preserving restart-controlled
+disable/re-enable and honest health/failure observations. They preserve accepted
+002/003 contracts and exclude public lifecycle administration, hostile-code
+isolation, hot-unload and later extension runtimes. Clarification found all ten
+requirements categories clear, with zero questions and no spec/checklist changes;
+no design choice or human answer was invented. The
+[plan](../specs/004-module-lifecycle/plan.md) and
+[Accepted ADR 0006](adr/0006-module-composition-lifecycle.md) now define explicit
+compiled discovery, stable bounded whole-set preflight, native DI and separate
+stopped preparation versus supervised serving. Assigned migrations/privilege
+separation and exact stores remain accepted 003; no anonymous module route or
+later capability runtime is added. Current-attempt private health drives only
+the existing aggregate readiness contract. Both constitutional design gates
+pass. The human's explicit **"yeah approved"** resolves ADR 0006's design gate;
+dependency-edge adoption and actual process/provider/privacy proof are separate
+implementation gates. Historical planning artifacts and ledger evidence are unchanged.
+The [quality checklist](../specs/004-module-lifecycle/checklists/quality.md)
+now satisfies **36/36 requirements-quality criteria** covering
+composition/lifecycle, storage/recovery, authority, privacy and retained
+interfaces, evaluated with per-item evidence under the reviewer's explicit
+request. No blocking requirements gap, new human decision or design change
+was found. Spec, plan and 16/16 author checklist remain unchanged.
+The [80 implementation tasks](../specs/004-module-lifecycle/tasks.md) order
+US2 whole-set preflight before US1 startup, then US3 stopped preparation,
+US4 exact preservation and US5 current health/safe failure evidence.
+They trace all 20 scenarios, 20 requirements, six outcomes and R1-R12
+decisions to concrete paths/prerequisites, real provider/process/public
+assertions and retained full gates without changing the approved architecture
+or reviewer-owned requirements markers.
+The read-only [analysis](../specs/004-module-lifecycle/analysis.md) passes:
+all 26 requirements/outcomes, 20 scenarios, 80 tasks and twelve plan decisions
+have concrete coverage, with 118 acyclic dependency edges and no actionable
+or constitutional issue. Both contracts, approved design and reviewed
+checklists remain unchanged. **The original implementation completed all 80 tasks** on this same branch and
+[draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), not acceptance
+or a merge. The [implementation evidence](../specs/004-module-lifecycle/implementation.md)
+records the separately reviewed DI edge and focused foundation checks. A
+non-authoritative model boundary permits new-owner structural inspection
+without an assignment or store opener; actual bindings and migrations retain
+accepted 003 authority. Actual stopped preparation now performs all-enabled
+preflight before owner-local writes in dependency order. Ordinary serving uses
+runtime credentials, verifies current stores/history and never provisions,
+migrates or rewrites migration revisions. Per-owner progress preserves original
+003 correlation/durability; a later interrupted owner does not roll back an
+earlier commit or authorize automatic replay. The public relational example
+passes on both providers, including actual later-owner interruption, unchanged
+automatic-retry refusal and explicit accepted recovery before a fresh attempt.
+Complete-set recovery includes disabled owners and refuses legacy platform-only
+operations. Restoring a deliberately selected older set into a fresh owned
+target is an explicit data-loss decision, not automatic compensation. The
+original source is retained. Three complete disabled/re-enabled process cycles
+per provider now preserve exact original assignments/revisions/data/history and
+complete unrelated state; disabled callbacks remain zero. Invalid dependent
+selection refuses unchanged, and a separately prepared single-owner additive
+release changes only that owner's target. Five explicit corrections now require
+fresh attempts, exact retained stores and accepted recovery for uncertain writes.
+Immutable health samples propagate failed/unknown/degraded prerequisites without
+hiding independent roots; publication checks the same immutable state it commits.
+Anonymous health reads snapshots without author callbacks and retains its schema.
+Supervised timeout/cleanup preserves real owner/stage, withdraws readiness and
+verifies owned exits rather than running concurrent abandoned cleanup. Losing a
+serving lease never reacquires it. Private records/transition events/spans/metrics
+retain safe codes/guidance and original storage durability, never raw settings,
+credentials, paths, exception/output text or caller baggage. Trusted code remains
+unsandboxed; no durable audit, lifecycle administration or general descendant
+termination guarantee is introduced. All public scenarios are implemented;
+all 80 tasks, ten complete local suite/provider reports and 286 steps are
+evidenced at assessed code head `267efc8`. Its eleven CI contexts and 286
+product steps also pass, including every public guide command and strict
+observation. The [final reconciliation](../specs/004-module-lifecycle/implementation.md#final-complete-gate-and-implementation-handoff)
+retains earlier failed evidence and fixture-only administrative-budget/
+contention-workload repairs. No product bound, retry rule, assertion or floor
+is relaxed. That checkpoint selected convergence, not acceptance or merge.
+
+The historical [004 convergence assessment](../specs/004-module-lifecycle/convergence.md)
+found one HIGH partial gap: disabled snapshots never reached private operator
+output. The [T081 implementation](../specs/004-module-lifecycle/implementation.md#convergence-remediation-t081)
+now projects that existing model after successful composition resolution,
+emitting one bounded `discovered / disabled / composition_disabled` record per
+explicitly disabled or omitted owner. Parent and worker copy the admitted
+enabled-owner set and reject contradictory disabled frames. Version 1, frame/
+record limits, fixed guidance, owner allowlists and anonymous aggregate schema
+are unchanged; no new storage/configuration/runtime authority is introduced.
+Actual both-provider public hosts prove fresh explicit/omitted observations
+and zero disabled effects. All 81 then-existing tasks are implemented; that
+checkpoint selected follow-up convergence on the same draft PR. Historical
+reports, approved architecture/dependencies and reviewer-owned checklists are
+preserved; review and explicit human acceptance remain later gates.
+
+The [follow-up assessment](../specs/004-module-lifecycle/convergence.md)
+closes F1/T081, but records HIGH F2: contribution local IDs admit 128 characters,
+while the host prefixes the owner and supplies that combined ID to a public
+dependency binding capped at 128. Valid input therefore fails activation;
+T082 must reconcile composition without silently narrowing approved inputs.
+MEDIUM F3 requires establishing the cause of repeated unexpected normal-stop
+cleanup failures, not assuming a product timeout or relaxing fail-closed
+semantics. Broad integration passes 102/104; unchanged isolation passes 5/5.
+Exactly T082-T083 were appended, selecting implement on draft PR #7.
+This assessment changes no architecture decision, source or approved contract.
+
+The [T082-T083 implementation](../specs/004-module-lifecycle/implementation.md#convergence-remediation-t082-t083)
+now admits the exact owner prefix plus the accepted 128-character local service
+name (up to 382 characters for a 253-character owner), retaining legacy explicit
+binding IDs up to 128. Ownership, versioning, collision safety and input bounds
+are unchanged; identities are neither truncated nor hashed. The independent
+public example requires its exact boundary binding and actual Start/readiness.
+Incomplete HTTP requests deterministically reproduced normal-stop failures on
+both providers. A 500-ms internal HTTP shutdown budget leaves time to abort/
+finish draining inside the unchanged one-second outer action; total stop
+remains 15 seconds. Four fixed private `stopping / incomplete` codes identify
+infrastructure cleanup boundaries without introducing raw details or new
+fields. Ownerless `cleanup` remains terminal, and lost-authority disposal still
+refuses success with uncertain durability. All 83 then-existing tasks are
+implemented; that checkpoint selected follow-up converge. Historical failures
+remain recorded without claiming that this reproduction explains each occurrence.
+No new architecture decision,
+dependency, public endpoint or privilege is introduced.
+
+The [convergence after T082-T083](../specs/004-module-lifecycle/convergence.md) closes
+the disabled-state and binding-name findings, but retains two partial gaps.
+HIGH F4 shows 65 prerequisite service exports or 129 global executable
+exports fail after accepted resolution; complete runtime counts must match
+the approved 128-per-owner/1,024-total contribution bounds. MEDIUM F3 remains
+open: two fresh normal paths fail host disposal despite passing incomplete-
+request HTTP-stop regressions. Only T084-T085 are appended; no product,
+contract, dependency, authority or approved architecture is changed.
+That checkpoint selected implement on the same draft PR #7; it did not
+establish or silently attribute the disposal cause to scheduling.
+
+The [T084-T085 increment](../specs/004-module-lifecycle/implementation.md#convergence-remediation-t084-t085)
+preserves the existing contribution bounds through executable registration
+and activation: 128 per owner, 1,024 enabled total and up to 1,024 complete
+copied prerequisite service bindings, independently of module-dependency count.
+An actual-builder regression proves that unused default JSON reload watchers
+survived configuration-source clearing. The composed host now disables reload
+before slim-builder construction, retaining the admitted snapshot and avoiding
+that unnecessary file-provider disposal work. No polling fallback, widened
+budget, DI ownership change or success-shaped cleanup is introduced.
+The corrected both-provider composition selection passes 106/106; all failed
+evidence and complete-gate reconciliation are retained. Follow-up convergence,
+review and explicit human acceptance remain later separate gates.
+
+The [convergence after T084-T085](../specs/004-module-lifecycle/convergence.md)
+now **passes**: all 46 requirements/outcomes/scenarios, twelve plan decisions,
+85 tasks and twelve principles were assessed with zero actionable gaps.
+All F1-F4 findings are closed; task bytes, approved architecture, reviewed
+checklists and product/test code are unchanged. **Review is next**, separately
+on the same draft PR #7, before explicit human acceptance; no new architecture,
+readiness or intermediate merge is introduced.
+
+The subsequent [final review](../specs/004-module-lifecycle/review.md) records
+**changes** for one HIGH implementation defect R1: diagnostic prerequisite
+metadata from disabled deployments incorrectly shares the 1,024 enabled-edge
+limit. Valid catalogs can contain up to 2,048 distinct disabled prerequisites;
+actual validate/serve refuses before worker admission despite accepted public
+resolution. Exactly T086 is appended to reconcile bounded parent/worker
+metadata without weakening graph, identity or framing rules. **Implement is
+next** on the same draft PR #7. No approved architecture, product/test source,
+historical finding closure or human acceptance is changed by this review.
+
+The [T086 implementation](../specs/004-module-lifecycle/implementation.md#final-review-remediation-t086)
+retains the existing shared parent/worker all-catalog prerequisite collection
+and corrects its copied diagnostic allowlist to the derived 32-by-64 maximum:
+2,048 identities, refusing the 2,049th without unbounded enumeration.
+This is metadata, not the enabled graph; its 1,024-edge limit and all owner,
+dependency, frame and related-identity restrictions are unchanged.
+Real both-provider boundary boots require no disabled callback/allocation,
+usable readiness, exact disabled observations, unchanged inventory and verified
+clean exit. All eleven code-head CI contexts pass. A separate local complete-gate
+PostgreSQL migration-interruption failure is retained without a causal
+diagnosis. The human subsequently directed
+[fact documentation and deferred investigation](../specs/004-module-lifecycle/implementation.md#human-directed-deferral-and-implementation-handoff)
+as non-blocking for this implementation checkpoint, after reviewing eight passes
+and one failure. This changes no architecture, test assertion or recorded result.
+T086 is complete; converge is next on draft PR #7, before final review and
+explicit human acceptance.
+
+The [convergence after T086](../specs/004-module-lifecycle/convergence.md)
+now passes across all 46 requirements/outcomes/scenarios, twelve decisions,
+86 tasks and twelve principles, with no new actionable gap. Review R1 and
+prior F1-F4 are closed; approved architecture, tasks and product/test source
+are unchanged. The separately deferred PostgreSQL observation remains
+undiagnosed, and the failed local complete attempt remains failed.
+**Review is next** on the same draft PR #7; no later gate or human acceptance
+is waived, and no intermediate merge is requested.
+
+The subsequent [final review after T086](../specs/004-module-lifecycle/review.md)
+passes across all 46 requirements/outcomes/scenarios, twelve design decisions,
+86 tasks and twelve principles. R1/T086 and prior F1-F4 are closed, with no new
+implementation defect, task or architecture change. The undiagnosed
+human-deferred PostgreSQL observation and failed/interrupted local complete
+attempt remain explicit limitations, not a full-gate pass or release waiver.
+**Explicit human acceptance of numbered feature 004 is next**, separately on
+the same draft PR #7 with those limits disclosed. No readiness or intermediate
+merge is requested.
+
+The [explicit human acceptance](../specs/004-module-lifecycle/acceptance.md)
+now records **"bro this human fugging accepts"** for numbered feature 004
+after that passing review, with its scope and deferred failed-check limitation
+retained. No architecture, product/test source or reviewed evidence changes.
+The local complete attempt stays failed and undiagnosed; acceptance is not
+a release waiver. The same PR #7 was returned to draft after a distinct SQLite
+CI boot-theory failure. The
+[follow-up record](../specs/004-module-lifecycle/implementation.md#post-acceptance-sqlite-ci-failure-and-diagnostic-correction)
+preserves the unknown cause and unchanged local passes; only bounded verifier
+diagnostics change, not product architecture or behavior. The
+[full-matrix follow-up](../specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up)
+removes duplicate integration execution while retaining every case and deadline.
+Renewed merge readiness requires all eleven latest-head checks to pass,
+not one passing provider job. Spec 005 remains
+blocked on that human merge and accepted evidence reaching updated main.
+
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.
@@ -339,7 +556,7 @@ Example **illustrative** manifest (not yet a frozen schema):
 ```yaml
 id: org.example.environments
 version: 0.1.0
-hostApi: '>=0.1 <1.0'
+hostApi: ">=0.1 <1.0"
 displayName: Environments
 capabilities:
   - api
@@ -516,7 +733,7 @@ Start small: sequence/step state, inputs, outputs, retry policy, progress events
 
 ### Events
 
-Publish typed/versioned **integration events** through host abstractions. In-process dispatch is acceptable for noncritical immediate handlers. For durable cross-module side effects, use an outbox/inbox or reliable job mechanism; explicit *at-least-once* semantics, duplicates and replay must be documented. Do not promise exactly-once delivery.
+Publish typed/versioned **integration events** through host abstractions. In-process dispatch is acceptable for noncritical immediate handlers. For durable cross-module side effects, use an outbox/inbox or reliable job mechanism; explicit _at-least-once_ semantics, duplicates and replay must be documented. Do not promise exactly-once delivery.
 
 ### Infrastructure/provider modules
 
@@ -528,11 +745,11 @@ SignalR handles live job status, resource updates, alerts and activity progress;
 
 ## 13. Deployment profiles
 
-| Profile | Pieces | Intended use |
-|---|---|---|
-| **Local/lightweight** | Next.js UI, .NET host (+ optional colocated worker), SQLite file per module, internal scheduler | Developer/evaluation/small-team instance |
-| **Team/shared** | UI, host API, PostgreSQL with module schemas, independently scalable worker, ingress/TLS | Multi-team deployment |
-| **Kubernetes** | OCI containers, secrets, config, persistent database, probes, autoscaling/worker strategy, Helm/Kustomize | First-class production target |
+| Profile               | Pieces                                                                                                    | Intended use                             |
+| --------------------- | --------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| **Local/lightweight** | Next.js UI, .NET host (+ optional colocated worker), SQLite file per module, internal scheduler           | Developer/evaluation/small-team instance |
+| **Team/shared**       | UI, host API, PostgreSQL with module schemas, independently scalable worker, ingress/TLS                  | Multi-team deployment                    |
+| **Kubernetes**        | OCI containers, secrets, config, persistent database, probes, autoscaling/worker strategy, Helm/Kustomize | First-class production target            |
 
 Deployment documentation MUST state persistence/backup responsibilities, TLS setup, auth defaults and security implications. Avoid making Redis, a dedicated message broker, external workflow server, or a cloud-managed realtime service a baseline dependency.
 
@@ -567,18 +784,18 @@ Deployment documentation MUST state persistence/backup responsibilities, TLS set
 
 ## 17. ADR backlog and unresolved design choices
 
-| ADR | Question | Recommended starting position |
-|---|---|---|
-| ADR-001 | Module ID and storage schema allocator | Immutable reverse-DNS ID, allocated deterministic bounded name + unique registry constraint |
-| ADR-002 | Module loading & trust | Trusted in-process backend; external protocol for lower-trust integrations |
-| ADR-003 | UI plugin composition | Versioned build/deployment-time frontend packages in MVP |
-| ADR-004 | MCP transport/auth/external servers | Early server with native tools; phase external federation separately |
-| ADR-005 | Job/workflow persistence | Minimal host-owned durable queue/state tables first |
-| ADR-006 | Postgres/SQLite migration parity | Provider-specific migration strategies; no silent shared database |
-| ADR-007 | First production auth providers | Pluggable OIDC, explicit bootstrap administrator process |
-| ADR-008 | Provider execution model | Direct and CI/CD-delegated adapters; separate IaC state responsibility |
-| ADR-009 | External event transport | Abstract from day one; introduce reliable broker only when needed |
-| ADR-010 | Module distribution and signature verification | Private packages first, community registry/signing later |
+| ADR     | Question                                       | Recommended starting position                                                               |
+| ------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| ADR-001 | Module ID and storage schema allocator         | Immutable reverse-DNS ID, allocated deterministic bounded name + unique registry constraint |
+| ADR-002 | Module loading & trust                         | Trusted in-process backend; external protocol for lower-trust integrations                  |
+| ADR-003 | UI plugin composition                          | Versioned build/deployment-time frontend packages in MVP                                    |
+| ADR-004 | MCP transport/auth/external servers            | Early server with native tools; phase external federation separately                        |
+| ADR-005 | Job/workflow persistence                       | Minimal host-owned durable queue/state tables first                                         |
+| ADR-006 | Postgres/SQLite migration parity               | Provider-specific migration strategies; no silent shared database                           |
+| ADR-007 | First production auth providers                | Pluggable OIDC, explicit bootstrap administrator process                                    |
+| ADR-008 | Provider execution model                       | Direct and CI/CD-delegated adapters; separate IaC state responsibility                      |
+| ADR-009 | External event transport                       | Abstract from day one; introduce reliable broker only when needed                           |
+| ADR-010 | Module distribution and signature verification | Private packages first, community registry/signing later                                    |
 
 ## 18. Recommended Spec Kit decomposition
 
@@ -601,4 +818,4 @@ For each specification include: purpose/personas, core vs module ownership, endp
 
 ---
 
-**Source of truth:** [`product-charter.md`](product-charter.md) sets scope; [`product-vision.md`](product-vision.md) sets direction. Where this file says *recommended/proposed*, the engineering team should record a decision before treating it as a locked requirement.
+**Source of truth:** [`product-charter.md`](product-charter.md) sets scope; [`product-vision.md`](product-vision.md) sets direction. Where this file says _recommended/proposed_, the engineering team should record a decision before treating it as a locked requirement.

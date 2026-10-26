@@ -54,6 +54,7 @@ public sealed class OwnedProcess : IAsyncDisposable
     }
 
     public bool HasExited => process.HasExited;
+    public int Id => process.Id;
     public Stream StandardOutput => process.StandardOutput.BaseStream;
     public StreamWriter StandardInput => process.StandardInput;
 
@@ -87,15 +88,18 @@ public sealed class OwnedProcess : IAsyncDisposable
         return new(process.ExitCode, output is null ? "" : await output, await error);
     }
 
-    public Task StopAsync(bool graceful = false) => stop ??= StopCoreAsync(graceful);
+    public Task StopAsync(bool graceful = false, TimeSpan? gracefulTimeout = null) =>
+        stop ??= StopCoreAsync(graceful, gracefulTimeout ?? TimeSpan.FromSeconds(5));
 
-    private async Task StopCoreAsync(bool graceful)
+    private async Task StopCoreAsync(bool graceful, TimeSpan gracefulTimeout)
     {
+        if (gracefulTimeout <= TimeSpan.Zero || gracefulTimeout > TimeSpan.FromSeconds(15))
+            throw new InvalidOperationException("test_process_stop_budget_invalid");
         if (!process.HasExited && graceful && !OperatingSystem.IsWindows())
         {
             if (Signal(process.Id, 15) != 0 && !process.HasExited)
                 process.Kill(entireProcessTree: true);
-            using var grace = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            using var grace = new CancellationTokenSource(gracefulTimeout);
             try { await process.WaitForExitAsync(grace.Token); }
             catch (OperationCanceledException) when (grace.IsCancellationRequested) { }
         }
