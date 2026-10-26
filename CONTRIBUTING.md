@@ -329,16 +329,20 @@ That checkpoint required human merge before 005. PR #7 is now human-merged;
 004's accepted ledger and all five acceptance artifact hashes were verified
 on updated main before beginning the new feature.
 
-**005 / specify is complete; clarify is next** on
+**005 / specify and clarify are complete; plan is next** on
 `feature/005-authentication-bootstrap`. Its
 [draft requirements](specs/005-authentication-bootstrap/spec.md) and
 [16/16 author checklist](specs/005-authentication-bootstrap/checklists/requirements.md)
 define OIDC/development login, stable identity, one-time first-admin enrollment
 and browser/API boundaries, not working authentication. Five stories,
 22 scenarios, 22 requirements and seven outcomes retain both-provider,
-protocol, browser and privacy evidence obligations. Continue on this branch
-and its one draft PR; no later stage, product package or implementation is
-introduced by specification.
+protocol, browser and privacy evidence obligations. Clarification found all ten
+requirements categories clear with zero questions; the spec and author checklist
+remain byte-for-byte unchanged at 16/16. The
+[coverage assessment](docs/development/spec-workflow.md#invocation-and-current-progress)
+separates requirements from later protocol/session/enrollment/budget design.
+Continue on this branch and [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8);
+no later stage, product package, implementation or feature acceptance is introduced.
 
 The following paragraphs preserve the historical design-stage checkpoint.
 

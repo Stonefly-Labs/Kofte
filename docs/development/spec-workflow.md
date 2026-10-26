@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / specify complete; clarify is next**, on
+**Current checkpoint: 005 / clarify complete; plan is next**, on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 [specification](../../specs/005-authentication-bootstrap/spec.md) uses the exact
@@ -24,13 +24,47 @@ artifact hashes matched. Its historical failed local gate and undiagnosed,
 human-deferred PostgreSQL observation remain explicit limitations; merge does
 not supply a new runtime result or release waiver.
 
-The driver records only this specification stage. There are no configured
-before/after specification hooks. No authentication code, package adoption,
-plan, tasks, runtime proof or human feature acceptance is introduced.
-The next invocation performs clarification on this same branch/draft PR,
-not a new branch or intermediate merge. Requirements-level defaults are
-visible in the spec; exact protocol/session/enrollment/storage mechanisms and
-finite budgets belong to later planning/ADR review.
+**005 clarification assessment:** No critical ambiguities detected worth formal
+clarification. Zero questions were asked or answered; no human decision was
+invented. `specs/005-authentication-bootstrap/spec.md` and its author checklist
+remain byte-for-byte unchanged: **16/16 to 16/16**, with no newly passing items,
+regressions or unchecked criteria. No spec section was touched.
+
+| Category | Status | Existing specification evidence |
+| -------- | ------ | ------------------------------- |
+| Functional scope and behavior | Clear | Scope/actors/exclusions, US1-5 and FR-001-015/021 distinguish production login, deliberate enrollment, local development and later authorization/MCP. |
+| Domain and data model | Clear | Key Entities, FR-003/009-014/016/017 and Data Ownership define issuer/subject uniqueness, stable internal users, session/ceremony states and owner-local atomicity. |
+| Interaction and UX flow | Clear | US1/3/4/5, FR-020 and Experience define entry/return, safe retry, sign-out, expired/dev/failure states, keyboard/focus/announcements, narrow width and enlarged text. |
+| Non-functional quality | Clear | FR-008/009/015-020 and SC-002/005-007 require finite budgets, twenty concurrent enrollments, three restarts, five-second post-return UI, WCAG 2.2 AA, safe evidence and honest recovery. |
+| Integration and dependencies | Clear | Accepted 001-004, FR-001/007/016/019/021, Interfaces and explicit exclusions define configured OIDC trust, shared actor/versioning and both-provider ownership without pulling 006/007/009 forward. |
+| Edge cases and failure handling | Clear | Edge Cases, US1-5 and FR-002/009-019 cover replay, request forgery, concurrent enrollment, commit uncertainty, outage, stale restore, secret rotation and bounded trusted requests. |
+| Constraints and tradeoffs | Clear | Scope and Requirements-level defaults explicitly choose one configured production trust, nominated first admin, no account linking/machine issuance and loopback-only development; granular permissions remain 006. |
+| Terminology and consistency | Clear | Key Entities consistently separate external identity, internal user, login/session, bootstrap ceremony, initial designation and security record; profile values are not identity keys. |
+| Completion signals | Clear | Required Validation maps all 22 scenarios, 22 requirements and seven outcomes to independent protocol/provider/browser/contract/privacy and retained regression evidence. |
+| Miscellaneous and placeholders | Clear | No unresolved clarification marker or canonical conflict; Planning choices explicitly assigns mechanisms and finite design budgets without leaving unanswered product intent. |
+
+Exact provider fixture/library, login/session flow and API credential format,
+versioned fields/routes/origins, enrollment delivery, secrets/rotation, finite
+durations/sizes/rates/timeouts, security-record retention/access and storage
+migration design remain planning/ADR choices, not deferred requirements questions.
+There are no Outstanding or Deferred taxonomy categories.
+
+The driver records only this clarification stage after specification. Explicit
+feature-path resolution targets `specs/005-authentication-bootstrap`; there is no
+`.specify/extensions.yml`, so no before/after clarification hook is configured.
+No authentication code, package adoption, plan, tasks, runtime proof, later
+reviewer-owned checklist or human feature acceptance is introduced.
+The next invocation performs **plan** on this same branch and
+[draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8),
+not a new branch or intermediate merge.
+
+The existing specification-head CI observation remains unresolved:
+`1aef63f714f53fe9792e2dcfdc278c0a20f64929` passed 10/11 contexts, while
+`composition-integration-postgres` failed in the actual `private-diagnostics`
+scenario with `composition_cleanup_incomplete`/`composition_consumer_failed`.
+The original assertion and cause are not established. Clarification does not
+diagnose or remediate that unchanged-code failure, replace it with a rerun or
+call the historical matrix green. Current-head checks are recorded in the PR.
 
 **Historical 004 checkpoint:** **human acceptance recorded; renewed handoff required a fully green latest-head PR matrix** after specify, clarify,
 plan, checklist, tasks and analyze completed on

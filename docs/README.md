@@ -440,14 +440,18 @@ successfully. PR #7 is now human-merged, and the accepted ledger plus all five
 acceptance hashes were verified on updated main before 005 began. Acceptance
 and merge are not new runtime results, release waivers or MVP completion.
 
-**005 / specify is complete; clarify is next** on
+**005 / specify and clarify are complete; plan is next** on
 `feature/005-authentication-bootstrap`. The
 [draft specification](../specs/005-authentication-bootstrap/spec.md) and
 [16/16 built-in author checklist](../specs/005-authentication-bootstrap/checklists/requirements.md)
 cover production OIDC, safe first-admin bootstrap, stable identity,
 browser/API parity, development-only login and safe recovery. Five stories,
 22 scenarios, 22 requirements and seven outcomes describe future acceptance
-evidence. No product code, plan, task list, reviewer-owned checklist or
+evidence. Clarification found all ten requirements categories clear, with zero
+questions and no spec/checklist changes; author criteria remain 16/16. The
+[coverage assessment](development/spec-workflow.md#invocation-and-current-progress)
+records the distinction between clear requirements and later design choices.
+No product code, plan, task list, reviewer-owned checklist or
 authentication runtime proof is introduced; later stages continue on one draft
 feature PR without intermediate merge.
 
