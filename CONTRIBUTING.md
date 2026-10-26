@@ -329,14 +329,15 @@ That checkpoint required human merge before 005. PR #7 is now human-merged;
 004's accepted ledger and all five acceptance artifact hashes were verified
 on updated main before beginning the new feature.
 
-**005 / implement is active but blocked at T002**, on
+**005 / implement has resumed after resolving its source-provenance blocker**, on
 `feature/005-authentication-bootstrap` and the same draft PR #8.
 The [implementation record](specs/005-authentication-bootstrap/implementation.md)
-completes T001, preserves historical failures and documents unresolved exact
-IdentityModel source provenance (official URLs 404; authenticated lookup
-SAML-denied). No dependency/code was adopted; 99 tasks remain unchecked.
-Resolve exact-source access/evidence before resuming the recorded implement
-stage; do not replace the package or skip its prerequisite gate.
+preserves the initial failures and records the security-advisory-fork root
+cause, 275 verified net10.0 source-document entries and passing signatures for
+all nine candidates. No SSO change, package substitution or gate waiver was
+needed. Only T001 is complete; 99 tasks remain unchecked. Continue T002's
+actual adoption, locks, inventory and compatibility checks before dependent
+tasks. No dependency or authentication code was adopted by this investigation.
 
 The completed specify-through-analyze history below remains applicable on
 `feature/005-authentication-bootstrap`. Its

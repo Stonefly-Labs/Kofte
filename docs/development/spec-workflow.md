@@ -6,20 +6,21 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement blocked at T002**, on
+**Current checkpoint: 005 / implement resumed; source-provenance blocker resolved**, on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 [implementation record](../../specs/005-authentication-bootstrap/implementation.md)
-completes only T001 and preserves the exact-source dependency blocker: official
-IdentityModel revision/license URLs returned 404, while authenticated lookup
-was denied by organization SAML enforcement. No package or authentication code
-was adopted; T002-T100 remain unchecked. The default SDK selection issue was
-resolved using the existing pinned isolated SDK and is not the blocker.
-Resolve authorized exact-source access/evidence, then use the driver's
-`resume --branch feature/005-authentication-bootstrap` with
-`SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap`; do not begin a
-second run, skip T002 or advance to converge. Keep the same draft PR #8;
-no intermediate merge or feature acceptance is requested.
+preserves the initial 404/SAML failures and resolves source provenance through
+the security-advisory-fork SourceLink, verified public source for all 275
+net10.0 document entries, and passing signatures for all nine candidate
+packages. No SSO change, version substitution or gate waiver was needed.
+The driver resumed the original stage; no second run or later stage began.
+Only T001 is complete; T002-T100 remain unchecked. T002 still requires actual
+adoption, locks, inventory, current advisories and compatibility checks before
+dependent tasks. No package or authentication code was adopted.
+Use `SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap` on downstream
+commands, keep the same draft PR #8 and do not begin a second run or advance to
+converge. No intermediate merge or feature acceptance is requested.
 
 The following preserves completed design-stage history. The
 [specification](../../specs/005-authentication-bootstrap/spec.md) uses the exact

@@ -7,6 +7,32 @@ and NuGet identity, archive source/integrity, declared license, available notice
 hashes, source commits where published, image digest and action SHAs.
 No floating direct dependency is approved.
 
+## Spec 005 source-provenance follow-up, before adoption
+
+**Review date:** 2026-10-26. The
+[implementation evidence](../../specs/005-authentication-bootstrap/implementation.md#t002-follow-up-source-provenance-resolved)
+resolves the original IdentityModel 8.19.2 source/license blocker without
+changing versions or waiving a check. The missing advertised commit belongs
+to a security-advisory-fork SourceLink, not the public repository named in the
+nuspec. The fork remains unavailable; SSO reauthorization was not required.
+
+All seven net10.0 PDBs are cryptographically bound to their package assemblies.
+Their 275 source-document entries match exact public source or bound embedded
+generated source: 259 match official 8.19.2 source, one unchanged input matches
+official 8.19.1 source, and fifteen are generated. Both immutable public
+revisions have the same original Microsoft MIT license. This is compiled-input
+source correspondence, not a claim that the unavailable fork's whole tree is
+identical to either public tag or a reproducible-build attestation.
+
+All nine candidate archives also passed `dotnet nuget verify --all` in the
+previously reviewed immutable Linux SDK image, with zero warnings/errors and
+normal online trust/revocation checks. Exact artifacts, source pins, hashes,
+checkout-byte handling and scope are recorded in the implementation report.
+This approves the investigated source/license evidence, not package adoption.
+The restored actual graph, pins/locks/inventory, current advisory audit and
+compatibility checks remain T002 work. No adopted dependency inventory,
+notice, package reference, version or runtime behavior changed.
+
 ## Spec 002 project adoption
 
 The platform library and test-owned author console introduce no runtime package.

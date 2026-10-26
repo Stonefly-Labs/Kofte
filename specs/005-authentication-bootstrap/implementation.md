@@ -1,11 +1,16 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** blocked at T002, before dependency adoption.
+**Result:** in progress; original source-provenance blocker resolved, T002 adoption pending.
 **Stage / date:** implement, 2026-10-26.
 **Assessed baseline:** `6df9eebdcfa6b273126b0c51c272d1b2c2f953e6`.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
 `specs/005-authentication-bootstrap`.
 **Checkpoint:** [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8).
+
+The initial blocked assessment below is retained as history. The
+[source-provenance follow-up](#t002-follow-up-source-provenance-resolved)
+resolves that blocker and resumes the original implement stage; it does not
+complete T002, adopt a package or implement authentication.
 
 ## T001: prerequisites and integration boundaries
 
@@ -164,7 +169,7 @@ MVP boundaries. Principle III/VI's dependency provenance gate is the actual
 blocker. No product test, permission engine, MCP/job/realtime runtime, full
 shell, deployment profile or constitutional exception is introduced.
 
-## Checkpoint verification and handoff
+## Initial blocked checkpoint verification and handoff
 
 Executed for this documentation/ledger checkpoint:
 
@@ -185,8 +190,150 @@ behavioral or cryptographic verification. Publication retains the same draft
 PR; its latest-head GitHub checks are observed separately in the PR body,
 not substituted for identity implementation.
 
-Only T001 is complete; T002-T100 remain unchecked. Historical ledger entries,
-analysis, approved inputs, ADR and both reviewer gates are preserved.
+At that initial checkpoint, only T001 was complete; T002-T100 remained unchecked.
+Historical ledger entries, analysis, approved inputs, ADR and both reviewer gates are preserved.
 The driver records **implement blocked**, not complete; no converge or other
 stage is run. Keep this original branch and draft PR #8. Resume implement only
 after resolving T002. No feature acceptance, readiness or merge is requested.
+
+## T002 follow-up: source provenance resolved
+
+**Date / baseline:** 2026-10-26 / `88c68c6ebc19ee4214aaf2eba08c85def6cdcb5b`.
+**Scope:** Investigate and resolve the reported provenance/license blocker,
+not perform the remaining dependency adoption or the whole 005 implementation.
+
+### Root cause and authoritative evidence
+
+Anonymous access to the public repository succeeds. Its commit API returns
+422, **"No commit found"**, for
+`25d90ed3f48854036d444541a049089ccd198707`; the revision's license remains 404.
+Authenticated lookup separately reports organization SAML enforcement (403).
+The latter is not a prerequisite for this resolution and no credential,
+scope, organizational authorization or SSO setting was changed.
+
+The official NuGet symbol archives supply the missing repository context.
+Every investigated net10.0 PDB's SourceLink maps `/_/*` to:
+
+```text
+https://raw.githubusercontent.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet-ghsa-97f9-wg23-8r98/25d90ed3f48854036d444541a049089ccd198707/*
+```
+
+That is a security-advisory fork, not the public repository in the nuspec.
+Its exact revision/license also returns 404; this does not establish whether
+the fork was deleted or is private. The public
+[official advisory](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/security/advisories/GHSA-97f9-wg23-8r98)
+identifies 8.19.2 as a fixed 8.x release. Its SAML vulnerability is separate
+from GitHub's SAML access-control error; no SAML package/protocol is introduced.
+
+The official [8.19.2 release](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/releases/tag/8.19.2)
+points to public commit `ee19952f21d5c170a778bdca901b67076a1cd8f8`.
+The official 8.19.1 tag points to
+`3dba1997da46a3fbc60ce6d7e94c15ca867f9571`.
+Both commits' original `LICENSE.txt` files are accessible and byte-identical
+Microsoft MIT licenses, SHA-256
+`cba03f5387b05405e56b688376421acae396136af4b5116738dc6e5160f87ddd`.
+No license was inferred merely from the package name or current default branch.
+
+### Exact compiled-source correspondence
+
+A one-off, package-free .NET 10 metadata reader outside the worktree inspected
+the seven official `.nupkg`/`.snupkg` pairs without executing their assemblies.
+For each selected net10.0 assembly:
+
+1. Its CodeView GUID, timestamp and age match the portable PDB.
+2. Its PE checksum entry matches SHA-256 of that PDB with its 20-byte ID
+   zeroed, as required by the official
+   [Portable PDB checksum specification](https://github.com/dotnet/runtime/blob/main/docs/design/specs/PE-COFF.md#portable-pdb-checksum).
+   A raw-PDB hash is not this checksum; no failed raw comparison is counted.
+3. Every PDB document's original SHA-256 matches source from the exact
+   official public revisions above or its cryptographically bound embedded
+   generated source. Public checkout bytes require LF-to-CRLF conversion,
+   preserving BOMs and all other bytes/encoding; no whitespace, code or
+   arbitrary-content normalization is permitted.
+
+| Exact IdentityModel 8.19.2 candidate | Verified net10.0 documents | `.nupkg` SHA-256 | `.snupkg` SHA-256 |
+| --- | --- | --- | --- |
+| Microsoft.IdentityModel.Abstractions | 11/11 | `bcd18aeaee95f92d0c21a61383eb129111785d48ccd4af9c2ae4756bd69108bb` | `b95b71d389fa5704bdafd075089f0782d977e13129a5523b0166a92fef63c811` |
+| Microsoft.IdentityModel.JsonWebTokens | 27/27 | `8fd6a2d0dae0cad0ec7d08888a3a7521be234465fd960444401a04e975bd48e7` | `da24aa73192e0f5bf1e57f7a25738292e6a338227a722f5dc1b09ffe2124e38e` |
+| Microsoft.IdentityModel.Logging | 14/14 | `8daf0f01850dc257c8ae42fa10eb99ed28197d127020e4461bf1130c3d41b511` | `4ea980808c91ea3e8edd9cfda8cac9bcf605cdff95546f450e627a131541b998` |
+| Microsoft.IdentityModel.Protocols | 25/25 | `b2800311442c3a9d47cadb75a8ba3e8ce39eabbbb2ec8eed50e5a88177905c56` | `d6cda9ae8ff5ecfec09466303d7189082cc3abadddbb39c4e0056fcd00004278` |
+| Microsoft.IdentityModel.Protocols.OpenIdConnect | 27/27 | `b92acde71946f925e5c60e0d002154d854a50b7577858a2376153c95473af3ba` | `eb10b808765a5d39a078d6eac5ef5858deaa19ff6c3c440d2a127a634a1f4fe7` |
+| Microsoft.IdentityModel.Tokens | 157/157 | `3ce8b74b370adfe881df5d38c17621de8a150f519b96dc1351ff8a323fff5185` | `ec460a4c98371c3831c148893667dc84fe10761a1b16a0303027c4e7102163d1` |
+| System.IdentityModel.Tokens.Jwt | 14/14 | `904a9f1225a4a2d7c3503a619f432c32a84e73cdaa40b5e56e8e57620e7cfe2a` | `b2f91c13520d9f10e3993351e942505165d7425f5d6ab88fc3de88a29e60aedf` |
+
+**All 275 document entries pass**, including repeated shared inputs:
+259 correspond to public 8.19.2 source and fifteen to embedded generated
+source. The remaining input,
+`src/Microsoft.IdentityModel.Tokens/AppContextSwitches.cs`, matches the
+immutable public 8.19.1 revision, not the 8.19.2 tag. Its expected original
+CRLF SHA-256 is
+`920074a86f0f8976c0bf642e0f377fcad4c23f8105d2c77ac69d0b40471583f9`.
+Its public LF bytes have SHA-256
+`57854ee6bcfeac85b34fa9e506b55f62c6b4fab5b7db012f0eaf80674a460465`.
+This verifies that exact unchanged compile input; **no 8.19.1 package is
+selected, installed or substituted**. Merely equating the 8.19.2 tag with
+the advertised private-fork commit would have missed this difference.
+
+This evidence resolves the original candidate's source/license assessment.
+It does not prove an identical entire private repository, cover other target
+frameworks, reproduce Microsoft's build or waive signature/runtime checks.
+The one-off reader compiled with SDK 10.0.402 with zero warnings/errors;
+its input/output and downloaded public evidence remain outside the worktree.
+No downloaded source was built or copied into the product.
+
+### Actual cryptographic signature verification
+
+The already reviewed immutable Linux SDK image was not locally cached;
+it was pulled by its exact approved digest. With only the public candidate
+evidence mounted read-only, this inner command executed:
+
+```bash
+dotnet nuget verify --all /evidence/*.nupkg
+```
+
+Image:
+`mcr.microsoft.com/dotnet/sdk@sha256:0d99ebf1ccad15037b5c98c9fe8979d6b8dbac23812feae2277a0b277b5c5ffa`,
+platform `linux/amd64`, normal online revocation/trust checks.
+**Passed: all nine archives, exit 0, zero warnings/errors.** Each reports
+Microsoft Corporation author and NuGet.org repository signatures. This is
+cryptographic verification, not the earlier observation of `.signature.p7s`.
+
+Besides the seven rows above, the verified archives are:
+
+- OIDC 10.0.13: SHA-256
+  `317e2f65bff5b70cd586a548b521c482388c02d8d85e09426291cce4dd53e276`.
+- Bcl.Cryptography 10.0.2: SHA-256
+  `f8e62d716b1dd6a65c11769d61e038b7afa9c800e0d403d00b1a4a52d3f4d363`.
+
+No host credentials/source were mounted, certificate installed, trust check
+disabled or signature warning accepted. The owned verification container
+exited and was removed automatically.
+
+### Current handoff and verification
+
+The driver's original **005 / implement** stage is resumed, not completed;
+the recorded branch, feature directory, start time and history are retained.
+No second stage/run, version decision, ADR amendment or checklist change
+occurred. The pre-execution prerequisite command passes, reviewer gates
+remain 16/16 and 36/36, and no extension hooks are configured.
+
+**Only T001 is complete.** T002's actual restored graph, central pins/package
+reference, locks/inventory/notice reconciliation, current advisory audit and
+compatibility validation remain implementation work. T003-T100 must continue
+to honor that prerequisite. No package, product/test code, migration, runtime
+behavior, authentication proof or feature acceptance is introduced here.
+Earlier failed checks and the initial blocked evidence above remain historical
+failures, not converted into passes by this investigation.
+
+| Follow-up check actually executed | Result |
+| --- | --- |
+| `python3 scripts/check_repository.py` | Passed: repository assets, documentation links, MCP parity and resumed driver state. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed: 121 tests, zero failures, 2.235 seconds. |
+| `git diff --check` | Passed. |
+| `SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap .specify/scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks` | Passed: recorded feature directory and required inputs. |
+| `SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap python3 .github/skills/drive-speckit/scripts/state.py status` | Confirmed 005 / implement running, original branch/directory/start time, no blocker reason. |
+| Evidence/baseline assertions | Passed: all sixteen candidate/symbol archive hashes match this report; all 275 bound source entries match; tasks, approved design/review artifacts, dependency inputs and historical ledger entries remain unchanged. |
+| New product build/protocol/provider/browser tests | Not run: no product or adopted dependency changes; no authentication behavior verified. |
+
+Publication and latest-head CI outcomes are recorded in the same draft PR #8.
+No readiness change or merge is requested.

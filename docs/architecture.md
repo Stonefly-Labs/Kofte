@@ -473,14 +473,15 @@ not one passing provider job. PR #7 is now human-merged; its accepted ledger
 and all five acceptance artifact hashes were verified on updated main before
 005 began. Historical failed checks and undiagnosed causes remain unchanged.
 
-**005 / implement is active but blocked at T002** on
+**005 / implement has resumed after resolving its provenance blocker** on
 `feature/005-authentication-bootstrap`. The
 [implementation checkpoint](../specs/005-authentication-bootstrap/implementation.md)
-completes T001 and records unresolved exact IdentityModel source provenance:
-official source URLs return 404 and authenticated lookup is SAML-denied.
-No package, architecture decision or runtime code changed; 99 tasks remain
-unchecked. Resume this same stage only after exact-source evidence/access is
-resolved, without weakening the adoption gate.
+records the security-advisory-fork SourceLink, all 275 net10.0 source-document
+matches and passing cryptographic signatures for all nine candidates.
+No SSO change, package substitution, architecture decision or gate waiver was
+needed. Only T001 is complete; T002's actual adoption, locks, inventory and
+compatibility checks remain. No package or runtime code changed; 99 tasks
+remain unchecked.
 
 The completed specify-through-analyze history below is retained on
 `feature/005-authentication-bootstrap`. Its

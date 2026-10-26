@@ -14,12 +14,14 @@ The [technology-stack exploration](kofte-technology-stack-architecture.md) is hi
 
 ## Working in the repository
 
-**Current Spec Kit checkpoint: 005 / implement blocked at T002.**
+**Current Spec Kit checkpoint: 005 / implement resumed; provenance blocker resolved.**
 The [implementation evidence](../specs/005-authentication-bootstrap/implementation.md)
-completes T001 and records unresolved exact IdentityModel source provenance:
-official source URLs return 404; authenticated lookup is SAML-denied.
+traces the security-advisory-fork SourceLink to verified public source:
+275 net10.0 symbol-document entries match and all nine candidate signatures
+pass. No SSO change or version substitution was needed. Only T001 is complete;
+T002's actual adoption, locks, inventory and compatibility checks remain.
 No dependency or authentication code was adopted; 99 tasks remain unchecked.
-Resolve source access/evidence and resume this same stage/branch/draft PR.
+Continue this same stage/branch/draft PR.
 The
 [requirements-quality checklist](../specs/005-authentication-bootstrap/checklists/quality.md)
 satisfies 36/36 criteria after explicitly requested assisted review, with
