@@ -18,7 +18,7 @@
     },
     "004": {
       "directory": "specs/004-module-lifecycle",
-      "next_step": "accept"
+      "next_step": "accepted"
     }
   },
   "active": null,
@@ -1048,6 +1048,26 @@
         "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
         "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
       }
+    },
+    {
+      "spec": "004",
+      "step": "accept",
+      "directory": "specs/004-module-lifecycle",
+      "status": "complete",
+      "branch": "feature/004-module-lifecycle",
+      "reason": "",
+      "started_at": "2026-10-26T02:11:00+00:00",
+      "completed_at": "2026-10-26T02:11:56+00:00",
+      "outcome": "pass",
+      "note": "Explicit human acceptance of numbered feature 004 follows the passing final review and disclosure of the deferred PostgreSQL failure. Exact decision is preserved in acceptance.md and human_approval. Accepted scope retains all 86 tasks, reviewed checklists and historical evidence unchanged. The local complete attempt remains failed/interrupted at 109/111 executed steps; the original assertion/cause remains unknown and investigation deferred, not a full-gate pass or release waiver. All eleven PR contexts at review checkpoint a673667 were verified passing; no new product run or investigation occurs. Publish acceptance and mark the same PR #7 ready for human merge only. Spec 005 requires that human merge and accepted evidence on updated main in a later invocation; no later stage is executed.",
+      "evidence_sha256": {
+        "specs/004-module-lifecycle/tasks.md": "1edad3eee4b8e81d8490bc12591d65e9497517a1dc08fab9c98764ecdc595bda",
+        "specs/004-module-lifecycle/review.md": "94338254e2b0cb3bf6a3b6e983bde4fa1496024c8bd1f693eaf81a55b08ad922",
+        "specs/004-module-lifecycle/acceptance.md": "842627ebfe0ac305e48059517ce4029ddf4a1c3f553e2e016cfdaeadd86e6f37",
+        "specs/004-module-lifecycle/checklists/quality.md": "62ae30ab9d5b01c63967f04422eb8c46b7dfd7e1adac47957d6d0553e8c10ed2",
+        "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
+      },
+      "human_approval": "bro this human fugging accepts"
     }
   ]
 }

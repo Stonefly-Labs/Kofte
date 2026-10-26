@@ -334,7 +334,7 @@ the failed local full-suite attempt stays failed. Supported commands,
 deadlines and recovery responsibilities are unchanged. **Review is next**
 on draft PR #7, retaining this limitation before explicit human acceptance.
 
-**Current 004 / final review passes after T086.** The
+**Historical 004 / final review passes after T086.** The
 [review](../../specs/004-module-lifecycle/review.md) finds no new implementation
 defect; R1/T086 and prior F1-F4 are closed and all 86 tasks remain unchanged.
 The local complete attempt remains failed/interrupted at 109/111 executed
@@ -343,6 +343,15 @@ undiagnosed and is not rerun/investigated. Review is not an all-checks-green
 claim or release waiver. Supported commands, deadlines and recovery duties
 are unchanged. **Explicit human acceptance of numbered feature 004 is next**,
 separately on draft PR #7 with this limitation disclosed.
+
+**Current 004 / explicitly human-accepted.** The
+[acceptance](../../specs/004-module-lifecycle/acceptance.md) records the exact
+affirmative decision after passing review and disclosure of the deferred
+PostgreSQL failure. The failed/interrupted local complete attempt and unknown
+cause remain; no runtime rerun/investigation or release waiver is implied.
+Supported commands, deadlines, recovery duties, review/tasks/checklists and
+product/test source are unchanged. PR #7 is ready for human merge; 005 waits
+for that merge and a later invocation from updated main.
 
 For the implemented storage examples, follow the
 [003 executable guide](../../specs/003-storage-registry/quickstart.md).

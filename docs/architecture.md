@@ -456,6 +456,14 @@ attempt remain explicit limitations, not a full-gate pass or release waiver.
 the same draft PR #7 with those limits disclosed. No readiness or intermediate
 merge is requested.
 
+The [explicit human acceptance](../specs/004-module-lifecycle/acceptance.md)
+now records **"bro this human fugging accepts"** for numbered feature 004
+after that passing review, with its scope and deferred failed-check limitation
+retained. No architecture, product/test source or reviewed evidence changes.
+The local complete attempt stays failed and undiagnosed; acceptance is not
+a release waiver. The same PR #7 is ready for human merge. Spec 005 remains
+blocked on that human merge and accepted evidence reaching updated main.
+
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
 do not describe current implementation progress.

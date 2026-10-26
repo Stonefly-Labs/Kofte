@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-34d399?style=flat-square"></a>
-  <img alt="Status: module lifecycle reviewed" src="https://img.shields.io/badge/status-module_lifecycle_reviewed-a78bfa?style=flat-square">
+  <img alt="Status: module lifecycle human-accepted" src="https://img.shields.io/badge/status-module_lifecycle_accepted-a78bfa?style=flat-square">
   <a href="docs/master-spec-inventory.md"><img alt="Built with Spec Kit" src="https://img.shields.io/badge/workflow-Spec_Kit-a78bfa?style=flat-square"></a>
 </p>
 
@@ -35,7 +35,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 | 🔐 Explicit boundaries     | Team-scoped authorization, audited actions and module-owned storage                                   |
 
 > [!IMPORTANT]
-> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004's [final review after T086](specs/004-module-lifecycle/review.md) passes with no new implementation defect; R1 is closed and all 86 tasks remain unchanged. This is not an all-checks-green conclusion: the human-deferred PostgreSQL anomaly remains undiagnosed and the failed local attempt stays failed. Explicit human acceptance is next on the same draft PR with that limitation disclosed. Nothing here claims production readiness or MVP completion.
+> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is now [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md) after its passing final review, with all 86 tasks unchanged. The human-deferred PostgreSQL anomaly remains undiagnosed and the failed local attempt stays failed; acceptance is not a release waiver. [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) awaits human merge before 005 may begin. Nothing here claims production readiness or MVP completion.
 
 ## 🧭 The shape of things to come
 
@@ -246,7 +246,7 @@ full-suite result remain unchanged, not diagnosed or rerun here.
 **Review is next** on the same draft PR #7, with that limitation retained;
 no feature acceptance, readiness or intermediate merge is implied.
 
-**Current 004 / final review passes after T086.** The
+**Historical 004 / final review passes after T086.** The
 [review](specs/004-module-lifecycle/review.md) covers all 46 requirements/
 outcomes/scenarios, twelve decisions, 86 tasks and twelve principles.
 R1/T086 and prior F1-F4 are closed; no new implementation defect or task remains.
@@ -256,6 +256,15 @@ full-gate pass or release waiver. **Explicit human acceptance of numbered
 feature 004 is next**, separately on
 [draft PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7), with that limitation
 disclosed; no readiness or merge is requested.
+
+**Current 004 / explicitly human-accepted.** The
+[acceptance record](specs/004-module-lifecycle/acceptance.md) preserves the exact
+decision **"bro this human fugging accepts"**, responding to the passing review
+and disclosed deferred PostgreSQL limitation. Review/tasks/checklists and
+historical evidence remain unchanged; the failed local attempt stays failed,
+not diagnosed or rerun. [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7)
+is ready for human merge. **005 waits for that merge** and a later invocation
+from updated main; acceptance starts no new feature and waives no release gate.
 
 **Spec 003 is explicitly human-accepted and human-merged.**
 The [acceptance record](specs/003-storage-registry/acceptance.md) preserves the

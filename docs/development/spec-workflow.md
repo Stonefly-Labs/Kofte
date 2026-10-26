@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** **004 / review passes after T086; explicit human acceptance is next** after specify, clarify,
+**Current checkpoint:** **004 / explicitly human-accepted; human merge of PR #7 is next** after specify, clarify,
 plan, checklist, tasks and analyze completed on
 `feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
 The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the
@@ -400,7 +400,7 @@ on the same branch/draft PR #7 with that limitation retained. No passing final
 review, numbered-feature acceptance, readiness, intermediate merge or 005 is
 implied.
 
-**Current final review after T086:** The
+**Historical final review after T086:** The
 [review](../../specs/004-module-lifecycle/review.md) passes across all 46
 requirements/outcomes/scenarios, twelve plan decisions, 86 tasks and twelve
 principles. The read-only `spec-review` agent inspected current implementation
@@ -423,6 +423,29 @@ invocation on the same draft PR #7, presenting both the passing review and
 the residual failed-check limitation. No affirmative feature acceptance is
 inferred from the earlier request, human deferral, autopilot or checked tasks.
 Do not mark ready, request merge or begin 005.
+
+**Current acceptance checkpoint:** Feature **004 is explicitly human-accepted**.
+After the assistant presented the passing review, linked draft PR #7 and
+retained the undiagnosed PostgreSQL failure and failed local gate, the human
+replied **"bro this human fugging accepts"**. The
+[acceptance record](../../specs/004-module-lifecycle/acceptance.md) and driver's
+`--approval` preserve that exact affirmative decision for numbered feature 004.
+This is not acceptance inferred from a prior request, task markers or autopilot.
+
+The passing review's approved scope and limitations remain unchanged.
+All 86 task bytes/markers, reviewer-owned checklists, review/implementation/
+convergence evidence and product/test source are preserved. The failed local
+complete attempt remains failed/interrupted at 109/111 executed steps; the
+separate human-deferred PostgreSQL observation stays undiagnosed and is not
+rerun/investigated. Acceptance is not an all-checks-green claim or release waiver.
+All eleven actual automatic contexts pass at review checkpoint `a673667`;
+these are existing results, not a new product execution by acceptance.
+
+Only **accept** is completed on the original branch/PR. The explicit decision
+permits marking PR #7 ready and requesting **human merge**, never assistant
+merge, closure, auto-merge or branch deletion. **005 waits for that merge**
+putting accepted ledger/evidence on updated main and a separate later invocation.
+No 005 stage, branch or artifact is created here.
 
 **003 acceptance checkpoint:** 003 is **explicitly human-accepted and
 human-merged** on its original `feature/003-storage-registry` and

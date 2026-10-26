@@ -413,7 +413,7 @@ failed local full-suite result preserved; this is not a new full-gate pass.
 **Review is next** on draft PR #7, before explicit human feature acceptance.
 No PR readiness or intermediate merge is requested.
 
-**Current 004 / final review passes after T086.** The
+**Historical 004 / final review passes after T086.** The
 [review](../specs/004-module-lifecycle/review.md) assesses all 46 requirements/
 outcomes/scenarios, twelve decisions, 86 tasks and twelve principles.
 R1/T086 and prior F1-F4 are closed; no new implementation defect or task remains.
@@ -423,6 +423,15 @@ Review does not replace that gate or waive release evidence.
 **Explicit human acceptance of numbered feature 004 is next**, separately on
 the same draft PR #7 with this limitation disclosed; no readiness or merge
 is requested.
+
+**Current 004 / explicitly human-accepted.** The
+[acceptance record](../specs/004-module-lifecycle/acceptance.md) preserves
+**"bro this human fugging accepts"** after the passing review and disclosed
+deferred PostgreSQL limitation. Review/tasks/checklists remain unchanged;
+the failed local complete attempt stays failed and its cause unknown.
+The same PR #7 is ready for human merge, not assistant merge. Spec 005 waits
+for accepted evidence on updated main after that merge and a later invocation.
+Acceptance is not a new runtime result, release waiver or MVP completion.
 
 The following specify-through-analyze paragraphs preserve historical checkpoints,
 including their then-Proposed ADR and unstarted-task statements.
