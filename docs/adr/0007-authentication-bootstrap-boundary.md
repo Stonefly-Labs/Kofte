@@ -1,6 +1,6 @@
 # 0007: Authentication, Sessions and Nominated Bootstrap
 
-**Status:** Proposed
+**Status:** Accepted for implementation
 **Date:** 2026-10-26
 **Spec:** [005 - Authentication and bootstrap administration](../../specs/005-authentication-bootstrap/spec.md)
 
@@ -120,8 +120,17 @@ nominee, issuer/subject, secret material or other users.
 
 ## Approval
 
-**Pending explicit human approval before implementation.** Neither invoking
-plan, autopilot, publication of draft PR #8, checklist generation nor the
-assistant's design assessment constitutes approval or numbered-feature
-acceptance. No runtime dependency, identity schema or authentication code is
-adopted in this stage.
+On 2026-10-26, after the explanation of this ADR's OIDC login, server-side
+sessions, deliberate one-time first administrator, explicit storage/recovery
+upgrades and development-only identity, the human explicitly replied
+**"ok, I approve it"**. This approves ADR 0007's design for implementation on
+the existing [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8).
+
+This decision does not adopt an unreviewed dependency, evaluate or mark the
+reviewer-owned quality checklist, accept numbered feature 005 or authorize
+merge. Earlier plan/research/model/contract/guide artifacts and ledger notes
+retain their historical Proposed/pending-approval statements; this later
+explicit decision is the current authority for ADR status. Those artifacts,
+the ledger and evidence hashes remain unchanged. **Checklist remains the next
+separate stage** on this same branch/PR; recording approval executes no stage
+and does not begin implementation.

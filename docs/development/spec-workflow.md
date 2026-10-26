@@ -90,8 +90,9 @@ all unrelated data. Add exact versioned format branches and explicit stopped
 preparation; ordinary serving performs no migration. Restore never promises
 rollback-proof administrator state or silently reopens a consumed ceremony.
 
-[ADR 0007](../adr/0007-authentication-bootstrap-boundary.md) is **Proposed** and
-requires explicit human approval before implementation. Before-research and
+[ADR 0007](../adr/0007-authentication-bootstrap-boundary.md) was **Proposed** at
+the planning checkpoint, requiring explicit human approval before implementation.
+Before-research and
 after-design gates assess all twelve constitutional principles and pass at
 design level. Microsoft Learn/Context7 MCP are unavailable; official web
 references were verified instead. Exact new OIDC/transitive package identity,
@@ -105,6 +106,17 @@ before/after planning hook is configured. The ledger records only **plan** in
 this invocation and selects **checklist** on this same branch/draft PR.
 Generate that later reviewer-owned checklist unchecked and stop for reviewer
 evaluation; no assistant marking, intermediate merge or PR readiness is implied.
+
+**Subsequent ADR 0007 approval:** On 2026-10-26, after the explanation of OIDC
+login, server-side sessions, deliberate first-admin enrollment, explicit
+storage/recovery upgrades and development-only identity, the human explicitly
+replied **"ok, I approve it"**. ADR 0007 is now **Accepted for implementation**.
+This later decision is the current authority for ADR status; plan/research/
+model/contracts/guide, the specification/author checklist and historical ledger
+entries/hashes remain unchanged. Exact dependency adoption, reviewer-owned
+checklist evaluation, actual runtime evidence and explicit feature acceptance
+remain separate gates. Recording approval executes no stage: **checklist is
+still next**, with no active stage, on the same branch/draft PR #8.
 
 **Historical 004 checkpoint:** **human acceptance recorded; renewed handoff required a fully green latest-head PR matrix** after specify, clarify,
 plan, checklist, tasks and analyze completed on

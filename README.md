@@ -51,8 +51,9 @@ research, data model, versioned identity/operator contracts and future validatio
 guide now propose OIDC code+PKCE, durable revocable cookie sessions, exact
 same-origin adapters, nominated atomic enrollment and explicit platform/recovery
 format-2 upgrades. [ADR 0007](docs/adr/0007-authentication-bootstrap-boundary.md)
-is **Proposed**, requiring human approval before implementation. No login code,
-package adoption, runtime proof or feature acceptance is introduced.
+is now **human-approved for implementation**, recording **"ok, I approve it"**.
+Historical planning artifacts remain unchanged; no login code, package adoption,
+runtime proof or feature acceptance is introduced by recording this decision.
 Continue on `feature/005-authentication-bootstrap`
 and [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8);
 the next checklist is generated unchecked for reviewer evaluation, not an

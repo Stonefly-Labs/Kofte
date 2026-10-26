@@ -486,7 +486,7 @@ and no spec/checklist changes; all 16 author criteria remain satisfied.
 The [coverage assessment](development/spec-workflow.md#invocation-and-current-progress)
 preserves the unchanged clarification evidence. The
 [plan](../specs/005-authentication-bootstrap/plan.md) and
-[Proposed ADR 0007](adr/0007-authentication-bootstrap-boundary.md) now define
+[ADR 0007](adr/0007-authentication-bootstrap-boundary.md) now define
 confidential OIDC code+PKCE, durable server-side cookie tickets, exact same-origin
 Next adapters/optional direct ingress, actor-v1 and nominated one-time enrollment.
 Host-owned format-2 SQL/history and recovery-v2 deliberately extend the strict
@@ -496,8 +496,10 @@ invalidates sessions, never automatically reopens bootstrap.
 Finite trust/egress/state budgets, protected key persistence, minimal durable
 records, accessible UI and independent both-provider/protocol/consumer/browser/
 privacy evidence are specified, not implemented. Both constitutional design
-gates pass. ADR 0007 needs explicit human approval before implementation and the
-new OIDC dependency closure needs actual adoption review. Granular authorization,
+gates pass. ADR 0007 is now **human-approved for implementation** by the explicit
+decision **"ok, I approve it"**; historical planning artifacts/ledger are unchanged
+and no stage is executed by recording approval. The new OIDC dependency closure
+still needs actual adoption review. Granular authorization,
 MCP and general audit administration remain 006/007/009. No product code/package,
 later quality checklist, tasks, runtime proof or feature acceptance is introduced.
 

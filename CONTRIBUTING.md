@@ -345,9 +345,11 @@ preserves the clarification evidence. The
 identity/operator-v1 contracts and future guide now resolve twelve proposed
 design choices, including durable sessions, nominated atomic enrollment and
 verified platform/recovery format 2. Both constitutional design gates pass.
-[ADR 0007](docs/adr/0007-authentication-bootstrap-boundary.md) remains
-**Proposed** and needs human approval before implementation; exact dependency
-adoption and actual protocol/provider/browser/privacy evidence are later gates.
+[ADR 0007](docs/adr/0007-authentication-bootstrap-boundary.md) is now
+**human-approved for implementation**, with the explicit decision
+**"ok, I approve it"**. Historical planning artifacts/ledger are unchanged;
+exact dependency adoption and actual protocol/provider/browser/privacy evidence
+remain later gates. Recording approval executes no stage.
 Continue on this branch and [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8);
 checklist generation/reviewer evaluation is the next separate stage. No product
 package, implementation, reviewed quality checklist or feature acceptance is

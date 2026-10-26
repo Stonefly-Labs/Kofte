@@ -459,8 +459,10 @@ preserves the requirements assessment. The
 and [future guide](../specs/005-authentication-bootstrap/quickstart.md)
 now propose the code+PKCE/session/actor/enrollment and platform/recovery design.
 Both constitutional design gates pass; the spec/16 author criteria are unchanged.
-[ADR 0007](adr/0007-authentication-bootstrap-boundary.md) is Proposed,
-not human-approved. No product source/package, task list, reviewer-owned
+[ADR 0007](adr/0007-authentication-bootstrap-boundary.md) is now
+**human-approved for implementation** by **"ok, I approve it"**.
+Historical planning artifacts/ledger remain unchanged; recording this decision
+executes no stage. No product source/package, task list, reviewer-owned
 checklist or authentication runtime proof is introduced. Next checklist
 generation leaves its markers unchecked; stages continue on the same
 [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8) without
