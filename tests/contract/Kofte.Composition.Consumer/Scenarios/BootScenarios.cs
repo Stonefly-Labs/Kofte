@@ -17,9 +17,10 @@ internal static class BootScenarios
         await using var fixture = await CompositionFixture.CreateAsync(provider, token);
         token = fixture.Storage.Token;
         await fixture.WriteSelectionAsync(DeploymentProgram.Selection([]), token);
-        foreach (var revision in new[] { 0, 1 })
+        foreach (var unrelated in new[] { false, true })
         {
-            if (revision == 1) await fixture.SeedUnrelatedNoStorageAsync(token);
+            if (unrelated) await fixture.SeedUnrelatedNoStorageAsync(token);
+            await fixture.PrepareIdentityAsync(token);
             foreach (var explicitSelection in new[] { false, true })
             {
                 var before = await CompositionStoreSnapshot.CaptureAsync(fixture.Storage, token);
@@ -48,6 +49,7 @@ internal static class BootScenarios
         await using var fixture = await CompositionFixture.CreateAsync(provider, token);
         token = fixture.Storage.Token;
         await fixture.SeedUnrelatedNoStorageAsync(token);
+        await fixture.PrepareIdentityAsync(token);
         var before = await CompositionStoreSnapshot.CaptureAsync(fixture.Storage, token);
         var inventoryBefore = await fixture.InspectStoppedInventoryAsync(token);
         await fixture.WriteSelectionAsync(Selection(disabled: false), token);
@@ -123,6 +125,7 @@ internal static class BootScenarios
         await using var fixture = await CompositionFixture.CreateAsync(provider, token);
         token = fixture.Storage.Token;
         await fixture.SeedUnrelatedNoStorageAsync(token);
+        await fixture.PrepareIdentityAsync(token);
         var before = await CompositionStoreSnapshot.CaptureAsync(fixture.Storage, token);
         var attempts = new HashSet<string>(StringComparer.Ordinal);
         foreach (var omitted in new[] { false, true })

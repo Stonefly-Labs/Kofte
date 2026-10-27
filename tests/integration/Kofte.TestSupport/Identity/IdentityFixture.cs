@@ -50,7 +50,7 @@ public sealed class IdentityFixture : IAsyncDisposable
     }
 
     public IdentityProcess Start(IReadOnlyList<string> arguments, string environment = "Development",
-        IdentityCommitBarrier? barrier = null)
+        IdentityCommitBarrier? barrier = null, bool composed = false)
     {
         ObjectDisposedException.ThrowIf(disposed, this);
         Storage.Token.ThrowIfCancellationRequested();
@@ -84,6 +84,14 @@ public sealed class IdentityFixture : IAsyncDisposable
         start.Environment["KOFTE_WEB_URL"] = WebUrl.AbsoluteUri;
         start.Environment["IDENTITY_TEST_ADMISSION_FILE"] = admission;
         if (File.Exists(ConfigurationPath)) start.Environment["KOFTE_AUTH_CONFIG_FILE"] = ConfigurationPath;
+        if (composed)
+        {
+            var selection = Path.Combine(privateRoot.Path, "modules.json");
+            if (!File.Exists(selection))
+                PrivateTestFiles.WriteNew(selection, "{\"schemaVersion\":\"1\",\"modules\":[]}"u8);
+            UnixStorePaths.ValidateFile(selection);
+            start.Environment["KOFTE_MODULES_FILE"] = selection;
+        }
         if (barrier is not null)
         {
             start.Environment["DOTNET_STARTUP_HOOKS"] = typeof(IdentityCommitBarrier).Assembly.Location;

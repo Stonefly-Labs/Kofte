@@ -987,3 +987,145 @@ Final focused publishing checks also passed:
 implementation evidence was restored byte-for-byte, keeping this report
 append-only. Dependencies were not restored/reinstalled and unchanged frontend
 runtime/build suites were not rerun for this component/diagnostic-only increment.
+
+## T018-T022: actual serving integration and foundation gate
+
+The same `005 / implement` stage, original branch and draft PR #8 continue.
+Requirements **16/16** and quality **36/36** remain read-only review gates.
+T018-T022 are now checked, bringing implementation to **22/100**; the stage
+itself remains running. No login, session, enrollment or recovery-v2 handler
+is mapped merely to obtain a healthy startup.
+
+`IdentityRuntime` is shared by the actual empty and composed serving paths.
+It requires explicit validated configuration, exact prepared format 2,
+acknowledged installation/mode/trust metadata, usable retained keys and absence
+of restored-copy quarantine. Valid v0/v1 receives `identity_prepare_required`.
+No startup migration, missing-key regeneration or live discovery is performed.
+Configuration rejection has a fixed private correction record even before a
+mode can be established. Composition projects the same allowlisted private
+identity records through its existing framed union.
+
+The runtime registers the same request policies, persistent protection provider
+and owner store against the actual already-held normal SQLite/PostgreSQL host
+lease. It acquires no competing host lease and receives no stopped provisioning
+authority. Configuration and keys are disposed with their serving lifetime,
+including failed startup. Existing storage reconciliation now exposes its
+verified installation internally instead of duplicating physical verification.
+Unused configuration reload watchers are disabled before builder defaults
+create them. Builder creation precedes the existing uncomposed three-second
+storage budget; that budget and composition's inherited callback envelopes
+are not extended.
+
+Owned serving fixtures now explicitly run stopped registry upgrade/identity
+preparation before immutable inventory baselines. Their private configuration
+and key roots are outside the recovery data root; production/staging fixtures
+use actual certificate-encrypted keys and an unreachable test-only issuer.
+Recovery-v1-only scenarios are not blanket-upgraded. A legacy PostgreSQL
+platform-only backup still refuses an identity-ready registry rather than
+pretending it is a complete recovery set.
+
+Development tooling forwards the explicit configuration path without preparing
+user storage. The verification runtime and both browser warm-start fixtures
+prepare only their owned installation before measuring serving. The latter
+retain exact pre-existing module payloads through empty/composed restarts and
+the original readiness/page/total/cleanup limits. Setup guidance documents the
+separate commands and owner-only layout.
+
+### Corrections and retained failed evidence
+
+The initial actual-entrypoint tests were red before integration. The first
+broad host run passed **65/77**, not all 77. Identity middleware incorrectly
+preceded accepted health guards, changing malformed-health error bodies; both
+entrypoints now install health guards first, matching the component host.
+Other failures occurred during PostgreSQL Docker fixture startup; their exact
+engine cause is unestablished. No unrelated shared containers/networks were
+removed.
+
+A subsequent serial run passed **76/77**. The remaining 121-second composed
+health test parsed identity stderr as composition stdout and captured its
+baseline before new explicit preparation. It now prepares before that baseline,
+parses only composition stdout and independently validates identity stderr.
+Its exact byte-preservation, serving-duration and stop-limit checks remain.
+The updated health/startup selection passed **10/12**, including that test,
+but both composed production-OIDC cases exhausted their original callback
+budgets. The cause was not conclusively diagnosed. A temporary owned-worker
+sample did not reproduce the failure and was removed; no probe is shipped.
+An unmodified, no-probe eight-case startup run then passed, followed by another
+eight-case pass under normal runner scheduling after assigning these actual
+startup-envelope measurements to an explicit nonparallel collection. This
+controls unrelated fixture scheduling, not product deadlines or assertions.
+These results do not prove a hard-real-time guarantee on a contended machine
+or erase the earlier timeouts.
+
+The first current SQLite `bounded-stop` recipe exposed one remaining obsolete
+empty-stderr assertion in the intentional serving-cleanup failure case. It now
+accepts only independently parsed, exact-field, bounded startup/access identity
+records; stopped overflow/cancellation cases still require empty stderr.
+Both-provider fault/privacy recipes subsequently passed without changing
+timeouts, exit checks, canary scans or preserved-storage comparisons.
+
+The changed Python runtime orchestration initially broke a mock that recreated
+the store for every setup command. It now models only explicit store init and
+checks the ordered upgrade/prepare commands, owner-only configuration and
+separate layout. The required 121-test suite passes. An unsupported native
+middle-wildcard filter and invalid `startup --provider` invocation were command
+selection errors, not executed passing tests; corrected exact commands follow.
+
+### Foundation evidence and task mapping
+
+T022 reuses the already-owned focused test files rather than adding an
+`IdentityFoundationTests.cs` aggregator that duplicates their assertions:
+`IdentityFormatTests` covers physical/history/constraint tampering and rollback;
+`IdentityAdmissionTests` covers checked overflow, exact quotas, foreign/stopped/
+lost normal authority and idempotent metadata; `IdentityDeadlineTests` covers
+real contention, cancellation and no late writes; `IdentityEventTests` covers
+transactional rollback, immutable evidence and capacities.
+`IdentityPreparationTests` adds actual admitted worker interruption and stopped
+refusal/idempotence, while `IdentityKeysTests` and `IdentityPolicyTests` retain
+crypto, ownership, CSRF and default-deny evidence. The serial 77-case host run
+executed these host cases; its single unrelated harness failure and correction
+are reported above. The new startup matrix checks both actual entrypoints and
+providers, retained full storage/key hashes, trust changes, quarantine, missing
+keys, cleanup and production serving without provider availability.
+
+All commands below use the existing SDK 10.0.402/runtime 10.0.13; provider
+commands opt in with `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true`. No dependency
+manifest changed and no package restore/install was performed.
+
+| Exact executed command | Result |
+| --- | --- |
+| `dotnet build Kofte.slnx --no-restore -c Release -warnaserror --nologo` | Passed, zero warnings/errors. |
+| `dotnet tests/unit/Kofte.Host.Tests/bin/Release/net10.0/Kofte.Host.Tests.dll -parallelMode none` | Passed **263**, zero failures/skips. |
+| `dotnet tests/integration/Kofte.Storage.IntegrationTests/bin/Release/net10.0/Kofte.Storage.IntegrationTests.dll -parallelMode none -class '*IdentityAdmissionTests' -class '*IdentityDeadlineTests' -class '*IdentityEventTests' -class '*IdentityFormatTests'` | Passed **94**, both providers, zero failures/skips. |
+| `dotnet tests/integration/Kofte.Storage.IntegrationTests/bin/Release/net10.0/Kofte.Storage.IntegrationTests.dll -parallelMode none -class '*CompositionAuthorityTests' -class '*CompositionProviderTests'` | Passed **25** dependent serving/authority cases, both providers, zero failures/skips. |
+| `dotnet tests/integration/Kofte.Host.IntegrationTests/bin/Release/net10.0/Kofte.Host.IntegrationTests.dll -parallelMode none -class '*IdentityStartupTests'` | Passed **8**, both providers/entrypoints/modes, no profiler. |
+| `dotnet test tests/integration/Kofte.Host.IntegrationTests/Kofte.Host.IntegrationTests.csproj -c Release --no-restore --filter FullyQualifiedName~IdentityStartupTests --nologo` | Passed **8** under normal scheduling with the explicit controlled collection, zero failures/skips. |
+| `dotnet run --project tests/contract/Kofte.Composition.Consumer --no-build -c Release -- --provider sqlite --scenario private-diagnostics` | Passed **67** assertions, all six capture channels. |
+| `dotnet run --project tests/contract/Kofte.Composition.Consumer --no-build -c Release -- --provider postgres --scenario private-diagnostics` | Passed **67** assertions, all six capture channels. |
+| `dotnet run --project tests/contract/Kofte.Composition.Consumer --no-build -c Release -- --provider sqlite --scenario bounded-stop` | Passed **97** assertions, all seven ignoring-token boundaries, actual descendant exit, cancellation, authority and unchanged snapshots. |
+| `dotnet run --project tests/contract/Kofte.Composition.Consumer --no-build -c Release -- --provider postgres --scenario bounded-stop` | Passed **102** assertions, including actual serving-lease loss. |
+| `python3 scripts/verify.py --suite startup` | Passed **12** steps, including two empty and two configured browser warm-start cycles with preserved original payloads and unchanged envelopes. |
+| `npm run format:check` | Passed. |
+| `npm run typecheck --workspace tests/e2e` | Passed. |
+| `npm run lint --workspace tests/e2e` | Passed. |
+| `dotnet format Kofte.slnx --verify-no-changes --no-restore --verbosity quiet` | Passed. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed **121** after the explicit-preparation mock correction. |
+| `python3 scripts/check_repository.py` | Passed after final progress/task/documentation updates. |
+| `git diff --check` | Passed after final progress/task/documentation updates. |
+
+### Published-head CI is separate evidence
+
+The preceding `df95d75` checkpoint's repository run **40437746912** passed.
+Product run **40437746923** passed quality, unit, both integration jobs,
+browser, startup and recovery when observed. Privacy failed its SQLite public
+`private-diagnostics` recipe; failure-propagation failed its PostgreSQL
+`bounded-stop` integration baseline before exercising mutations. Their original
+underlying causes remain unestablished. Contract was still running when last
+queried. The fresh local public recipes above pass, but are not a relabeling of
+that CI run, a full failure-propagation execution or a CI result for this new
+checkpoint.
+
+**T023-T100 (78 tasks) remain unchecked.** Real OIDC/mapping/attempts/session
+commit, enrollment, web journeys, identity recovery and the full final evidence
+matrix remain dependent implement work. No converge, review, acceptance or
+merge is requested.

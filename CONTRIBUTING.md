@@ -329,7 +329,7 @@ That checkpoint required human merge before 005. PR #7 is now human-merged;
 004's accepted ledger and all five acceptance artifact hashes were verified
 on updated main before beginning the new feature.
 
-**005 / implement is in progress, with T001–T017 complete (17/100)**, on
+**005 / implement is in progress, with T001–T022 complete (22/100)**, on
 `feature/005-authentication-bootstrap` and the same draft PR #8.
 The [implementation record](specs/005-authentication-bootstrap/implementation.md)
 preserves the provenance investigation and records actual reviewed OIDC
@@ -347,10 +347,16 @@ Transactional evidence, persistent keys and stopped preparation/reconciliation/
 revocation now have focused real-provider/key tests. Actual PostgreSQL restore
 and both-provider format regressions pass 49 cases after a narrowly diagnosed
 constraint-deparsing correction.
-Eighty-three tasks remain unchecked. Shared T018–T020 endpoint/CSRF/default-deny
+Seventy-eight tasks remain unchecked. Shared T018–T020 endpoint/CSRF/default-deny
 and sanitized diagnostic components now have executable component/operator
-tests, including real before/after-commit worker termination. They are not yet
-integrated into both serving entrypoints; login/sessions, enrollment, web and
+tests, including real before/after-commit worker termination. T021
+installs these components in both serving entrypoints, using
+their actual normal host leases, explicit configuration and read-only
+prepared-storage/trust/key verification. Owned serving fixtures prepare identity
+explicitly before inventory baselines; recovery-v1 fixtures remain intentional.
+Foundation units, both-provider storage/startup and stop/privacy recipes pass,
+as do actual empty/composed browser warm starts. Preserve recorded failures
+and the controlled deadline-test profile. Login/sessions, enrollment, web and
 recovery are not delivered. Preserve the same stage/branch/draft PR.
 
 The completed specify-through-analyze history below remains applicable on

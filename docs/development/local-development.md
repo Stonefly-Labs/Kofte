@@ -473,7 +473,7 @@ is uncertain, never success. Raw child output is discarded. Key files and databa
 effects are not atomic together; retain owned partial artifacts for deliberate
 retry/correction. OIDC keys require certificate encryption; development keys
 require explicit Development/loopback configuration. These commands do not
-provide working login, enrollment, serving identity policy or recovery-v2.
+provide working login, enrollment or recovery-v2.
 
 Real interruption before SQLite's migration commit can leave a retained journal
 even though the database transaction did not commit. The existing physical
@@ -481,8 +481,16 @@ inventory guard then refuses prepare with `identity_reconciliation_required`,
 preserving database, journal and completed key files. Stop and inspect the
 preserved recovery state; do not delete the journal or treat a retry as proof of
 rollback. A verified current database after commit remains idempotently prepared.
-Shared route/antiforgery/default-deny and private diagnostic components are
-tested separately; both serving entrypoints still await explicit T021 wiring.
+Both normal serving entrypoints now load this explicit configuration, verify
+the exact prepared format and acknowledged trust, and validate the retained key
+ring before listening. Valid v0/v1 stores return `identity_prepare_required`;
+missing keys are not regenerated. An `identity-restore-required` marker blocks
+exposure until the later explicit recovery workflow is delivered. Startup does
+not contact the identity provider. The shared route/antiforgery/default-deny
+middleware and private diagnostics apply to both paths, but unfinished identity
+handlers are not mapped. T018–T022 foundation checks now pass; exact initial
+failures, controlled deadline-test scheduling and current limits remain in the
+implementation report. This is not a working login/session journey.
 
 ### Toolchain
 
@@ -526,11 +534,36 @@ resolution, unsupported tool roll-forward or floating package versions.
 
 ## Initialize, start, stop and restart
 
-Initialization is separate, explicit and non-overwriting:
+Initialization and identity preparation are separate, explicit and
+non-overwriting. First create an owner-only directory outside `data/` and an
+owner-only configuration file (`0700` directory, `0600` file). For the default
+Development/loopback profile, use this shape with your actual absolute key path:
+
+```json
+{
+  "version": "1",
+  "mode": "development",
+  "publicOrigin": "http://127.0.0.1:3000",
+  "keyRingDirectory": "/absolute/private/kofte-identity/keys",
+  "development": {
+    "enabled": true,
+    "identities": [{ "key": "synthetic" }]
+  }
+}
+```
+
+Do not overwrite existing configuration or key material to repair a refusal.
+Set the configuration path in your shell or private `.env`; secret values must
+not be placed in either. The supervisor forwards this path but never creates,
+upgrades or prepares identity storage:
 
 ```bash
+export KOFTE_AUTH_CONFIG_FILE=/absolute/private/kofte-identity/identity.json
+export ASPNETCORE_ENVIRONMENT=Development
 dotnet build Kofte.slnx --no-restore -c Release -warnaserror
 dotnet run --project src/Kofte.Host --no-build -c Release -- --store init
+dotnet run --project src/Kofte.Host --no-build -c Release -- --registry upgrade
+dotnet run --project src/Kofte.Host --no-build -c Release -- --identity prepare
 python3 scripts/dev.py
 ```
 
@@ -547,9 +580,10 @@ it. Stop/retry/restart do not delete data. Fresh format-0 initialization has no
 application/fixture table, migration history or registry. A host-held exclusive operation lock prevents
 concurrent initialization; the lock file remains in place after clean shutdown.
 
-On the 003 feature branch, initialization still creates genuine table-free
-format 0. The separate `--registry upgrade` maintenance command establishes
-format 1; normal serving never initializes or migrates it automatically.
+Initialization still creates genuine table-free format 0. The separate
+`--registry upgrade` maintenance command establishes format 1; explicit
+`--identity prepare` establishes identity-ready format 2 and its separate keys.
+Normal serving never initializes or migrates either automatically.
 The host remains module-free, and no public registration command is provided.
 Do not put `KOFTE_POSTGRES_PROVISIONING_CONNECTION` in serving configuration:
 the elevated connection is accepted only by owned offline maintenance.

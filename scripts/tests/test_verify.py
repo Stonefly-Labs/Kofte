@@ -784,10 +784,14 @@ class VerifyTests(unittest.TestCase):
             def stop(self):
                 self.stopped = True
 
-        def initialize(_name, _command, **kwargs):
-            database = Path(kwargs["environment"]["KOFTE_DATA_ROOT"]) / "platform/platform.db"
-            database.parent.mkdir()
-            database.write_bytes(b"owned store")
+        initialization = []
+
+        def initialize(name, command, **kwargs):
+            initialization.append((name, command))
+            if name == "isolated-store-init":
+                database = Path(kwargs["environment"]["KOFTE_DATA_ROOT"]) / "platform/platform.db"
+                database.parent.mkdir()
+                database.write_bytes(b"owned store")
 
         with patch.object(runner, "build_runtime"), patch.object(runner, "command", side_effect=initialize), \
                 patch.object(verify, "OwnedProcesses", Owned), patch.object(verify.dev, "wait_ready"):
@@ -796,6 +800,14 @@ class VerifyTests(unittest.TestCase):
                 self.assertEqual("current-canary", session.environment["BOOTSTRAP_PRIVACY_CANARY"])
                 self.assertEqual(0o700, Path(session.environment["BOOTSTRAP_TEST_CONTROL"]).stat().st_mode & 0o777)
                 self.assertRegex(session.environment["BOOTSTRAP_TEST_RUN_ID"], "^[a-f0-9]{32}$")
+                identity = Path(session.environment["KOFTE_AUTH_CONFIG_FILE"])
+                self.assertEqual(0o600, identity.stat().st_mode & 0o777)
+                self.assertFalse(identity.is_relative_to(Path(session.environment["KOFTE_DATA_ROOT"])))
+                self.assertEqual([
+                    ("isolated-store-init", ["dotnet", verify.HOST, "--store", "init"]),
+                    ("isolated-registry-upgrade", ["dotnet", verify.HOST, "--registry", "upgrade"]),
+                    ("isolated-identity-prepare", ["dotnet", verify.HOST, "--identity", "prepare"]),
+                ], initialization)
                 session.worker.actions["stop-host"]()
                 session.worker.actions["start-host"]()
                 session.check()

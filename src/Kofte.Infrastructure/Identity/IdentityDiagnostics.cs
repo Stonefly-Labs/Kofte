@@ -16,7 +16,7 @@ internal enum IdentityAction
 internal enum IdentityDiagnosticOutcome
 {
     Ready, RequestInvalid, Unauthenticated, Forbidden, EnrollmentUnavailable, AdmissionExceeded,
-    Unavailable, OutcomeUncertain, PrepareRequired, ReconciliationRequired, KeysInvalid, Cancelled
+    Unavailable, OutcomeUncertain, PrepareRequired, ReconciliationRequired, KeysInvalid, Cancelled, ConfigurationInvalid
 }
 
 internal sealed record IdentityDiagnosticRecord(int Version, string EventCode, string Component,
@@ -116,6 +116,8 @@ internal static class IdentityDiagnostics
             ("identity_reconciliation_required", "rejected", "stop_and_reconcile"),
         IdentityDiagnosticOutcome.KeysInvalid => ("identity_keys_invalid", "rejected", "inspect_preserved_keys"),
         IdentityDiagnosticOutcome.Cancelled => ("identity_cancelled", "cancelled", "retry_explicitly"),
+        IdentityDiagnosticOutcome.ConfigurationInvalid =>
+            ("identity_configuration_invalid", "rejected", "correct_configuration"),
         _ => throw Invalid()
     };
 

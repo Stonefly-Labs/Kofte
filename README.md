@@ -37,7 +37,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 > [!IMPORTANT]
 > **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md) and [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) is now human-merged. Its accepted ledger and evidence were verified on updated main before 005 began. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) retains prior failures and unknown causes; the historical failed local gate remains failed, not waived by acceptance or merge. Spec 005 now has [draft authentication/bootstrap requirements](specs/005-authentication-bootstrap/spec.md), not working login. Nothing here claims production readiness or MVP completion.
 
-**Current stage: 005 / implement in progress; T001–T017 complete (17/100).** The
+**Current stage: 005 / implement in progress; T001–T022 complete (22/100).** The
 [implementation checkpoint](specs/005-authentication-bootstrap/implementation.md)
 records actual OIDC dependency adoption and locked inventory (403 npm / 87
 NuGet identities), an independent HTTPS issuer, owned interruption fixtures,
@@ -55,13 +55,19 @@ The focused both-provider identity/registry/lease gate passes 105 tests; key
 tests pass 27 cases and stopped commands pass fourteen both-provider cases.
 A reproduced PostgreSQL dump/restore fingerprint regression is corrected;
 49 recovery/physical-format cases pass without omitting constraint verification.
-The next increment adds tested shared route/default-deny/CSRF components and
+The foundation increment adds tested shared route/default-deny/CSRF components and
 bounded private diagnostics, including real operator commit/interruption evidence.
 A reproduced SQLite pre-open sharing race now retries only that effect-free guard
 inside the original deadline. These components are **not working login** and are
-not yet installed in both serving entrypoints. T018–T020 remain unchecked pending
-that integration; sessions, enrollment, UI and identity recovery remain unbuilt
-(83 unchecked tasks).
+installed in both serving entrypoints:
+normal serving requires explicit configuration and read-only verification of
+prepared storage, acknowledged trust and usable retained keys. Startup does not
+perform discovery or silently prepare storage. Existing health contracts remain
+unchanged. Foundation units, both-provider storage/startup, stop/privacy recipes
+and actual empty/composed browser warm starts pass. Initial failures and the
+controlled deadline-test profile are retained in the implementation report.
+Sessions, enrollment, UI and identity recovery remain unbuilt
+(78 unchecked tasks).
 Keep the same implement stage and draft PR #8; no merge or acceptance yet.
 
 The following preserves the completed design-stage context. The

@@ -1,4 +1,6 @@
 using Kofte.Host.Bootstrap;
+using Kofte.Host.Features.Identity;
+using Kofte.Infrastructure.Identity;
 using Kofte.Infrastructure.Composition;
 using Kofte.Infrastructure.Storage;
 using Kofte.Platform.Modules.Storage;
@@ -10,6 +12,11 @@ internal sealed record CompositionFailure(string Code, CompositionOutcome Outcom
     internal static CompositionFailure From(Exception error) => error switch
     {
         ModuleSelectionException => Rejected("composition_configuration_invalid"),
+        IdentityConfigurationException => Rejected("composition_configuration_invalid"),
+        IdentityStateException { Outcome: IdentityDiagnosticOutcome.PrepareRequired } =>
+            Rejected("composition_prepare_required"),
+        IdentityStateException or InvalidOperationException { Message: "identity_keys_invalid" } =>
+            new("composition_reconciliation_required", CompositionOutcome.ReconciliationRequired, 4),
         BootstrapException { Code: BootstrapError.StoreBusy } => new("composition_storage_rejected", CompositionOutcome.Busy, 3),
         BootstrapException => Rejected("composition_configuration_invalid"),
         CompositionStorageException { Code: "composition_prepare_required" } => Rejected("composition_prepare_required"),

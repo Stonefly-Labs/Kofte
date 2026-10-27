@@ -473,7 +473,7 @@ not one passing provider job. PR #7 is now human-merged; its accepted ledger
 and all five acceptance artifact hashes were verified on updated main before
 005 began. Historical failed checks and undiagnosed causes remain unchanged.
 
-**005 / implement has completed T001–T017, not the feature**, on
+**005 / implement has completed T001–T022, not the feature**, on
 `feature/005-authentication-bootstrap`. The
 [implementation checkpoint](../specs/005-authentication-bootstrap/implementation.md)
 retains the source/signature investigation and records the adopted maintained
@@ -514,12 +514,21 @@ PostgreSQL constraint fingerprints now use the server's parenthesis-normalizing
 deparser, preserving full definitions across real dump/restore without dropping
 checks or changing frozen migration-1 bytes.
 Shared exact-route/default-deny/CSRF components and fixed private diagnostics
-now have component/operator evidence, not serving integration. Identity
+now have component/operator evidence. Identity
 composition records remain an internal strict framed union, never new Platform
 identity/lifecycle payload. Operator projection waits for verified child exit
 and cleanup; a lost acknowledgement is uncertain, not success.
-Serving is not wired to identity yet. Sessions, login/enrollment and identity
-recovery remain dependent work (83 unchecked tasks); no end-to-end authentication
+T021 shares configuration and read-only prepared
+format/trust/key validation across empty and composed serving. It reuses their
+actual normal host authority and installs the same services, persistent key
+provider, request boundaries and private diagnostics. Valid older formats
+require explicit stopped preparation; startup never repairs keys or contacts
+discovery and refuses restored-copy quarantine. Foundation units and both-provider
+storage/startup/stop/privacy gates pass with preserved snapshots. The actual
+empty/composed stack also passes browser warm starts under unchanged envelopes.
+Recorded initial failures and the controlled deadline-test profile remain
+limitations of that evidence. Sessions, login/enrollment and identity
+recovery remain dependent work (78 unchecked tasks); no end-to-end authentication
 is claimed.
 
 The completed specify-through-analyze history below is retained on

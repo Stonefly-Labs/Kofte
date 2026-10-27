@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement in progress; T001–T017 complete (17/100)**, on
+**Current checkpoint: 005 / implement in progress; T001–T022 complete (22/100)**, on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 [implementation record](../../specs/005-authentication-bootstrap/implementation.md)
@@ -32,10 +32,16 @@ The PostgreSQL recovery failure is reproduced and corrected by server-deparsed
 constraint definitions that preserve semantics across actual dump/restore;
 49 recovery/physical-format cases pass, retaining tamper refusal.
 These are foundations, not functioning login, enrollment, UI or recovery.
-Eighty-three tasks remain unchecked. Shared T018–T020 endpoint/CSRF/default-deny
+Seventy-eight tasks remain unchecked. Shared T018–T020 endpoint/CSRF/default-deny
 and private diagnostic components now have executable component/operator
-evidence, including real child termination; both actual serving entrypoints
-still need T021 integration before those foundations can be marked complete.
+evidence, including real child termination. T021
+installs the same configuration/prepared-state/key checks, normal-lease-backed
+services, middleware and private diagnostics in both actual serving paths.
+Foundation units, both-provider storage/startup and stop/privacy recipes pass,
+as do actual empty/composed browser warm starts. Exact checks, initial failures
+and the controlled deadline-test profile remain in the implementation report.
+T023's real OIDC journey tests are next; no login/session implementation is
+inferred from a ready health endpoint.
 The original stage is running, not completed; no second run or later stage began.
 Use `SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap` on downstream
 commands, keep the same draft PR #8 and do not begin a second run or advance to

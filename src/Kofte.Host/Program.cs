@@ -4,6 +4,8 @@ using Kofte.Host.Features.Bootstrap;
 using Kofte.Host.Features.StorageMaintenance;
 using Kofte.Host.Features.ModuleComposition;
 using Kofte.Host.Features.IdentityMaintenance;
+using Kofte.Host.Features.Identity;
+using Kofte.Infrastructure.Identity;
 using Kofte.Infrastructure.Storage;
 using Kofte.Infrastructure.Storage.Registry;
 using Microsoft.Data.Sqlite;
@@ -47,18 +49,22 @@ public static class BootstrapProgram
                 ? new SqlitePlatformStore(config.DataRoot)
                 : new PostgresPlatformStore(config.PostgresConnection ??
                     throw new BootstrapException(BootstrapError.ConfigurationInvalid));
+            var builder = WebApplication.CreateSlimBuilder(new WebApplicationOptions
+            {
+                Args = ["--hostBuilder:reloadConfigOnChange=false"]
+            });
+            builder.Configuration.Sources.Clear();
+            builder.Configuration.AddInMemoryCollection();
+            builder.Logging.ClearProviders();
             using var lease = store is SqlitePlatformStore sqlite
                 ? Kofte.Host.Bootstrap.StoreLease.Acquire(sqlite.Root) : null;
-            using var startupBudget = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+            using var startupBudget = new OperationBudget(OperationBudget.Resolve, CancellationToken.None);
             await using var postgresLease = store is PostgresPlatformStore postgres
                 ? await postgres.AcquireHostLeaseAsync(startupBudget.Token) : null;
             await store.ProbeAsync(startupBudget.Token);
             var installation = StorageServices.Installation(config);
-            await StorageReconciliation.ValidateStartupAsync(installation, startupBudget.Token);
-            var builder = WebApplication.CreateSlimBuilder();
-            builder.Configuration.Sources.Clear();
-            builder.Configuration.AddInMemoryCollection();
-            builder.Logging.ClearProviders();
+            using var identity = await IdentityRuntime.OpenAsync(config, builder.Environment.EnvironmentName,
+                installation, startupBudget);
             var bindings = new List<string> { config.HostUrl.AbsoluteUri };
             if (!BootstrapConfiguration.Loopback(config.HostUrl.Host) &&
                 IPAddress.TryParse(config.HostUrl.Host.Trim('[', ']'), out var boundAddress) &&
@@ -70,16 +76,23 @@ public static class BootstrapProgram
             builder.Services.AddStorageServices(installation);
             builder.Services.AddSingleton<IPlatformStore>(store);
             builder.Services.AddSingleton<HealthHandler>();
+            identity.Register(builder.Services, lease?.Authority, postgresLease);
             if (builder.Environment.IsDevelopment()) builder.Services.AddBootstrapOpenApi();
             BootstrapTelemetry.Add(builder.Services, config);
             await using var app = builder.Build();
             app.MapBootstrapHealth();
+            app.UseIdentityBoundary();
             if (app.Environment.IsDevelopment())
                 app.MapOpenApi("/openapi/v1.json").WithName("bootstrapOpenApi").AllowAnonymous();
             if (config.UnsafeExposure)
                 Console.Error.WriteLine("""{"level":"warning","eventCode":"unsafe_local_exposure","component":"host"}""");
             await app.RunAsync();
             return 0;
+        }
+        catch (Exception error) when (error is IdentityStateException or IdentityConfigurationException or
+            InvalidOperationException { Message: "identity_keys_invalid" })
+        {
+            return 1;
         }
         catch (BootstrapException error)
         {

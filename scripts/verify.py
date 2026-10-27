@@ -856,6 +856,18 @@ def runtime(runner, provider, disposable, external_connection=None, privacy_cana
             if provider == "sqlite":
                 runner.command("isolated-store-init", ["dotnet", HOST, "--store", "init"],
                                environment=environment, timeout=30, capture=capture)
+            identity_path = directory / "identity.json"
+            with os.fdopen(os.open(identity_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600), "w") as identity:
+                json.dump({
+                    "version": "1", "mode": "development", "publicOrigin": web,
+                    "keyRingDirectory": str(directory / "identity-keys"),
+                    "development": {"enabled": True, "identities": [{"key": "synthetic"}]},
+                }, identity)
+            environment["KOFTE_AUTH_CONFIG_FILE"] = str(identity_path)
+            runner.command("isolated-registry-upgrade", ["dotnet", HOST, "--registry", "upgrade"],
+                           environment=environment, timeout=120, capture=capture)
+            runner.command("isolated-identity-prepare", ["dotnet", HOST, "--identity", "prepare"],
+                           environment=environment, timeout=120, capture=capture)
             web_processes = OwnedProcesses(runner.root, environment, capture=capture)
 
             def start_host(timeout=10):

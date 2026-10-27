@@ -8,6 +8,7 @@ using System.Text.Json;
 using Kofte.Infrastructure.Storage;
 using Kofte.Infrastructure.Storage.Registry;
 using Kofte.Infrastructure.Storage.Recovery;
+using Kofte.TestSupport.Identity;
 using Kofte.Platform.Modules.Manifest;
 using Kofte.Platform.Modules.Storage;
 using Npgsql;
@@ -41,6 +42,7 @@ public sealed class CompositionFixture : IAsyncDisposable
     private CompositionAuthorTrace? authorTrace;
     private bool probeRunning;
     private bool disposed;
+    private ServingIdentity? identity;
 
     private CompositionFixture(StorageProviderScope storage)
     {
@@ -56,6 +58,19 @@ public sealed class CompositionFixture : IAsyncDisposable
     public Uri HostUrl { get; private set; } = new("http://127.0.0.1:1");
     public CompositionAuthorTrace AuthorTrace => authorTrace ??
         throw new InvalidOperationException("composition_author_probe_not_started");
+
+    public async Task PrepareIdentityAsync(CancellationToken token)
+    {
+        RequireStopped();
+        if (identity is not null) return;
+        var prepared = new ServingIdentity();
+        try
+        {
+            await prepared.PrepareAsync(start => Storage.ConfigureChild(start, offlineMaintenance: true), token);
+            identity = prepared;
+        }
+        catch { prepared.Dispose(); throw; }
+    }
 
     public CompositionProcess StartBoot(CompositionTestCatalog catalog, bool explicitSelection = true,
         bool observeAuthor = false)
@@ -167,7 +182,8 @@ public sealed class CompositionFixture : IAsyncDisposable
         }
 
         static bool DeploymentKey(string key) => key.StartsWith("KOFTE_", StringComparison.Ordinal) ||
-            key.StartsWith("OTEL_", StringComparison.Ordinal) || key.StartsWith("COMPOSITION_TEST_", StringComparison.Ordinal);
+            key.StartsWith("OTEL_", StringComparison.Ordinal) || key.StartsWith("COMPOSITION_TEST_", StringComparison.Ordinal) ||
+            key is "ASPNETCORE_ENVIRONMENT" or "DOTNET_ENVIRONMENT";
     }
 
     public void TrackIdleFixtureChild(CompositionProcess owner)
@@ -240,6 +256,7 @@ public sealed class CompositionFixture : IAsyncDisposable
             HostUrl = new("http://127.0.0.1:" + ((IPEndPoint)port.LocalEndPoint!).Port);
         }
         start.Environment["KOFTE_HOST_URL"] = HostUrl.AbsoluteUri;
+        identity?.ConfigureChild(start);
         return start;
     }
 
@@ -425,6 +442,7 @@ public sealed class CompositionFixture : IAsyncDisposable
         finally
         {
             await Storage.DisposeAsync();
+            identity?.Dispose();
             privateRoot.Dispose();
             disposed = true;
         }

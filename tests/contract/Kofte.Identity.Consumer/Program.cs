@@ -4,6 +4,7 @@ using Kofte.Identity.Consumer;
 using Kofte.TestSupport.Identity;
 
 if (args is ["--identity-fixture-worker"]) return await FixtureProgram.RunAsync();
+if (args is ["--modules-worker", "serve"]) return await BootstrapProgram.RunAsync(args);
 
 string? scenario = null;
 string? provider = null;

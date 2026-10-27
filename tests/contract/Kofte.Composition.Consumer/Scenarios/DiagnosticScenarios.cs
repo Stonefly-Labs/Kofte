@@ -8,6 +8,7 @@ using Kofte.Composition.TestModule;
 using Kofte.Host.Features.ModuleComposition;
 using Kofte.Infrastructure.Composition;
 using Kofte.TestSupport;
+using Kofte.TestSupport.Identity;
 using Npgsql;
 
 namespace Kofte.Composition.Consumer.Scenarios;
@@ -20,6 +21,7 @@ internal static class DiagnosticScenarios
         await using var fixture = await CompositionFixture.CreateAsync(provider, token);
         token = fixture.Storage.Token;
         await fixture.SeedUnrelatedNoStorageAsync(token);
+        await fixture.PrepareIdentityAsync(token);
         var password = fixture.Storage.Postgres is { } postgres
             ? new NpgsqlConnectionStringBuilder(postgres.ConnectionString).Password! : "private-sqlite-credential";
         var secret = fixture.Canary + "|" + password + "|" + fixture.Storage.DataRoot;
@@ -99,7 +101,7 @@ internal static class DiagnosticScenarios
             "composition_test_private_diagnostic_faults_changed_installation");
 
         var records = BootScenarios.HostRecords(capture.Stdout);
-        evidence.Require(records.Count > 0 && capture.Stderr.Length == 0 &&
+        evidence.Require(records.Count > 0 && IdentityDiagnosticOutput.IsSafeServingOutput(capture.Stderr) &&
             records.All(record => record.GetProperty("attempt").GetString() is { Length: 32 } &&
                 record.GetProperty("guidance").GetString() is { Length: > 0 }) &&
             records.Select(record => record.GetProperty("attempt").GetString()).Distinct().Count() >= 15,

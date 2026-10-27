@@ -4,6 +4,7 @@ using Kofte.Infrastructure.Storage;
 using Kofte.Infrastructure.Storage.Registry;
 using Kofte.Platform.Modules.Storage;
 using Kofte.TestSupport;
+using Kofte.TestSupport.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kofte.Composition.Consumer.Scenarios;
@@ -241,7 +242,7 @@ internal static class MigrationScenarios
     internal static void RequireExit(ScenarioEvidence evidence, CompositionProcess process, ProcessOutput result, int exit)
     {
         evidence.Require(result.ExitCode == exit && process.ExitVerified && process.DescendantExitsVerified &&
-            result.Stderr.Length == 0, "composition_test_command_exit_expected_" + exit + "_actual_" + result.ExitCode +
+            IdentityDiagnosticOutput.IsSafeServingOutput(result.Stderr), "composition_test_command_exit_expected_" + exit + "_actual_" + result.ExitCode +
                 "_" + ExitReason(result.Stdout));
     }
 

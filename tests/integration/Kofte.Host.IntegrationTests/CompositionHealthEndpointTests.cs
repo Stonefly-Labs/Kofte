@@ -7,6 +7,7 @@ using Kofte.Host.Features.ModuleComposition;
 using Kofte.Platform.Modules.Composition;
 using Kofte.Platform.Modules.Lifecycle;
 using Kofte.Platform.Modules.Manifest;
+using Kofte.TestSupport.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,8 +37,10 @@ public sealed class CompositionHealthEndpointTests
             UnixCreateMode = UnixStorePaths.FileMode
         }))
             await file.WriteAsync("""{"schemaVersion":"1","modules":[]}"""u8.ToArray(), token);
+        using var identity = await StartupFixture.PrepareIdentityAsync(root.Path, token);
         var before = await File.ReadAllBytesAsync(store.DatabasePath, token);
-        await using var host = await StartupFixture.StartAsync(root.Path, token, modulesFile: path);
+        await using var host = await StartupFixture.StartAsync(root.Path, token, modulesFile: path,
+            preparedIdentity: identity);
         var started = Stopwatch.GetTimestamp();
         await Task.Delay(TimeSpan.FromSeconds(121), token);
         using var ready = await host.Client.GetAsync("/health/ready", token);
@@ -46,7 +49,9 @@ public sealed class CompositionHealthEndpointTests
         var stopping = Stopwatch.GetTimestamp();
         await host.StopAsync();
         Assert.True(Stopwatch.GetElapsedTime(stopping) < TimeSpan.FromSeconds(15));
-        var records = (await host.SafeOutputAsync()).Split('\n', StringSplitOptions.RemoveEmptyEntries)
+        var output = await host.SafeOutputAsync();
+        Assert.True(IdentityDiagnosticOutput.IsSafeServingOutput(output.Stderr));
+        var records = output.Stdout.Split('\n', StringSplitOptions.RemoveEmptyEntries)
             .Select(line => JsonSerializer.Deserialize<JsonElement>(line)).ToArray();
         Assert.Contains(records, record => record.GetProperty("stage").GetString() == "published");
         Assert.Equal("cleanup", records[^1].GetProperty("stage").GetString());
