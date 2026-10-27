@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using Kofte.Host.Bootstrap;
+using Kofte.Host.Features.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi;
 
@@ -14,7 +15,8 @@ public static class BootstrapOpenApi
             options.OpenApiVersion = OpenApiSpecVersion.OpenApi3_1;
             options.AddOperationTransformer((operation, context, token) =>
             {
-                if (!context.Description.ActionDescriptor.EndpointMetadata.OfType<IAllowAnonymous>().Any())
+                if (!context.Description.ActionDescriptor.EndpointMetadata.OfType<IAllowAnonymous>().Any() &&
+                    !IdentityOpenApi.IsOperation(operation.OperationId))
                     throw new InvalidOperationException("bootstrap_openapi_access_invalid");
                 operation.Security = [];
                 return Task.CompletedTask;
@@ -25,7 +27,7 @@ public static class BootstrapOpenApi
                 {
                     Title = "Köfte Bootstrap API",
                     Version = "1.0.0",
-                    Description = "Local-only, non-sensitive bootstrap contract. No identity, domain operation or module/MCP interface."
+                    Description = "Bootstrap-v1 health and host identity-v1. No domain operation or module/MCP interface."
                 };
                 var config = context.ApplicationServices.GetRequiredService<BootstrapConfiguration>();
                 document.Servers = [new() { Url = config.BackendOrigin.GetLeftPart(UriPartial.Authority) }];
@@ -87,6 +89,7 @@ public static class BootstrapOpenApi
                     if (path.Operations is null) throw new InvalidOperationException("bootstrap_openapi_operation_missing");
                     foreach (var operation in path.Operations.Values)
                     {
+                        if (IdentityOpenApi.IsOperation(operation.OperationId)) continue;
                         if (operation.Responses is null) throw new InvalidOperationException("bootstrap_openapi_response_missing");
                         operation.Tags?.Clear();
                         var live = operation.OperationId switch
@@ -163,6 +166,8 @@ public static class BootstrapOpenApi
                         }
                     }
                 };
+                IdentityOpenApi.Configure(document,
+                    context.ApplicationServices.GetRequiredService<IdentityConfiguration>());
                 return Task.CompletedTask;
             });
         });

@@ -1595,3 +1595,194 @@ trusted actor projection and generated contracts. The owned bridge host is not
 those delivered routes, a module actor consumer, browser UI, full three-restart
 T038 evidence, enrollment, sign-out or identity recovery. Continue the same
 running stage and original draft PR, without accepting or advancing it.
+
+## T031/T032: registered backend login, self identity and trusted actor
+
+The original **005 / implement** stage continues on its original branch and
+draft PR #8. **T001–T032 are complete (32/100); 68 tasks remain unchecked.**
+This increment delivers backend endpoints, not the web adapters/UI or complete
+US1 journey. No later stage or feature acceptance is inferred.
+
+### Actual delivered behavior
+
+Both empty and composed hosts now register the same maintained native
+cookie/OIDC services and exact browser-context, POST login, GET callback and
+self-only `/me` endpoints. OIDC is registered only in configured OIDC mode;
+the callback has a real exact mapped endpoint so pre-authentication routing
+cannot reject it as unknown or broadly open unrelated paths. Only native
+post-protocol `OnTicketReceived` invokes the already tested one-owner-commit
+coordinator. Deliberate challenge/completion use 303, never an API challenge.
+Startup remains offline/read-only: no discovery or implicit preparation.
+
+Browser-context uses framework antiforgery plus a private protected random
+browser cookie, mode-specific names/purposes and a five-minute bounded
+continuity payload. Login requires exact Origin and a valid framework pair,
+accepts only the two form fields, rejects duplicates/unsafe returns and defaults
+an omitted return to `/identity`. Only `/` and `/identity` are accepted.
+Callbacks additionally require the independent browser digest in protected
+native state and the durable pending attempt; native correlation/nonce alone
+are insufficient. No raw binding/reference/provider evidence is persisted.
+After login, a newly fetched token is bound to the authenticated local identity;
+the prior anonymous token cannot authorize a new signed-in mutation.
+
+Shared bounded admission uses installation, browser/session and actual transport
+peer digests, never forwarded identity/peer headers. Native callback admission
+precedes protocol egress. Cookie input is bounded to sixteen admitted auth
+cookies, with duplicate admitted names refused; header/body/target bounds remain.
+Kestrel reserves HTTP framing outside the exact sixteen-KiB callback-target
+limit, so at-limit requests reach the boundary and one-over requests receive
+the safe 400. Identity responses/redirects restore exact no-store/no-cache/
+no-referrer headers at response start, including framework-generated responses.
+Storage/protection/provider failures remain safe 503 rather than anonymous
+success or raw provider output; invalid/replayed binding remains safe 401.
+
+Native authentication must be registered on the **root pipeline**, after the
+request/binding/budget middleware. An initial conditional branch caused the
+framework to automatically insert native authentication earlier, so the real
+callback bypassed the intended request-local budget seam and returned 500.
+Restoring explicit root registration fixed the ordering, without an internal
+framework flag or an authorization bypass. The cookie manager suppresses
+retrieval on health/OpenAPI and new-session publication paths, not POST login:
+login must authenticate an existing identity for its current CSRF token, while
+callback sign-in must not renew/reuse the old session reference.
+Health remains anonymous and does not consult the session store.
+
+Every successful cookie authentication has already verified fresh durable
+session/user/mode/epoch/designation. Only that private verified view populates
+the read-only request-scoped actor. `/me` requires that actor and returns exactly
+version, canonical local user ID, nullable safe display, mode and designation.
+Display JSON uses the explicit safe encoder. Fresh profile/designation changes
+appear without reissuing a cookie; revocation removes both API identity and
+actor on the next request, while corrupt protection returns 503.
+A designated administrator still receives 403 for an unrelated ungranted
+fixture operation. Fixture profile/designation seeding is **not enrollment
+ceremony/endpoint evidence**.
+
+### Shared generated contract and independent consumers
+
+Development OpenAPI now includes the configured mode's delivered identity
+operations and explicit self-cookie security alongside unchanged bootstrap-v1
+health. All documentation methods remain absent outside Development.
+The checked-in Development contract is captured from the actual owned runtime,
+normalizing only its unpredictable listener and equivalent empty root security.
+The original spec 001 contract remains untouched. `contract:check` now verifies
+every original operation/component and version before checking generated types;
+identity additions do not require replacing or weakening health definitions.
+Object equality is semantic, not JSON property insertion order.
+The native parity test independently checks original health definitions,
+required self fields and cookie security.
+
+Existing generation produces the shared `CurrentIdentityV1` type. Its separate
+runtime guard refuses missing/malformed required fields, zero/noncanonical IDs,
+invalid modes/booleans and unsafe/overlong Unicode display values. It admits
+additive future response fields without manufacturing defaults. Package changes
+are exports/test/typecheck wiring only; dependency versions and locks are unchanged.
+
+Actual capture used the existing `scripts/verify.py` ownership/build/runtime
+helpers, with SDK selection as in earlier sections:
+
+```python
+import json
+import os
+from pathlib import Path
+from urllib.request import urlopen
+import verify
+root = Path.cwd()
+report = verify.Report(root, 'identity-contract-capture', 'sqlite', 'targeted')
+runner = verify.Runner(root, report, dict(os.environ))
+try:
+    with verify.runtime(runner, 'sqlite', False) as session:
+        with urlopen(session.environment['KOFTE_HOST_URL'] + '/openapi/v1.json', timeout=6) as response:
+            document = json.load(response)
+        document['servers'] = [{'url': 'http://127.0.0.1:5080'}]
+        document.setdefault('security', [])
+        destination = root / 'packages/bootstrap-contract/openapi.json'
+        destination.write_text(json.dumps(document, indent=2, ensure_ascii=False) + '\n')
+        print('Captured actual Development health/identity OpenAPI; only owned listener normalized.')
+    report.finish(True)
+except BaseException:
+    report.finish(False)
+    raise
+```
+
+Executed through `PYTHONPATH=scripts python3` with that exact standard-input
+body. All twelve named build/preparation/owned-host/web/start/stop/output-scan
+steps passed; no helper remained running or private runtime root was retained.
+The actual host and web builds passed, but this capture is not an identity UI test.
+
+### Preserved red/failed results and corrections
+
+The endpoint contract initially failed compilation because product-fixture APIs
+did not exist. Fixture extraction initially misplaced a catch block; normal
+syntax/format correction restored a zero-warning build. The first actual
+twelve endpoint cases passed four and failed eight: framework antiforgery changed
+the cache header, and conditional native middleware ran before the explicit
+boundary. Exact response-start headers and root authentication corrected both;
+expanded sixteen endpoint cases passed, then the combined gate below included
+the two exact target-limit cases as well.
+
+The current-user test first returned actual 404 instead of required 401 before
+the endpoint existed. The initial typed route hit ASP0016/request-delegate
+inference; a real read-only actor dependency made it a typed route handler
+without suppression. OpenAPI collection typing was corrected normally.
+An expanded twenty-case login/current-user run passed eighteen and failed two
+because default HTTP JSON did not HTML-escape display text. An explicit safe
+current-user encoder fixed the behavior; the four current-user cases then passed.
+
+The shared TypeScript guard initially failed to import its absent implementation.
+Initial contract checking after real capture also failed because native property
+insertion order differed, despite Python structural comparison showing every
+old operation was identical. Semantic deep equality corrected the checker;
+every old operation/component is still required verbatim in meaning.
+Generated types, consumer tests, lint and type checking then passed.
+
+### Exact checkpoint verification
+
+All .NET commands use the existing isolated SDK 10.0.402/runtime 10.0.13.
+Both-provider commands set `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true`.
+No install or restore occurred.
+
+| Exact executed command | Result |
+| --- | --- |
+| `dotnet test tests/contract/Kofte.Platform.ContractTests/Kofte.Platform.ContractTests.csproj -c Release --no-restore --filter FullyQualifiedName~LoginEndpointContractTests --nologo` | Initial missing-fixture compile red; initial **4 passed / 8 failed**, followed by corrected expanded **16 passed**. |
+| `dotnet test tests/contract/Kofte.Platform.ContractTests/Kofte.Platform.ContractTests.csproj -c Release --no-restore --filter FullyQualifiedName~SqliteCurrentIdentityContractTests --nologo` | Initial actual 404/401 assertion red before endpoint implementation. |
+| `dotnet test tests/contract/Kofte.Platform.ContractTests/Kofte.Platform.ContractTests.csproj -c Release --no-restore --filter 'FullyQualifiedName~LoginCommitContractTests\|FullyQualifiedName~SessionPersistenceContractTests\|FullyQualifiedName~LoginEndpointContractTests\|FullyQualifiedName~CurrentIdentityContractTests' --nologo` | **52 passed**, both providers, zero failures/skips, 9m23s. Includes eighteen endpoint, four current-identity and thirty earlier bridge/session cases. |
+| `dotnet test tests/contract/Kofte.Platform.ContractTests/Kofte.Platform.ContractTests.csproj -c Release --no-restore --filter FullyQualifiedName~CurrentIdentityContractTests --nologo` | **Final 4 passed**, after adding the actual designated-but-ungranted 403 assertion; earlier 52-case execution is not relabeled as including that last assertion. |
+| `dotnet test tests/integration/Kofte.Host.IntegrationTests/Kofte.Host.IntegrationTests.csproj -c Release --no-restore --filter 'FullyQualifiedName~OpenApiTests\|FullyQualifiedName~IdentityPolicyTests\|FullyQualifiedName~IdentityStartupTests\|FullyQualifiedName~OidcIssuerTests\|FullyQualifiedName~ActualNativeProtectedStateRetainsOnlyTheLocalAttemptAndBrowserBinding\|FullyQualifiedName~NativeHandlerValidatesRealCodePkceAndNonceBeforeTheLocalTicketSeam' --nologo` | **21 passed**, zero failures/skips, actual empty/composed startup on both providers and original issuer/native state regressions. |
+| `dotnet build Kofte.slnx --no-restore -c Release -warnaserror --nologo` | Final passed, zero warnings/errors. |
+| `dotnet format Kofte.slnx --verify-no-changes --no-restore --verbosity quiet` | Final passed after existing targeted format correction. |
+| `npm exec --workspace packages/bootstrap-contract -- vitest run src/identity.test.ts` | Initial missing-implementation import red. |
+| `npm run generate --workspace packages/bootstrap-contract` | Passed from captured actual OpenAPI. |
+| `npm run contract:check` | Passed after semantic equality correction; all accepted bootstrap operations/components and generated types match. |
+| `npm run test:unit --workspace packages/bootstrap-contract` | **4 passed** in two files, including original status tests. |
+| `npm run lint --workspace packages/bootstrap-contract` | Passed. |
+| `npm run typecheck --workspace packages/bootstrap-contract` | Passed. |
+| `npm run lint --workspace apps/web` | Passed. |
+| `npm run typecheck --workspace apps/web` | Passed. |
+| `npm run format:check` | Passed. |
+
+### CI limitation and remaining scope
+
+The new checkpoint also passed `python3 scripts/check_repository.py`,
+`python3 -m unittest discover -s scripts/tests -v` (**121 passed**) and
+`git diff --check`. These were executed after its source/docs changes, not
+reused from the previous checkpoint.
+
+Published session head `ad21b2b` repository checks passed, but product run
+`40455783090` finished **failed**: eight product jobs passed; contract and
+failure-propagation failed. Completed job logs were obtained directly from the
+GitHub job-logs API while recovery was still running, without printing raw
+terminal escapes. `platform-public-contracts` passed in approximately five
+minutes before `composition-public-contracts` reached its unchanged fifteen-minute
+`command_timeout`. The PostgreSQL failure-propagation baseline reached its
+unchanged fifteen-minute `failure_exercise_timeout`, before mutations.
+These are not passing new-head checks; underlying causes are unestablished.
+Earlier head `591d025` remains an independently observed fully green run,
+not a diagnosis or waiver. A bounded current-source execution of the exact
+composition selector is tracked separately below when it finishes.
+
+Next work is T033–T040: fixed same-origin adapters, accessible browser identity,
+delivered protocol/deadline/refusal evidence, actual three-restart/API/consumer
+and both-provider browser comparison. Enrollment, sign-out, development sessions,
+identity recovery and final complete gates remain later tasks. No complete
+US1 story, browser identity journey, feature acceptance or merge is claimed.

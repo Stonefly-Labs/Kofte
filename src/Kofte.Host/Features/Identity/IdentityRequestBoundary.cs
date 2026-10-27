@@ -31,7 +31,15 @@ public sealed class IdentityRequestBoundary(RequestDelegate next, IdentityConfig
         var path = request.Path.Value ?? "";
         var endpoint = context.GetEndpoint();
         var health = path is "/health/live" or "/health/ready" or "/openapi/v1.json";
-        if (!health) IdentityProblem.Headers(context.Response);
+        if (!health)
+        {
+            IdentityProblem.Headers(context.Response);
+            context.Response.OnStarting(() =>
+            {
+                IdentityProblem.Headers(context.Response);
+                return Task.CompletedTask;
+            });
+        }
         Rules.TryGetValue(path, out var rule);
         if (endpoint is null || endpoint is RouteEndpoint route &&
             Rules.ContainsKey(route.RoutePattern.RawText ?? "") && rule is null ||
@@ -79,10 +87,29 @@ public sealed class IdentityRequestBoundary(RequestDelegate next, IdentityConfig
             await IdentityProblem.WriteAsync(context, IdentityFailure.RequestInvalid);
             return;
         }
+        if (!health)
+        {
+            var admittedCookies = request.Headers.Cookie.SelectMany(header => (header ?? "").Split(';'))
+                .Select(cookie => cookie.Trim().Split('=', 2)[0])
+                .Where(name => name is "__Host-kofte-session" or "__Host-kofte-antiforgery" or
+                    "__Host-kofte-browser" or "kofte-dev-session" or "kofte-dev-antiforgery" or
+                    "kofte-dev-browser" || name.StartsWith("__Host-kofte-nonce.", StringComparison.Ordinal) ||
+                    name.StartsWith("__Host-kofte-correlation.", StringComparison.Ordinal)).ToArray();
+            if (admittedCookies.Length > 16 ||
+                admittedCookies.Distinct(StringComparer.Ordinal).Count() != admittedCookies.Length)
+            {
+                await IdentityProblem.WriteAsync(context, IdentityFailure.RequestInvalid);
+                return;
+            }
+        }
         if (context.Features.Get<IHttpMaxRequestBodySizeFeature>() is { IsReadOnly: false } size)
             size.MaxRequestBodySize = 8192;
         try { await next(context); }
         catch (BadHttpRequestException error) when (!context.Response.HasStarted && error.StatusCode is 400 or 413)
+        {
+            await IdentityProblem.WriteAsync(context, IdentityFailure.RequestInvalid);
+        }
+        catch (InvalidDataException) when (!context.Response.HasStarted)
         {
             await IdentityProblem.WriteAsync(context, IdentityFailure.RequestInvalid);
         }

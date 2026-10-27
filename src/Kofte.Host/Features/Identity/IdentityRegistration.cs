@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 namespace Kofte.Host.Features.Identity;
 
@@ -14,6 +15,9 @@ public static class IdentityRegistration
         IdentityConfiguration configuration)
     {
         services.AddSingleton(configuration);
+        // Keep HTTP method/version framing outside the 16 KiB callback-target budget.
+        services.Configure<KestrelServerOptions>(options =>
+            options.Limits.MaxRequestLineSize = 16_384 + 32);
         services.TryAddSingleton(new IdentityDiagnosticContext("unknown",
             Kofte.Infrastructure.Identity.IdentityDiagnostics.Write));
         services.AddScoped<CurrentActor>();
@@ -51,7 +55,14 @@ public static class IdentityRegistration
         app.UseRouting();
         app.UseMiddleware<IdentityRequestDiagnostics>();
         app.UseMiddleware<IdentityRequestBoundary>();
+        if (app.Services.GetService<Login.IdentityBrowserBinding>() is not null)
+            app.UseMiddleware<Login.IdentityProtocolAdmission>();
         app.UseAuthentication();
+        app.Use(async (context, next) =>
+        {
+            CurrentUser.CurrentUserEndpoints.ProjectActor(context);
+            await next(context);
+        });
         app.UseAuthorization();
         app.Use(async (context, next) =>
         {
@@ -59,6 +70,12 @@ public static class IdentityRegistration
                 !await IdentityRequestBoundary.ValidateMutationAsync(context)) return;
             await next(context);
         });
+    }
+
+    public static void MapIdentityEndpoints(this WebApplication app)
+    {
+        Login.LoginEndpoints.Map(app);
+        CurrentUser.CurrentUserEndpoints.Map(app);
     }
 
     internal sealed class CurrentActor : ICurrentActorV1

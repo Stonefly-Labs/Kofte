@@ -681,13 +681,19 @@ empty 400; unsupported methods are empty 405 and unknown/case-mismatched paths
 are empty 404.
 
 `GET /openapi/v1.json` is generated from native endpoint/type metadata with the
-strict bootstrap schema, anonymous applicability and no-store response contracts.
+strict bootstrap schema plus host identity-v1, explicit public/self-cookie
+applicability and no-store response contracts.
 It declares API version `1.0.0` and OpenAPI `3.1.1`; it is not a separately served
-static copy. All documentation methods are absent outside Development. Generation
+static copy. All documentation methods are absent outside Development.
+The configured mode determines which protocol routes are present. The
+generated shared contract now includes browser-context and self-only `/me`;
+OIDC-mode hosts additionally describe their login/callback protocol routes.
+Regeneration preserves every accepted bootstrap operation/component, rather
+than replacing spec 001's immutable baseline. Generation
 parity checks normalize only the actual owned listener and the semantically
 equivalent omitted/empty root security list, not paths, schemas or responses.
 
-The browser uses only `/backend/health/ready`. This server-only fixed adapter
+The existing status browser uses only `/backend/health/ready`. This server-only fixed adapter
 forwards no caller credentials/headers and validates status, content type and
 payload before returning a minimal response. Its total deadline is five seconds;
 invalid/failed upstream data becomes an explicit correlated unavailable 503.

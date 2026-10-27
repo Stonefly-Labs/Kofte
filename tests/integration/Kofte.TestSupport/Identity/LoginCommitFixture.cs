@@ -12,6 +12,7 @@ using Kofte.Infrastructure.Identity;
 using Kofte.Infrastructure.Storage;
 using Kofte.Infrastructure.Storage.Postgres;
 using Kofte.Platform.Modules.Storage;
+using Kofte.Platform.Identity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -78,14 +79,16 @@ public sealed class LoginCommitFixture : IAsyncDisposable
     private AuthenticationTicket? lastTicket;
     private bool reusedRefused;
     private string? capacityOriginal;
+    private bool productRoutes;
+    private string? productCallback;
     private static readonly string Browser = new('b', 64);
 
     public string Issuer => issuer.Issuer.AbsoluteUri;
 
     public static async Task<LoginCommitFixture> CreateAsync(string provider, CancellationToken token,
-        TimeProvider? localClock = null)
+        TimeProvider? localClock = null, bool productRoutes = false)
     {
-        var fixture = new LoginCommitFixture { clock = localClock ?? TimeProvider.System };
+        var fixture = new LoginCommitFixture { clock = localClock ?? TimeProvider.System, productRoutes = productRoutes };
         try
         {
             fixture.scope = await StorageProviderScope.CreateAsync(provider, token);
@@ -109,6 +112,78 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         catch { await fixture.DisposeAsync(); throw; }
     }
 
+    public static Task<LoginCommitFixture> CreateProductAsync(string provider, CancellationToken token) =>
+            CreateAsync(provider, token, productRoutes: true);
+
+    public int ProductProviderRequests => issuer.Observations.Count;
+    public string? ProductFailure { get; private set; }
+
+    public async Task<HttpResponseMessage> SendProductAsync(HttpRequestMessage request, CancellationToken token,
+        bool includeCookies = true)
+    {
+        var origin = new Uri(configuration.PublicOrigin, request.RequestUri!);
+        if (includeCookies)
+        {
+            var cookie = cookies.GetCookieHeader(origin);
+            if (cookie.Length != 0) request.Headers.Add("Cookie", cookie);
+        }
+        var response = await client.SendAsync(request, token);
+        if (response.Headers.TryGetValues("Set-Cookie", out var values))
+            foreach (var value in values) cookies.SetCookies(origin, value);
+        return response;
+    }
+
+    public async Task<string> ProductContextAsync(CancellationToken token)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/api/identity/v1/browser-context");
+        using var response = await SendProductAsync(request, token);
+        if ((int)response.StatusCode != 200)
+            throw new InvalidOperationException("identity_fixture_browser_context_failed");
+        using var body = JsonDocument.Parse(await response.Content.ReadAsByteArrayAsync(token));
+        return body.RootElement.GetProperty("csrfToken").GetString()!;
+    }
+
+    public HttpRequestMessage ProductLoginRequest(string? returnPath, string csrf, bool origin = true)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, "/auth/login")
+        {
+            Content = new FormUrlEncodedContent(returnPath is null ? [] :
+                new[] { new KeyValuePair<string, string>("returnPath", returnPath) })
+        };
+        request.Headers.Add("X-Kofte-CSRF", csrf);
+        if (origin) request.Headers.Add("Origin", configuration.PublicOrigin.OriginalString);
+        return request;
+    }
+
+    public async Task<HttpResponseMessage> CompleteProductAsync(HttpResponseMessage start, CancellationToken token)
+    {
+        if ((int)start.StatusCode != 303 || start.Headers.Location is null)
+            throw new InvalidOperationException("identity_fixture_product_challenge_failed");
+        using var authorization = await providerClient.GetAsync(start.Headers.Location, token);
+        if ((int)authorization.StatusCode != 302 || authorization.Headers.Location is null)
+            throw new InvalidOperationException("identity_fixture_product_authorization_failed");
+        productCallback = authorization.Headers.Location.PathAndQuery;
+        using var request = new HttpRequestMessage(HttpMethod.Get, productCallback);
+        return await SendProductAsync(request, token);
+    }
+
+    public async Task<HttpResponseMessage> ReplayProductCallbackAsync(CancellationToken token)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, productCallback ??
+            throw new InvalidOperationException("identity_fixture_callback_missing"));
+        return await SendProductAsync(request, token);
+    }
+
+    public async Task<HttpResponseMessage> ProductCallbackWithoutBrowserBindingAsync(HttpResponseMessage start,
+        CancellationToken token)
+    {
+        using var authorization = await providerClient.GetAsync(start.Headers.Location, token);
+        using var request = new HttpRequestMessage(HttpMethod.Get, authorization.Headers.Location!.PathAndQuery);
+        request.Headers.Add("Cookie", string.Join("; ", cookies.GetCookies(configuration.PublicOrigin)
+            .Cast<Cookie>().Where(cookie => cookie.Name != "__Host-kofte-browser")
+            .Select(cookie => cookie.Name + "=" + cookie.Value)));
+        return await SendProductAsync(request, token, includeCookies: false);
+    }
     private async Task OpenOwnerAsync(CancellationToken token)
     {
         using var budget = new OperationBudget(OperationBudget.Register, token);
@@ -173,46 +248,56 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         builder.Services.AddSingleton(services => new OidcBackchannel(configuration.Provider!,
             services.GetRequiredService<IHttpContextAccessor>(), workerTrust is { } authority
                 ? OidcIssuer.CreateSocketsHandler(authority) : issuer.CreateSocketsHandler()));
-        builder.Services.AddAuthentication().AddCookie(OidcConfiguration.SessionScheme, _ => { })
+        if (productRoutes)
+        {
+            builder.Services.AddIdentityBoundary(configuration);
+            IdentityLoginRegistration.Add(builder.Services, configuration);
+            builder.Services.AddSingleton(services => new OidcBackchannel(configuration.Provider!,
+                services.GetRequiredService<IHttpContextAccessor>(), issuer.CreateSocketsHandler()));
+        }
+        else
+        {
+            builder.Services.AddAuthentication().AddCookie(OidcConfiguration.SessionScheme, _ => { })
             .AddOpenIdConnect(OidcConfiguration.ProviderScheme, _ => { });
-        builder.Services.AddOptions<CookieAuthenticationOptions>(OidcConfiguration.SessionScheme)
-            .Configure<IdentityTicketStore>((options, tickets) =>
-            {
-                options.SessionStore = tickets;
-                options.Cookie.Name = "__Host-kofte-session";
-                options.Cookie.Path = "/";
-                options.Cookie.HttpOnly = true;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.Cookie.SameSite = SameSiteMode.Lax;
-                options.SlidingExpiration = false;
-                options.TimeProvider = clock;
-                options.CookieManager = new FaultCookies(this);
-            });
-        builder.Services.AddOptions<OpenIdConnectOptions>(OidcConfiguration.ProviderScheme)
-            .Configure<OidcBackchannel>((options, backchannel) =>
-            {
-                OidcConfiguration.Apply(options, configuration.Provider!, configuration.PublicOrigin, backchannel);
-                options.Events.OnTicketReceived = async context =>
+            builder.Services.AddOptions<CookieAuthenticationOptions>(OidcConfiguration.SessionScheme)
+                .Configure<IdentityTicketStore>((options, tickets) =>
                 {
-                    context.HandleResponse();
-                    using var budget = new OperationBudget(TimeSpan.FromSeconds(4), context.HttpContext.RequestAborted);
-                    var result = await context.HttpContext.RequestServices.GetRequiredService<ValidatedLogin>()
-                        .CompleteOidcAsync(context.HttpContext,
-                            context.Principal ?? throw new InvalidOperationException("identity_fixture_principal_missing"),
-                            context.Properties, Browser, budget);
-                    lastTicket = result.Ticket;
-                    reusedRefused = await RefusesAsync(() => context.HttpContext.RequestServices
-                        .GetRequiredService<IdentityTicketStore>().StoreAsync(result.Ticket, context.HttpContext, token));
-                    context.Response.StatusCode = 303;
-                    context.Response.Headers.Location = result.ReturnPath;
-                };
-                options.Events.OnRemoteFailure = context =>
+                    options.SessionStore = tickets;
+                    options.Cookie.Name = "__Host-kofte-session";
+                    options.Cookie.Path = "/";
+                    options.Cookie.HttpOnly = true;
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                    options.Cookie.SameSite = SameSiteMode.Lax;
+                    options.SlidingExpiration = false;
+                    options.TimeProvider = clock;
+                    options.CookieManager = new FaultCookies(this);
+                });
+            builder.Services.AddOptions<OpenIdConnectOptions>(OidcConfiguration.ProviderScheme)
+                .Configure<OidcBackchannel>((options, backchannel) =>
                 {
-                    context.HandleResponse();
-                    context.Response.StatusCode = 401;
-                    return Task.CompletedTask;
-                };
-            });
+                    OidcConfiguration.Apply(options, configuration.Provider!, configuration.PublicOrigin, backchannel);
+                    options.Events.OnTicketReceived = async context =>
+                    {
+                        context.HandleResponse();
+                        using var budget = new OperationBudget(TimeSpan.FromSeconds(4), context.HttpContext.RequestAborted);
+                        var result = await context.HttpContext.RequestServices.GetRequiredService<ValidatedLogin>()
+                            .CompleteOidcAsync(context.HttpContext,
+                                context.Principal ?? throw new InvalidOperationException("identity_fixture_principal_missing"),
+                                context.Properties, Browser, budget);
+                        lastTicket = result.Ticket;
+                        reusedRefused = await RefusesAsync(() => context.HttpContext.RequestServices
+                            .GetRequiredService<IdentityTicketStore>().StoreAsync(result.Ticket, context.HttpContext, token));
+                        context.Response.StatusCode = 303;
+                        context.Response.Headers.Location = result.ReturnPath;
+                    };
+                    options.Events.OnRemoteFailure = context =>
+                    {
+                        context.HandleResponse();
+                        context.Response.StatusCode = 401;
+                        return Task.CompletedTask;
+                    };
+                });
+        }
         application = builder.Build();
         application.Use(async (context, next) =>
         {
@@ -224,11 +309,33 @@ public sealed class LoginCommitFixture : IAsyncDisposable
             catch (IdentityAdmissionException) { context.Response.StatusCode = 429; }
             catch (StorageException) { context.Response.StatusCode = 503; }
             catch (CryptographicException) { context.Response.StatusCode = 503; }
+            catch (Exception error) when (productRoutes)
+            {
+                ProductFailure = error.GetType().Name + ":" + string.Join(",", new StackTrace(error).GetFrames()
+                    .Take(8).Select(frame => frame.GetMethod()?.DeclaringType?.Name + "." + frame.GetMethod()?.Name));
+                throw;
+            }
         });
-        application.UseAuthentication();
-        application.MapGet("/start", ChallengeAsync);
-        application.MapGet("/probe", ProbeSessionAsync);
-        application.MapGet("/fixture-live", () => Results.NoContent());
+        if (productRoutes)
+        {
+            application.UseIdentityBoundary();
+            application.MapIdentityEndpoints();
+            application.MapGet("/fixture-actor", (ICurrentActorV1 current) =>
+                Results.Json(new
+                {
+                    userId = current.Actor!.UserId,
+                    identityMode = current.Actor.IdentityMode == IdentityMode.Oidc ? "oidc" : "development",
+                    isInitialAdministrator = current.Actor.IsInitialAdministrator
+                })).RequireAuthorization(IdentityRegistration.CurrentIdentityPolicy);
+            application.MapGet("/fixture-ungranted", () => Results.NoContent());
+        }
+        else
+        {
+            application.UseAuthentication();
+            application.MapGet("/start", ChallengeAsync);
+            application.MapGet("/probe", ProbeSessionAsync);
+            application.MapGet("/fixture-live", () => Results.NoContent());
+        }
         observer = new(this);
         await application.StartAsync(token);
         client = new(new HttpClientHandler { AllowAutoRedirect = false, UseCookies = false })
@@ -299,6 +406,23 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         await database.QueryAsync($"""
             UPDATE {database.Prefix}__kofte_sessions SET protected_ticket=@ticket WHERE reference_digest=@digest
             """, ("ticket", corrupt), ("digest", session.Digest));
+        await database.CommitAsync();
+    }
+
+    public async Task SeedCurrentProfileAndDesignationAsync(CancellationToken token)
+    {
+        var user = (await SnapshotAsync(token)).Users.Single();
+        using var budget = new OperationBudget(TimeSpan.FromSeconds(1), token);
+        await using var database = await DeadlineStore.OpenAsync(installation, budget);
+        await database.BeginWriteAsync();
+        var now = clock.GetUtcNow().UtcDateTime;
+        await database.QueryAsync($"""
+            UPDATE {database.Prefix}__kofte_users SET display_name=@display,updated_at_utc=@now WHERE user_id=@user
+            """, ("display", "<changed-profile>"), ("now", now), ("user", user.Id));
+        await database.QueryAsync($"""
+            UPDATE {database.Prefix}__kofte_bootstrap SET state='consumed',generation=1,initial_user_id=@user,
+            consumed_at_utc=@now,consumed_generation=1 WHERE singleton_key=1 AND state='disabled'
+            """, ("user", user.Id), ("now", now));
         await database.CommitAsync();
     }
 

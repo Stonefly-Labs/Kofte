@@ -14,7 +14,7 @@ The [technology-stack exploration](kofte-technology-stack-architecture.md) is hi
 
 ## Working in the repository
 
-**Current Spec Kit checkpoint: 005 / implement in progress, T001–T030 complete (30/100).**
+**Current Spec Kit checkpoint: 005 / implement in progress, T001–T032 complete (32/100).**
 The [implementation evidence](../specs/005-authentication-bootstrap/implementation.md)
 records reviewed OIDC adoption (403 npm / 87 NuGet), independent HTTPS/process
 fixtures and corpora, strict configuration/public actor-v1, and both-provider
@@ -37,9 +37,13 @@ The atomic coordinator/session bridge now passes thirty actual native-handler
 contracts on both stores, including real callback-owner kills and publication
 failure, session lifetimes/revocation and both capacity limits. Ninety-two
 dependent storage and four original issuer/native-handler regressions pass.
-This is an owned test host, not delivered product routes or actor projection.
-There are 70 unchecked tasks; no working product login,
-session/enrollment UI or identity recovery is claimed.
+T031/T032 now register product browser-context, protected login/callback and
+self-only `/me` in both hosts, with fresh actor projection and generated types.
+The combined native/session/route/API gate passes 52 both-provider cases;
+21 startup/policy/OpenAPI/original-issuer regressions pass. Accepted bootstrap
+operations/components are unchanged. Web adapters/UI and the remaining
+stories are not delivered (68 unchecked tasks). The prior session head's
+composition and PostgreSQL baseline CI timeouts remain failed, not waived.
 T018–T020 test shared route/default-deny/CSRF components, private diagnostics
 and actual operator interruption. T021 installs those boundaries in both serving paths with explicit,
 read-only prepared-storage/trust/key checks and no discovery prerequisite.
@@ -60,7 +64,7 @@ passes with concrete coverage of all 29 requirements/outcomes and 22 scenarios,
 100 mapped unchecked tasks, 242 acyclic dependency edges and no actionable or
 constitutional finding at the historical analysis checkpoint.
 Specification, planning artifacts, approved ADR and both reviewed checklists
-remain unchanged; the current implementation markers are T001–T030.
+remain unchanged; the current implementation markers are T001–T032.
 The historical design checkpoint did not introduce runtime proof or acceptance;
 no intermediate merge is requested.
 See the [current workflow record](development/spec-workflow.md#invocation-and-current-progress).

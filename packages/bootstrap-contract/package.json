@@ -4,14 +4,15 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/status.ts"
+    ".": "./src/status.ts",
+    "./identity": "./src/identity.ts"
   },
   "scripts": {
     "generate": "openapi-typescript openapi.json -o src/generated.ts && prettier --write src/generated.ts",
     "lint": "eslint src",
-    "typecheck": "node ../../node_modules/typescript/bin/tsc --strict --noEmit --skipLibCheck --target ES2022 --moduleResolution bundler --module esnext src/status.ts",
+    "typecheck": "node ../../node_modules/typescript/bin/tsc --strict --noEmit --skipLibCheck --target ES2022 --moduleResolution bundler --module esnext src/status.ts src/identity.ts",
     "build": "npm run typecheck",
-    "test:unit": "vitest run src/status.test.ts"
+    "test:unit": "vitest run src/status.test.ts src/identity.test.ts"
   },
   "devDependencies": {
     "openapi-typescript": "7.13.0",

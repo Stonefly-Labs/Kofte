@@ -34,7 +34,8 @@ internal sealed class IdentityRequestDiagnostics(RequestDelegate next, IdentityC
         try { await next(context); }
         catch (Exception error) when (!context.Response.HasStarted && error is StorageException or
             IdentityStateException or IdentityEventCapacityException or SqliteException or NpgsqlException or
-            IOException or UnauthorizedAccessException or OperationCanceledException or InvalidOperationException)
+            IOException or UnauthorizedAccessException or OperationCanceledException or InvalidOperationException or
+            System.Security.Cryptography.CryptographicException)
         {
             observation.Fail(error);
             await IdentityProblem.WriteAsync(context, observation.Durability == StorageDurability.Uncertain

@@ -112,6 +112,7 @@ internal static class CompositionWorker
                         _ => ValueTask.FromResult(builder.Build()), lifetime.Token);
                     app.MapBootstrapHealth();
                     app.UseIdentityBoundary();
+                    app.MapIdentityEndpoints();
                     if (app.Environment.IsDevelopment())
                         app.MapOpenApi("/openapi/v1.json").WithName("bootstrapOpenApi").AllowAnonymous();
                     await coordinator.InitializeAsync(app.Services, lifetime.Token);

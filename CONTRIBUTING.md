@@ -329,7 +329,7 @@ That checkpoint required human merge before 005. PR #7 is now human-merged;
 004's accepted ledger and all five acceptance artifact hashes were verified
 on updated main before beginning the new feature.
 
-**005 / implement is in progress, with T001–T030 complete (30/100)**, on
+**005 / implement is in progress, with T001–T032 complete (32/100)**, on
 `feature/005-authentication-bootstrap` and the same draft PR #8.
 The [implementation record](specs/005-authentication-bootstrap/implementation.md)
 preserves the provenance investigation and records actual reviewed OIDC
@@ -347,7 +347,7 @@ Transactional evidence, persistent keys and stopped preparation/reconciliation/
 revocation now have focused real-provider/key tests. Actual PostgreSQL restore
 and both-provider format regressions pass 49 cases after a narrowly diagnosed
 constraint-deparsing correction.
-Seventy tasks remain unchecked. Exact user mapping is now tested on both
+Sixty-eight tasks remain unchecked. Exact user mapping is now tested on both
 stores, including capacity, rollback, profile/key distinctions, three fresh
 owner processes and preserved consumed designation across explicit trust/mode
 changes. No OIDC session is established by those storage tests.
@@ -369,7 +369,15 @@ fresh references, expiry/revocation and per-user/global capacity.
 Dependent storage and original issuer/native regressions pass 92 and four cases.
 Product registration must use the dedicated session cookie manager and disable
 native sliding renewal; durable activity is renewed only by fresh store lookup.
-Actual login routes and actor projection remain T031/T032, not delivered here.
+T031/T032 now register product browser-context, protected login/callback and
+self-only `/me` in both hosts, with fresh scoped actor projection and generated
+identity types. The combined both-provider native/session/endpoint gate passes
+52 cases; 21 startup/policy/OpenAPI/original-issuer regressions also pass.
+The current-user tests additionally verify escaped fresh profiles, designation,
+revocation, unavailable protection and continued denial of ungranted actions.
+Web adapters/UI and the remaining stories are not delivered. The preceding
+session-head CI's composition and PostgreSQL baseline timeouts remain failed
+with unknown causes, not waived or replaced by local passes.
 Shared T018–T020 endpoint/CSRF/default-deny
 and sanitized diagnostic components now have executable component/operator
 tests, including real before/after-commit worker termination. T021
@@ -379,7 +387,7 @@ prepared-storage/trust/key verification. Owned serving fixtures prepare identity
 explicitly before inventory baselines; recovery-v1 fixtures remain intentional.
 Foundation units, both-provider storage/startup and stop/privacy recipes pass,
 as do actual empty/composed browser warm starts. Preserve recorded failures
-and the controlled deadline-test profile. Login/sessions, enrollment, web and
+and the controlled deadline-test profile. The complete browser login journey, enrollment, web and
 recovery are not delivered. Preserve the same stage/branch/draft PR.
 
 The completed specify-through-analyze history below remains applicable on

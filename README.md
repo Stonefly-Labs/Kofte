@@ -35,9 +35,9 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 | 🔐 Explicit boundaries     | Team-scoped authorization, audited actions and module-owned storage                                   |
 
 > [!IMPORTANT]
-> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md) and [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) is now human-merged. Its accepted ledger and evidence were verified on updated main before 005 began. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) retains prior failures and unknown causes; the historical failed local gate remains failed, not waived by acceptance or merge. Spec 005 now has [draft authentication/bootstrap requirements](specs/005-authentication-bootstrap/spec.md), not working login. Nothing here claims production readiness or MVP completion.
+> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md) and [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) is now human-merged. Its accepted ledger and evidence were verified on updated main before 005 began. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) retains prior failures and unknown causes; the historical failed local gate remains failed, not waived by acceptance or merge. Spec 005 now has [authentication/bootstrap requirements](specs/005-authentication-bootstrap/spec.md) and backend login implementation in progress, not the complete browser journey. Nothing here claims production readiness or MVP completion.
 
-**Current stage: 005 / implement in progress; T001–T030 complete (30/100).** The
+**Current stage: 005 / implement in progress; T001–T032 complete (32/100).** The
 [implementation checkpoint](specs/005-authentication-bootstrap/implementation.md)
 records actual OIDC dependency adoption and locked inventory (403 npm / 87
 NuGet identities), an independent HTTPS issuer, owned interruption fixtures,
@@ -89,9 +89,17 @@ native-handler/session contracts pass, including actual callback-owner kills,
 publication failure, fresh-login references, exact idle/absolute expiry,
 revocation and both session limits. Ninety-two dependent storage regressions
 and four original issuer/native-handler regressions pass.
-These components run in an owned test host, **not product login routes**.
-Actual route/actor registration, enrollment, UI and identity recovery remain
-unbuilt (70 unchecked tasks).
+The product browser-context, protected login/callback and self-only `/me`
+routes are now registered in both hosts. Actual maintained handlers verify
+CSRF/browser continuity, exact returns, replay refusal and refreshed tokens.
+Fresh durable profile/designation populate the API and read-only actor; even
+initial designation does not grant an unrelated action. The combined native
+commit/session/route/actor gate passes 52 tests on both stores. Generated
+identity types preserve all accepted bootstrap operations/components.
+Web adapters/UI, enrollment, sign-out, development sessions and identity recovery
+remain unbuilt (68 unchecked tasks); no complete browser journey is claimed.
+The preceding session checkpoint's CI still failed composition and PostgreSQL
+failure-propagation baseline timeouts; causes are not established or waived.
 Keep the same implement stage and draft PR #8; no merge or acceptance yet.
 
 The following preserves the completed design-stage context. The

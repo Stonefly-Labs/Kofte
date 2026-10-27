@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement in progress; T001–T030 complete (30/100)**, on
+**Current checkpoint: 005 / implement in progress; T001–T032 complete (32/100)**, on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 [implementation record](../../specs/005-authentication-bootstrap/implementation.md)
@@ -32,7 +32,7 @@ The PostgreSQL recovery failure is reproduced and corrected by server-deparsed
 constraint definitions that preserve semantics across actual dump/restore;
 49 recovery/physical-format cases pass, retaining tamper refusal.
 These are foundations, not functioning login, enrollment, UI or recovery.
-Seventy tasks remain unchecked. Shared T018–T020 endpoint/CSRF/default-deny
+Sixty-eight tasks remain unchecked. Shared T018–T020 endpoint/CSRF/default-deny
 and private diagnostic components now have executable component/operator
 evidence, including real child termination. T021
 installs the same configuration/prepared-state/key checks, normal-lease-backed
@@ -62,11 +62,19 @@ contracts exercise actual native OIDC/cookie handlers, real callback-owner
 termination before/after commit, publication failure, expiry/revocation,
 fresh references and both session capacities. Ninety-two dependent storage
 and four original issuer/native-handler cases also pass.
-These components are not wired into product login routes; 70 tasks remain unchecked.
-T031 registration must use the session cookie manager, disable native sliding
-renewal and complete only at the native post-protocol `OnTicketReceived` seam.
+T031 now wires product browser-context, protected login/callback and the native
+post-protocol coordinator into both hosts. Native sliding renewal is disabled.
+Root-pipeline authentication remains after the explicit request/binding/budget
+boundary; conditional authentication had allowed automatic native callback
+middleware to run too early and was corrected. Health never retrieves a session.
 Confirmed sign-out semantics remain later endpoint work, not the framework's
-void-returning removal API. T032 still owes actual actor projection and `/me`.
+void-returning removal API. T032 now delivers self-only `/me`, fresh scoped
+actor projection and generated identity contracts, preserving accepted health
+operations/components. The combined native/session/route/API gate passes 52
+both-provider cases, with 21 focused startup/policy/OpenAPI/issuer regressions.
+Sixty-eight tasks remain, beginning with web adapters and the browser journey.
+Session-head `ad21b2b` CI failed composition and PostgreSQL baseline timeouts;
+their causes remain unestablished. They are not erased by local passes.
 The original stage is running, not completed; no second run or later stage began.
 Use `SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap` on downstream
 commands, keep the same draft PR #8 and do not begin a second run or advance to

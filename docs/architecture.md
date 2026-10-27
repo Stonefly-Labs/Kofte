@@ -473,7 +473,7 @@ not one passing provider job. PR #7 is now human-merged; its accepted ledger
 and all five acceptance artifact hashes were verified on updated main before
 005 began. Historical failed checks and undiagnosed causes remain unchanged.
 
-**005 / implement has completed T001–T030, not the feature**, on
+**005 / implement has completed T001–T032, not the feature**, on
 `feature/005-authentication-bootstrap`. The
 [implementation checkpoint](../specs/005-authentication-bootstrap/implementation.md)
 retains the source/signature investigation and records the adopted maintained
@@ -558,9 +558,20 @@ withholds pre-login cookies on new-login paths so framework sign-in cannot
 renew/reuse an older reference.
 Thirty both-provider native-handler contracts cover commit/publication/crash
 boundaries, references, expiry/revocation and capacities. They use an owned
-test host, not shipped product routes or actor projection. Login/enrollment,
-web and identity recovery remain dependent work (70 unchecked tasks);
-no delivered end-to-end authentication is claimed.
+test host. T031/T032 now register product browser-context, protected
+login/callback and self-only `/me` in both serving paths. Native authentication
+runs after the exact route/binding/budget boundary, not automatically before it;
+health suppresses session retrieval without relocating the authentication
+middleware. Only the validated durable view populates the read-only scoped actor.
+Exact Origin/framework CSRF, private browser binding, rate/cookie/target bounds,
+canonical returns and safe errors/headers apply before protected effects.
+Fresh profiles/designation, revocation and corrupt protection are tested;
+initial designation still grants no unrelated action. Additive generated
+identity contracts preserve every accepted bootstrap operation/component.
+The combined gate passes 52 both-provider native/session/route/API cases.
+Web adapters/UI, enrollment, sign-out, development sessions and identity recovery
+remain dependent work (68 unchecked tasks); no complete browser journey
+or feature acceptance is claimed.
 
 The completed specify-through-analyze history below is retained on
 `feature/005-authentication-bootstrap`. Its

@@ -82,6 +82,7 @@ public static class BootstrapProgram
             await using var app = builder.Build();
             app.MapBootstrapHealth();
             app.UseIdentityBoundary();
+            app.MapIdentityEndpoints();
             if (app.Environment.IsDevelopment())
                 app.MapOpenApi("/openapi/v1.json").WithName("bootstrapOpenApi").AllowAnonymous();
             if (config.UnsafeExposure)

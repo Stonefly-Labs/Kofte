@@ -138,7 +138,8 @@ internal sealed class IdentitySessionCookieManager : ICookieManager
     private readonly ChunkingCookieManager cookies = new();
 
     public string? GetRequestCookie(HttpContext context, string key) =>
-        context.Request.Path.Value is "/auth/login" or "/auth/oidc/callback" or "/api/identity/v1/development-session"
+        context.Request.Path.Value is "/auth/oidc/callback" or "/api/identity/v1/development-session" or
+            "/health/live" or "/health/ready" or "/openapi/v1.json"
             ? null : cookies.GetRequestCookie(context, key);
 
     public void AppendResponseCookie(HttpContext context, string key, string? value, CookieOptions options) =>
