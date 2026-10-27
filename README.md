@@ -37,7 +37,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 > [!IMPORTANT]
 > **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md) and [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) is now human-merged. Its accepted ledger and evidence were verified on updated main before 005 began. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) retains prior failures and unknown causes; the historical failed local gate remains failed, not waived by acceptance or merge. Spec 005 now has [draft authentication/bootstrap requirements](specs/005-authentication-bootstrap/spec.md), not working login. Nothing here claims production readiness or MVP completion.
 
-**Current stage: 005 / implement in progress; T001–T024 and T026–T028 complete (27/100).** The
+**Current stage: 005 / implement in progress; T001–T030 complete (30/100).** The
 [implementation checkpoint](specs/005-authentication-bootstrap/implementation.md)
 records actual OIDC dependency adoption and locked inventory (403 npm / 87
 NuGet identities), an independent HTTPS issuer, owned interruption fixtures,
@@ -82,9 +82,16 @@ checkpoint passed all ten product CI jobs and the repository job.
 Durable attempts now enforce exact browser/mode/trust/epoch binding, five-minute
 expiry, finite quotas, bounded pruning and transactional single consumption on
 both stores. Maintained protected state retains the local binding without
-exposing it; product-route/session coordination remains pending.
-Sessions, enrollment, UI and identity recovery remain unbuilt
-(73 unchecked tasks).
+exposing it. The validated-login coordinator now commits mapping, user/event,
+attempt consumption and a protected server session in one owner transaction
+before the framework can publish an opaque cookie. Thirty both-provider
+native-handler/session contracts pass, including actual callback-owner kills,
+publication failure, fresh-login references, exact idle/absolute expiry,
+revocation and both session limits. Ninety-two dependent storage regressions
+and four original issuer/native-handler regressions pass.
+These components run in an owned test host, **not product login routes**.
+Actual route/actor registration, enrollment, UI and identity recovery remain
+unbuilt (70 unchecked tasks).
 Keep the same implement stage and draft PR #8; no merge or acceptance yet.
 
 The following preserves the completed design-stage context. The

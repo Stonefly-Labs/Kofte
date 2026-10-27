@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement in progress; T001–T024 and T026–T028 complete (27/100)**, on
+**Current checkpoint: 005 / implement in progress; T001–T030 complete (30/100)**, on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 [implementation record](../../specs/005-authentication-bootstrap/implementation.md)
@@ -32,7 +32,7 @@ The PostgreSQL recovery failure is reproduced and corrected by server-deparsed
 constraint definitions that preserve semantics across actual dump/restore;
 49 recovery/physical-format cases pass, retaining tamper refusal.
 These are foundations, not functioning login, enrollment, UI or recovery.
-Seventy-six tasks remain unchecked. Shared T018–T020 endpoint/CSRF/default-deny
+Seventy tasks remain unchecked. Shared T018–T020 endpoint/CSRF/default-deny
 and private diagnostic components now have executable component/operator
 evidence, including real child termination. T021
 installs the same configuration/prepared-state/key checks, normal-lease-backed
@@ -52,12 +52,21 @@ checks and all ten product CI jobs, including actual failure propagation.
 T023/T026 now add maintained OIDC configuration, bounded HTTPS transport and
 66 real native-protocol/transport/issuer regressions. The fixture
 stops at the post-protocol/pre-session ticket seam; no product login route,
-stored session or actor is inferred. T025's one-owner-commit contract and
-session/ticket coordination are next. T028 now supplies bounded durable
+stored session or actor is inferred from that earlier fixture. T028 supplies bounded durable
 attempts inside the caller's owner mutation and protected framework properties.
 Forty both-provider attempt/mapping cases, two binding units and two actual
 native-handler cases pass, including exact security context, replay and rollback.
-These components are not wired into product login routes; 73 tasks remain unchecked.
+T025/T029/T030 now supply protected minimal server sessions, the one-shot
+framework bridge and the validated-login owner coordinator. Thirty both-provider
+contracts exercise actual native OIDC/cookie handlers, real callback-owner
+termination before/after commit, publication failure, expiry/revocation,
+fresh references and both session capacities. Ninety-two dependent storage
+and four original issuer/native-handler cases also pass.
+These components are not wired into product login routes; 70 tasks remain unchecked.
+T031 registration must use the session cookie manager, disable native sliding
+renewal and complete only at the native post-protocol `OnTicketReceived` seam.
+Confirmed sign-out semantics remain later endpoint work, not the framework's
+void-returning removal API. T032 still owes actual actor projection and `/me`.
 The original stage is running, not completed; no second run or later stage began.
 Use `SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap` on downstream
 commands, keep the same draft PR #8 and do not begin a second run or advance to

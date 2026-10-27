@@ -1454,3 +1454,144 @@ T025/T029/T030 still owe the real session/cookie bridge, one known owner commit
 before publication, and uncertain-acknowledgement/publication-failure evidence.
 Current component tests are not full product login, stored-session, actor,
 browser or retained-session restart evidence.
+
+## T025/T029/T030: atomic native login and durable session bridge
+
+The original **005 / implement** stage remains running on its original branch
+and draft PR #8. **T001–T030 are complete (30/100); 70 tasks remain unchecked.**
+The historical checkpoints above remain unchanged. No driver completion,
+converge, review, feature acceptance or merge is implied.
+
+### Delivered components and actual acceptance evidence
+
+`ValidatedLogin` is called only after the maintained native handler finishes
+protocol validation, at `OnTicketReceived`. It verifies the configured exact
+issuer/subject shape and protected local browser binding. One existing owner
+mutation resolves the exact mapping/user, records required creation evidence,
+consumes the durable attempt, and creates the protected minimal session/event.
+It preserves the original one-second local work and enclosing callback budget.
+Only a returned, known committed mutation can bind the private request-local
+reference and call framework sign-in. There is no uncertain-outcome retry.
+Existing exact-key UNIQUE reconciliation remains in the mapping helper; the
+92-case dependent storage selection includes its eighteen both-provider cases.
+
+`IdentityTicketStore` generates fresh 256-bit base64url references and a
+domain-separated SHA-256 digest. The retained encrypted ticket contains only
+local UUID/mode and fixed scheme/lifetime properties, not external provider
+claims, tokens, roles or the raw reference. Its three framework storage
+overloads can return the private committed reference exactly once for the exact
+serialized ticket. Unbound, cross-request and reused calls refuse without
+writing a second transaction. Retrieval opens fresh owner work, verifies the
+protected ticket inside that transaction and sets only request-local current
+state after known commit. Corrupt protection rolls back activity renewal and
+returns unavailable rather than an anonymous or cached success.
+
+`IdentitySessionStore` enforces eight live sessions/user and 50,000/installation
+without eviction, exact thirty-minute idle/eight-hour absolute lifetimes,
+renewal clipped to absolute expiry, current user/mode/epoch/designation and
+terminal compare-and-update revocation/observed expiry with required events.
+It never opens or commits an independent transaction.
+
+The maintained cookie handler normally renews an existing session key during
+sign-in. The dedicated cookie manager withholds the older cookie on the exact
+new-login paths, so repeat login receives a fresh committed reference.
+**Product registration must use this manager and disable native sliding
+renewal.** Durable activity renewal happens only during fresh retrieval.
+Framework `RemoveAsync` cannot return the confirmed revoke boolean; the later
+sign-out endpoint must deliberately distinguish confirmed revocation, absent/
+expired session and uncertainty. No sign-out route is claimed here.
+
+The test-owned `LoginCommitFixture` uses actual native OIDC and cookie handlers,
+the independent owned HTTPS issuer, real prepared certificate-protected keys,
+normal host leases and actual SQLite/PostgreSQL. Its routes are fixture-only;
+neither an externally asserted principal nor a product test bypass is added.
+Baseline preparation genuinely records `keys_prepared` at security revision 1,
+and every exact state/event assertion preserves that baseline.
+
+| Obligation | Evidence in the final thirty-case selection |
+| --- | --- |
+| T025 one commit before cookie | Exact user/mapping/attempt/session/event IDs, shared revision/correlation and opaque-reference-only cookie; unbound/reused framework stores cannot mutate. |
+| T025 failed publication/unknown acknowledgement | Before-commit rollback, after-commit interruption and failed cookie publication yield no session cookie. Four actual callback-owner process-kill cases independently reopen storage after verified owned-child exit. |
+| T029 session identity/protection | Independent digest expectation, minimal protected ticket, fresh reference with an existing browser cookie, no persisted raw reference and corrupt-ticket rollback/unavailable response. |
+| T029 lifetimes and terminal state | Controlled exact idle and absolute boundaries through actual cookie authentication; repeated activity cannot extend absolute expiry, and concurrent revocation/activity cannot resurrect the session. |
+| T029 both capacities | Eight/ninth-user-session refusal preserves earlier sessions/events. A fixture baseline of 49,999 additional valid protected rows reaches exactly 50,000; real next login refuses without eviction, then succeeds after controlled expiry. |
+| T030 coordinator | Actual native validated callback invokes the production coordinator/bridge and real framework sign-in; mapping/creation/consumption/session/evidence remain indivisible before publication. |
+
+The global-capacity baseline contains 6,250 complete additional users/mappings,
+each with at most eight sessions, and uses actual prepared protection keys.
+This is bounded fixture seeding, **not 49,999 OIDC journeys or creation-event
+evidence**. Its ninety-second setup budget does not change any product request
+budget. Scalar snapshots avoid the operation store's 128-returned-row limit.
+
+The real crash child is admitted by the existing private fixture dispatcher,
+uses the original prepared installation and independently acquires the normal
+lease/keys. Its private test CA file contains only the owned issuer's public
+certificate; hostname and chain verification remain enabled. The parent
+verifies the barrier's exact owned PID, kills that process before publication,
+observes the genuinely lost HTTP acknowledgement and independently reopens
+durable state. No shared Docker resource or unrelated process is terminated.
+This is the actual callback owner, not a surrogate transaction.
+
+### Initial red/failed results and corrections
+
+The initial contract command failed compilation before the session/bridge and
+coordinator APIs existed. Later fixture additions likewise first failed for
+missing probe/clock/crash/capacity APIs. Compilation exposed ambiguous store
+lease/path types and missing Hosting imports; explicit aliases/imports corrected
+them without widening product access. A nested minimal-handler inference
+triggered ASP0016; an explicit `Task` handler replaced it. Existing xUnit
+analyzer requirements were followed without suppression.
+
+The first twelve-case actual contract run passed two and failed ten because
+its expected revision/event baseline incorrectly assumed preparation left zero.
+Source and raw state established the real `keys_prepared`/revision-1 baseline.
+Assertions were corrected to preserve that actual baseline; the corrected run
+passed twelve. Expanded combined contracts passed 24, then the four real-kill
+and two global-capacity cases passed in separate runs. **The final combined
+thirty-case run below was executed after all fixture changes**; the earlier
+24+4+2 results are not relabeled as that final run.
+
+Initial full format verification found five indentation errors in the new
+ticket factory. The existing formatter corrected only that file; full build
+and format verification then passed with zero warnings/errors.
+
+### Exact checkpoint verification
+
+Commands select the existing isolated SDK 10.0.402/runtime 10.0.13; both-provider
+commands opt in with `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true`. No package,
+lock, migration, installation or restore change was needed.
+
+| Exact executed command | Result |
+| --- | --- |
+| `dotnet test tests/contract/Kofte.Platform.ContractTests/Kofte.Platform.ContractTests.csproj -c Release --no-restore --filter FullyQualifiedName~LoginCommitContractTests --nologo` | Initial missing-implementation compile red; initial actual run **2 passed / 10 failed** for the incorrect preparation baseline; corrected **12 passed** before crash expansion. |
+| `dotnet test tests/contract/Kofte.Platform.ContractTests/Kofte.Platform.ContractTests.csproj -c Release --no-restore --filter 'FullyQualifiedName~LoginCommitContractTests\|FullyQualifiedName~SessionPersistenceContractTests' --nologo` | Earlier combined **24 passed**, before crash/capacity expansion. |
+| `dotnet test tests/contract/Kofte.Platform.ContractTests/Kofte.Platform.ContractTests.csproj -c Release --no-restore --filter FullyQualifiedName~KillingTheActualNativeCallbackOwner --nologo` | **4 passed**, actual process kills on both providers. |
+| `dotnet test tests/contract/Kofte.Platform.ContractTests/Kofte.Platform.ContractTests.csproj -c Release --no-restore --filter FullyQualifiedName~InstallationLimitRefusesTheNextSession --nologo` | **2 passed**, actual 50,000/50,001 limit and corrected login after expiry. |
+| `dotnet test tests/contract/Kofte.Platform.ContractTests/Kofte.Platform.ContractTests.csproj -c Release --no-build --no-restore --filter 'FullyQualifiedName~LoginCommitContractTests\|FullyQualifiedName~SessionPersistenceContractTests' --nologo` | **Final 30 passed**, zero failures/skips, 5m33s, after all current source/fixture changes. |
+| `dotnet test tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj -c Release --no-build --no-restore --filter 'FullyQualifiedName~IdentityAdmissionTests\|FullyQualifiedName~IdentityDeadlineTests\|FullyQualifiedName~IdentityEventTests\|FullyQualifiedName~IdentityMappingTests\|FullyQualifiedName~IdentityAttemptTests' --nologo` | **92 passed**, both providers, zero failures/skips, 5m09s. |
+| `dotnet test tests/integration/Kofte.Host.IntegrationTests/Kofte.Host.IntegrationTests.csproj -c Release --no-build --no-restore --filter 'FullyQualifiedName~OidcIssuerTests\|FullyQualifiedName~ActualNativeProtectedStateRetainsOnlyTheLocalAttemptAndBrowserBinding\|FullyQualifiedName~NativeHandlerValidatesRealCodePkceAndNonceBeforeTheLocalTicketSeam' --nologo` | **4 passed**, zero failures/skips, after shared TLS-fixture changes. |
+| `dotnet build Kofte.slnx --no-restore -c Release -warnaserror --nologo` | Passed after all current source additions, zero warnings/errors. |
+| `dotnet format Kofte.slnx --verify-no-changes --no-restore --verbosity quiet` | Passed after the targeted formatter correction. |
+| `python3 scripts/check_repository.py` | Passed for this checkpoint. |
+| `python3 -m unittest discover -s scripts/tests -v` | **121 passed** for this checkpoint. |
+| `git diff --check` | Passed for this checkpoint. |
+| `npm run format:check` | Passed for this checkpoint. |
+
+### Head-specific CI and remaining work
+
+Published attempts head `591d025` subsequently completed with **all ten product
+jobs and repository checks passing**: product run `40451670282`, repository run
+`40451670291`. This is not a CI result for the new session/bridge work.
+Earlier OIDC head `c8c01c3` product run `40450557540` finished failed:
+the PostgreSQL failure-propagation baseline reached its original fifteen-minute
+`failure_exercise_timeout`, and `composition-public-contracts` reached its
+original fifteen-minute `command_timeout` after platform contracts passed.
+Eight other product jobs passed. The underlying causes remain unestablished;
+the later green head does not diagnose or erase those failures.
+
+T031 still owes actual product browser-context/login/callback route registration,
+CSRF, browser continuity, admission and safe completion. T032 still owes `/me`,
+trusted actor projection and generated contracts. The owned bridge host is not
+those delivered routes, a module actor consumer, browser UI, full three-restart
+T038 evidence, enrollment, sign-out or identity recovery. Continue the same
+running stage and original draft PR, without accepting or advancing it.

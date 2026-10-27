@@ -473,7 +473,7 @@ not one passing provider job. PR #7 is now human-merged; its accepted ledger
 and all five acceptance artifact hashes were verified on updated main before
 005 began. Historical failed checks and undiagnosed causes remain unchanged.
 
-**005 / implement has completed T001–T024 and T026–T028, not the feature**, on
+**005 / implement has completed T001–T030, not the feature**, on
 `feature/005-authentication-bootstrap`. The
 [implementation checkpoint](../specs/005-authentication-bootstrap/implementation.md)
 retains the source/signature investigation and records the adopted maintained
@@ -545,10 +545,22 @@ compare-and-consume and rollback; they never commit independently. Quotas are
 at-most-128-row cleanup. Mode/trust/epoch and browser digest must still match.
 Native protected properties carry only the local binding; durable return paths
 remain authoritative. Both-provider races and protected-state roundtrips pass,
-but the session coordinator and actual login routes remain dependent work.
-Sessions, login/enrollment and identity
-recovery remain dependent work (73 unchecked tasks); no end-to-end authentication
-is claimed.
+but actual product login routes remain dependent work.
+The validated-login coordinator now maps the exact identity, consumes its
+attempt and persists the protected minimal session plus required events in one
+owner commit. A private request-local one-shot bridge returns only that known
+committed reference; framework storage never creates a second transaction.
+Every retrieval verifies current stored user/mode/epoch/designation and renews
+idle expiry only within the fixed absolute limit. Terminal revocation cannot
+be resurrected; per-user/global session overflow refuses without eviction.
+Native cookie sliding renewal stays disabled, and the session cookie manager
+withholds pre-login cookies on new-login paths so framework sign-in cannot
+renew/reuse an older reference.
+Thirty both-provider native-handler contracts cover commit/publication/crash
+boundaries, references, expiry/revocation and capacities. They use an owned
+test host, not shipped product routes or actor projection. Login/enrollment,
+web and identity recovery remain dependent work (70 unchecked tasks);
+no delivered end-to-end authentication is claimed.
 
 The completed specify-through-analyze history below is retained on
 `feature/005-authentication-bootstrap`. Its

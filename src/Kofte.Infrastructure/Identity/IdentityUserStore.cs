@@ -66,6 +66,13 @@ internal static class IdentityUserStore
             throw new StorageException(StorageCode.Corrupt);
     }
 
+    internal static async Task<IdentityUser> ReadAsync(DeadlineStore database, Guid userId)
+    {
+        var rows = await database.QueryAsync(
+            $"SELECT {Columns} FROM {database.Prefix}__kofte_users WHERE user_id=@id", ("id", userId));
+        return rows.Count == 1 ? Parse(rows[0]) : throw new StorageException(StorageCode.Corrupt);
+    }
+
     private static async Task<IdentityUser?> FindAsync(DeadlineStore database, string mode, string issuer, string subject)
     {
         var rows = await database.QueryAsync($"""

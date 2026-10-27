@@ -15,7 +15,7 @@ public sealed class ServingIdentity : IDisposable
     private readonly OwnedTestRoot root = new();
     private readonly string environment;
 
-    public ServingIdentity(string environment = "Development")
+    public ServingIdentity(string environment = "Development", OidcIssuer? issuer = null)
     {
         this.environment = environment;
         try
@@ -45,22 +45,29 @@ public sealed class ServingIdentity : IDisposable
                 var secretFile = Path.Combine(root.Path, "client-secret");
                 PrivateTestFiles.WriteNew(certificateFile, Encoding.ASCII.GetBytes(certificate.ExportCertificatePem()));
                 PrivateTestFiles.WriteNew(keyFile, Encoding.ASCII.GetBytes(key.ExportPkcs8PrivateKeyPem()));
-                PrivateTestFiles.WriteNew(secretFile, Encoding.ASCII.GetBytes(Convert.ToHexString(RandomNumberGenerator.GetBytes(32))));
+                PrivateTestFiles.WriteNew(secretFile, Encoding.ASCII.GetBytes(issuer?.ClientSecret ??
+                    Convert.ToHexString(RandomNumberGenerator.GetBytes(32))));
                 value["keyEncryptionCertificateFile"] = certificateFile;
                 value["keyEncryptionPrivateKeyFile"] = keyFile;
                 value["provider"] = new JsonObject
                 {
-                    ["issuer"] = "https://offline-issuer.invalid",
-                    ["metadataAddress"] = "https://offline-issuer.invalid/discovery",
-                    ["authorizationEndpoint"] = "https://offline-issuer.invalid/authorize",
-                    ["tokenEndpoint"] = "https://offline-issuer.invalid/token",
-                    ["jwksUri"] = "https://offline-issuer.invalid/keys",
-                    ["clientId"] = "test-client",
+                    ["issuer"] = issuer?.Issuer.AbsoluteUri ?? "https://offline-issuer.invalid",
+                    ["metadataAddress"] = issuer is null ? "https://offline-issuer.invalid/discovery" :
+                        new Uri(issuer.Issuer, ".well-known/openid-configuration").AbsoluteUri,
+                    ["authorizationEndpoint"] = issuer is null ? "https://offline-issuer.invalid/authorize" :
+                        new Uri(issuer.Issuer, "authorize").AbsoluteUri,
+                    ["tokenEndpoint"] = issuer is null ? "https://offline-issuer.invalid/token" :
+                        new Uri(issuer.Issuer, "token").AbsoluteUri,
+                    ["jwksUri"] = issuer is null ? "https://offline-issuer.invalid/keys" :
+                        new Uri(issuer.Issuer, "jwks").AbsoluteUri,
+                    ["clientId"] = issuer?.ClientId ?? "test-client",
                     ["clientSecretFile"] = secretFile,
-                    ["allowedEndpoints"] = new JsonArray("https://offline-issuer.invalid/discovery",
-                        "https://offline-issuer.invalid/authorize", "https://offline-issuer.invalid/token",
-                        "https://offline-issuer.invalid/keys"),
-                    ["allowedNetworks"] = new JsonArray("203.0.113.0/24")
+                    ["allowedEndpoints"] = issuer is null
+                        ? new JsonArray("https://offline-issuer.invalid/discovery", "https://offline-issuer.invalid/authorize",
+                            "https://offline-issuer.invalid/token", "https://offline-issuer.invalid/keys")
+                        : new JsonArray(new[] { ".well-known/openid-configuration", "authorize", "token", "jwks" }
+                            .Select(path => (JsonNode?)JsonValue.Create(new Uri(issuer.Issuer, path).AbsoluteUri)).ToArray()),
+                    ["allowedNetworks"] = new JsonArray(issuer is null ? "203.0.113.0/24" : "127.0.0.0/8")
                 };
             }
             else value["development"] = new JsonObject

@@ -1,0 +1,622 @@
+using System.Diagnostics;
+using System.Globalization;
+using System.Net;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Text.Json;
+using Kofte.Host.Bootstrap;
+using Kofte.Host.Features.Identity;
+using Kofte.Host.Features.Identity.Login;
+using Kofte.Infrastructure.Identity;
+using Kofte.Infrastructure.Storage;
+using Kofte.Infrastructure.Storage.Postgres;
+using Kofte.Platform.Modules.Storage;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Npgsql;
+using StoreLease = Kofte.Infrastructure.Storage.StoreLease;
+using UnixStorePaths = Kofte.Infrastructure.Storage.UnixStorePaths;
+using static Kofte.Infrastructure.Identity.IdentityValues;
+
+namespace Kofte.TestSupport.Identity;
+
+public enum LoginCommitFault { None, BeforeCommit, AfterCommit, CookiePublication }
+
+public sealed record LoginCommitResponse(int Status, Guid AttemptId, bool SessionCookieIssued,
+    bool CookieContainsOnlyReference, bool CookieHasRequiredFlags, string Reference);
+
+public sealed record LoginUserObservation(Guid Id, string Mode, string? DisplayName, DateTime CreatedAt, DateTime UpdatedAt);
+public sealed record LoginMappingObservation(string Mode, string Issuer, string Subject, Guid UserId, DateTime CreatedAt);
+public sealed record LoginAttemptObservation(Guid Id, string State, Guid Epoch);
+public sealed record LoginSessionObservation(string Digest, Guid UserId, string Mode, Guid Epoch, byte[] ProtectedTicket,
+    DateTime CreatedAt, DateTime IdleExpiresAt, DateTime AbsoluteExpiresAt, string State, DateTime LastSeenAt, DateTime? TerminalAt);
+public sealed record LoginSessionProbe(int Status, Guid? UserId, string? Mode, bool IsInitialAdministrator);
+public sealed record LoginCommitCrash(Guid AttemptId, bool AcknowledgementLost, bool ExitVerified);
+public sealed record LoginCapacitySnapshot(long Revision, long Users, long Sessions, long LiveSessions,
+    string OriginalDigest, string OriginalState, string AttemptState, IReadOnlyList<LoginEventObservation> Events);
+public sealed record LoginEventObservation(Guid Id, long Revision, string Code, string Correlation, Guid? UserId);
+public sealed record LoginCommitSnapshot(long Revision, Guid Epoch, long RegistryRevision, string BootstrapState,
+    IReadOnlyList<LoginUserObservation> Users, IReadOnlyList<LoginMappingObservation> Mappings,
+    IReadOnlyList<LoginAttemptObservation> Attempts, IReadOnlyList<LoginSessionObservation> Sessions,
+    IReadOnlyList<LoginEventObservation> Events);
+
+// This owned host exercises real native OIDC and cookie handlers; its routes are not product endpoints.
+public sealed class LoginCommitFixture : IAsyncDisposable
+{
+    private readonly CookieContainer cookies = new();
+    private readonly IHttpContextAccessor accessor = new HttpContextAccessor();
+    private StorageProviderScope? scope;
+    private OidcIssuer issuer = null!;
+    private ServingIdentity? serving;
+    private IdentityConfiguration configuration = null!;
+    private IdentityKeys? keys;
+    private StorageInstallation installation = null!;
+    private StoreLease? fileLease;
+    private NpgsqlConnection? hostLease;
+    private IdentityStore store = null!;
+    private WebApplication? application;
+    private HttpClient client = null!, providerClient = null!;
+    private FaultObserver? observer;
+    private OwnedProcess? worker;
+    private X509Certificate2? workerTrust;
+    private int backendPort;
+    private TimeProvider clock = TimeProvider.System;
+    private LoginCommitFault fault;
+    private Guid lastAttempt;
+    private AuthenticationTicket? lastTicket;
+    private bool reusedRefused;
+    private string? capacityOriginal;
+    private static readonly string Browser = new('b', 64);
+
+    public string Issuer => issuer.Issuer.AbsoluteUri;
+
+    public static async Task<LoginCommitFixture> CreateAsync(string provider, CancellationToken token,
+        TimeProvider? localClock = null)
+    {
+        var fixture = new LoginCommitFixture { clock = localClock ?? TimeProvider.System };
+        try
+        {
+            fixture.scope = await StorageProviderScope.CreateAsync(provider, token);
+            fixture.issuer = await OidcIssuer.CreateAsync(token);
+            fixture.serving = new("Production", fixture.issuer);
+            await fixture.serving.PrepareAsync(start => fixture.scope.ConfigureChild(start, offlineMaintenance: true), token);
+            var bootstrap = new BootstrapConfiguration(provider == "sqlite" ? "local-sqlite" : "test-postgres",
+                new("http://127.0.0.1:5080"), fixture.serving.WebUrl, new("http://127.0.0.1:5080"),
+                fixture.scope.DataRoot, fixture.scope.Postgres?.ConnectionString, false, null)
+            {
+                AuthenticationConfigurationFile = fixture.serving.ConfigurationPath
+            };
+            fixture.configuration = IdentityConfiguration.Load(bootstrap, "Production");
+            fixture.installation = fixture.scope.Postgres is { } postgres
+                ? StorageInstallation.PostgreSql(postgres.ConnectionString)
+                : StorageInstallation.Sqlite(fixture.scope.DataRoot);
+            await fixture.OpenOwnerAsync(token);
+            await fixture.StartAsync(token);
+            return fixture;
+        }
+        catch { await fixture.DisposeAsync(); throw; }
+    }
+
+    private async Task OpenOwnerAsync(CancellationToken token)
+    {
+        using var budget = new OperationBudget(OperationBudget.Register, token);
+        if (installation.Provider == "sqlite") fileLease = StoreLease.Acquire(installation.Root!);
+        else
+        {
+            hostLease = (NpgsqlConnection)await installation.OpenPlatformAsync(budget);
+            await using var command = new NpgsqlCommand(
+                "SELECT pg_catalog.pg_try_advisory_lock_shared($1)", hostLease);
+            command.Parameters.AddWithValue(PostgresIdentity.LeaseKey);
+            if (await command.ExecuteScalarAsync(token) is not true)
+                throw new InvalidOperationException("identity_fixture_lease_failed");
+        }
+        await using var database = await DeadlineStore.OpenAsync(installation, budget);
+        var metadata = await IdentityStore.ReadMetadataAsync(database);
+        await IdentityPreparation.VerifyAsync(installation, metadata.InstallationId,
+            "oidc", configuration.TrustDigest, budget);
+        store = new(installation, metadata.InstallationId, "oidc", configuration.TrustDigest, fileLease, hostLease);
+        keys = IdentityKeys.Open(configuration, metadata.InstallationId, budget);
+    }
+
+    public static async Task<int> RunExistingChildAsync()
+    {
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(120));
+        await using var fixture = new LoginCommitFixture();
+        var bootstrap = BootstrapConfiguration.FromEnvironment();
+        fixture.configuration = IdentityConfiguration.Load(bootstrap, "Production");
+        fixture.installation = bootstrap.PostgresConnection is { } connection
+            ? StorageInstallation.PostgreSql(connection) : StorageInstallation.Sqlite(bootstrap.DataRoot);
+        var directory = Path.GetDirectoryName(bootstrap.AuthenticationConfigurationFile!)!;
+        UnixStorePaths.ValidateRoot(directory, allowMissing: false);
+        var authority = Path.Combine(directory, "issuer-ca.pem");
+        UnixStorePaths.ValidateFile(authority);
+        if (new FileInfo(authority).Length > 16_384)
+            throw new InvalidOperationException("identity_fixture_trust_invalid");
+        fixture.workerTrust = X509Certificate2.CreateFromPem(await File.ReadAllTextAsync(authority, timeout.Token));
+        fixture.backendPort = bootstrap.HostUrl.Port;
+        await fixture.OpenOwnerAsync(timeout.Token);
+        await fixture.StartAsync(timeout.Token);
+        await fixture.application!.WaitForShutdownAsync(timeout.Token);
+        return 0;
+    }
+
+    private async Task StartAsync(CancellationToken token)
+    {
+        var builder = WebApplication.CreateSlimBuilder(new WebApplicationOptions
+        {
+            EnvironmentName = "Production",
+            ContentRootPath = Path.GetDirectoryName(serving?.ConfigurationPath ?? configuration.KeyRingDirectory)
+        });
+        builder.Configuration.Sources.Clear();
+        builder.Logging.ClearProviders();
+        builder.WebHost.ConfigureKestrel(server => server.Listen(IPAddress.Loopback, backendPort));
+        builder.Services.AddSingleton(this);
+        builder.Services.AddSingleton(configuration);
+        builder.Services.AddSingleton(store);
+        builder.Services.AddSingleton<IDataProtectionProvider>(keys!.Provider);
+        builder.Services.AddSingleton(accessor);
+        builder.Services.AddSingleton(clock);
+        builder.Services.AddSingleton<IdentityTicketStore>();
+        builder.Services.AddScoped<ValidatedLogin>();
+        builder.Services.AddSingleton(services => new OidcBackchannel(configuration.Provider!,
+            services.GetRequiredService<IHttpContextAccessor>(), workerTrust is { } authority
+                ? OidcIssuer.CreateSocketsHandler(authority) : issuer.CreateSocketsHandler()));
+        builder.Services.AddAuthentication().AddCookie(OidcConfiguration.SessionScheme, _ => { })
+            .AddOpenIdConnect(OidcConfiguration.ProviderScheme, _ => { });
+        builder.Services.AddOptions<CookieAuthenticationOptions>(OidcConfiguration.SessionScheme)
+            .Configure<IdentityTicketStore>((options, tickets) =>
+            {
+                options.SessionStore = tickets;
+                options.Cookie.Name = "__Host-kofte-session";
+                options.Cookie.Path = "/";
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SameSite = SameSiteMode.Lax;
+                options.SlidingExpiration = false;
+                options.TimeProvider = clock;
+                options.CookieManager = new FaultCookies(this);
+            });
+        builder.Services.AddOptions<OpenIdConnectOptions>(OidcConfiguration.ProviderScheme)
+            .Configure<OidcBackchannel>((options, backchannel) =>
+            {
+                OidcConfiguration.Apply(options, configuration.Provider!, configuration.PublicOrigin, backchannel);
+                options.Events.OnTicketReceived = async context =>
+                {
+                    context.HandleResponse();
+                    using var budget = new OperationBudget(TimeSpan.FromSeconds(4), context.HttpContext.RequestAborted);
+                    var result = await context.HttpContext.RequestServices.GetRequiredService<ValidatedLogin>()
+                        .CompleteOidcAsync(context.HttpContext,
+                            context.Principal ?? throw new InvalidOperationException("identity_fixture_principal_missing"),
+                            context.Properties, Browser, budget);
+                    lastTicket = result.Ticket;
+                    reusedRefused = await RefusesAsync(() => context.HttpContext.RequestServices
+                        .GetRequiredService<IdentityTicketStore>().StoreAsync(result.Ticket, context.HttpContext, token));
+                    context.Response.StatusCode = 303;
+                    context.Response.Headers.Location = result.ReturnPath;
+                };
+                options.Events.OnRemoteFailure = context =>
+                {
+                    context.HandleResponse();
+                    context.Response.StatusCode = 401;
+                    return Task.CompletedTask;
+                };
+            });
+        application = builder.Build();
+        application.Use(async (context, next) =>
+        {
+            using var timeout = CancellationTokenSource.CreateLinkedTokenSource(context.RequestAborted);
+            timeout.CancelAfter(TimeSpan.FromSeconds(4));
+            context.RequestAborted = timeout.Token;
+            try { await next(context); }
+            catch (CommitInterruption) { context.Response.StatusCode = 503; }
+            catch (IdentityAdmissionException) { context.Response.StatusCode = 429; }
+            catch (StorageException) { context.Response.StatusCode = 503; }
+            catch (CryptographicException) { context.Response.StatusCode = 503; }
+        });
+        application.UseAuthentication();
+        application.MapGet("/start", ChallengeAsync);
+        application.MapGet("/probe", ProbeSessionAsync);
+        application.MapGet("/fixture-live", () => Results.NoContent());
+        observer = new(this);
+        await application.StartAsync(token);
+        client = new(new HttpClientHandler { AllowAutoRedirect = false, UseCookies = false })
+        {
+            BaseAddress = new(application.Services.GetRequiredService<IServer>()
+                .Features.Get<IServerAddressesFeature>()!.Addresses.Single()),
+            Timeout = TimeSpan.FromSeconds(6)
+        };
+        if (issuer is not null)
+        {
+            providerClient = issuer.CreateClient();
+            issuer.RegisteredRedirectUri = new(configuration.PublicOrigin, "/auth/oidc/callback");
+        }
+    }
+
+    private async Task ChallengeAsync(HttpContext context)
+    {
+        using var budget = new OperationBudget(TimeSpan.FromSeconds(1), context.RequestAborted);
+        var attempt = await store.MutateAsync(budget, change =>
+            IdentityLoginAttempts.StartAsync(change, Browser, "/identity", clock.GetUtcNow().UtcDateTime));
+        lastAttempt = attempt.AttemptId;
+        await context.ChallengeAsync(OidcConfiguration.ProviderScheme, LoginAttemptBinding.Create(attempt));
+    }
+
+    private static async Task ProbeSessionAsync(HttpContext context)
+    {
+        var result = await context.AuthenticateAsync(OidcConfiguration.SessionScheme);
+        if (!result.Succeeded)
+        {
+            context.Response.StatusCode = 401;
+            return;
+        }
+        var view = IdentityTicketStore.Current(context) ??
+            throw new InvalidOperationException("identity_fixture_verified_session_missing");
+        await context.Response.WriteAsJsonAsync(new
+        {
+            userId = view.User.UserId,
+            mode = view.User.Mode,
+            isInitialAdministrator = view.IsInitialAdministrator
+        }, context.RequestAborted);
+    }
+
+    public async Task<LoginSessionProbe> ProbeAsync(CancellationToken token)
+    {
+        using var response = await SendAsync("/probe", token);
+        if ((int)response.StatusCode != 200) return new((int)response.StatusCode, null, null, false);
+        using var body = JsonDocument.Parse(await response.Content.ReadAsByteArrayAsync(token));
+        return new(200, body.RootElement.GetProperty("userId").GetGuid(),
+            body.RootElement.GetProperty("mode").GetString(),
+            body.RootElement.GetProperty("isInitialAdministrator").GetBoolean());
+    }
+
+    public Task RevokeCurrentAsync(CancellationToken token)
+    {
+        var reference = CurrentCookieTicket().Principal.Claims.Single().Value;
+        return application!.Services.GetRequiredService<IdentityTicketStore>()
+            .RemoveAsync(reference, new DefaultHttpContext(), token);
+    }
+
+    public async Task CorruptCurrentTicketAsync(CancellationToken token)
+    {
+        var session = (await SnapshotAsync(token)).Sessions.Single();
+        var corrupt = session.ProtectedTicket.ToArray();
+        corrupt[^1] ^= 0xff;
+        using var budget = new OperationBudget(TimeSpan.FromSeconds(1), token);
+        await using var database = await DeadlineStore.OpenAsync(installation, budget);
+        await database.BeginWriteAsync();
+        await database.QueryAsync($"""
+            UPDATE {database.Prefix}__kofte_sessions SET protected_ticket=@ticket WHERE reference_digest=@digest
+            """, ("ticket", corrupt), ("digest", session.Digest));
+        await database.CommitAsync();
+    }
+
+    public async Task SeedGlobalCapacityAsync(CancellationToken token)
+    {
+        capacityOriginal = (await SnapshotAsync(token)).Sessions.Single().Digest;
+        using var cancel = CancellationTokenSource.CreateLinkedTokenSource(token, scope!.Token);
+        using var budget = new OperationBudget(TimeSpan.FromSeconds(90), cancel.Token);
+        await using var database = await DeadlineStore.OpenAsync(installation, budget);
+        await database.BeginWriteAsync();
+        var metadata = await IdentityStore.ReadMetadataAsync(database);
+        var tickets = application!.Services.GetRequiredService<IdentityTicketStore>();
+        var now = clock.GetUtcNow().UtcDateTime;
+        var remaining = 49_999;
+        for (var index = 0; remaining != 0; index++)
+        {
+            budget.Check();
+            var user = new IdentityUser(Guid.NewGuid(), "oidc", null, now, now);
+            await database.QueryAsync($"""
+                INSERT INTO {database.Prefix}__kofte_users (user_id,mode,created_at_utc,updated_at_utc)
+                VALUES (@id,'oidc',@now,@now)
+                """, ("id", user.UserId), ("now", now));
+            await database.QueryAsync($"""
+                INSERT INTO {database.Prefix}__kofte_external_identities (mode,issuer,subject,user_id,created_at_utc)
+                VALUES ('oidc',@issuer,@subject,@id,@now)
+                """, ("issuer", Issuer), ("subject", "capacity-seed-" + index.ToString(CultureInfo.InvariantCulture)),
+                ("id", user.UserId), ("now", now));
+            var count = Math.Min(8, remaining);
+            var parameters = new List<(string Name, object? Value)>
+            {
+                ("user", user.UserId), ("epoch", metadata.Epoch),
+                ("ticket", tickets.Protect(IdentityTicketStore.CreateTicket(user, now))),
+                ("now", now), ("idle", now.AddMinutes(30)), ("absolute", now.AddHours(8))
+            };
+            for (var session = 0; session < count; session++)
+                parameters.Add(("digest" + session.ToString(CultureInfo.InvariantCulture),
+                    IdentityTicketStore.NewReference().Digest));
+            var values = string.Join(",", Enumerable.Range(0, count).Select(session =>
+                $"(@digest{session},@user,'oidc',@epoch,@ticket,@now,@now,@idle,@absolute,'active')"));
+            await database.QueryAsync($"""
+                INSERT INTO {database.Prefix}__kofte_sessions
+                (reference_digest,user_id,mode,session_epoch,protected_ticket,created_at_utc,last_seen_at_utc,
+                 idle_expires_at_utc,absolute_expires_at_utc,state) VALUES {values}
+                """, parameters.ToArray());
+            remaining -= count;
+        }
+        await database.CommitAsync();
+    }
+
+    public async Task<LoginCapacitySnapshot> CapacitySnapshotAsync(CancellationToken token)
+    {
+        if (capacityOriginal is null) throw new InvalidOperationException("identity_fixture_capacity_not_seeded");
+        using var budget = new OperationBudget(TimeSpan.FromSeconds(1), token);
+        await using var database = await DeadlineStore.OpenAsync(installation, budget);
+        var metadata = await IdentityStore.ReadMetadataAsync(database);
+        var events = await database.QueryAsync($"""
+            SELECT event_id,security_revision,event_code,correlation_id,user_id
+            FROM {database.Prefix}__kofte_identity_events ORDER BY event_id
+            """);
+        return new(metadata.Revision,
+            (long)DeadlineStore.AssertScalar(await database.QueryAsync(
+                $"SELECT COUNT(*) FROM {database.Prefix}__kofte_users"))!,
+            (long)DeadlineStore.AssertScalar(await database.QueryAsync(
+                $"SELECT COUNT(*) FROM {database.Prefix}__kofte_sessions"))!,
+            (long)DeadlineStore.AssertScalar(await database.QueryAsync($"""
+                SELECT COUNT(*) FROM {database.Prefix}__kofte_sessions WHERE state='active'
+                AND idle_expires_at_utc>@now AND absolute_expires_at_utc>@now
+                """, ("now", clock.GetUtcNow().UtcDateTime)))!,
+            capacityOriginal, (string)DeadlineStore.AssertScalar(await database.QueryAsync(
+                $"SELECT state FROM {database.Prefix}__kofte_sessions WHERE reference_digest=@digest",
+                ("digest", capacityOriginal)))!,
+            (string)DeadlineStore.AssertScalar(await database.QueryAsync(
+                $"SELECT state FROM {database.Prefix}__kofte_login_attempts"))!,
+            events.Select(row => new LoginEventObservation(Id(row[0]), (long)row[1]!, (string)row[2]!,
+                (string)row[3]!, row[4] is null ? null : Id(row[4]))).ToArray());
+    }
+
+    private AuthenticationTicket CurrentCookieTicket()
+    {
+        var cookie = cookies.GetCookies(configuration.PublicOrigin)["__Host-kofte-session"] ??
+            throw new InvalidOperationException("identity_fixture_session_cookie_missing");
+        return application!.Services.GetRequiredService<IOptionsMonitor<CookieAuthenticationOptions>>()
+            .Get(OidcConfiguration.SessionScheme).TicketDataFormat.Unprotect(cookie.Value) ??
+            throw new InvalidOperationException("identity_fixture_cookie_invalid");
+    }
+
+    public async Task<LoginCommitResponse> LoginAsync(LoginCommitFault selectedFault, CancellationToken token)
+    {
+        fault = selectedFault;
+        using var start = await SendAsync("/start", token);
+        if ((int)start.StatusCode != 302 || start.Headers.Location is null)
+            throw new InvalidOperationException("identity_fixture_challenge_failed");
+        if (worker is not null) lastAttempt = (await SnapshotAsync(token)).Attempts.Single().Id;
+        using var authorization = await providerClient.GetAsync(start.Headers.Location, token);
+        if ((int)authorization.StatusCode != 302 || authorization.Headers.Location is null)
+            throw new InvalidOperationException("identity_fixture_authorization_failed");
+        using var response = await SendAsync(authorization.Headers.Location.PathAndQuery, token);
+        var issued = response.Headers.TryGetValues("Set-Cookie", out var headers)
+            ? headers.SingleOrDefault(value => value.StartsWith("__Host-kofte-session=", StringComparison.Ordinal)) : null;
+        if (issued is null) return new((int)response.StatusCode, lastAttempt, false, false, false, "");
+        var cookie = cookies.GetCookies(configuration.PublicOrigin)["__Host-kofte-session"] ??
+            throw new InvalidOperationException("identity_fixture_session_cookie_missing");
+        var ticket = CurrentCookieTicket();
+        var claims = ticket.Principal.Claims.ToArray();
+        var opaque = claims.Length == 1 &&
+            claims[0].Type == "Microsoft.AspNetCore.Authentication.Cookies-SessionId" &&
+            ticket.Properties.Items.Count == 0;
+        var flags = cookie.Secure && cookie.HttpOnly && cookie.Path == "/" &&
+            issued.Contains("samesite=lax", StringComparison.OrdinalIgnoreCase) &&
+            !issued.Contains("domain=", StringComparison.OrdinalIgnoreCase);
+        return new((int)response.StatusCode, lastAttempt, true, opaque, flags, opaque ? claims[0].Value : "");
+    }
+
+    public async Task<LoginCommitCrash> CrashLoginAsync(string phase, CancellationToken token)
+    {
+        if (worker is not null || phase is not ("login_before_commit" or "login_committed"))
+            throw new InvalidOperationException("identity_fixture_crash_invalid");
+        var port = client.BaseAddress!.Port;
+        using (var stop = new CancellationTokenSource(TimeSpan.FromSeconds(5)))
+            await application!.StopAsync(stop.Token);
+        await application!.DisposeAsync();
+        application = null;
+        fileLease?.Dispose();
+        fileLease = null;
+        if (hostLease is not null) await hostLease.DisposeAsync();
+        hostLease = null;
+        var directory = Path.GetDirectoryName(serving!.ConfigurationPath)!;
+        var barrier = new IdentityCommitBarrier(directory, phase);
+        PrivateTestFiles.WriteNew(Path.Combine(directory, "issuer-ca.pem"), Encoding.ASCII.GetBytes(issuer.AuthorityCertificatePem));
+        var admission = Path.Combine(directory, "login-child-admission.json");
+        PrivateTestFiles.WriteNew(admission, JsonSerializer.SerializeToUtf8Bytes(new
+        {
+            version = 1,
+            arguments = new[] { "--fixture-login-bridge" }
+        }));
+        var start = new ProcessStartInfo("dotnet")
+        {
+            WorkingDirectory = OwnedProcesses.FindRepository(),
+            UseShellExecute = false,
+            RedirectStandardInput = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true
+        };
+        var build = AppContext.BaseDirectory.Contains("/Release/", StringComparison.Ordinal) ? "Release" : "Debug";
+        start.ArgumentList.Add(Path.Combine(OwnedProcesses.FindRepository(), "tests", "contract",
+            "Kofte.Identity.Consumer", "bin", build, "net10.0", "Kofte.Identity.Consumer.dll"));
+        start.ArgumentList.Add("--identity-fixture-worker");
+        scope!.ConfigureChild(start);
+        serving.ConfigureChild(start);
+        start.Environment["KOFTE_HOST_URL"] = $"http://127.0.0.1:{port}";
+        start.Environment["KOFTE_BACKEND_ORIGIN"] = $"http://127.0.0.1:{port}";
+        start.Environment["IDENTITY_TEST_ADMISSION_FILE"] = admission;
+        start.Environment["IDENTITY_TEST_BARRIER_FILE"] = barrier.DescriptorPath;
+        start.Environment["DOTNET_STARTUP_HOOKS"] = typeof(IdentityCommitBarrier).Assembly.Location;
+        worker = OwnedProcesses.Start(start);
+        using var deadline = CancellationTokenSource.CreateLinkedTokenSource(token);
+        deadline.CancelAfter(TimeSpan.FromSeconds(15));
+        while (true)
+        {
+            deadline.Token.ThrowIfCancellationRequested();
+            if (worker.HasExited) throw new InvalidOperationException("identity_fixture_child_exited");
+            try
+            {
+                using var ready = await client.GetAsync("/fixture-live", deadline.Token);
+                if ((int)ready.StatusCode == 204) break;
+            }
+            catch (HttpRequestException) { }
+            await Task.Delay(5, deadline.Token);
+        }
+        var callback = LoginAsync(LoginCommitFault.None, token);
+        await barrier.WaitAsync(deadline.Token);
+        if (barrier.ObservedProcessId != worker.Id)
+            throw new InvalidOperationException("identity_fixture_child_ownership_invalid");
+        await worker.StopAsync(graceful: false);
+        try { await callback; }
+        catch (HttpRequestException) { return new(lastAttempt, true, worker.HasExited); }
+        throw new InvalidOperationException("identity_fixture_callback_acknowledged");
+    }
+
+    private async Task<HttpResponseMessage> SendAsync(string path, CancellationToken token)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, path);
+        var cookie = cookies.GetCookieHeader(new Uri(configuration.PublicOrigin, path));
+        if (cookie.Length != 0) request.Headers.Add("Cookie", cookie);
+        var response = await client.SendAsync(request, token);
+        if (response.Headers.TryGetValues("Set-Cookie", out var values))
+            foreach (var value in values) cookies.SetCookies(new Uri(configuration.PublicOrigin, path), value);
+        return response;
+    }
+
+    public async Task<bool> UnboundAndReusedStoresRefuseAsync(CancellationToken token)
+    {
+        var ticket = lastTicket ?? throw new InvalidOperationException("identity_fixture_ticket_missing");
+        var tickets = application!.Services.GetRequiredService<IdentityTicketStore>();
+        var previous = accessor.HttpContext;
+        var context = new DefaultHttpContext();
+        accessor.HttpContext = context;
+        try
+        {
+            return reusedRefused &&
+                await RefusesAsync(() => tickets.StoreAsync(ticket, context, token)) &&
+                await RefusesAsync(() => tickets.StoreAsync(ticket, token)) &&
+                await RefusesAsync(() => tickets.StoreAsync(ticket));
+        }
+        finally { accessor.HttpContext = previous; }
+    }
+
+    private static async Task<bool> RefusesAsync(Func<Task<string>> operation)
+    {
+        try { await operation(); return false; }
+        catch (InvalidOperationException error) when (error.Message == "identity_ticket_bridge_invalid") { return true; }
+    }
+
+    public async Task<LoginCommitSnapshot> SnapshotAsync(CancellationToken token)
+    {
+        using var budget = new OperationBudget(TimeSpan.FromSeconds(1), token);
+        await using var database = await DeadlineStore.OpenAsync(installation, budget);
+        var metadata = await IdentityStore.ReadMetadataAsync(database);
+        var users = await database.QueryAsync(
+            $"SELECT user_id,mode,display_name,created_at_utc,updated_at_utc FROM {database.Prefix}__kofte_users ORDER BY user_id");
+        var mappings = await database.QueryAsync(
+            $"SELECT mode,issuer,subject,user_id,created_at_utc FROM {database.Prefix}__kofte_external_identities ORDER BY user_id");
+        var attempts = await database.QueryAsync(
+            $"SELECT attempt_id,state,session_epoch FROM {database.Prefix}__kofte_login_attempts ORDER BY attempt_id");
+        var sessions = await database.QueryAsync($"""
+            SELECT reference_digest,user_id,mode,session_epoch,protected_ticket,created_at_utc,
+            idle_expires_at_utc,absolute_expires_at_utc,state,last_seen_at_utc,terminal_at_utc
+            FROM {database.Prefix}__kofte_sessions ORDER BY reference_digest
+            """);
+        var events = await database.QueryAsync($"""
+            SELECT event_id,security_revision,event_code,correlation_id,user_id
+            FROM {database.Prefix}__kofte_identity_events ORDER BY event_id
+            """);
+        return new(metadata.Revision, metadata.Epoch,
+            (long)DeadlineStore.AssertScalar(await database.QueryAsync(
+                $"SELECT registry_revision FROM {database.Prefix}__kofte_installation"))!,
+            (string)DeadlineStore.AssertScalar(await database.QueryAsync(
+                $"SELECT state FROM {database.Prefix}__kofte_bootstrap"))!,
+            users.Select(row => new LoginUserObservation(Id(row[0]), (string)row[1]!, (string?)row[2],
+                Utc(row[3]), Utc(row[4]))).ToArray(),
+            mappings.Select(row => new LoginMappingObservation((string)row[0]!, (string)row[1]!, (string)row[2]!,
+                Id(row[3]), Utc(row[4]))).ToArray(),
+            attempts.Select(row => new LoginAttemptObservation(Id(row[0]), (string)row[1]!, Id(row[2]))).ToArray(),
+            sessions.Select(row => new LoginSessionObservation((string)row[0]!, Id(row[1]), (string)row[2]!, Id(row[3]),
+                (byte[])row[4]!, Utc(row[5]), Utc(row[6]), Utc(row[7]), (string)row[8]!,
+                Utc(row[9]), row[10] is null ? null : Utc(row[10]))).ToArray(),
+            events.Select(row => new LoginEventObservation(Id(row[0]), (long)row[1]!, (string)row[2]!,
+                (string)row[3]!, row[4] is null ? null : Id(row[4]))).ToArray());
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (worker is not null) await worker.DisposeAsync();
+        client?.Dispose();
+        providerClient?.Dispose();
+        if (application is not null)
+        {
+            using var stop = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            await application.StopAsync(stop.Token);
+            await application.DisposeAsync();
+        }
+        observer?.Dispose();
+        workerTrust?.Dispose();
+        keys?.Dispose();
+        configuration?.Dispose();
+        fileLease?.Dispose();
+        if (hostLease is not null) await hostLease.DisposeAsync();
+        serving?.Dispose();
+        if (issuer is not null) await issuer.DisposeAsync();
+        if (scope is not null) await scope.DisposeAsync();
+    }
+
+    private sealed class CommitInterruption() : Exception("identity_fixture_commit_interrupted");
+
+    private sealed class FaultCookies(LoginCommitFixture owner) : ICookieManager
+    {
+        private readonly IdentitySessionCookieManager inner = new();
+        public string? GetRequestCookie(HttpContext context, string key) => inner.GetRequestCookie(context, key);
+        public void DeleteCookie(HttpContext context, string key, CookieOptions options) => inner.DeleteCookie(context, key, options);
+        public void AppendResponseCookie(HttpContext context, string key, string? value, CookieOptions options)
+        {
+            if (owner.fault == LoginCommitFault.CookiePublication) throw new CommitInterruption();
+            inner.AppendResponseCookie(context, key, value, options);
+        }
+    }
+
+    private sealed class FaultObserver : IObserver<DiagnosticListener>, IObserver<KeyValuePair<string, object?>>, IDisposable
+    {
+        private readonly LoginCommitFixture owner;
+        private readonly List<IDisposable> subscriptions = [];
+        private readonly IDisposable all;
+        internal FaultObserver(LoginCommitFixture owner)
+        {
+            this.owner = owner;
+            all = DiagnosticListener.AllListeners.Subscribe(this);
+        }
+
+        public void OnNext(DiagnosticListener listener)
+        {
+            if (listener.Name == "Kofte.Identity") subscriptions.Add(listener.Subscribe(this));
+        }
+
+        public void OnNext(KeyValuePair<string, object?> item)
+        {
+            if (owner.fault is not (LoginCommitFault.BeforeCommit or LoginCommitFault.AfterCommit) ||
+                item.Key != "identity.phase" || item.Value is null ||
+                !ReferenceEquals(owner.accessor.HttpContext?.RequestServices.GetService<LoginCommitFixture>(), owner)) return;
+            var phase = JsonSerializer.SerializeToElement(item.Value).GetProperty("phase").GetString();
+            if (phase == (owner.fault == LoginCommitFault.BeforeCommit ? "login_before_commit" : "login_committed"))
+                throw new CommitInterruption();
+        }
+
+        public void OnCompleted() { }
+        public void OnError(Exception error) => throw new InvalidOperationException("identity_fixture_observer_failed");
+        public void Dispose()
+        {
+            all.Dispose();
+            foreach (var subscription in subscriptions) subscription.Dispose();
+        }
+    }
+}

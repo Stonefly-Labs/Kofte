@@ -13,6 +13,8 @@ namespace Kofte.Infrastructure.Identity;
 internal sealed record IdentityMetadata(Guid InstallationId, long Revision, Guid Epoch,
     string Mode, string TrustDigest, DateTime ReconciledAt);
 
+internal enum IdentityCommitKind { Login, Enrollment }
+
 internal sealed record IdentityMutation(DeadlineStore Database, IdentityMetadata Before, long Revision)
 {
     internal bool EventsPruned { get; set; }
@@ -43,11 +45,13 @@ internal sealed class IdentityStore
             (installation, installationId, mode, digest, fileLease, hostLease);
     }
 
-    internal async Task<T> MutateAsync<T>(OperationBudget budget, Func<IdentityMutation, Task<T>> action)
+    internal async Task<T> MutateAsync<T>(OperationBudget budget, Func<IdentityMutation, Task<T>> action,
+        IdentityCommitKind? commitKind = null)
         => await IdentityDiagnostics.ObserveAsync(IdentityAction.OwnerMutation, mode, installation.Provider, budget,
-            () => MutateCoreAsync(budget, action));
+            () => MutateCoreAsync(budget, action, commitKind));
 
-    private async Task<T> MutateCoreAsync<T>(OperationBudget budget, Func<IdentityMutation, Task<T>> action)
+    private async Task<T> MutateCoreAsync<T>(OperationBudget budget, Func<IdentityMutation, Task<T>> action,
+        IdentityCommitKind? commitKind)
     {
         budget.Check();
         var remaining = Math.Min(TimeSpan.FromSeconds(1).Ticks, budget.Remaining.Ticks);
@@ -61,10 +65,25 @@ internal sealed class IdentityStore
         Match(metadata, installationId, mode, digest);
         var result = await ApplyAsync(database, metadata, action);
         await VerifyAuthorityAsync(database);
+        Checkpoint(commitKind, committed: false);
         IdentityDiagnostics.Current?.PossibleCommit();
         await database.CommitAsync();
         IdentityDiagnostics.Current?.Committed();
+        Checkpoint(commitKind, committed: true);
         return result;
+    }
+
+    private static void Checkpoint(IdentityCommitKind? kind, bool committed)
+    {
+        if (kind is null) return;
+        IdentityDiagnostics.Checkpoint((kind, committed) switch
+        {
+            (IdentityCommitKind.Login, false) => "login_before_commit",
+            (IdentityCommitKind.Login, true) => "login_committed",
+            (IdentityCommitKind.Enrollment, false) => "enrollment_before_commit",
+            (IdentityCommitKind.Enrollment, true) => "enrollment_committed",
+            _ => throw new StorageException(StorageCode.RequestInvalid)
+        });
     }
 
     internal static async Task<T> MutateStoppedAsync<T>(StorageInstallation installation, MaintenanceScope scope,

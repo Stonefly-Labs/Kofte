@@ -43,6 +43,8 @@ internal static class FixtureProgram
                 await Task.Delay(TimeSpan.FromSeconds(100));
                 return 0;
             }
+            if (args is ["--fixture-login-bridge"])
+                return await Kofte.TestSupport.Identity.LoginCommitFixture.RunExistingChildAsync();
             return await BootstrapProgram.RunAsync(args);
         }
         catch (Exception error) when (error is IOException or UnauthorizedAccessException or

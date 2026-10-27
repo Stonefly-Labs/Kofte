@@ -329,7 +329,7 @@ That checkpoint required human merge before 005. PR #7 is now human-merged;
 004's accepted ledger and all five acceptance artifact hashes were verified
 on updated main before beginning the new feature.
 
-**005 / implement is in progress, with T001–T024 and T026–T028 complete (27/100)**, on
+**005 / implement is in progress, with T001–T030 complete (30/100)**, on
 `feature/005-authentication-bootstrap` and the same draft PR #8.
 The [implementation record](specs/005-authentication-bootstrap/implementation.md)
 preserves the provenance investigation and records actual reviewed OIDC
@@ -347,21 +347,29 @@ Transactional evidence, persistent keys and stopped preparation/reconciliation/
 revocation now have focused real-provider/key tests. Actual PostgreSQL restore
 and both-provider format regressions pass 49 cases after a narrowly diagnosed
 constraint-deparsing correction.
-Seventy-three tasks remain unchecked. Exact user mapping is now tested on both
+Seventy tasks remain unchecked. Exact user mapping is now tested on both
 stores, including capacity, rollback, profile/key distinctions, three fresh
 owner processes and preserved consumed designation across explicit trust/mode
 changes. No OIDC session is established by those storage tests.
 Maintained OIDC configuration and the bounded HTTPS backchannel pass 66
 native-protocol/transport/issuer cases, including exact evidence, cancellation,
 key/payload/cache and inherited deadline checks. The test-owned native handler
-stops before local ticket persistence; product login registration and the
-one-commit bridge remain pending. The published mapping/composition checkpoint
+stops before local ticket persistence; product login registration remains
+pending. The published mapping/composition checkpoint
 passed all ten product CI jobs and repository checks.
 Durable attempts and protected framework properties now retain exact local
 binding with five-minute lifetime, finite quotas, bounded cleanup and single
 owner-transaction consumption. Forty both-provider attempt/mapping cases,
 two binding units and two actual native-handler cases pass; this is not yet a
-product login/session or the T025/T030 atomic ticket bridge.
+product login/session. T025/T029/T030 now add the one-owner-commit coordinator,
+protected minimal server tickets and one-shot committed-reference bridge.
+Thirty both-provider contracts pass through actual native OIDC/cookie handlers,
+including real before/after-commit process kills, publication failures,
+fresh references, expiry/revocation and per-user/global capacity.
+Dependent storage and original issuer/native regressions pass 92 and four cases.
+Product registration must use the dedicated session cookie manager and disable
+native sliding renewal; durable activity is renewed only by fresh store lookup.
+Actual login routes and actor projection remain T031/T032, not delivered here.
 Shared T018–T020 endpoint/CSRF/default-deny
 and sanitized diagnostic components now have executable component/operator
 tests, including real before/after-commit worker termination. T021

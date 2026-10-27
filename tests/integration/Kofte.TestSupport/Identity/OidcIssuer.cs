@@ -77,6 +77,7 @@ public sealed class OidcIssuer : IAsyncDisposable
     public Func<string, HttpContext, IResult?>? ResponseOverride { get; set; }
     public int TokenRequests => Volatile.Read(ref tokenRequests);
     public IReadOnlyList<string> Observations => observations.ToArray();
+    public string AuthorityCertificatePem => authority.ExportCertificatePem();
 
     public static async Task<OidcIssuer> CreateAsync(CancellationToken token)
     {
@@ -127,18 +128,20 @@ public sealed class OidcIssuer : IAsyncDisposable
     {
         AllowAutoRedirect = false,
         UseCookies = false,
-        ServerCertificateCustomValidationCallback = (_, certificate, _, errors) => ValidateCertificate(certificate, errors)
+        ServerCertificateCustomValidationCallback = (_, certificate, _, errors) => ValidateCertificate(authority, certificate, errors)
     };
 
-    public SocketsHttpHandler CreateSocketsHandler() => new()
+    public SocketsHttpHandler CreateSocketsHandler() => CreateSocketsHandler(authority);
+
+    internal static SocketsHttpHandler CreateSocketsHandler(X509Certificate2 authority) => new()
     {
         SslOptions = new()
         {
-            RemoteCertificateValidationCallback = (_, certificate, _, errors) => ValidateCertificate(certificate, errors)
+            RemoteCertificateValidationCallback = (_, certificate, _, errors) => ValidateCertificate(authority, certificate, errors)
         }
     };
 
-    private bool ValidateCertificate(X509Certificate? certificate, SslPolicyErrors errors)
+    private static bool ValidateCertificate(X509Certificate2 authority, X509Certificate? certificate, SslPolicyErrors errors)
     {
         if (certificate is null || (errors & (SslPolicyErrors.RemoteCertificateNameMismatch |
             SslPolicyErrors.RemoteCertificateNotAvailable)) != 0) return false;
