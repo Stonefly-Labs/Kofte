@@ -473,7 +473,7 @@ not one passing provider job. PR #7 is now human-merged; its accepted ledger
 and all five acceptance artifact hashes were verified on updated main before
 005 began. Historical failed checks and undiagnosed causes remain unchanged.
 
-**005 / implement has completed T001–T032, not the feature**, on
+**005 / implement is blocked after T001–T033, not a completed feature**, on
 `feature/005-authentication-bootstrap`. The
 [implementation checkpoint](../specs/005-authentication-bootstrap/implementation.md)
 retains the source/signature investigation and records the adopted maintained
@@ -569,8 +569,13 @@ Fresh profiles/designation, revocation and corrupt protection are tested;
 initial designation still grants no unrelated action. Additive generated
 identity contracts preserve every accepted bootstrap operation/component.
 The combined gate passes 52 both-provider native/session/route/API cases.
-Web adapters/UI, enrollment, sign-out, development sessions and identity recovery
-remain dependent work (68 unchecked tasks); no complete browser journey
+Independent adapter/configuration tests pass 51 cases; 78 total web units,
+lint/types and the candidate Next route build pass. T034 remains unchecked:
+the owned live parity probe cannot start because post-build process-group
+cleanup raises `PermissionError`/`EPERM` after Next exits 0. The ledger records
+that blocker; ownership-safe cleanup and actual route verification are next.
+UI, enrollment, sign-out, development sessions and identity recovery
+remain dependent work (67 unchecked tasks); no complete browser journey
 or feature acceptance is claimed.
 
 The completed specify-through-analyze history below is retained on

@@ -693,6 +693,15 @@ than replacing spec 001's immutable baseline. Generation
 parity checks normalize only the actual owned listener and the semantically
 equivalent omitted/empty root security list, not paths, schemas or responses.
 
+The candidate exact Next identity handlers read only public routing fields from
+the same private `KOFTE_AUTH_CONFIG_FILE`; credential references are never opened
+by the web adapter. They use the existing fixed loopback backend configuration,
+not caller Host/forwarding headers, with a 4.5-second total deadline. Independent
+transport/configuration tests and the production build pass, but **T034 is not
+verified live**: owned runtime startup is blocked by the verifier's post-build
+process-group cleanup error. See the [implementation blocker](../../specs/005-authentication-bootstrap/implementation.md#t033-and-partial-t034-bounded-next-adapters-and-runtime-verification-blocker).
+This is not a complete browser login/UI or an operator-ready identity profile.
+
 The existing status browser uses only `/backend/health/ready`. This server-only fixed adapter
 forwards no caller credentials/headers and validates status, content type and
 payload before returning a minimal response. Its total deadline is five seconds;

@@ -329,7 +329,7 @@ That checkpoint required human merge before 005. PR #7 is now human-merged;
 004's accepted ledger and all five acceptance artifact hashes were verified
 on updated main before beginning the new feature.
 
-**005 / implement is in progress, with T001–T032 complete (32/100)**, on
+**005 / implement is blocked, with T001–T033 complete (33/100)**, on
 `feature/005-authentication-bootstrap` and the same draft PR #8.
 The [implementation record](specs/005-authentication-bootstrap/implementation.md)
 preserves the provenance investigation and records actual reviewed OIDC
@@ -347,7 +347,7 @@ Transactional evidence, persistent keys and stopped preparation/reconciliation/
 revocation now have focused real-provider/key tests. Actual PostgreSQL restore
 and both-provider format regressions pass 49 cases after a narrowly diagnosed
 constraint-deparsing correction.
-Sixty-eight tasks remain unchecked. Exact user mapping is now tested on both
+Sixty-seven tasks remain unchecked. Exact user mapping is now tested on both
 stores, including capacity, rollback, profile/key distinctions, three fresh
 owner processes and preserved consumed designation across explicit trust/mode
 changes. No OIDC session is established by those storage tests.
@@ -375,7 +375,12 @@ identity types. The combined both-provider native/session/endpoint gate passes
 52 cases; 21 startup/policy/OpenAPI/original-issuer regressions also pass.
 The current-user tests additionally verify escaped fresh profiles, designation,
 revocation, unavailable protection and continued denial of ungranted actions.
-Web adapters/UI and the remaining stories are not delivered. The preceding
+T033 adds independent adapter/configuration tests: 51 pass, with 78 web units
+total, plus lint/types and direct Next build. T034's candidate fixed routes
+remain unchecked: actual host/Next parity cannot start because owned Next-build
+cleanup raises `PermissionError`/`EPERM` after exit 0. No cleanup exception is
+ignored. The driver records this blocker; fix ownership-safe cleanup and verify
+T034 before continuing. UI and the remaining stories are not delivered. The preceding
 session-head CI's composition and PostgreSQL baseline timeouts remain failed
 with unknown causes, not waived or replaced by local passes.
 Shared T018–T020 endpoint/CSRF/default-deny
@@ -387,7 +392,7 @@ prepared-storage/trust/key verification. Owned serving fixtures prepare identity
 explicitly before inventory baselines; recovery-v1 fixtures remain intentional.
 Foundation units, both-provider storage/startup and stop/privacy recipes pass,
 as do actual empty/composed browser warm starts. Preserve recorded failures
-and the controlled deadline-test profile. The complete browser login journey, enrollment, web and
+and the controlled deadline-test profile. The complete browser login journey, enrollment, UI and
 recovery are not delivered. Preserve the same stage/branch/draft PR.
 
 The completed specify-through-analyze history below remains applicable on

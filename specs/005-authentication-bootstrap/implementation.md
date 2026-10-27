@@ -1779,10 +1779,108 @@ unchanged fifteen-minute `failure_exercise_timeout`, before mutations.
 These are not passing new-head checks; underlying causes are unestablished.
 Earlier head `591d025` remains an independently observed fully green run,
 not a diagnosis or waiver. A bounded current-source execution of the exact
-composition selector is tracked separately below when it finishes.
+composition selector subsequently passed: **588.596 seconds**, unchanged
+900-second limit and minimum expected count of 84, on the local macOS profile.
+This is not a reproduction or diagnosis of the failed Linux CI environment.
 
 Next work is T033–T040: fixed same-origin adapters, accessible browser identity,
 delivered protocol/deadline/refusal evidence, actual three-restart/API/consumer
 and both-provider browser comparison. Enrollment, sign-out, development sessions,
 identity recovery and final complete gates remain later tasks. No complete
 US1 story, browser identity journey, feature acceptance or merge is claimed.
+
+## T033 and partial T034: bounded Next adapters and runtime verification blocker
+
+The original **005 / implement** stage is now **blocked**, not complete.
+**T001–T033 are complete (33/100); 67 tasks remain unchecked.** T034's candidate
+source is preserved, but its marker stays unchecked because actual host/Next
+parity could not start. No reviewer checklist, approved intent, migration,
+dependency/lock file or later stage changed.
+
+### Implemented and focused verification
+
+T033 supplies independently frozen transport expectations, without importing
+the production parser. The actual four Next route exports call only fixed
+browser-context/login/callback/me destinations. Tests verify local unsupported
+credentials and mixed cookie refusal, fixed methods/destinations, stripping
+Host/forwarding/identity/unrelated-cookie headers, both cookie namespaces/counts,
+individual Set-Cookie with an Expires comma, invalid cookie attributes, manual
+redirect destinations, bounded malformed responses, no reflected upstream
+errors/extra fields, escaped display, eight-KiB streamed request boundaries,
+sixteen-KiB header boundaries and a stalled lost mutation response with no retry.
+OIDC-only route absence precedes method/credential handling in development.
+
+Candidate T034 source uses the existing fixed loopback backend derivation.
+Node-only routing configuration reads at most 32 KiB from the canonical private
+owner file with no-follow/nonblocking open and a verified regular descriptor.
+Only public origin/mode/authorization endpoint are projected; client-secret
+and key references are not opened. Duplicate/escaped-duplicate configuration
+keys, symlinks/public permissions, invalid origins/endpoints and accidental
+development mode are independently tested. Host validation/authentication
+remains authoritative; this public routing subset is not a second authenticator.
+
+The 4.5-second total adapter deadline covers configuration, body, fetch and
+response reading. Both bodies and headers/cookies are byte-bounded, response
+cookies remain separate, only configured challenge or exact local completion
+redirects are admitted, and all responses are private. Known safe host failures
+retain their fixed code/correlation; malformed/lost mutation replies return
+uncertain, never a successful session/sign-out/enrollment. No health adapter
+behavior changes, dependency, arbitrary proxy or identity UI was introduced.
+
+The first executed adapter command failed module import because the production
+implementation did not exist; **zero tests ran**, not a fabricated assertion
+red. The first implementation then passed **27 adapter tests**. Lint caught a
+missing preserved error cause in configuration error translation; the normal
+typed `cause` was retained and remains absent from safe public logs/responses.
+Additional boundary/mode/real-file/actual-export cases brought the final focused
+source to **41 adapter + 10 configuration tests**, within **78 web unit tests**.
+All units, lint, type checking and direct Next production builds pass. Builds
+list the four intended dynamic routes alongside unchanged readiness/home routes.
+These are not real browser/native-login or live adapter-parity observations.
+
+| Exact executed command | Result |
+| --- | --- |
+| `npm run test:unit --workspace apps/web -- features/identity/identityAdapter.test.ts` | Initial missing-implementation import failure; zero tests ran. |
+| `npm exec -- prettier --write apps/web/features/identity apps/web/app/auth apps/web/app/api/identity/v1` | Passed; existing formatter applied only to new adapter files. |
+| `npm run test:unit --workspace apps/web` | Final **78 passed** in five files, including all 51 new adapter/configuration cases and retained bootstrap/readiness tests. |
+| `npm run lint --workspace apps/web` | Initial preserved-cause finding corrected; final passed. |
+| `npm run typecheck --workspace apps/web` | Passed. |
+| `npm run build --workspace apps/web` | Direct builds passed; all four dynamic identity routes compile. |
+| `npm run format:check` | Passed. |
+| `python3 scripts/check_repository.py` | Passed with the blocked ledger and current docs. |
+| `python3 -m unittest discover -s scripts/tests -v` | **121 passed** for this checkpoint. |
+| `git diff --check` | Passed. |
+| `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore -c Release --filter-class '*Composition*' --minimum-expected-tests 84` | Passed through the unchanged owned `verify.Runner`/private XML diagnostics: **588.596s**, original **900s** limit. |
+
+### Actual failed owned-runtime probe: not waived
+
+Two ordinary `verify.Report`/`Runner`/`runtime` SQLite probes attempted actual
+prepared host/Next status/header/cookie parity. In both, full host build passed
+and the Next build process **exited 0**, but `runtime-web-build` failed with
+`verification_input_invalid` during cleanup. Hosting/preparation had not begun:
+**none of the sixteen planned HTTP parity observations ran**. Both failed
+reports remain under ignored verification artifacts; no live parity or browser
+success is claimed.
+
+A separate bounded execution through `verify.OwnedProcesses` reproduced the
+post-success exception as **`PermissionError`, errno 1 (`EPERM`) at
+`verify.py:450`, `OwnedProcesses.stop`, `os.killpg`**. Only exception type/errno
+and source frames were exposed, not raw private output. A no-descendant `true`
+child cleaned up normally. Another independently owned Next build also exited
+0 and, after checking its exact group had no members, cleaned up successfully.
+That later success does not explain or erase the earlier failed cleanups;
+an unchanged full runtime retry still failed at the same build-cleanup phase.
+No cleanup error was ignored, no owned-process/deadline assertion changed,
+and no generic PermissionError catch was added to the existing supervisor.
+
+The driver helper records the actionable blocker: resolve ownership-safe
+post-build cleanup without waiving live-descendant checks, rerun the actual
+adapter parity probe, finish T034 and then continue T035–T100. The original
+draft PR #8 remains the publication checkpoint; no feature acceptance, ready
+status, intermediate merge or stage completion is implied.
+
+At the last observation, published route head `f3ef060` had passing repository
+checks (`40460031671`) and eight passing product jobs, including PostgreSQL
+integration and failure propagation; contract and recovery were still running
+in product run `40460031691`. This is not a CI result for the adapter checkpoint,
+a diagnosis of the prior timeouts or a completed product matrix.

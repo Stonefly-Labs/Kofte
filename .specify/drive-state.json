@@ -29,9 +29,9 @@
     "spec": "005",
     "step": "implement",
     "directory": "specs/005-authentication-bootstrap",
-    "status": "running",
+    "status": "blocked",
     "branch": "feature/005-authentication-bootstrap",
-    "reason": "",
+    "reason": "T001-T033 complete (33/100, 67 unchecked). T034 candidate adapters pass 78 web units, lint, types and direct Next build, but actual host/Next parity is not executed: both owned-runtime attempts fail during post-success Next build cleanup with verification_input_invalid; independent capture reproduced PermissionError/EPERM at verify.py OwnedProcesses.stop/os.killpg after exit 0. Resolve owned-group cleanup without ignoring live descendants, rerun actual adapter parity, finish T034 and continue T035-T100. Local both-provider composition selector passed in 588.596s within its unchanged 900-second limit; prior Linux CI timeout causes remain unestablished. Feature incomplete; original PR #8 remains draft.",
     "started_at": "2026-10-26T21:30:18+00:00"
   },
   "history": [
