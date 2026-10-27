@@ -1374,3 +1374,83 @@ of `d12fe0d` failures or a claim that the new OIDC helper head has passed CI.
 Continue the same implement stage with T025 and one-owner-commit attempt/
 session/ticket coordination. **74 tasks remain unchecked.** No convergence,
 final review, acceptance, ready status or merge is requested.
+
+## T028: durable owner-transaction attempts and protected local binding
+
+The original **005 / implement** stage remains running on its original branch
+and draft PR #8. T001–T024 and T026–T028 are complete (**27/100**); 73 tasks
+remain unchecked. No stage transition, feature acceptance or merge is requested.
+
+`IdentityLoginAttempts` creates five-minute pending attempts in the caller's
+existing owner mutation and returns the actual persisted values on both stores.
+It admits at most 256 live pending attempts installation-wide and eight per
+browser digest, pruning at most 128 expired/consumed rows. IDs are random UUIDs;
+only lowercase SHA-256-shaped browser digests and the exact local return paths
+are accepted. No raw protocol credential, state, nonce, verifier or browser
+secret is stored. UTC values and stored five-minute correspondence are checked.
+The existing user-store ID/UTC parsing is shared without changing its semantics.
+
+Consumption is one compare-and-update matching pending state, browser digest,
+mode, trust digest, epoch and the half-open local lifetime. It receives the
+same caller-owned mutation as user mapping and never opens or commits a second
+transaction. The authenticated session coordinator must call it inside its
+future complete login commit; these primitives are deliberately not exposed
+through an unfinished product route.
+
+`LoginAttemptBinding` creates framework authentication properties for the
+local attempt ID/browser digest. Its reader accepts only canonical nonempty
+IDs and an exact constant-time digest match. It does not derive the trusted
+return path from incoming properties. The maintained protected-properties
+serializer and an actual native OIDC code/PKCE exchange preserve that binding
+without exposing it in the authorization URL. The native fixture independently
+seeds expected property names and values and still stops before sign-in.
+No new friend assembly, public product API, authentication bypass, package,
+migration or lock change is introduced.
+
+### Actual red results and corrections
+
+The first attempt test command failed compilation because `IdentityLoginAttempt`
+did not exist. Implementation initially missed the storage namespace import
+in the shared parsing helper; the corrected combined attempt/mapping selection
+passed **34/34**. Expanded races and mode/trust checks pass **40/40** on both
+providers: 22 attempt cases plus the existing 18 mapping cases. Tests compare
+exact IDs, binding, epoch, mode, times, states and revisions, including eight
+concurrent browser starts, 256/257 capacity, exact expiry, bounded cleanup,
+twelve simultaneous consumers with one commit, missing/wrong/replayed binding,
+changed security context and rollback of consumption/mapping/event together.
+
+Protected-property unit tests were initially red because the binder did not
+exist; both now pass. The first native binding-fixture build attempted to expose
+an Infrastructure-internal result to Host.IntegrationTests and failed. The
+fixture now uses independent framework properties without widening internals.
+Its first run reused one mutable challenge-property instance and returned 500
+on the second challenge. Copying seed items into fresh per-request properties
+corrected the fixture; both actual native positive/binding cases then passed.
+The other existing native case passed in that failed run; it was not relabeled
+as an all-green result.
+
+### Exact checkpoint verification
+
+Commands select the existing isolated SDK 10.0.402/runtime 10.0.13; both-provider
+commands opt in with `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true`. No restore or
+installation occurred. Required final repository/format checks were executed
+after the fixture correction; earlier checkpoint results are not reused.
+
+| Exact executed command | Result |
+| --- | --- |
+| `dotnet test tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj -c Release --no-restore --filter FullyQualifiedName~IdentityAttemptTests --nologo` | Initial missing-type compilation failure, before implementation. |
+| `dotnet test tests/unit/Kofte.Host.Tests/Kofte.Host.Tests.csproj -c Release --no-restore --filter FullyQualifiedName~LoginAttemptBindingTests --nologo` | Initial missing-binder compilation failure, before implementation. |
+| `dotnet test tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj -c Release --no-build --no-restore --filter 'FullyQualifiedName~IdentityAttemptTests\|FullyQualifiedName~IdentityMappingTests' --nologo` | **40 passed**, both providers, zero failures/skips. |
+| `dotnet test tests/unit/Kofte.Host.Tests/Kofte.Host.Tests.csproj -c Release --no-build --no-restore --filter FullyQualifiedName~LoginAttemptBindingTests --nologo` | **2 passed**, zero failures/skips. |
+| `dotnet test tests/integration/Kofte.Host.IntegrationTests/Kofte.Host.IntegrationTests.csproj -c Release --no-restore --filter 'FullyQualifiedName~ActualNativeProtectedStateRetainsOnlyTheLocalAttemptAndBrowserBinding\|FullyQualifiedName~NativeHandlerValidatesRealCodePkceAndNonceBeforeTheLocalTicketSeam' --nologo` | Final **2 passed**, zero failures/skips, after the fresh-property correction. |
+| `dotnet build Kofte.slnx --no-restore -c Release -warnaserror --nologo` | Passed after the fixture correction, zero warnings/errors. |
+| `dotnet format Kofte.slnx --verify-no-changes --no-restore --verbosity quiet` | Passed after the fixture correction. |
+| `python3 scripts/check_repository.py` | Passed. |
+| `python3 -m unittest discover -s scripts/tests -v` | **121 passed**. |
+| `git diff --check` | Passed. |
+| `npm run format:check` | Passed. |
+
+T025/T029/T030 still owe the real session/cookie bridge, one known owner commit
+before publication, and uncertain-acknowledgement/publication-failure evidence.
+Current component tests are not full product login, stored-session, actor,
+browser or retained-session restart evidence.

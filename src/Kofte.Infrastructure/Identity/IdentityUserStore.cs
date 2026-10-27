@@ -1,8 +1,8 @@
 using System.Buffers;
-using System.Globalization;
 using System.Text;
 using Kofte.Infrastructure.Storage;
 using Kofte.Platform.Modules.Storage;
+using static Kofte.Infrastructure.Identity.IdentityValues;
 
 namespace Kofte.Infrastructure.Identity;
 
@@ -104,18 +104,6 @@ internal static class IdentityUserStore
         if (updated < created) throw new StorageException(StorageCode.Corrupt);
         return new(Id(row[0]), mode, (string?)row[2], created, updated);
     }
-
-    private static Guid Id(object? value) =>
-        Guid.TryParse(Convert.ToString(value, CultureInfo.InvariantCulture), out var id) && id != Guid.Empty
-            ? id : throw new StorageException(StorageCode.Corrupt);
-
-    private static DateTime Utc(object? value) => value switch
-    {
-        DateTime { Kind: DateTimeKind.Utc } utc => utc,
-        string text when DateTime.TryParseExact(text, "O", CultureInfo.InvariantCulture,
-            DateTimeStyles.RoundtripKind, out var parsed) && parsed.Kind == DateTimeKind.Utc => parsed,
-        _ => throw new StorageException(StorageCode.Corrupt)
-    };
 
     private static bool ValidKey(string mode, string issuer, string subject)
     {

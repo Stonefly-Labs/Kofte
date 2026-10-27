@@ -41,6 +41,36 @@ public sealed class OidcProtocolTests
         AssertNoSession(response);
     }
 
+    [Fact]
+    public async Task ActualNativeProtectedStateRetainsOnlyTheLocalAttemptAndBrowserBinding()
+    {
+        await using var issuer = await OidcIssuer.CreateAsync(Token);
+        var now = DateTime.UtcNow;
+        var attemptId = Guid.NewGuid();
+        var browserDigest = new string('b', 64);
+        var properties = new AuthenticationProperties(new Dictionary<string, string?>
+        {
+            ["kofte.attempt.v1"] = attemptId.ToString("D"),
+            ["kofte.browser.v1"] = browserDigest
+        })
+        {
+            RedirectUri = "/identity",
+            IssuedUtc = new DateTimeOffset(now),
+            ExpiresUtc = new DateTimeOffset(now.AddMinutes(5))
+        };
+        await using var fixture = await ProtocolHost.CreateAsync(issuer, Token, properties);
+        using var start = await fixture.StartAsync(Token);
+        Assert.Equal(HttpStatusCode.Found, start.StatusCode);
+        Assert.DoesNotContain(attemptId.ToString("D"), start.Headers.Location!.AbsoluteUri,
+            StringComparison.Ordinal);
+        Assert.DoesNotContain(browserDigest, start.Headers.Location.AbsoluteUri, StringComparison.Ordinal);
+        using var response = await fixture.LoginAsync(Token);
+        Assert.Equal(HttpStatusCode.SeeOther, response.StatusCode);
+        Assert.Equal(attemptId, fixture.ValidatedAttempt);
+        Assert.Single(fixture.Validated);
+        AssertNoSession(response);
+    }
+
     [Theory]
     [InlineData(IdTokenMutation.WrongIssuer)]
     [InlineData(IdTokenMutation.WrongAudience)]
@@ -268,10 +298,12 @@ public sealed class OidcProtocolTests
         private HttpClient client = null!;
         private HttpClient providerClient = null!;
         internal List<string?[]> Validated { get; } = [];
+        internal Guid? ValidatedAttempt { get; private set; }
         internal TaskCompletionSource CallbackFinished { get; } =
             new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        internal static async Task<ProtocolHost> CreateAsync(OidcIssuer issuer, CancellationToken token)
+        internal static async Task<ProtocolHost> CreateAsync(OidcIssuer issuer, CancellationToken token,
+            AuthenticationProperties? attemptProperties = null)
         {
             var host = new ProtocolHost { providerClient = issuer.CreateClient() };
             try
@@ -307,6 +339,8 @@ public sealed class OidcProtocolTests
                             var principal = context.Principal ?? throw new InvalidOperationException("fixture_principal_missing");
                             host.Validated.Add([principal.FindFirstValue("iss"),
                                 principal.FindFirstValue("sub"), principal.FindFirstValue("name")]);
+                            if (attemptProperties is not null)
+                                host.ValidatedAttempt = LoginAttemptBinding.Read(context.Properties, new string('b', 64));
                             context.HandleResponse();
                             context.Response.StatusCode = 303;
                             context.Response.Headers.Location = "/identity";
@@ -334,7 +368,9 @@ public sealed class OidcProtocolTests
                 });
                 host.application.UseAuthentication();
                 host.application.MapGet("/start", (HttpContext context) => context.ChallengeAsync(
-                    OidcConfiguration.ProviderScheme, new AuthenticationProperties { RedirectUri = "/identity" }));
+                    OidcConfiguration.ProviderScheme, attemptProperties is null
+                        ? new AuthenticationProperties { RedirectUri = "/identity" }
+                        : new AuthenticationProperties(new Dictionary<string, string?>(attemptProperties.Items))));
                 await host.application.StartAsync(token);
                 host.client = new(new HttpClientHandler { AllowAutoRedirect = false, UseCookies = false })
                 {

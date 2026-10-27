@@ -473,7 +473,7 @@ not one passing provider job. PR #7 is now human-merged; its accepted ledger
 and all five acceptance artifact hashes were verified on updated main before
 005 began. Historical failed checks and undiagnosed causes remain unchanged.
 
-**005 / implement has completed T001–T024 and T026–T027, not the feature**, on
+**005 / implement has completed T001–T024 and T026–T028, not the feature**, on
 `feature/005-authentication-bootstrap`. The
 [implementation checkpoint](../specs/005-authentication-bootstrap/implementation.md)
 retains the source/signature investigation and records the adopted maintained
@@ -539,8 +539,15 @@ transport and issuer cases pass. This is a pre-session validation seam:
 the product hosts do not yet register an OIDC login route, and the test host
 intercepts only after the native handler completes all protocol validation.
 It cannot establish a local session or trusted actor.
+Durable attempts now share the caller's existing owner mutation, including
+compare-and-consume and rollback; they never commit independently. Quotas are
+256 pending/installation and eight/browser, with five-minute expiry and
+at-most-128-row cleanup. Mode/trust/epoch and browser digest must still match.
+Native protected properties carry only the local binding; durable return paths
+remain authoritative. Both-provider races and protected-state roundtrips pass,
+but the session coordinator and actual login routes remain dependent work.
 Sessions, login/enrollment and identity
-recovery remain dependent work (74 unchecked tasks); no end-to-end authentication
+recovery remain dependent work (73 unchecked tasks); no end-to-end authentication
 is claimed.
 
 The completed specify-through-analyze history below is retained on
