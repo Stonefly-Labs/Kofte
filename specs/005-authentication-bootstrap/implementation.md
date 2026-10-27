@@ -728,3 +728,117 @@ The exact required `python3 scripts/check_repository.py`,
 format/build, locked restore, frontend lint/types/build and dependency review.
 No new dependency, public contract, approved limit or feature acceptance
 changed. This remains a partial implement checkpoint on the original draft PR.
+
+## T015-T017: transactional evidence, persistent keys and stopped commands
+
+The explicit `/drive-speckit` invocation resumes the original running
+`005 / implement` stage on its recorded branch and open draft PR #8.
+Checklist gates remain requirements **16/16** and quality **36/36**, read-only.
+The interrupted identity event/key/test files were verified as unfinished work
+from this same implementation, not adopted from an unrelated task. No stage
+completion, new run, convergence or acceptance is recorded.
+
+T015 records fixed allowlisted security events in the owner transaction with
+random IDs, checked revision, generated correlation, UTC, optional internal user
+and fixed committed outcome/retention. Installation events cannot be updated or
+deleted. Session retention is thirty days with one at-most-128-row prune per
+mutation. Actual 1,000,000/200,000 capacities warn at 90% and refuse the entire
+mutation when full; neither a missing FK nor a later error leaves a committed
+event or owner revision behind. The existing native deadline executor is reused.
+
+T016 uses maintained Data Protection with installation/mode/purpose binding,
+private owned owner/key artifacts and mandatory actual certificate encryption
+for OIDC. Strict bounded JSON/XML, hashes, no-link/owner/mode validation,
+old-key retention and read-only validation prevent silently adopting, repairing
+or regenerating a ready ring. Warmed providers revalidate disk state before
+protect/unprotect. Framework logging is isolated because it can disclose paths,
+XML and crypto details. Tests use actual protection/unprotection and framework
+rotation, not a replacement cipher or mock principal. Certificate-overlap
+operations remain later T083 work.
+
+T017 adds only strict admitted stopped `prepare`, `reconcile-configuration` and
+`revoke-sessions` commands. They reuse supervised owned-worker admission and the
+exclusive installation scope, with clipped work/acquisition/cleanup inside the
+existing 120-second envelope. Full installation preflight precedes changes.
+Table-free v0 requires separate registry upgrade. Format-1 preparation commits
+format 2, metadata, disabled bootstrap, event and security revision together.
+Borrowed `DeadlineStore` wrappers never commit/rollback/dispose the caller's
+connection/transaction. Key preparation is a separate filesystem effect,
+deliberately completed before that database commit; no distributed atomicity is
+claimed. Ready files left by a failed database transaction can be verified on
+explicit retry.
+
+A current database can complete its explicitly owned `preparing` ring but cannot
+create missing ready keys or adopt an unowned/foreign directory. That boundary
+was initially red on both providers and is now covered by permanent command
+regressions. Reconciliation explicitly acknowledges changed trust/keys and
+advances the epoch, revoking active sessions and pending attempts/authority.
+Revocation requires already acknowledged trust. Both preserve user mappings,
+consumed first-admin designation, installation ID and registry revision totals.
+Direct workers and all stopped commands while a real host lease is held refuse.
+The supervisor projects only a validated bounded four-field success receipt;
+worker failure/empty stdout is handled through the existing safe exit mapping.
+Shared correlated runtime diagnostics/phase projection remain T020.
+
+### PostgreSQL recovery regression: established cause and narrow correction
+
+Published head `d677e82` product run **40426069394** failed integration-postgres,
+recovery, contract, privacy and failure-propagation; quality, unit,
+integration-sqlite, browser, startup and the separate repository check passed.
+Its integration artifact assesses merge revision
+`460f22be3e2c461658bca8959bf3201d1f1c57a7`; host PostgreSQL passed and storage
+PostgreSQL failed the same two `Corrupt` complete-recovery cases described above.
+These are observed failures, not pending checks.
+
+A temporary owned real-PostgreSQL diagnostic reproduced the refusal and captured
+source/restored native catalogs privately. The only difference was
+`__kofte_module_registrations_module_id_check`: original `BETWEEN` parsing
+retained nested `AND` parentheses while actual dump/restore flattened them.
+Both checks have identical semantics. PostgreSQL's native
+`pg_get_constraintdef(oid, true)` removes this redundant grouping; the entire
+source/restored catalogs then compared byte-for-byte equal. The physical verifier
+now uses that server deparser and reviewed fresh v1/v2 reference fingerprints.
+It still fingerprints full constraint definitions, flags and every other
+catalog category; there is no broad parenthesis stripping, omitted constraint,
+schema waiver or migration-1 edit. SQLite fingerprints are unchanged.
+Temporary diagnostic test source was removed and the shipping test assembly
+rebuilt. Existing actual recovery and tamper regressions pass **49/49**.
+This fixes the reproduced regression, not every historical CI failure or
+unimplemented format-2 recovery. Earlier failed evidence remains unchanged.
+
+### Exact executed checks and red/green evidence
+
+Commands use the existing isolated SDK 10.0.402/runtime 10.0.13; PostgreSQL
+commands explicitly set `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true`.
+
+| Exact executed command | Result |
+| --- | --- |
+| `dotnet test tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj -c Release --no-restore --filter FullyQualifiedName~IdentityEventTests --nologo` | Passed **10**, zero failures/skips. Actual full-capacity warning/refusal, immutable retention, bounded pruning and rollback on both providers. |
+| `dotnet test tests/unit/Kofte.Host.Tests/Kofte.Host.Tests.csproj -c Release --no-restore --filter FullyQualifiedName~IdentityKeysTests --nologo` | Passed **27**, zero failures/skips. Actual certificate encryption, restarts/retained rotation, wrong/missing/foreign/edited keys, links, cancellation and stopped authority. |
+| `dotnet test tests/integration/Kofte.Host.IntegrationTests/Kofte.Host.IntegrationTests.csproj -c Release --no-restore --filter FullyQualifiedName~IdentityPreparationTests --nologo` | Initially **4/6 failed** before commands existed; then **6/6**, expanded **12/12**, and final **14/14 passed**, zero skips. Final cases cover exact consumed designation/mapping, revoked sessions/attempts, lost-key correction, owned partial retry and held real host leases. |
+| `dotnet test tests/integration/Kofte.Host.IntegrationTests/Kofte.Host.IntegrationTests.csproj -c Release --no-restore --filter FullyQualifiedName~CurrentDatabaseCanResumeItsOwnedPreparingRing --nologo` | Initially **0/2 passed**: current DB could not finish its owned preparing ring. Fixed with existing-only preparation; both are included in final 14/14 above. |
+| `dotnet test tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj -c Release --no-restore --filter 'FullyQualifiedName~Identity\|FullyQualifiedName~RegistryFormatTests\|FullyQualifiedName~RegistryConstraintTests\|FullyQualifiedName~LeaseLoss' --nologo` | Passed **105**, zero failures/skips, before the deparser correction. |
+| `dotnet test tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj -c Release --no-restore --filter 'FullyQualifiedName~PostgresRecoveryDiagnosticsTests\|FullyQualifiedName~PostgresRecoveryExercise\|FullyQualifiedName~IdentityFormatTests' --nologo` | Passed **49**, zero failures/skips after the correction: actual backup/restore, private recovery records, both-provider physical/history tampering and preserved populated EF/module state. |
+| `dotnet test tests/unit/Kofte.Host.Tests/Kofte.Host.Tests.csproj -c Release --no-restore --nologo` | Passed **255**, zero failures/skips; repeated after the final owned-key retry/supervisor correction. |
+
+During implementation, a missing shared diagnostics-helper visibility caused a
+compiler failure and was fixed by reusing the existing internal failure mapping.
+The first expanded preparation tests attempted internal migration helpers from
+the host integration assembly and failed compilation; their setup now uses
+independently constructed ADO.NET commands, without new friend-assembly access.
+Both failures are resolved, not omitted evidence.
+
+**T001-T017 are complete; T018-T100 (83 tasks) remain unchecked.** Next is the
+endpoint/CSRF/fallback-policy foundation, shared diagnostics and identical
+read-only prepared serving. No identity HTTP endpoint, working login/session,
+enrollment, web journey, recovery-v2, full-matrix pass or acceptance is claimed.
+The driver remains the original running implement stage.
+
+After final source/tests and current-progress/operator documentation updates,
+`python3 scripts/verify.py --suite quality` passed **all 20 steps**, including
+the exact required `python3 scripts/check_repository.py`,
+`python3 -m unittest discover -s scripts/tests -v` (**121 passed**) and
+`git diff --check`, full solution format/build, locked restores and existing
+frontend/dependency checks. No dependency, approved limit or design artifact
+changed. This remains a tested partial implementation checkpoint, not a
+completed foundation/stage or a claim that latest-head CI has passed.

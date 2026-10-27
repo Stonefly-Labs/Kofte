@@ -14,17 +14,20 @@ The [technology-stack exploration](kofte-technology-stack-architecture.md) is hi
 
 ## Working in the repository
 
-**Current Spec Kit checkpoint: 005 / implement in progress, T001–T014 complete.**
+**Current Spec Kit checkpoint: 005 / implement in progress, T001–T017 complete.**
 The [implementation evidence](../specs/005-authentication-bootstrap/implementation.md)
 records reviewed OIDC adoption (403 npm / 87 NuGet), independent HTTPS/process
 fixtures and corpora, strict configuration/public actor-v1, and both-provider
 format-2 migration with exact physical verification and real data/history
 preservation. The deadline blocker is resolved without increasing limits:
 native SQLite execution/cancellable PostgreSQL and metadata/admission now
-pass the 95-case focused both-provider identity/registry/lease gate.
-There are 86 unchecked tasks; no working login, operator preparation,
+pass the 105-case focused both-provider identity/registry/lease gate.
+Transactional security evidence, persistent keys and admitted stopped operator
+preparation/reconciliation/revocation are tested; a corrected PostgreSQL
+dump/restore fingerprint passes 49 recovery/physical-format cases.
+There are 83 unchecked tasks; no working login, serving identity policy,
 session/enrollment UI or identity recovery is claimed.
-T015 transactional security evidence is next in the same stage/branch/draft PR,
+T018 endpoint/CSRF/fallback-policy tests are next in the same stage/branch/draft PR,
 not converge or acceptance.
 The
 [requirements-quality checklist](../specs/005-authentication-bootstrap/checklists/quality.md)

@@ -14,8 +14,8 @@ internal static class RegistryPhysicalFormat
         {
             [("sqlite", 1)] = "4ab7a665924f8fde963cc508101a7fcc1751ca36f80d9c5d5987e9dda0b5347f",
             [("sqlite", 2)] = "74a91a561694f987a6f47c805616443441f2b19922b1c3faf813259c9ea5c3e8",
-            [("postgresql", 1)] = "8d66bb5df94fd4d50aef4e1d25cded9d2cd79a4f8ebdc26ce1432ae4360ecc97",
-            [("postgresql", 2)] = "731227e24b428f67c43dcae6f9d6d9edc8dfe06d76cfde8c6a3d1e3c0dd2e1dc"
+            [("postgresql", 1)] = "d29011ff800969e86bd380b26ae64c6e8c64f278beff4aa96401cf4d964b64ff",
+            [("postgresql", 2)] = "a55a8a9c95238c0a619ac4975f4435bf654fc9164180017b9c300d3827473f39"
         };
 
     internal static async Task VerifyAsync(DbConnection connection, string provider, int version,
@@ -29,6 +29,7 @@ internal static class RegistryPhysicalFormat
     internal static async Task<string> FingerprintAsync(DbConnection connection, OperationBudget budget,
         DbTransaction? transaction = null)
     {
+        // PostgreSQL's pretty deparser removes redundant Boolean grouping changed by dump/restore.
         var sql = connection is SqliteConnection ? """
             SELECT type,name,tbl_name,sql FROM sqlite_master ORDER BY type,name
             """ : """
@@ -46,7 +47,7 @@ internal static class RegistryPhysicalFormat
                 LEFT JOIN pg_catalog.pg_attrdef d ON d.adrelid=c.oid AND d.adnum=a.attnum
                 WHERE n.nspname='kofte_system' AND a.attnum>0),
               'constraints', (SELECT jsonb_agg(jsonb_build_array(c.relname,k.conname,k.contype,
-                pg_catalog.pg_get_constraintdef(k.oid,false),k.condeferrable,k.condeferred,k.convalidated,k.connoinherit)
+                pg_catalog.pg_get_constraintdef(k.oid,true),k.condeferrable,k.condeferred,k.convalidated,k.connoinherit)
                 ORDER BY c.relname,k.conname)
                 FROM pg_catalog.pg_constraint k JOIN pg_catalog.pg_namespace n ON n.oid=k.connamespace
                 LEFT JOIN pg_catalog.pg_class c ON c.oid=k.conrelid WHERE n.nspname='kofte_system'),

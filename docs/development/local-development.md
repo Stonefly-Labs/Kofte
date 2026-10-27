@@ -442,6 +442,38 @@ are not bypassed.
 
 ## Prerequisites and explicit restore
 
+### Spec 005 stopped identity checkpoint
+
+Only the following identity commands are implemented at this checkpoint:
+
+```text
+--identity prepare
+--identity reconcile-configuration
+--identity revoke-sessions
+```
+
+Invoke them with the built host DLL and an explicit private
+`KOFTE_AUTH_CONFIG_FILE` matching the host/web origins. The exact configuration
+shape is in [operator-v1](../../specs/005-authentication-bootstrap/contracts/operator-v1.md);
+its remaining commands are still proposals. Stop the installation first.
+Prepare requires the existing separate `--registry upgrade` for table-free
+stores, then transactionally upgrades platform format 1 to 2 with disabled
+bootstrap, metadata and its event. Module mappings/history/data are preserved.
+Retries verify current state and may complete only an owned preparing ring;
+they never recreate missing ready keys. Reconciliation explicitly acknowledges
+configuration/key changes and revokes sessions/attempts/pending authority;
+revocation alone requires the acknowledged trust. Neither resets consumed
+designation or mappings.
+
+The admitted worker has a supervised 120-second envelope, private bounded
+success receipt and no raw child-output projection. Key files and database
+effects are not atomic together; retain owned partial artifacts for deliberate
+retry/correction. OIDC keys require certificate encryption; development keys
+require explicit Development/loopback configuration. These commands do not
+provide working login, enrollment, serving identity policy or recovery-v2.
+
+### Toolchain
+
 Supported targets are macOS 15+ arm64 and Ubuntu 24.04 x64. Native Windows is not
 promised. Install .NET SDK **10.0.402** (runtime **10.0.13**), Node **24.22.0**
 with npm **11.19.1**, and Python 3.11+. The supervisor checks exact product tool

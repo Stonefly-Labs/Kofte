@@ -13,13 +13,28 @@ internal sealed class DeadlineStore : IAsyncDisposable
     private static readonly TimeSpan CleanupReserve = TimeSpan.FromMilliseconds(50);
     private readonly DbConnection connection;
     private readonly OperationBudget work;
+    private readonly bool ownsConnection;
     private DbTransaction? transaction;
     private bool disposed;
     internal string Prefix => connection is NpgsqlConnection ? "kofte_system." : "";
     internal OperationBudget Budget => work;
 
-    private DeadlineStore(DbConnection connection, OperationBudget work)
-        => (this.connection, this.work) = (connection, work);
+    private DeadlineStore(DbConnection connection, OperationBudget work, bool ownsConnection = true)
+        => (this.connection, this.work, this.ownsConnection) = (connection, work, ownsConnection);
+
+    internal static DeadlineStore Borrow(DbConnection connection, DbTransaction transaction, OperationBudget budget)
+    {
+        if (transaction.Connection != connection) throw new StorageException(StorageCode.RequestInvalid);
+        budget.Check();
+        var store = new DeadlineStore(connection, new OperationBudget(budget.Remaining, budget.Token), false)
+        { transaction = transaction };
+        if (connection is SqliteConnection sqlite)
+        {
+            sqlite3_progress_handler(sqlite.Handle!, 1000, _ =>
+                store.work.Token.IsCancellationRequested || store.work.Remaining <= TimeSpan.Zero ? 1 : 0, null);
+        }
+        return store;
+    }
 
     internal static async Task<DeadlineStore> OpenAsync(StorageInstallation installation, OperationBudget budget)
     {
@@ -55,6 +70,7 @@ internal sealed class DeadlineStore : IAsyncDisposable
     internal async Task BeginWriteAsync()
     {
         Check();
+        if (!ownsConnection) throw new StorageException(StorageCode.RequestInvalid);
         if (connection is SqliteConnection sqlite)
         {
             if (sqlite3_get_autocommit(sqlite.Handle!) == 0) throw new StorageException(StorageCode.RequestInvalid);
@@ -70,6 +86,7 @@ internal sealed class DeadlineStore : IAsyncDisposable
     internal async Task CommitAsync()
     {
         Check();
+        if (!ownsConnection) throw new StorageException(StorageCode.RequestInvalid);
         if (connection is SqliteConnection sqlite)
         {
             if (sqlite3_get_autocommit(sqlite.Handle!) != 0) throw new StorageException(StorageCode.RequestInvalid);
@@ -223,14 +240,14 @@ internal sealed class DeadlineStore : IAsyncDisposable
             if (connection is SqliteConnection sqlite)
             {
                 sqlite3_progress_handler(sqlite.Handle!, 0, null, null);
-                if (sqlite3_get_autocommit(sqlite.Handle!) == 0)
+                if (ownsConnection && sqlite3_get_autocommit(sqlite.Handle!) == 0)
                     SqliteException.ThrowExceptionForRC(sqlite3_exec(sqlite.Handle!, "ROLLBACK"), sqlite.Handle);
             }
         }
         finally
         {
             // Unpooled PostgreSQL closes the session; do not await an uncancellable rollback round trip.
-            try { await connection.DisposeAsync(); }
+            try { if (ownsConnection) await connection.DisposeAsync(); }
             finally { work.Dispose(); }
         }
     }

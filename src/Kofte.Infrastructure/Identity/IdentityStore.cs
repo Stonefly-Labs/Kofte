@@ -13,7 +13,11 @@ namespace Kofte.Infrastructure.Identity;
 internal sealed record IdentityMetadata(Guid InstallationId, long Revision, Guid Epoch,
     string Mode, string TrustDigest, DateTime ReconciledAt);
 
-internal sealed record IdentityMutation(DeadlineStore Database, IdentityMetadata Before, long Revision);
+internal sealed record IdentityMutation(DeadlineStore Database, IdentityMetadata Before, long Revision)
+{
+    internal bool EventsPruned { get; set; }
+    internal string Correlation { get; } = Guid.NewGuid().ToString("N");
+}
 
 internal sealed class IdentityStore
 {
@@ -51,6 +55,32 @@ internal sealed class IdentityStore
         await database.BeginWriteAsync();
         var metadata = await ReadMetadataAsync(database, locked: true);
         Match(metadata, installationId, mode, digest);
+        var result = await ApplyAsync(database, metadata, action);
+        await VerifyAuthorityAsync(database);
+        await database.CommitAsync();
+        return result;
+    }
+
+    internal static async Task<T> MutateStoppedAsync<T>(StorageInstallation installation, MaintenanceScope scope,
+        Guid installationId, string mode, string digest, bool reconcile, OperationBudget budget,
+        Func<IdentityMutation, Task<T>> action)
+    {
+        ValidateTrust(mode, digest);
+        await scope.VerifyAsync(installation, budget);
+        await using var database = await DeadlineStore.OpenAsync(installation, budget);
+        await database.BeginWriteAsync();
+        var metadata = await ReadMetadataAsync(database, locked: true);
+        if (metadata.InstallationId != installationId) throw new StorageException(StorageCode.OwnerMismatch);
+        if (!reconcile) Match(metadata, installationId, mode, digest);
+        var result = await ApplyAsync(database, metadata, action);
+        await scope.VerifyAsync(installation, budget);
+        await database.CommitAsync();
+        return result;
+    }
+
+    private static async Task<T> ApplyAsync<T>(DeadlineStore database, IdentityMetadata metadata,
+        Func<IdentityMutation, Task<T>> action)
+    {
         var revision = checked(metadata.Revision + 1);
         var result = await action(new(database, metadata, revision));
         if (DeadlineStore.AssertScalar(await database.QueryAsync($"""
@@ -58,8 +88,6 @@ internal sealed class IdentityStore
             WHERE singleton_key=1 AND security_revision=@previous RETURNING security_revision
             """, ("next", revision), ("previous", metadata.Revision))) is not long actual || actual != revision)
             throw new StorageException(StorageCode.Conflict);
-        await VerifyAuthorityAsync(database);
-        await database.CommitAsync();
         return result;
     }
 
@@ -162,7 +190,7 @@ internal sealed class IdentityStore
         return new(id, revision, epoch, mode, digest, time);
     }
 
-    private static void Match(IdentityMetadata metadata, Guid id, string mode, string digest)
+    internal static void Match(IdentityMetadata metadata, Guid id, string mode, string digest)
     {
         if (metadata.InstallationId != id || metadata.Mode != mode || metadata.TrustDigest != digest)
             throw new StorageException(StorageCode.ReconciliationRequired);

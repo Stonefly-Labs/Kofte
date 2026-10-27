@@ -3,6 +3,7 @@ using Kofte.Host.Bootstrap;
 using Kofte.Host.Features.Bootstrap;
 using Kofte.Host.Features.StorageMaintenance;
 using Kofte.Host.Features.ModuleComposition;
+using Kofte.Host.Features.IdentityMaintenance;
 using Kofte.Infrastructure.Storage;
 using Kofte.Infrastructure.Storage.Registry;
 using Microsoft.Data.Sqlite;
@@ -20,6 +21,13 @@ public static class BootstrapProgram
     {
         try
         {
+            if (args.FirstOrDefault() == "--identity-worker")
+                return await IdentityMaintenanceWorker.ExecuteAsync(args);
+            if (args.FirstOrDefault() == "--identity")
+            {
+                await IdentityCommand.RunAsync(args);
+                return 0;
+            }
             if (args.FirstOrDefault() == "--registry-worker")
             {
                 return await MaintenanceWorker.ExecuteAsync(args);

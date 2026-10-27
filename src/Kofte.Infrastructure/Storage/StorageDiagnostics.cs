@@ -65,7 +65,7 @@ internal static class StorageDiagnostics
         _ => StorageOutcome.Failed
     };
 
-    private static StorageCode FailureCode(Exception error, bool callerCancelled) => error switch
+    internal static StorageCode FailureCode(Exception error, bool callerCancelled) => error switch
     {
         StorageException storage => storage.Code,
         StorePathException path => path.Code switch

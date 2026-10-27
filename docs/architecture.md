@@ -473,7 +473,7 @@ not one passing provider job. PR #7 is now human-merged; its accepted ledger
 and all five acceptance artifact hashes were verified on updated main before
 005 began. Historical failed checks and undiagnosed causes remain unchanged.
 
-**005 / implement has completed T001–T014, not the feature**, on
+**005 / implement has completed T001–T017, not the feature**, on
 `feature/005-authentication-bootstrap`. The
 [implementation checkpoint](../specs/005-authentication-bootstrap/implementation.md)
 retains the source/signature investigation and records the adopted maintained
@@ -502,9 +502,20 @@ executing concurrent requests on the borrowed lease connection. Checked security
 revisions, UTC windows, hashed keys, exact rate/capacity refusal and 128-row
 pruning leave module revisions untouched. Real-provider regressions cover
 contention, rollback, overflow, foreign/lost authority and concurrent quotas.
-Serving is not wired to identity yet. Transactional security evidence (T015),
-operator preparation, default denial, sessions, login/enrollment and recovery
-remain dependent work (86 tasks); no end-to-end authentication is claimed.
+Transactional events share owner commits/revisions, immutable installation
+retention, bounded session-event pruning and exact capacity refusal.
+Persistent keys bind installation/mode/purpose, verify owner-only artifacts and
+require certificate encryption in OIDC mode; serving never creates lost rings.
+Admitted stopped prepare/reconcile/revoke commands reuse exclusive maintenance
+authority, initialize disabled bootstrap and preserve mappings/consumed
+designation while invalidating sessions/attempts/pending authority.
+Database and key-file preparation are explicitly not a distributed transaction.
+PostgreSQL constraint fingerprints now use the server's parenthesis-normalizing
+deparser, preserving full definitions across real dump/restore without dropping
+checks or changing frozen migration-1 bytes.
+Serving is not wired to identity yet. Default denial, sessions, login/enrollment
+and identity recovery remain dependent work (83 tasks); no end-to-end
+authentication is claimed.
 
 The completed specify-through-analyze history below is retained on
 `feature/005-authentication-bootstrap`. Its

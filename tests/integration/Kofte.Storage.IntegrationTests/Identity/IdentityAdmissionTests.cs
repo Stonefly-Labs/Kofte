@@ -324,13 +324,42 @@ internal sealed class AdmissionFixture : IAsyncDisposable
     }
 
     internal async Task ExecuteAsync(string sql, params (string Name, object? Value)[] parameters)
+        => await ExecuteWithinAsync(sql, TimeSpan.FromSeconds(1), parameters);
+
+    private async Task ExecuteWithinAsync(string sql, TimeSpan duration, params (string Name, object? Value)[] parameters)
     {
-        using var budget = new OperationBudget(TimeSpan.FromSeconds(1), token);
+        using var budget = new OperationBudget(duration, token);
         await using var database = await DeadlineStore.OpenAsync(fixture.Installation, budget);
         await database.BeginWriteAsync();
         await database.QueryAsync(string.Format(System.Globalization.CultureInfo.InvariantCulture,
             sql, database.Prefix), parameters);
         await database.CommitAsync();
+    }
+
+    internal async Task SeedEventsAsync(int count, bool session, DateTime now, int offset = 0)
+    {
+        using var setup = new OperationBudget(OperationBudget.Migration, token);
+        for (var seeded = 0; seeded < count;)
+        {
+            setup.Check();
+            var batch = Math.Min(16_384, count - seeded);
+            await ExecuteWithinAsync(fixture.Provider == "sqlite" ? """
+        WITH RECURSIVE n(value) AS (SELECT @offset+1 UNION ALL SELECT value+1 FROM n WHERE value<@offset+@count)
+        INSERT INTO __kofte_identity_events
+        (event_id,security_revision,event_code,occurred_at_utc,correlation_id,user_id,outcome,retention_class)
+        SELECT printf('%s0000000-0000-0000-0000-%012x',@prefix,value),0,@code,@now,
+               '0123456789abcdef0123456789abcdef',NULL,'committed',@retention FROM n
+        """ : """
+        INSERT INTO kofte_system.__kofte_identity_events
+        (event_id,security_revision,event_code,occurred_at_utc,correlation_id,user_id,outcome,retention_class)
+        SELECT (@prefix || '0000000-0000-0000-0000-' || lpad(to_hex(value),12,'0'))::uuid,0,@code,@now,
+               '0123456789abcdef0123456789abcdef',NULL,'committed',@retention
+        FROM generate_series(@offset+1,@offset+@count) AS n(value)
+        """, setup.Remaining, ("offset", offset + seeded), ("count", batch),
+                ("prefix", session ? "2" : "1"), ("code", session ? "session_created" : "user_created"),
+                ("now", now), ("retention", session ? "session" : "installation"));
+            seeded += batch;
+        }
     }
 
     internal Task SeedAsync(int rows, bool expired, DateTime now) => ExecuteAsync(fixture.Provider == "sqlite" ? """

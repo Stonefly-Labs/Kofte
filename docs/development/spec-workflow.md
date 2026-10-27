@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement in progress; T001–T014 complete (14/100)**, on
+**Current checkpoint: 005 / implement in progress; T001–T017 complete (17/100)**, on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 [implementation record](../../specs/005-authentication-bootstrap/implementation.md)
@@ -24,10 +24,16 @@ bounded native SQLite execution and cancellable PostgreSQL pass real lock,
 commit, cancellation and rollback tests. Metadata/admission transactions
 verify normal host authority, preserve epoch/trust and module revisions,
 advance checked security revisions and enforce bounded persisted quotas.
-The focused both-provider identity/registry/lease gate passes 95 tests.
+The focused both-provider identity/registry/lease gate passes 105 tests.
+Transactional immutable security events, installation/purpose-bound persistent
+keys and admitted stopped preparation/reconciliation/revocation are implemented.
+Key tests pass 27 cases and stopped commands pass fourteen both-provider cases.
+The PostgreSQL recovery failure is reproduced and corrected by server-deparsed
+constraint definitions that preserve semantics across actual dump/restore;
+49 recovery/physical-format cases pass, retaining tamper refusal.
 These are foundations, not functioning login, enrollment, UI or recovery.
-Eighty-six tasks remain unchecked, starting with T015 transactional security
-evidence. The original stage is running, not completed; no second run or
+Eighty-three tasks remain unchecked, starting with T018 endpoint/CSRF/fallback
+policy tests. The original stage is running, not completed; no second run or
 later stage began.
 Use `SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap` on downstream
 commands, keep the same draft PR #8 and do not begin a second run or advance to
