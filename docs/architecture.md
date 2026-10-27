@@ -473,7 +473,7 @@ not one passing provider job. PR #7 is now human-merged; its accepted ledger
 and all five acceptance artifact hashes were verified on updated main before
 005 began. Historical failed checks and undiagnosed causes remain unchanged.
 
-**005 / implement has completed T001–T022, T024 and T027, not the feature**, on
+**005 / implement has completed T001–T024 and T026–T027, not the feature**, on
 `feature/005-authentication-bootstrap`. The
 [implementation checkpoint](../specs/005-authentication-bootstrap/implementation.md)
 retains the source/signature investigation and records the adopted maintained
@@ -532,8 +532,15 @@ owner transaction with creation evidence, strict key/profile bounds, finite
 capacity and startup/maintenance correspondence validation. Real-store races,
 rollback and fresh owner processes preserve IDs/designation across acknowledged
 trust/mode changes; HTTP/session orchestration remains separate work.
+Maintained native OIDC configuration now enforces confidential code+PKCE,
+exact signed RS256 evidence, protected state/nonce and an explicitly bounded
+HTTPS/DNS/peer/response/cache backchannel. Sixty-six real protocol,
+transport and issuer cases pass. This is a pre-session validation seam:
+the product hosts do not yet register an OIDC login route, and the test host
+intercepts only after the native handler completes all protocol validation.
+It cannot establish a local session or trusted actor.
 Sessions, login/enrollment and identity
-recovery remain dependent work (76 unchecked tasks); no end-to-end authentication
+recovery remain dependent work (74 unchecked tasks); no end-to-end authentication
 is claimed.
 
 The completed specify-through-analyze history below is retained on

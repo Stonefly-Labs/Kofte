@@ -1233,3 +1233,144 @@ No dependency manifest changed and no package restore/install occurred.
 **76 tasks remain unchecked.** Continue real OIDC protocol and one-commit
 attempt/session/ticket orchestration in this same implement stage. The durable
 driver is not completed, accepted or advanced by publishing this checkpoint.
+
+## T023/T026: maintained native OIDC and bounded HTTPS protocol seam
+
+The original **005 / implement** stage remains running on its original branch
+and draft PR #8. T001–T024 and T026–T027 are now complete (**26/100**); T025 and
+the other 73 remaining tasks are unchecked. Reviewed checklists, approved
+intent, migration bytes and the driver stage are unchanged.
+
+`OidcConfiguration.Apply` configures the adopted maintained ASP.NET Core
+10.0.13 handler and IdentityModel 8.19.2 validation. It requires confidential
+`client_secret_post` code+S256, query callback, exact issuer and single exact
+audience, RS256 signature/lifetime with 60-second skew, and native protected
+state/correlation/nonce. It clears inbound claim actions/remapping, disables
+saved tokens, UserInfo, PAR and telemetry parameters, fixes the callback to
+the configured public origin and uses separate Secure/HttpOnly/Lax protocol
+cookies. Input admits only scalar standard code/error callbacks with required
+state, no duplicate/implicit/mixed fields and an exact response issuer when
+provided. The helper is deliberately **not yet registered in product hosts**.
+
+The native handler clears `RequireSignedTokens` for code-flow token responses.
+A small `JsonWebTokenHandler` subclass therefore restores that parameter on
+its cloned validation input and delegates all cryptographic/token validation
+to the maintained implementation. Independently generated `alg:none` and
+foreign/RS384 signatures are rejected. No custom JWT authenticator, manually
+asserted principal or signature-validation bypass is introduced.
+
+Native ASP.NET Core validates protected state/correlation and clears protocol
+state before its protocol-validator call. The protocol validator retains its
+framework `RequireStateValidation=false` integration setting; native protected
+state is not skipped. Nonce is mandatory. The fixture intercepts
+**OnTicketReceived**, after full native validation, not OnTokenValidated,
+which occurs before the handler's final nonce/protocol checks.
+
+`OidcBackchannel` requires a current request and allows only the configured
+exact HTTPS discovery/JWKS GET and token POST endpoints. Actual DNS answers
+and the connected socket peer must belong to configured networks. Standard
+TLS hostname/chain validation remains enabled; only the test-owned socket
+handler injects trust for its private CA. There is no configuration skip-TLS
+flag. Proxy, cookies, automatic redirects/decompression and credentials/
+Authorization headers are disabled. HTTP/1.1 non-reused connections and an
+explicit per-message connection-attempt guard prevent retry egress.
+
+Request-local accounting allows three backchannel requests, two seconds each,
+clipped to three seconds combined and inherited request cancellation.
+Responses are streamed with announced/unannounced wire limits, strict UTF-8,
+non-duplicate bounded-depth JSON and a separate 16 KiB ID-token cap. No
+compressed expansion or response body reflection occurs. Lazy metadata must
+match issuer and all configured endpoint URLs and advertise the delivered
+code/S256/RS256/client-secret-post flow. Public RSA keys are bounded and
+validated; private, malformed, duplicate or excess keys refuse the exchange.
+
+The cache uses monotonic time: fifteen-minute maximum, one admitted refresh
+per minute, no background fetch or expired/failed-refresh fallback. A signing
+key must still belong to the current unexpired cache at token validation, so
+a callback cannot cross the expiry boundary and admit already expired key
+material. Unknown-key fallback to every other key is disabled. A required
+exchange that cannot fit fails rather than extending the four-second callback.
+
+### Actual independent evidence and limits
+
+`OidcProtocolTests` hosts the real maintained native handler against the owned
+HTTPS issuer's independent signing/authorization/token implementation. The
+positive exchange observes exact issuer/subject/display only at the
+post-protocol seam. Negative cases cover issuer case/trailing slash/audience,
+signature/key/algorithm/unsigned/time, missing/wrong nonce, wrong protected
+state/correlation/PKCE, malformed/missing/private/duplicate/17th keys, exact
+16-key admission, unsolicited/duplicate/mixed/implicit callbacks, preserved
+cookie/code replay, provider cancellation/outage/redirect and fresh correction.
+An actual disconnected callback propagates cancellation to the provider and
+finishes without reaching the ticket seam.
+
+The transport suite exercises actual HTTPS/private-CA rejection, denied
+endpoint/network, strict byte/JSON/UTF-8/decompression boundaries, a fourth
+request refusal before egress, real per-request/combined cancellation and
+controlled exact 59,999/60,000 ms refresh and fifteen-minute cache boundaries.
+Expiry and failed revalidation cannot retain an admissible old key.
+
+These are storage-independent native-protocol tests, scheduled under the
+existing SQLite trait, **not SQLite/PostgreSQL session or full API evidence**.
+The fixture uses test-owned ephemeral Data Protection and intercepts before
+framework sign-in: no local user/session/actor or product test endpoint exists
+there. It rejects every non-protocol Set-Cookie. Product retained-key,
+one-owner-commit/cookie-publication and actual browser/API journeys remain
+T025/T028–T040; do not relabel this as a working login or T038 restart proof.
+
+### Actual red results and corrections
+
+The first protocol selection failed compilation because the Login namespace
+did not exist. Its first implemented build exposed a test principal-nullability
+error. After that correction, the fixture failed because its owned content root
+was not created. The next run exposed an empty Cookie header, was stopped
+after repeated identical failures, and was corrected to omit absent cookies.
+The fixture now explicitly stops its owned Kestrel host within five seconds.
+The real positive then passed; the first expanded selection passed **19/19**.
+Further protocol and transport cases passed **50/50**, then the expanded
+protocol/transport/original-issuer selection passed **62/62**. Actual HTTP
+disconnect and unannounced streamed-boundary additions separately passed
+**3/3**, yielding **65 distinct passing cases**, not a fabricated single run.
+The solution build passed with zero warnings/errors; format verification found
+one whitespace error, corrected using the existing formatter and reverified.
+
+Direct source review then found that failed unknown-key refresh could discard
+the cache and allow subsequent cold-discovery retries inside its one-minute
+refresh bound. The new
+`FailedUnknownKeyRefreshCannotTurnIntoUnboundedColdDiscoveryRetries` regression
+failed with **no expected exception** and unexpected network activity.
+`dotnet test tests/integration/Kofte.Host.IntegrationTests/Kofte.Host.IntegrationTests.csproj -c Release --no-restore --filter FullyQualifiedName~FailedUnknownKeyRefreshCannotTurnIntoUnboundedColdDiscoveryRetries --nologo`
+recorded that actual initial red result. Failed key refresh now preserves its
+cooldown and refuses before egress at 59,999 ms, admits revalidation at 60,000 ms,
+and consistently uses the cache clock. No expired key is restored. The final
+combined selection passed **66/66**, including all prior cases and this
+correction; solution build and format verification passed again.
+
+### Exact checkpoint verification
+
+All .NET commands use the existing isolated SDK 10.0.402/runtime 10.0.13. No
+package manifest or lock changed; no install or restore occurred.
+
+| Exact executed command | Result |
+| --- | --- |
+| `dotnet test tests/integration/Kofte.Host.IntegrationTests/Kofte.Host.IntegrationTests.csproj -c Release --no-restore --filter 'FullyQualifiedName~OidcProtocolTests\|FullyQualifiedName~OidcBackchannelTests\|FullyQualifiedName~OidcIssuerTests' --nologo` | Final **66 passed**, zero failures/skips, 9m47s; earlier **62 passed** before the cancellation/streamed/failed-refresh additions. |
+| `dotnet test tests/integration/Kofte.Host.IntegrationTests/Kofte.Host.IntegrationTests.csproj -c Release --no-restore --filter 'FullyQualifiedName~ActualCallbackDisconnectCancelsProvider\|FullyQualifiedName~UnannouncedStreamedBody' --nologo` | **3 passed**, zero failures/skips. |
+| `dotnet build Kofte.slnx --no-restore -c Release -warnaserror --nologo` | Passed, zero warnings/errors. |
+| `dotnet format Kofte.slnx --verify-no-changes --no-restore --verbosity quiet` | Passed after correcting the reported whitespace. |
+| `python3 scripts/check_repository.py` | Passed. |
+| `python3 -m unittest discover -s scripts/tests -v` | **121 passed**. |
+| `git diff --check` | Passed. |
+| `npm run format:check` | Passed. |
+
+### Published mapping/composition checkpoint CI
+
+Published `cdb19a8` repository run **40445118973** and product run
+**40445118966** both completed **success**. All ten product contexts passed:
+quality, unit, integration-sqlite, integration-postgres, startup, browser,
+recovery, contract, failure-propagation and privacy. This is observed new-head
+CI evidence for the preceding mapping/composition checkpoint, not a rewrite
+of `d12fe0d` failures or a claim that the new OIDC helper head has passed CI.
+
+Continue the same implement stage with T025 and one-owner-commit attempt/
+session/ticket coordination. **74 tasks remain unchecked.** No convergence,
+final review, acceptance, ready status or merge is requested.

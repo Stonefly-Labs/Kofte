@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement in progress; T001–T022, T024 and T027 complete (24/100)**, on
+**Current checkpoint: 005 / implement in progress; T001–T024 and T026–T027 complete (26/100)**, on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 [implementation record](../../specs/005-authentication-bootstrap/implementation.md)
@@ -47,8 +47,13 @@ designation; these storage tests do not establish an HTTP session.
 The published foundation CI exposed missing explicit preparation in three
 shared composition recipes; the reproduced omission is corrected before their
 preservation baselines, with both-provider public regressions passing.
-T023's real OIDC journey tests are next; no login/session implementation is
-inferred from a ready health endpoint.
+Published mapping/composition head `cdb19a8` subsequently passed repository
+checks and all ten product CI jobs, including actual failure propagation.
+T023/T026 now add maintained OIDC configuration, bounded HTTPS transport and
+66 real native-protocol/transport/issuer regressions. The fixture
+stops at the post-protocol/pre-session ticket seam; no product login route,
+stored session or actor is inferred. T025's one-owner-commit contract and
+attempt/session/ticket coordination are next; 74 tasks remain unchecked.
 The original stage is running, not completed; no second run or later stage began.
 Use `SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap` on downstream
 commands, keep the same draft PR #8 and do not begin a second run or advance to

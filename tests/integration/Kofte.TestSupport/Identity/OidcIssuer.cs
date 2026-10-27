@@ -20,7 +20,8 @@ namespace Kofte.TestSupport.Identity;
 public enum IdTokenMutation
 {
     None, WrongIssuer, WrongAudience, WrongSignature, WrongAlgorithm,
-    Expired, Future, MissingNonce, WrongNonce
+    Expired, Future, MissingNonce, WrongNonce, Unsigned, WrongKey,
+    IssuerCase, IssuerTrailingSlash
 }
 
 public sealed class OidcIssuer : IAsyncDisposable
@@ -73,6 +74,7 @@ public sealed class OidcIssuer : IAsyncDisposable
     public bool CancelAuthorization { get; set; }
     public bool PublishSigningKey { get; set; } = true;
     public Func<string, CancellationToken, Task>? BeforeResponse { get; set; }
+    public Func<string, HttpContext, IResult?>? ResponseOverride { get; set; }
     public int TokenRequests => Volatile.Read(ref tokenRequests);
     public IReadOnlyList<string> Observations => observations.ToArray();
 
@@ -125,17 +127,28 @@ public sealed class OidcIssuer : IAsyncDisposable
     {
         AllowAutoRedirect = false,
         UseCookies = false,
-        ServerCertificateCustomValidationCallback = (_, certificate, _, errors) =>
+        ServerCertificateCustomValidationCallback = (_, certificate, _, errors) => ValidateCertificate(certificate, errors)
+    };
+
+    public SocketsHttpHandler CreateSocketsHandler() => new()
+    {
+        SslOptions = new()
         {
-            if (certificate is null || (errors & (SslPolicyErrors.RemoteCertificateNameMismatch |
-                SslPolicyErrors.RemoteCertificateNotAvailable)) != 0) return false;
-            using var chain = new X509Chain();
-            chain.ChainPolicy.TrustMode = X509ChainTrustMode.CustomRootTrust;
-            chain.ChainPolicy.CustomTrustStore.Add(authority);
-            chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
-            return chain.Build(certificate);
+            RemoteCertificateValidationCallback = (_, certificate, _, errors) => ValidateCertificate(certificate, errors)
         }
     };
+
+    private bool ValidateCertificate(X509Certificate? certificate, SslPolicyErrors errors)
+    {
+        if (certificate is null || (errors & (SslPolicyErrors.RemoteCertificateNameMismatch |
+            SslPolicyErrors.RemoteCertificateNotAvailable)) != 0) return false;
+        using var chain = new X509Chain();
+        chain.ChainPolicy.TrustMode = X509ChainTrustMode.CustomRootTrust;
+        chain.ChainPolicy.CustomTrustStore.Add(authority);
+        chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
+        using var leaf = new X509Certificate2(certificate);
+        return chain.Build(leaf);
+    }
 
     public HttpClient CreateClient() => new(CreateHandler())
     {
@@ -152,6 +165,7 @@ public sealed class OidcIssuer : IAsyncDisposable
     private async Task<IResult> DiscoveryAsync(HttpContext context)
     {
         await ObserveAsync("discovery", context.RequestAborted);
+        if (ResponseOverride?.Invoke("discovery", context) is { } overridden) return overridden;
         return Results.Json(new
         {
             issuer = Issuer.AbsoluteUri,
@@ -170,6 +184,7 @@ public sealed class OidcIssuer : IAsyncDisposable
     private async Task<IResult> KeysAsync(HttpContext context)
     {
         await ObserveAsync("jwks", context.RequestAborted);
+        if (ResponseOverride?.Invoke("jwks", context) is { } overridden) return overridden;
         var key = signingKey.ExportParameters(false);
         return Results.Json(new
         {
@@ -210,6 +225,7 @@ public sealed class OidcIssuer : IAsyncDisposable
     {
         Interlocked.Increment(ref tokenRequests);
         await ObserveAsync("token", context.RequestAborted);
+        if (ResponseOverride?.Invoke("token", context) is { } overridden) return overridden;
         if (!context.Request.HasFormContentType) return OAuthFailure("invalid_request");
         IFormCollection form;
         try { form = await context.Request.ReadFormAsync(context.RequestAborted); }
@@ -242,7 +258,13 @@ public sealed class OidcIssuer : IAsyncDisposable
         var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         var claims = new Dictionary<string, object>
         {
-            ["iss"] = Mutation == IdTokenMutation.WrongIssuer ? "https://wrong-issuer.invalid/" : Issuer.AbsoluteUri,
+            ["iss"] = Mutation switch
+            {
+                IdTokenMutation.WrongIssuer => "https://wrong-issuer.invalid/",
+                IdTokenMutation.IssuerCase => Issuer.AbsoluteUri.ToUpperInvariant(),
+                IdTokenMutation.IssuerTrailingSlash => Issuer.AbsoluteUri.TrimEnd('/'),
+                _ => Issuer.AbsoluteUri
+            },
             ["aud"] = Mutation == IdTokenMutation.WrongAudience ? "wrong-audience" : ClientId,
             ["sub"] = Subject,
             ["iat"] = now,
@@ -252,10 +274,16 @@ public sealed class OidcIssuer : IAsyncDisposable
         };
         if (Mutation == IdTokenMutation.MissingNonce) claims.Remove("nonce");
         if (DisplayName is { } display) claims["name"] = display;
-        var algorithm = Mutation == IdTokenMutation.WrongAlgorithm ? "RS384" : "RS256";
+        var algorithm = Mutation switch
+        {
+            IdTokenMutation.WrongAlgorithm => "RS384",
+            IdTokenMutation.Unsigned => "none",
+            _ => "RS256"
+        };
         var unsigned = Base64Url(JsonSerializer.SerializeToUtf8Bytes(
-            new { alg = algorithm, kid = "fixture-key", typ = "JWT" })) +
+            new { alg = algorithm, kid = Mutation == IdTokenMutation.WrongKey ? "foreign-key" : "fixture-key", typ = "JWT" })) +
             "." + Base64Url(JsonSerializer.SerializeToUtf8Bytes(claims));
+        if (Mutation == IdTokenMutation.Unsigned) return unsigned + ".";
         var key = Mutation == IdTokenMutation.WrongSignature ? foreignKey : signingKey;
         return unsigned + "." + Base64Url(key.SignData(Encoding.ASCII.GetBytes(unsigned),
             algorithm == "RS256" ? HashAlgorithmName.SHA256 : HashAlgorithmName.SHA384, RSASignaturePadding.Pkcs1));
