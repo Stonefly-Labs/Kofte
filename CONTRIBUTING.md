@@ -329,7 +329,7 @@ That checkpoint required human merge before 005. PR #7 is now human-merged;
 004's accepted ledger and all five acceptance artifact hashes were verified
 on updated main before beginning the new feature.
 
-**005 / implement is in progress, with T001–T022 complete (22/100)**, on
+**005 / implement is in progress, with T001–T022, T024 and T027 complete (24/100)**, on
 `feature/005-authentication-bootstrap` and the same draft PR #8.
 The [implementation record](specs/005-authentication-bootstrap/implementation.md)
 preserves the provenance investigation and records actual reviewed OIDC
@@ -347,7 +347,11 @@ Transactional evidence, persistent keys and stopped preparation/reconciliation/
 revocation now have focused real-provider/key tests. Actual PostgreSQL restore
 and both-provider format regressions pass 49 cases after a narrowly diagnosed
 constraint-deparsing correction.
-Seventy-eight tasks remain unchecked. Shared T018–T020 endpoint/CSRF/default-deny
+Seventy-six tasks remain unchecked. Exact user mapping is now tested on both
+stores, including capacity, rollback, profile/key distinctions, three fresh
+owner processes and preserved consumed designation across explicit trust/mode
+changes. No OIDC session is established by those storage tests.
+Shared T018–T020 endpoint/CSRF/default-deny
 and sanitized diagnostic components now have executable component/operator
 tests, including real before/after-commit worker termination. T021
 installs these components in both serving entrypoints, using

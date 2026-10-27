@@ -233,6 +233,7 @@ internal sealed class AdmissionFixture : IAsyncDisposable
     internal Guid InstallationId { get; private set; }
     internal StoreLease? FileLease { get; private set; }
     internal NpgsqlConnection? HostLease { get; private set; }
+    internal RegistryFixture RegistryFixture => fixture;
 
     private AdmissionFixture(RegistryFixture fixture, CancellationToken token)
         => (this.fixture, this.token) = (fixture, token);
@@ -255,16 +256,7 @@ internal sealed class AdmissionFixture : IAsyncDisposable
                     "oidc", new string('a', 64), DateTime.UtcNow, budget);
                 await transaction.CommitAsync(token);
             }
-            if (provider == "sqlite") owned.FileLease = StoreLease.Acquire(owned.fixture.Root!);
-            else
-            {
-                owned.HostLease = Assert.IsType<NpgsqlConnection>(
-                    await owned.fixture.Installation.OpenPlatformAsync(budget));
-                await using var command = new NpgsqlCommand(
-                    "SELECT pg_catalog.pg_try_advisory_lock_shared($1)", owned.HostLease);
-                command.Parameters.AddWithValue(PostgresIdentity.LeaseKey);
-                Assert.True(await command.ExecuteScalarAsync(token) is true);
-            }
+            await owned.AcquireRuntimeLeaseAsync();
             return owned;
         }
         catch { await owned.DisposeAsync(); throw; }
@@ -276,6 +268,50 @@ internal sealed class AdmissionFixture : IAsyncDisposable
 
     internal IdentityStore StoreWithLease(AdmissionFixture other) =>
         new(fixture.Installation, InstallationId, "oidc", new string('a', 64), other.FileLease, other.HostLease);
+
+    internal async Task ReleaseRuntimeLeaseAsync()
+    {
+        FileLease?.Dispose();
+        FileLease = null;
+        if (HostLease is not null) await HostLease.DisposeAsync();
+        HostLease = null;
+    }
+
+    internal async Task AcquireRuntimeLeaseAsync()
+    {
+        Assert.Null(FileLease);
+        Assert.Null(HostLease);
+        if (fixture.Provider == "sqlite") FileLease = StoreLease.Acquire(fixture.Root!);
+        else
+        {
+            using var budget = new OperationBudget(OperationBudget.Register, token);
+            HostLease = Assert.IsType<NpgsqlConnection>(await fixture.Installation.OpenPlatformAsync(budget));
+            await using var command = new NpgsqlCommand(
+                "SELECT pg_catalog.pg_try_advisory_lock_shared($1)", HostLease);
+            command.Parameters.AddWithValue(PostgresIdentity.LeaseKey);
+            Assert.True(await command.ExecuteScalarAsync(token) is true);
+        }
+    }
+
+    internal async Task ReconcileAsync(string mode, string digest)
+    {
+        await ReleaseRuntimeLeaseAsync();
+        await using (var scope = await fixture.Maintenance.AcquireAsync(token))
+        {
+            using var budget = new OperationBudget(OperationBudget.Migration, token);
+            await IdentityPreparation.RevokeAsync(fixture.Installation, Assert.IsType<MaintenanceScope>(scope),
+                InstallationId, mode, digest, reconcile: true, budget);
+        }
+        await AcquireRuntimeLeaseAsync();
+    }
+
+    internal async Task VerifyPreparedAsync()
+    {
+        using var budget = new OperationBudget(TimeSpan.FromSeconds(1), token);
+        var metadata = await MetadataAsync();
+        await IdentityPreparation.VerifyAsync(fixture.Installation, InstallationId,
+            metadata.Mode, metadata.TrustDigest, budget);
+    }
 
     internal async Task InitializeAgainAsync()
     {
@@ -315,12 +351,12 @@ internal sealed class AdmissionFixture : IAsyncDisposable
         return await IdentityStore.ReadMetadataAsync(database);
     }
 
-    internal async Task<object?> ScalarAsync(string sql)
+    internal async Task<object?> ScalarAsync(string sql, params (string Name, object? Value)[] parameters)
     {
         using var budget = new OperationBudget(TimeSpan.FromSeconds(1), token);
         await using var database = await DeadlineStore.OpenAsync(fixture.Installation, budget);
         return DeadlineStore.AssertScalar(await database.QueryAsync(string.Format(
-            System.Globalization.CultureInfo.InvariantCulture, sql, database.Prefix)));
+            System.Globalization.CultureInfo.InvariantCulture, sql, database.Prefix), parameters));
     }
 
     internal async Task ExecuteAsync(string sql, params (string Name, object? Value)[] parameters)

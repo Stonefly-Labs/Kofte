@@ -37,7 +37,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 > [!IMPORTANT]
 > **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md) and [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) is now human-merged. Its accepted ledger and evidence were verified on updated main before 005 began. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) retains prior failures and unknown causes; the historical failed local gate remains failed, not waived by acceptance or merge. Spec 005 now has [draft authentication/bootstrap requirements](specs/005-authentication-bootstrap/spec.md), not working login. Nothing here claims production readiness or MVP completion.
 
-**Current stage: 005 / implement in progress; T001–T022 complete (22/100).** The
+**Current stage: 005 / implement in progress; T001–T022, T024 and T027 complete (24/100).** The
 [implementation checkpoint](specs/005-authentication-bootstrap/implementation.md)
 records actual OIDC dependency adoption and locked inventory (403 npm / 87
 NuGet identities), an independent HTTPS issuer, owned interruption fixtures,
@@ -66,8 +66,14 @@ perform discovery or silently prepare storage. Existing health contracts remain
 unchanged. Foundation units, both-provider storage/startup, stop/privacy recipes
 and actual empty/composed browser warm starts pass. Initial failures and the
 controlled deadline-test profile are retained in the implementation report.
+Exact local user mapping now composes with the caller's owner transaction:
+case-sensitive keys, bounded profiles/capacity, creation evidence and rollback
+are tested on both stores. Three fresh owner processes and explicit trust/mode
+reconciliation preserve exact IDs and consumed designation. This is storage
+evidence, not a delivered login. A reproduced composition-recipe preparation
+omission is corrected before preservation baselines, without relaxing serving.
 Sessions, enrollment, UI and identity recovery remain unbuilt
-(78 unchecked tasks).
+(76 unchecked tasks).
 Keep the same implement stage and draft PR #8; no merge or acceptance yet.
 
 The following preserves the completed design-stage context. The

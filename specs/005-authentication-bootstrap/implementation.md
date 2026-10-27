@@ -1129,3 +1129,107 @@ checkpoint.
 commit, enrollment, web journeys, identity recovery and the full final evidence
 matrix remain dependent implement work. No converge, review, acceptance or
 merge is requested.
+
+## T024/T027: exact transactional user mapping and composition fixture correction
+
+The original **005 / implement** stage remains running on its recorded branch
+and draft PR #8. T001–T022, T024 and T027 are complete (**24/100**); all other
+task markers and both reviewed checklists are unchanged. No OIDC session,
+working login, enrollment, UI, recovery-v2 or later Spec Kit stage is delivered
+by this checkpoint.
+
+`IdentityUserStore.ResolveAsync` receives the existing owner mutation; it never
+opens or commits a second transaction. It derives mode from verified metadata,
+preserves byte-exact issuer/subject keys, rejects invalid UTF-16/control/profile
+and byte bounds, and inserts the random local user, unique mapping and required
+creation event together. Existing mappings retain ID/mode/creation time and
+update display text only. Capacity is 10,000 users across modes; existing users
+remain resolvable at capacity. Only the exact mapping-key `ON CONFLICT` target
+is reconciled. A real unrelated UNIQUE violation propagates and rolls back,
+not an "existing user" fallback. No email, password, provider privilege or
+administrator field is introduced.
+
+The shared prepared-state verifier now checks complete user/mapping
+correspondence without repairing orphan users. Real SQLite/PostgreSQL cases
+cover twelve simultaneous first resolutions, exact issuer-path/subject case
+and spaces, equal and changed display/email-shaped profile values, transaction
+rollback after mapping creation, ASCII/multibyte 2,048-byte issuers, 255-byte
+subjects, 128 astral Unicode scalars, invalid Unicode/controls and one-over
+limits. The capacity case seeds 9,999 complete mappings, admits exactly the
+10,000th, refuses a new key and still updates that established user.
+
+Three independently started owner processes acquire actual normal host leases,
+perform full startup/prepared-state verification and resolve the original key.
+They compare exact user ID, creation time, mode, display, consumed designation,
+generation/time and immutable creation-event ID. Explicit stopped reconciliation
+then changes trusted configuration and mode, keeps distinct replacement/development
+users, refuses the wrong development namespace and returns to the original
+production user/designation. These are storage-owner process tests, **not an
+HTTP/OIDC login or retained-session demonstration**; delivered coordinator/API
+evidence remains T023/T025–T026/T028–T040. The worker and dispatcher live only
+in the dedicated storage integration test project; no production test route,
+fixture switch, new package or migration byte is added.
+
+### Actual red results and corrections
+
+The initial four mapping cases could not compile because `IdentityUser` and
+its store did not exist. After implementation they passed **8/8** on the two
+providers. The expanded worker initially omitted the required cancellation
+token and failed compilation; that test-only error is corrected. The next
+expanded run passed **12/14**: both process cases wrongly demanded empty stderr,
+although a successful owner mutation emits its required private terminal record.
+They now independently require exactly the ten allowed fields, expected fixed
+values, generated correlation, committed durability and the 1 KiB bound. No
+arbitrary stderr is accepted. The combined storage selection then passed
+**108/108**. Subsequent unrelated-UNIQUE, exact-space and multibyte boundary
+additions pass the final **18/18** mapping selection.
+
+### Published foundation CI: reproduced preparation omission
+
+Published foundation head `d12fe0d` repository run **40442569234** passed.
+Product run **40442569060**, assessing PR merge revision
+`687e6708dd5fa3caa90f0371559af089e58cde44`, passed quality, unit, browser, startup
+and privacy. Both integration jobs passed their host and non-composition
+storage selections, then failed the public `disable-reenable` and
+`failure-correction` recipes. Contract additionally failed `ordered-migration`;
+recovery reached the same correction failure, and failure-propagation stopped
+at its non-green PostgreSQL baseline before mutations.
+
+The exact SQLite `disable-reenable` command reproduced
+`composition_test_boot_exited_before_ready`. Source inspection established that
+the shared public migration preparation helper never explicitly prepared
+identity before its later serving/preservation baselines. It now performs that
+owned stopped preparation after the existing module preparation/cleanup proof.
+All existing original-ID/data/history/full-inventory, cleanup, correction and
+three-cycle assertions remain unchanged. Serving still refuses unprepared
+identity; no runtime migration, weakened stderr/deadline/inventory assertion or
+complete-set recovery format waiver is introduced. Genuine recovery-v1-only
+fixtures and legacy identity-backup refusals remain unchanged.
+
+The focused public contract regression passes **8/8** on both stores, including
+the three reproduced recipe families. This closes the reproduced local
+omission; it is **not** a relabeling of failed CI, a new full integration/
+recovery/failure-propagation run or evidence that a later head's CI passed.
+
+### Exact checkpoint verification
+
+All .NET commands select the existing isolated SDK 10.0.402/runtime 10.0.13.
+Real-provider commands set `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true`.
+No dependency manifest changed and no package restore/install occurred.
+
+| Exact executed command | Result |
+| --- | --- |
+| `dotnet test tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj -c Release --no-restore --filter FullyQualifiedName~Identity --nologo` | Passed **108**, both providers, zero failures/skips, before the final UNIQUE and multibyte additions. |
+| `dotnet test tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj -c Release --no-restore --filter FullyQualifiedName~IdentityMappingTests --nologo` | Final **18 passed**, both providers, zero failures/skips; earlier eight- and sixteen-case successes are intermediate evidence only. |
+| `dotnet test tests/contract/Kofte.Platform.ContractTests/Kofte.Platform.ContractTests.csproj -c Release --no-restore --filter 'FullyQualifiedName~CompositionMigrationContractTests\|FullyQualifiedName~IndependentPublicFailuresRequireTheirNamedCorrectionAndActualOwnedExit' --nologo` | Passed **8**, both providers, zero failures/skips. Actual ordered migration, three disable/re-enable cycles and named failure corrections retain their independent assertions. |
+| `dotnet test tests/integration/Kofte.Host.IntegrationTests/Kofte.Host.IntegrationTests.csproj -c Release --no-restore --filter 'FullyQualifiedName~IdentityPreparationTests\|FullyQualifiedName~IdentityStartupTests' --nologo` | Passed **28**, both providers and actual empty/composed serving, zero failures/skips. |
+| `dotnet build Kofte.slnx --no-restore -c Release -warnaserror --nologo` | Passed, zero warnings/errors. |
+| `dotnet format Kofte.slnx --verify-no-changes --no-restore --verbosity quiet` | Passed. |
+| `python3 scripts/check_repository.py` | Passed. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed **121**. |
+| `git diff --check` | Passed. |
+| `npm run format:check` | Passed. |
+
+**76 tasks remain unchecked.** Continue real OIDC protocol and one-commit
+attempt/session/ticket orchestration in this same implement stage. The durable
+driver is not completed, accepted or advanced by publishing this checkpoint.

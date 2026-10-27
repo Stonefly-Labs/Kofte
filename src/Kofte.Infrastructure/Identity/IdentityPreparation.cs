@@ -57,6 +57,7 @@ internal static class IdentityPreparation
         if (DeadlineStore.AssertScalar(rows) is not { } value ||
             !Guid.TryParse(Convert.ToString(value, CultureInfo.InvariantCulture), out var owner) || owner != installationId)
             throw new StorageException(StorageCode.Corrupt);
+        await IdentityUserStore.VerifyCorrespondenceAsync(database);
     }
 
     internal static async Task RevokeAsync(StorageInstallation installation, MaintenanceScope scope,

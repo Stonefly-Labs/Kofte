@@ -14,7 +14,7 @@ The [technology-stack exploration](kofte-technology-stack-architecture.md) is hi
 
 ## Working in the repository
 
-**Current Spec Kit checkpoint: 005 / implement in progress, T001–T022 complete.**
+**Current Spec Kit checkpoint: 005 / implement in progress, T001–T022, T024 and T027 complete (24/100).**
 The [implementation evidence](../specs/005-authentication-bootstrap/implementation.md)
 records reviewed OIDC adoption (403 npm / 87 NuGet), independent HTTPS/process
 fixtures and corpora, strict configuration/public actor-v1, and both-provider
@@ -25,7 +25,9 @@ pass the 105-case focused both-provider identity/registry/lease gate.
 Transactional security evidence, persistent keys and admitted stopped operator
 preparation/reconciliation/revocation are tested; a corrected PostgreSQL
 dump/restore fingerprint passes 49 recovery/physical-format cases.
-There are 78 unchecked tasks; no working login,
+Exact transactional user mapping now has both-provider capacity, rollback,
+fresh-owner-process and trust/mode preservation evidence.
+There are 76 unchecked tasks; no working login,
 session/enrollment UI or identity recovery is claimed.
 T018–T020 test shared route/default-deny/CSRF components, private diagnostics
 and actual operator interruption. T021 installs those boundaries in both serving paths with explicit,
@@ -47,7 +49,7 @@ passes with concrete coverage of all 29 requirements/outcomes and 22 scenarios,
 100 mapped unchecked tasks, 242 acyclic dependency edges and no actionable or
 constitutional finding at the historical analysis checkpoint.
 Specification, planning artifacts, approved ADR and both reviewed checklists
-remain unchanged; the current implementation markers are T001–T022.
+remain unchanged; the current implementation markers are T001–T022, T024 and T027.
 The historical design checkpoint did not introduce runtime proof or acceptance;
 no intermediate merge is requested.
 See the [current workflow record](development/spec-workflow.md#invocation-and-current-progress).

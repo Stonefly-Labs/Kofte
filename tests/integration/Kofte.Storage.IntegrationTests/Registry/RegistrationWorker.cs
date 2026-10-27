@@ -12,6 +12,8 @@ public static class RegistrationWorker
 {
     public static async Task<int> Main(string[] args)
     {
+        if (args.FirstOrDefault() == "--identity-mapping-worker")
+            return await Identity.IdentityMappingWorker.RunAsync(args);
         if (args is ["--storage-crash-worker", _, "compose", _])
             return await Composition.CompositionPreparationCrashWorker.RunAsync(args);
         if (args.FirstOrDefault() == "--storage-crash-worker")

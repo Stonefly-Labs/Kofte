@@ -133,6 +133,7 @@ internal static class MigrationScenarios
                 record.GetProperty("owner").GetString() == owner).GetProperty("storageCorrelation").GetString()
                 is { Length: 32 }, "composition_test_original_storage_correlation_missing");
         BootScenarios.RequireCleanup(evidence, trace, Owners);
+        await fixture.PrepareIdentityAsync(token);
     }
 
     internal static async Task<ServingAttempt> ServeAsync(ScenarioEvidence evidence, CompositionFixture fixture,

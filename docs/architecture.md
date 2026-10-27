@@ -473,7 +473,7 @@ not one passing provider job. PR #7 is now human-merged; its accepted ledger
 and all five acceptance artifact hashes were verified on updated main before
 005 began. Historical failed checks and undiagnosed causes remain unchanged.
 
-**005 / implement has completed T001–T022, not the feature**, on
+**005 / implement has completed T001–T022, T024 and T027, not the feature**, on
 `feature/005-authentication-bootstrap`. The
 [implementation checkpoint](../specs/005-authentication-bootstrap/implementation.md)
 retains the source/signature investigation and records the adopted maintained
@@ -527,8 +527,13 @@ discovery and refuses restored-copy quarantine. Foundation units and both-provid
 storage/startup/stop/privacy gates pass with preserved snapshots. The actual
 empty/composed stack also passes browser warm starts under unchanged envelopes.
 Recorded initial failures and the controlled deadline-test profile remain
-limitations of that evidence. Sessions, login/enrollment and identity
-recovery remain dependent work (78 unchecked tasks); no end-to-end authentication
+limitations of that evidence. Exact user mapping now runs inside the existing
+owner transaction with creation evidence, strict key/profile bounds, finite
+capacity and startup/maintenance correspondence validation. Real-store races,
+rollback and fresh owner processes preserve IDs/designation across acknowledged
+trust/mode changes; HTTP/session orchestration remains separate work.
+Sessions, login/enrollment and identity
+recovery remain dependent work (76 unchecked tasks); no end-to-end authentication
 is claimed.
 
 The completed specify-through-analyze history below is retained on
