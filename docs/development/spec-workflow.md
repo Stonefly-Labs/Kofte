@@ -32,9 +32,11 @@ The PostgreSQL recovery failure is reproduced and corrected by server-deparsed
 constraint definitions that preserve semantics across actual dump/restore;
 49 recovery/physical-format cases pass, retaining tamper refusal.
 These are foundations, not functioning login, enrollment, UI or recovery.
-Eighty-three tasks remain unchecked, starting with T018 endpoint/CSRF/fallback
-policy tests. The original stage is running, not completed; no second run or
-later stage began.
+Eighty-three tasks remain unchecked. Shared T018–T020 endpoint/CSRF/default-deny
+and private diagnostic components now have executable component/operator
+evidence, including real child termination; both actual serving entrypoints
+still need T021 integration before those foundations can be marked complete.
+The original stage is running, not completed; no second run or later stage began.
 Use `SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap` on downstream
 commands, keep the same draft PR #8 and do not begin a second run or advance to
 converge. No intermediate merge or feature acceptance is requested.

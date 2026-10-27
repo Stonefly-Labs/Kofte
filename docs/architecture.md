@@ -513,9 +513,14 @@ Database and key-file preparation are explicitly not a distributed transaction.
 PostgreSQL constraint fingerprints now use the server's parenthesis-normalizing
 deparser, preserving full definitions across real dump/restore without dropping
 checks or changing frozen migration-1 bytes.
-Serving is not wired to identity yet. Default denial, sessions, login/enrollment
-and identity recovery remain dependent work (83 tasks); no end-to-end
-authentication is claimed.
+Shared exact-route/default-deny/CSRF components and fixed private diagnostics
+now have component/operator evidence, not serving integration. Identity
+composition records remain an internal strict framed union, never new Platform
+identity/lifecycle payload. Operator projection waits for verified child exit
+and cleanup; a lost acknowledgement is uncertain, not success.
+Serving is not wired to identity yet. Sessions, login/enrollment and identity
+recovery remain dependent work (83 unchecked tasks); no end-to-end authentication
+is claimed.
 
 The completed specify-through-analyze history below is retained on
 `feature/005-authentication-bootstrap`. Its

@@ -1,9 +1,11 @@
 using System.Data.Common;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Kofte.Host.Bootstrap;
 using Kofte.Infrastructure.Storage;
+using Kofte.TestSupport;
 using Kofte.TestSupport.Identity;
 using Microsoft.Data.Sqlite;
 using Npgsql;
@@ -15,6 +17,95 @@ public abstract class IdentityPreparationTests
 {
     protected abstract string Provider { get; }
     private CancellationToken Token => TestContext.Current.CancellationToken;
+
+    [Theory]
+    [InlineData("operator_before_commit", false)]
+    [InlineData("operator_committed", true)]
+    public async Task ActualWorkerTerminationCannotPublishSuccessAndPreservesCommittedOrRefusedRecoveryState(
+        string phase, bool committed)
+    {
+        await using var fixture = await IdentityFixture.CreateAsync(Provider, Token);
+        Configure(fixture);
+        Assert.Equal(0, await RunAsync(fixture, "--registry", "upgrade"));
+        var barrier = new IdentityCommitBarrier(fixture.PrivateDirectory, phase, maintenanceChild: true);
+        await using var process = fixture.Start(["--identity", "prepare"], barrier: barrier);
+        await barrier.WaitAsync(fixture.Storage.Token);
+        using var worker = Process.GetProcessById(barrier.ObservedProcessId!.Value);
+        Assert.NotEqual(process.ProcessId, worker.Id);
+        var keys = Directory.GetFiles(fixture.KeyRingDirectory).Order(StringComparer.Ordinal)
+            .Select(File.ReadAllBytes).Select(bytes => Convert.ToHexString(
+                System.Security.Cryptography.SHA256.HashData(bytes))).ToArray();
+        worker.Kill(entireProcessTree: true);
+        await worker.WaitForExitAsync(fixture.Storage.Token);
+        var output = await process.WaitAsync(fixture.Storage.Token);
+        Assert.NotEqual(0, output.ExitCode);
+        Assert.True(process.ExitVerified && process.DescendantExitsVerified && worker.HasExited);
+        Assert.DoesNotContain("identity_completed", output.Stdout + output.Stderr, StringComparison.Ordinal);
+        var line = Assert.Single(output.Stderr.Split('\n', StringSplitOptions.RemoveEmptyEntries),
+            value => value.Contains("\"component\":\"identity\"", StringComparison.Ordinal));
+        using var diagnostic = JsonDocument.Parse(line);
+        Assert.Equal("identity_outcome_uncertain", diagnostic.RootElement.GetProperty("eventCode").GetString());
+        Assert.Equal("uncertain", diagnostic.RootElement.GetProperty("durability").GetString());
+        Assert.Equal(committed ? 2L : 1L, Convert.ToInt64(await ScalarAsync(fixture,
+            "SELECT registry_version FROM {0}__kofte_installation"), CultureInfo.InvariantCulture));
+        if (committed)
+            Assert.Equal(1L, await ScalarAsync(fixture, "SELECT COUNT(*) FROM {0}__kofte_identity_events"));
+        if (Provider == "sqlite" && !committed)
+        {
+            var database = Path.Combine(fixture.Storage.DataRoot, "platform", "platform.db");
+            var before = await File.ReadAllBytesAsync(database, Token);
+            var journal = await File.ReadAllBytesAsync(database + "-journal", Token);
+            var refused = await RunOutputAsync(fixture, "--identity", "prepare");
+            Assert.NotEqual(0, refused.ExitCode);
+            Assert.Contains("\"eventCode\":\"identity_reconciliation_required\"", refused.Stderr,
+                StringComparison.Ordinal);
+            Assert.Equal(before, await File.ReadAllBytesAsync(database, Token));
+            Assert.Equal(journal, await File.ReadAllBytesAsync(database + "-journal", Token));
+        }
+        else
+        {
+            var retry = await RunOutputAsync(fixture, "--identity", "prepare");
+            Assert.True(retry.ExitCode == 0, retry.Stdout + retry.Stderr);
+            Assert.Equal(1L, await ScalarAsync(fixture, "SELECT COUNT(*) FROM {0}__kofte_identity_events"));
+            Assert.Equal(1L, await ScalarAsync(fixture, "SELECT security_revision FROM {0}__kofte_identity_metadata"));
+        }
+        Assert.Equal(keys, Directory.GetFiles(fixture.KeyRingDirectory).Order(StringComparer.Ordinal)
+            .Select(File.ReadAllBytes).Select(bytes => Convert.ToHexString(
+                System.Security.Cryptography.SHA256.HashData(bytes))).ToArray());
+    }
+
+    [Fact]
+    public async Task OperatorDiagnosticsShareTheDurableCorrelationAndDistinguishCommitRetryAndKeyRefusal()
+    {
+        await using var fixture = await IdentityFixture.CreateAsync(Provider, Token);
+        Configure(fixture);
+        Assert.Equal(0, await RunAsync(fixture, "--registry", "upgrade"));
+        var prepared = await RunOutputAsync(fixture, "--identity", "prepare");
+        Assert.Equal(0, prepared.ExitCode);
+        Assert.InRange(System.Text.Encoding.UTF8.GetByteCount(prepared.Stdout.Trim()), 1, 1024);
+        using var committed = JsonDocument.Parse(prepared.Stdout);
+        var correlation = committed.RootElement.GetProperty("correlationId").GetString();
+        Assert.Equal("identity_completed", committed.RootElement.GetProperty("eventCode").GetString());
+        Assert.Equal("committed", committed.RootElement.GetProperty("durability").GetString());
+        Assert.Equal(correlation, await ScalarAsync(fixture,
+            "SELECT correlation_id FROM {0}__kofte_identity_events"));
+        var retry = await RunOutputAsync(fixture, "--identity", "prepare");
+        Assert.Equal(0, retry.ExitCode);
+        using var unchanged = JsonDocument.Parse(retry.Stdout);
+        Assert.Equal("unchanged", unchanged.RootElement.GetProperty("durability").GetString());
+        Assert.NotEqual(correlation, unchanged.RootElement.GetProperty("correlationId").GetString());
+        Directory.Move(fixture.KeyRingDirectory, Path.Combine(fixture.PrivateDirectory, "retained-keys"));
+        var refused = await RunOutputAsync(fixture, "--identity", "prepare");
+        Assert.NotEqual(0, refused.ExitCode);
+        var refusal = Assert.Single(refused.Stderr.Split('\n', StringSplitOptions.RemoveEmptyEntries),
+            line => line.Contains("\"component\":\"identity\"", StringComparison.Ordinal));
+        using var diagnostic = JsonDocument.Parse(refusal);
+        Assert.Equal("identity_keys_invalid", diagnostic.RootElement.GetProperty("eventCode").GetString());
+        Assert.Equal("unchanged", diagnostic.RootElement.GetProperty("durability").GetString());
+        Assert.False(Directory.Exists(fixture.KeyRingDirectory));
+        Assert.Equal(correlation, await ScalarAsync(fixture,
+            "SELECT correlation_id FROM {0}__kofte_identity_events"));
+    }
 
     [Fact]
     public async Task ExplicitPreparationRequiresRegistryUpgradeAndPreservesCurrentStateOnRetry()
@@ -219,13 +310,16 @@ public abstract class IdentityPreparationTests
         }));
 
     private async Task<int> RunAsync(IdentityFixture fixture, params string[] arguments)
+        => (await RunOutputAsync(fixture, arguments)).ExitCode;
+
+    private static async Task<ProcessOutput> RunOutputAsync(IdentityFixture fixture, params string[] arguments)
     {
         await using var process = fixture.Start(arguments);
         var output = await process.WaitAsync(fixture.Storage.Token);
         Assert.DoesNotContain(fixture.PrivateDirectory, output.Stdout + output.Stderr, StringComparison.Ordinal);
         Assert.DoesNotContain(fixture.Canary, output.Stdout + output.Stderr, StringComparison.Ordinal);
         Assert.True(process.ExitVerified && process.DescendantExitsVerified);
-        return output.ExitCode;
+        return output;
     }
 
     private async Task<object?> ScalarAsync(IdentityFixture fixture, string sql)

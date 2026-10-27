@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Xml;
 using System.Xml.Linq;
 using Kofte.Infrastructure.Storage;
+using Kofte.Infrastructure.Identity;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.DataProtection.Repositories;
@@ -82,7 +83,7 @@ internal sealed class IdentityKeys : IDisposable
 
     internal void Verify(OperationBudget budget)
     {
-        lock (repository.Gate)
+        using (Enter(repository.Gate, budget))
         {
             try
             {
@@ -141,14 +142,51 @@ internal sealed class IdentityKeys : IDisposable
 
     private T Use<T>(Func<T> operation)
     {
-        lock (repository.Gate)
+        var enclosing = IdentityDiagnostics.Current?.Budget;
+        enclosing?.Check();
+        var duration = enclosing?.Remaining ?? OperationBudget.Resolve;
+        if (duration <= TimeSpan.Zero) throw new OperationCanceledException(enclosing?.Token ?? default);
+        using var budget = new OperationBudget(duration,
+            enclosing?.Token ?? CancellationToken.None);
+        using (Enter(repository.Gate, budget))
         {
-            using var budget = new OperationBudget(OperationBudget.Resolve, CancellationToken.None);
             Verify(budget);
-            try { return operation(); }
+            try
+            {
+                var result = operation();
+                budget.Check();
+                return result;
+            }
             catch (CryptographicException) { throw new CryptographicException("identity_keys_invalid"); }
             catch (Exception error) when (Unsafe(error)) { throw Invalid(); }
         }
+    }
+
+    private static IDisposable Enter(object gate, OperationBudget budget)
+    {
+        while (true)
+        {
+            budget.Check();
+            if (Monitor.TryEnter(gate))
+            {
+                try
+                {
+                    budget.Check();
+                    return new GateLease(gate);
+                }
+                catch
+                {
+                    Monitor.Exit(gate);
+                    throw;
+                }
+            }
+            _ = budget.Token.WaitHandle.WaitOne(OperationBudget.ProbeInterval);
+        }
+    }
+
+    private sealed class GateLease(object gate) : IDisposable
+    {
+        public void Dispose() => Monitor.Exit(gate);
     }
 
     private static void Purpose(string purpose)
@@ -263,7 +301,7 @@ internal sealed class IdentityKeys : IDisposable
 
         internal void MarkReady(OperationBudget budget)
         {
-            lock (Gate)
+            using (Enter(Gate, budget))
             {
                 var owner = Read(budget).Owner;
                 if (owner.State != "preparing" || owner.Keys.Count == 0) throw Invalid();
@@ -306,7 +344,10 @@ internal sealed class IdentityKeys : IDisposable
 
         internal Snapshot Read(OperationBudget? budget)
         {
-            lock (Gate)
+            using var owned = budget is null && preparationBudget is null && IdentityDiagnostics.Current is null
+                ? new OperationBudget(OperationBudget.Resolve, CancellationToken.None) : null;
+            budget ??= preparationBudget ?? IdentityDiagnostics.Current?.Budget ?? owned!;
+            using (Enter(Gate, budget))
             {
                 budget?.Check();
                 Paths.ValidateRoot(directory, allowMissing: false);
@@ -335,7 +376,9 @@ internal sealed class IdentityKeys : IDisposable
 
         public void StoreElement(XElement element, string friendlyName)
         {
-            lock (Gate)
+            var enclosing = preparationBudget ?? IdentityDiagnostics.Current?.Budget;
+            using var owned = enclosing is null ? new OperationBudget(OperationBudget.Resolve, CancellationToken.None) : null;
+            using (Enter(Gate, enclosing ?? owned!))
             {
                 try
                 {
@@ -508,9 +551,13 @@ internal sealed class IdentityKeys : IDisposable
         private void Effect(Action effect)
         {
             preparationBudget?.Check();
+            IdentityDiagnostics.Current?.Budget.Check();
             authority?.Invoke();
+            IdentityDiagnostics.Current?.PossibleCommit();
             effect();
+            IdentityDiagnostics.Current?.Committed();
             authority?.Invoke();
+            IdentityDiagnostics.Current?.Budget.Check();
             preparationBudget?.Check();
         }
 

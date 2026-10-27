@@ -44,9 +44,25 @@ internal sealed class DeadlineStore : IAsyncDisposable
         DeadlineStore? store = null;
         try
         {
-            var connection = installation.Provider == "sqlite"
-                ? installation.OpenSqliteHandle(work)
-                : await installation.OpenPlatformAsync(work, preciseDeadline: true);
+            DbConnection connection;
+            if (installation.Provider == "sqlite")
+            {
+                while (true)
+                {
+                    work.Check();
+                    try
+                    {
+                        connection = installation.OpenSqliteHandle(work);
+                        break;
+                    }
+                    catch (StorageException error) when (error.Code == StorageCode.Busy)
+                    {
+                        // The header guard has not opened a SQLite handle or begun any transaction.
+                        await Task.Delay(OperationBudget.ProbeInterval, work.Token);
+                    }
+                }
+            }
+            else connection = await installation.OpenPlatformAsync(work, preciseDeadline: true);
             store = new(connection, work);
             if (connection is SqliteConnection sqlite)
             {

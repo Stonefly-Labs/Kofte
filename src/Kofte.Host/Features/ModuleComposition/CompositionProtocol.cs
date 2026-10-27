@@ -1,5 +1,7 @@
 using System.Buffers.Binary;
+using System.Text;
 using System.Text.Json;
+using Kofte.Infrastructure.Identity;
 using Kofte.Platform.Modules.Lifecycle;
 using Kofte.Platform.Modules.Manifest;
 
@@ -14,6 +16,7 @@ public sealed class CompositionProtocol
     private readonly HashSet<string> prerequisiteOwners;
     private readonly HashSet<string> enabledOwners;
     private readonly CompositionMode mode;
+    private readonly SemaphoreSlim writes = new(1, 1);
     private readonly Dictionary<string, HashSet<string>> fieldTokens = new(StringComparer.Ordinal);
 
     public CompositionProtocol(string attempt, string snapshot, IEnumerable<ModuleId> owners, CompositionMode mode,
@@ -52,7 +55,8 @@ public sealed class CompositionProtocol
         }
     }
 
-    private sealed record Frame(int Version, string Snapshot, CompositionRecord Record);
+    internal sealed record Frame(int Version, string Snapshot, CompositionRecord? Record,
+        IdentityDiagnosticRecord? Identity = null);
 
     public static async Task DiscardRawAsync(TextReader source, CancellationToken token)
     {
@@ -60,20 +64,42 @@ public sealed class CompositionProtocol
         while (await source.ReadAsync(buffer.AsMemory(), token) != 0) { }
     }
 
-    public async Task WriteAsync(Stream destination, CompositionRecord record, CancellationToken token)
+    public Task WriteAsync(Stream destination, CompositionRecord record, CancellationToken token)
     {
         Validate(record);
-        var bytes = JsonSerializer.SerializeToUtf8Bytes(new Frame(1, snapshot, record),
-            CompositionDiagnostics.JsonOptions);
+        return WriteFrameAsync(destination, new(1, snapshot, record), token);
+    }
+
+    internal Task WriteIdentityAsync(Stream destination, IdentityDiagnosticRecord record, CancellationToken token)
+    {
+        ValidateIdentity(record);
+        return WriteFrameAsync(destination, new(1, snapshot, null, record), token);
+    }
+
+    private async Task WriteFrameAsync(Stream destination, Frame frame, CancellationToken token)
+    {
+        var bytes = JsonSerializer.SerializeToUtf8Bytes(frame, CompositionDiagnostics.JsonOptions);
         if (bytes.Length > 4096) throw new CompositionBoundaryException("composition_output_limit");
         var header = new byte[4];
         BinaryPrimitives.WriteInt32LittleEndian(header, bytes.Length);
-        await destination.WriteAsync(header, token);
-        await destination.WriteAsync(bytes, token);
-        await destination.FlushAsync(token);
+        await writes.WaitAsync(token);
+        try
+        {
+            await destination.WriteAsync(header, token);
+            await destination.WriteAsync(bytes, token);
+            await destination.FlushAsync(token);
+        }
+        finally { writes.Release(); }
     }
 
     public async Task<CompositionRecord?> ReadAsync(Stream source, CancellationToken token)
+    {
+        var frame = await ReadObservationAsync(source, token);
+        if (frame?.Identity is not null) throw Invalid();
+        return frame?.Record;
+    }
+
+    internal async Task<Frame?> ReadObservationAsync(Stream source, CancellationToken token)
     {
         var header = new byte[4];
         if (await source.ReadAsync(header.AsMemory(0, 1), token) == 0) return null;
@@ -84,16 +110,31 @@ public sealed class CompositionProtocol
             if (length is < 1 or > 4096) throw Invalid();
             var bytes = new byte[length];
             await source.ReadExactlyAsync(bytes, token);
-            var frame = JsonSerializer.Deserialize<Frame>(bytes, CompositionDiagnostics.JsonOptions);
+            using var json = JsonDocument.Parse(bytes, new() { AllowDuplicateProperties = false, MaxDepth = 8 });
+            var frame = json.RootElement.Deserialize<Frame>(CompositionDiagnostics.JsonOptions);
             if (frame is null || frame.Version != 1 || frame.Snapshot != snapshot) throw Invalid();
-            Validate(frame.Record);
-            return frame.Record;
+            if ((frame.Record is null) == (frame.Identity is null)) throw Invalid();
+            if (frame.Record is not null) Validate(frame.Record);
+            if (frame.Identity is not null)
+            {
+                if (Encoding.UTF8.GetByteCount(json.RootElement.GetProperty("identity").GetRawText()) > 1024)
+                    throw Invalid();
+                ValidateIdentity(frame.Identity);
+            }
+            return frame;
         }
         catch (Exception error) when (error is JsonException or EndOfStreamException or
             ArgumentException or InvalidOperationException)
         {
             throw Invalid();
         }
+    }
+
+    private void ValidateIdentity(IdentityDiagnosticRecord record)
+    {
+        if (mode != CompositionMode.Serve) throw Invalid();
+        try { _ = IdentityDiagnostics.Serialize(record); }
+        catch (InvalidOperationException) { throw Invalid(); }
     }
 
     private void Validate(CompositionRecord record)

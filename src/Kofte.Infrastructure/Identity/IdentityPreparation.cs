@@ -36,7 +36,12 @@ internal static class IdentityPreparation
                 """, ("revision", checked(metadata.Revision + 1)));
         }
         await scope.VerifyAsync(installation, budget);
+        IdentityDiagnostics.Checkpoint("operator_before_commit");
+        budget.Check();
+        IdentityDiagnostics.Current?.PossibleCommit();
         await transaction.CommitAsync(budget.Token);
+        IdentityDiagnostics.Current?.Committed();
+        IdentityDiagnostics.Checkpoint("operator_committed");
     }
 
     internal static async Task VerifyAsync(StorageInstallation installation, Guid installationId,

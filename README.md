@@ -55,9 +55,13 @@ The focused both-provider identity/registry/lease gate passes 105 tests; key
 tests pass 27 cases and stopped commands pass fourteen both-provider cases.
 A reproduced PostgreSQL dump/restore fingerprint regression is corrected;
 49 recovery/physical-format cases pass without omitting constraint verification.
-These are foundations, **not working login**: serving policy, sessions,
-enrollment, UI and identity recovery remain unbuilt (83 tasks).
-T018 endpoint/CSRF/fallback-policy tests are next.
+The next increment adds tested shared route/default-deny/CSRF components and
+bounded private diagnostics, including real operator commit/interruption evidence.
+A reproduced SQLite pre-open sharing race now retries only that effect-free guard
+inside the original deadline. These components are **not working login** and are
+not yet installed in both serving entrypoints. T018–T020 remain unchecked pending
+that integration; sessions, enrollment, UI and identity recovery remain unbuilt
+(83 unchecked tasks).
 Keep the same implement stage and draft PR #8; no merge or acceptance yet.
 
 The following preserves the completed design-stage context. The

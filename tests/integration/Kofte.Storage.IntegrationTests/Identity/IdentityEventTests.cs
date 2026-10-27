@@ -89,15 +89,17 @@ public abstract class IdentityEventTests
             await RecordAsync(fixture, IdentityEventCode.SessionCreated);
         }
         finally { Console.SetError(originalError); }
-        var warnings = capture.ToString().Split('\n', StringSplitOptions.RemoveEmptyEntries);
-        Assert.Equal(2, warnings.Length);
-        foreach (var line in warnings)
+        var records = capture.ToString().Split('\n', StringSplitOptions.RemoveEmptyEntries);
+        Assert.Equal(4, records.Length);
+        var warnings = 0;
+        foreach (var line in records)
         {
             Assert.True(System.Text.Encoding.UTF8.GetByteCount(line) <= 1024);
             using var json = JsonDocument.Parse(line);
-            Assert.Equal("identity_event_capacity_warning", json.RootElement.GetProperty("eventCode").GetString());
-            Assert.Matches("^[0-9a-f]{32}$", json.RootElement.GetProperty("correlation").GetString()!);
+            if (json.RootElement.GetProperty("eventCode").GetString() == "identity_event_capacity_warning") warnings++;
+            Assert.Matches("^[0-9a-f]{32}$", json.RootElement.GetProperty("correlationId").GetString()!);
         }
+        Assert.Equal(2, warnings);
         using var failedSink = new FailedWarningSink();
         try
         {

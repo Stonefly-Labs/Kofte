@@ -139,6 +139,27 @@ public sealed class SqliteIdentityDeadlineTests : IdentityDeadlineTests
     protected override string Provider => "sqlite";
 
     [Fact]
+    public async Task TransientHeaderSharingContentionIsRetriedBeforeAnyTransactionWithinTheOriginalBudget()
+    {
+        await using var fixture = await PreparedAsync();
+        using var budget = new OperationBudget(TimeSpan.FromSeconds(1), Token);
+        using var headerLock = new FileStream(fixture.Installation.PlatformPath,
+            FileMode.Open, FileAccess.Read, FileShare.None);
+        var opening = DeadlineStore.OpenAsync(fixture.Installation, budget);
+        await Task.Delay(150, Token);
+        var waitedForRelease = !opening.IsCompleted;
+        headerLock.Dispose();
+        await using var store = await opening;
+        Assert.True(waitedForRelease);
+        await store.BeginWriteAsync();
+        await InsertAsync(store, Guid.NewGuid(), "header-retry");
+        await store.CommitAsync();
+        Assert.Equal("header-retry", Assert.Single(
+            await store.QueryAsync("SELECT display_name FROM __kofte_users"))[0]);
+        Assert.True(budget.Remaining > TimeSpan.Zero);
+    }
+
+    [Fact]
     public async Task ExclusiveLockBeforeOpenFailsClosedWithinTheOriginalBudget()
     {
         await using var fixture = await PreparedAsync();

@@ -16,7 +16,7 @@ internal sealed record IdentityMetadata(Guid InstallationId, long Revision, Guid
 internal sealed record IdentityMutation(DeadlineStore Database, IdentityMetadata Before, long Revision)
 {
     internal bool EventsPruned { get; set; }
-    internal string Correlation { get; } = Guid.NewGuid().ToString("N");
+    internal string Correlation { get; } = IdentityDiagnostics.Current?.CorrelationId ?? Guid.NewGuid().ToString("N");
 }
 
 internal sealed class IdentityStore
@@ -44,6 +44,10 @@ internal sealed class IdentityStore
     }
 
     internal async Task<T> MutateAsync<T>(OperationBudget budget, Func<IdentityMutation, Task<T>> action)
+        => await IdentityDiagnostics.ObserveAsync(IdentityAction.OwnerMutation, mode, installation.Provider, budget,
+            () => MutateCoreAsync(budget, action));
+
+    private async Task<T> MutateCoreAsync<T>(OperationBudget budget, Func<IdentityMutation, Task<T>> action)
     {
         budget.Check();
         var remaining = Math.Min(TimeSpan.FromSeconds(1).Ticks, budget.Remaining.Ticks);
@@ -57,11 +61,20 @@ internal sealed class IdentityStore
         Match(metadata, installationId, mode, digest);
         var result = await ApplyAsync(database, metadata, action);
         await VerifyAuthorityAsync(database);
+        IdentityDiagnostics.Current?.PossibleCommit();
         await database.CommitAsync();
+        IdentityDiagnostics.Current?.Committed();
         return result;
     }
 
     internal static async Task<T> MutateStoppedAsync<T>(StorageInstallation installation, MaintenanceScope scope,
+        Guid installationId, string mode, string digest, bool reconcile, OperationBudget budget,
+        Func<IdentityMutation, Task<T>> action)
+        => await IdentityDiagnostics.ObserveAsync(IdentityAction.OwnerMutation, mode, installation.Provider, budget,
+            () => MutateStoppedCoreAsync(installation, scope, installationId, mode, digest,
+                reconcile, budget, action));
+
+    private static async Task<T> MutateStoppedCoreAsync<T>(StorageInstallation installation, MaintenanceScope scope,
         Guid installationId, string mode, string digest, bool reconcile, OperationBudget budget,
         Func<IdentityMutation, Task<T>> action)
     {
@@ -74,7 +87,11 @@ internal sealed class IdentityStore
         if (!reconcile) Match(metadata, installationId, mode, digest);
         var result = await ApplyAsync(database, metadata, action);
         await scope.VerifyAsync(installation, budget);
+        IdentityDiagnostics.Checkpoint("operator_before_commit");
+        IdentityDiagnostics.Current?.PossibleCommit();
         await database.CommitAsync();
+        IdentityDiagnostics.Current?.Committed();
+        IdentityDiagnostics.Checkpoint("operator_committed");
         return result;
     }
 

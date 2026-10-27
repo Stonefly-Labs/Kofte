@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Kofte.Infrastructure.Storage;
 using Kofte.Platform.Modules.Storage;
 
@@ -44,14 +43,7 @@ internal static class IdentityEventStore
             """, ("id", receipt.EventId), ("revision", change.Revision), ("code", name), ("now", now),
             ("correlation", receipt.Correlation), ("user", userId), ("retention", retention));
         if (count + 1 >= limit * 9 / 10)
-            Console.Error.WriteLine(JsonSerializer.Serialize(new
-            {
-                eventCode = "identity_event_capacity_warning",
-                correlation = receipt.Correlation,
-                retention,
-                capacity = "at_least_ninety_percent",
-                durability = "unchanged"
-            }));
+            (IdentityDiagnostics.Current ?? throw new StorageException(StorageCode.RequestInvalid)).Warning(retention);
         return receipt;
     }
 

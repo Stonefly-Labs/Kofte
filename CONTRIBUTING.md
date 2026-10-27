@@ -347,8 +347,10 @@ Transactional evidence, persistent keys and stopped preparation/reconciliation/
 revocation now have focused real-provider/key tests. Actual PostgreSQL restore
 and both-provider format regressions pass 49 cases after a narrowly diagnosed
 constraint-deparsing correction.
-Eighty-three tasks remain, starting with T018 endpoint/CSRF/fallback-policy tests;
-serving policy, login/sessions, enrollment, web and
+Eighty-three tasks remain unchecked. Shared T018–T020 endpoint/CSRF/default-deny
+and sanitized diagnostic components now have executable component/operator
+tests, including real before/after-commit worker termination. They are not yet
+integrated into both serving entrypoints; login/sessions, enrollment, web and
 recovery are not delivered. Preserve the same stage/branch/draft PR.
 
 The completed specify-through-analyze history below remains applicable on

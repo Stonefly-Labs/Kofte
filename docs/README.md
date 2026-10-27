@@ -27,8 +27,10 @@ preparation/reconciliation/revocation are tested; a corrected PostgreSQL
 dump/restore fingerprint passes 49 recovery/physical-format cases.
 There are 83 unchecked tasks; no working login, serving identity policy,
 session/enrollment UI or identity recovery is claimed.
-T018 endpoint/CSRF/fallback-policy tests are next in the same stage/branch/draft PR,
-not converge or acceptance.
+The in-progress T018–T020 increment tests shared route/default-deny/CSRF
+components, private diagnostics and actual operator interruption. Both serving
+entrypoints still need T021 integration, so no additional task is marked complete.
+Continue the same stage/branch/draft PR, not converge or acceptance.
 The
 [requirements-quality checklist](../specs/005-authentication-bootstrap/checklists/quality.md)
 satisfies 36/36 criteria after explicitly requested assisted review, with
@@ -42,8 +44,8 @@ passes with concrete coverage of all 29 requirements/outcomes and 22 scenarios,
 100 mapped unchecked tasks, 242 acyclic dependency edges and no actionable or
 constitutional finding at the historical analysis checkpoint.
 Specification, planning artifacts, approved ADR and both reviewed checklists
-remain unchanged; only T001's implementation marker is now checked.
-No product/dependency/runtime proof or feature acceptance is introduced;
+remain unchanged; the current implementation markers are T001–T017.
+The historical design checkpoint did not introduce runtime proof or acceptance;
 no intermediate merge is requested.
 See the [current workflow record](development/spec-workflow.md#invocation-and-current-progress).
 

@@ -842,3 +842,148 @@ the exact required `python3 scripts/check_repository.py`,
 frontend/dependency checks. No dependency, approved limit or design artifact
 changed. This remains a tested partial implementation checkpoint, not a
 completed foundation/stage or a claim that latest-head CI has passed.
+
+## In-progress T018–T020: HTTP boundary and correlated private diagnostics
+
+The original **005 / implement** stage, branch, draft PR and reviewed checklists
+remain unchanged. T001–T017 are still the only completed tasks. The shared
+components below are not yet installed in both actual serving entrypoints;
+T018–T020 remain unchecked pending that T021 integration. No production identity
+HTTP handler, established session, working login, enrollment, UI or recovery-v2
+is delivered by this checkpoint.
+
+The shared boundary admits only exact public protocol routes, retains anonymous
+health/Development-only OpenAPI and rejects route aliases, wrong methods,
+queries/bodies, Authorization credentials, oversized inputs and unauthorised
+anonymous metadata. Default and fallback policies deny unrelated operations;
+actor-v1/self access is not first-admin universal permission. POST execution
+requires exact configured Origin/Fetch Metadata and actual framework antiforgery
+validation. Safe problem JSON has only five fixed fields and generated
+correlation; identity/error responses are non-cacheable/no-referrer.
+Real Kestrel component tests use framework token pairs and test-owned handlers,
+not mock principals or new production endpoints.
+
+The initial component tests were red because production boundary APIs did not
+exist. An OIDC-mode test then reproduced HTTP 500 when framework
+`CookieSecurePolicy.Always` rejected the approved fixed HTTP backend. The
+supported CookieBuilder override now derives the actual Secure flag solely
+from validated mode, retaining the Secure/HttpOnly/host-only `__Host-` cookie
+without trusting forwarded scheme/host. The actual ingress-hop test passes.
+[ADR 0007](../../docs/adr/0007-authentication-bootstrap-boundary.md#implementation-follow-up-fixed-https-ingress-and-private-diagnostics)
+records this detail and the official API fallback; Learn/Context7 MCP remain
+unavailable. No new dependency or changed production topology is introduced.
+
+Infrastructure diagnostics use strict fixed codes/fields, generated correlation
+independent of caller trace identity, at most 1 KiB/event, one terminal outcome,
+bounded phase/warning counts and fixed metric dimensions. Sanitized spans share
+that generated correlation, without caller baggage. Owner mutations/events,
+initialization and key-file effects share the observation's truthful unchanged/
+committed/uncertain evidence. Key protection inherits the enclosing deadline
+and cancellation instead of starting an uncancellable three-second allowance;
+gate waiting is bounded too. A failing terminal sink is not silently retried
+or reported successful. No raw exception, credential, query, path, nominee or
+profile value becomes a diagnostic field.
+
+Stopped workers now emit the same bounded records rather than the earlier
+four-field success receipt. The supervisor rejects unknown/duplicate fields,
+wrong context/correlation, malformed/oversized frames and records following the
+unique terminal. It projects success only after observed natural exit and
+verified cleanup. Missing/malformed/lost acknowledgement remains uncertain.
+Real operator tests compare the diagnostic correlation with the committed
+database event, distinguish committed preparation from unchanged retry and
+preserve the specific key-refusal outcome without printing private paths.
+Private composition transport now carries a strict identity-or-composition
+union and serializes whole concurrent frame writes. Its identity projection
+accepts only validated serve-mode records from the admitted owned worker.
+No new identity-specific Platform lifecycle contract is exposed. Actual worker
+identity service/sink registration remains T021.
+
+### Reproduced SQLite pre-open contention
+
+The first owner/event/deadline regression run passed 50/51 and reproduced
+`Busy` during the managed header read in actual twelve-way SQLite admission.
+A deterministic held-header regression also failed with that exact pre-open
+refusal. It is before a SQLite handle/transaction or any effect, not an
+uncertain commit. DeadlineStore now retries only that classified guard refusal
+using existing 25 ms probes and original clipped budget/cleanup reserve.
+No file sharing guard, corruption check, transaction replay or deadline changed.
+The transient-release, permanent-lock, cancellation, no-late-write and exact
+ten-admitted/two-refused SQLite selection then passed **22/22**.
+
+### Actual worker interruption and preserved SQLite journal boundary
+
+Private test-only diagnostic barriers hold the actual admitted maintenance
+worker immediately before/after commit. Tests kill that exact reported worker,
+await its exit and its supervisor, then inspect the real database and retained
+key files. Neither interruption can publish success or automatically replay an
+unknown commit. Verified committed preparation retries preserve the one event,
+security revision and exact key-file digests.
+
+The first four-case interruption execution passed three: the SQLite
+before-commit case incorrectly expected all interrupted state to be immediately
+retryable. A repeated diagnostic execution established
+`identity_reconciliation_required`, not a missing implementation or quota
+failure. SQLite had retained a journal although the database remained format 1.
+The accepted read-only physical inventory guard deliberately refuses any such
+sidecar. That guard is unchanged: the permanent regression now requires that
+specific refusal and byte-for-byte preservation of database/journal/key files.
+No journal is deleted, recovery check bypassed or arbitrary failure accepted.
+Operator guidance documents the need to inspect preserved recovery state.
+This does not claim that every crash residue is automatically recoverable.
+
+The first operator-correlation test compilation also exposed inaccessible
+Infrastructure internals and an xUnit assertion diagnostic. The tests now
+parse independently expected JSON using public ADO.NET observations, without
+new friend-assembly access; both compile errors are resolved.
+
+### Checks executed during this increment
+
+All .NET commands select the existing isolated SDK 10.0.402/runtime 10.0.13.
+Both-provider commands set `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true`.
+
+| Exact executed command                                                                                                                                                                                                                                                      | Actual result                                                                                                                                                                  |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `dotnet test tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj -c Release --no-restore --filter 'FullyQualifiedName~IdentityAdmissionTests\|FullyQualifiedName~IdentityEventTests\|FullyQualifiedName~IdentityDeadlineTests' --nologo` | Initially **50/51 passed**; SQLite pre-open header-sharing failure reproduced, not waived.                                                                                     |
+| `dotnet test tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj -c Release --no-restore --filter FullyQualifiedName~TransientHeaderSharingContention --nologo`                                                                          | Initially red with the same `Busy` header-guard stack before the correction.                                                                                                   |
+| `dotnet test tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj -c Release --no-restore --filter 'FullyQualifiedName~SqliteIdentityAdmissionTests\|FullyQualifiedName~SqliteIdentityDeadlineTests' --nologo`                            | Passed **22**, zero failures/skips, after the bounded pre-open correction.                                                                                                     |
+| `dotnet test tests/unit/Kofte.Host.Tests/Kofte.Host.Tests.csproj -c Release --no-restore --filter 'FullyQualifiedName~IdentityDiagnosticsTests\|FullyQualifiedName~CompositionDiagnosticTests\|FullyQualifiedName~IdentityKeysTests' --nologo`                              | Passed **85**, zero failures/skips, including strict transport bounds, mixed concurrent frames, no caller baggage, sink refusal and inherited expired/cancelled key deadlines. |
+| `dotnet test tests/integration/Kofte.Host.IntegrationTests/Kofte.Host.IntegrationTests.csproj -c Release --no-restore --filter 'FullyQualifiedName~IdentityPreparationTests\|FullyQualifiedName~IdentityPolicyTests' --nologo`                                              | Passed **20**, zero failures/skips, before the later four actual interruption cases were added.                                                                                |
+| `dotnet test tests/integration/Kofte.Host.IntegrationTests/Kofte.Host.IntegrationTests.csproj -c Release --no-restore --filter FullyQualifiedName~ActualWorkerTermination --nologo`                                                                                         | Initially **3/4 passed**; established retained-journal refusal described above. Final combined-gate results follow separately.                                                 |
+
+### Published T017-head CI follow-up
+
+Actual pushed head `77feefea5c3d015380f8c45e16e74df8627ca663` now passes
+all eleven observed contexts: the separate repository check
+([run 40432430645](https://github.com/Stonefly-Labs/Kofte/actions/runs/40432430645))
+and quality, unit, integration-sqlite, integration-postgres, recovery, contract,
+browser, privacy, startup and failure-propagation
+([run 40432430650](https://github.com/Stonefly-Labs/Kofte/actions/runs/40432430650)).
+This is new published-head evidence, not a relabeling of historical failures,
+a CI result for the current uncommitted increment, a completed implement stage
+or proof of unbuilt identity scenarios.
+
+### Combined checkpoint regression results
+
+| Exact executed command                                                                                                                                                                                                                                                                                                                             | Final result                                                                                                                                                        |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `dotnet test tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj -c Release --no-restore --filter 'FullyQualifiedName~Identity\|FullyQualifiedName~RegistryFormatTests\|FullyQualifiedName~RegistryConstraintTests\|FullyQualifiedName~LeaseLoss\|FullyQualifiedName~MaintenanceObserverFailureTests' --nologo` | Passed **108**, zero failures/skips: both-provider identity/format/constraints, concurrent admission, deadlines, lost authority and rejected worker-output cleanup. |
+| `dotnet test tests/integration/Kofte.Host.IntegrationTests/Kofte.Host.IntegrationTests.csproj -c Release --no-restore --filter 'FullyQualifiedName~IdentityPreparationTests\|FullyQualifiedName~IdentityPolicyTests\|FullyQualifiedName~HealthEndpointTests' --nologo`                                                                             | Passed **28**, zero failures/skips: all operator/policy cases, four actual interruption cases, and retained actual empty/composed health regressions.               |
+| `dotnet test tests/unit/Kofte.Host.Tests/Kofte.Host.Tests.csproj -c Release --no-restore --nologo`                                                                                                                                                                                                                                                 | Passed **263**, zero failures/skips.                                                                                                                                |
+
+These are component/foundation regressions, not the remaining T021/T022
+serving/foundation gate, independent OIDC journey or the completed implement
+stage. Task/checklist markers and driver state remain unchanged.
+
+Final focused publishing checks also passed:
+`python3 scripts/check_repository.py`;
+`python3 -m unittest discover -s scripts/tests -v` (**121 passed**);
+`git diff --check`;
+`dotnet format Kofte.slnx --verify-no-changes --no-restore --verbosity quiet`;
+`dotnet build Kofte.slnx --no-restore -c Release -warnaserror --nologo`
+(zero warnings/errors);
+`dotnet test tests/unit/Kofte.Host.Tests/Kofte.Host.Tests.csproj -c Release --no-build --no-restore --nologo`
+(**263 passed** again after final diagnostic assertions); and
+`npm run format:check`. The changed Markdown was formatted, then historical
+implementation evidence was restored byte-for-byte, keeping this report
+append-only. Dependencies were not restored/reinstalled and unchanged frontend
+runtime/build suites were not rerun for this component/diagnostic-only increment.

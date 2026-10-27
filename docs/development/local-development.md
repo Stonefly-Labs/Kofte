@@ -465,12 +465,24 @@ configuration/key changes and revokes sessions/attempts/pending authority;
 revocation alone requires the acknowledged trust. Neither resets consumed
 designation or mappings.
 
-The admitted worker has a supervised 120-second envelope, private bounded
-success receipt and no raw child-output projection. Key files and database
+The admitted worker has a supervised 120-second envelope and strictly validated
+identity records of at most 1 KiB each, with generated correlation, fixed
+operation/outcome/guidance and truthful durability. The success record is
+published only after verified exit/cleanup; absent or invalid acknowledgement
+is uncertain, never success. Raw child output is discarded. Key files and database
 effects are not atomic together; retain owned partial artifacts for deliberate
 retry/correction. OIDC keys require certificate encryption; development keys
 require explicit Development/loopback configuration. These commands do not
 provide working login, enrollment, serving identity policy or recovery-v2.
+
+Real interruption before SQLite's migration commit can leave a retained journal
+even though the database transaction did not commit. The existing physical
+inventory guard then refuses prepare with `identity_reconciliation_required`,
+preserving database, journal and completed key files. Stop and inspect the
+preserved recovery state; do not delete the journal or treat a retry as proof of
+rollback. A verified current database after commit remains idempotently prepared.
+Shared route/antiforgery/default-deny and private diagnostic components are
+tested separately; both serving entrypoints still await explicit T021 wiring.
 
 ### Toolchain
 

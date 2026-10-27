@@ -8,6 +8,7 @@ using System.Xml.Linq;
 using Kofte.Host.Bootstrap;
 using Kofte.Host.Features.Identity;
 using Kofte.Infrastructure.Storage;
+using Kofte.Infrastructure.Identity;
 using Kofte.TestSupport;
 using Microsoft.AspNetCore.DataProtection;
 using Xunit;
@@ -30,6 +31,33 @@ public sealed class IdentityKeysTests : IDisposable
         if (OperatingSystem.IsWindows()) throw new InvalidOperationException("test_platform_unsupported");
         Directory.CreateDirectory(root.Path, Paths.DirectoryMode);
         Directory.CreateDirectory(Data, Paths.DirectoryMode);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task KeyProtectionCannotRestartAnExpiredOrCancelledEnclosingIdentityBudget(bool cancelled)
+    {
+        using var configuration = Configuration();
+        await Prepare(configuration);
+        using var keys = Open(configuration);
+        var protector = keys.Protector("deadline");
+        var ciphertext = protector.Protect("private-canary"u8.ToArray());
+        var before = Snapshot();
+        using var caller = CancellationTokenSource.CreateLinkedTokenSource(Token);
+        var records = new List<IdentityDiagnosticRecord>();
+        using (var observation = IdentityDiagnostics.Begin(IdentityAction.Current, "development", "sqlite",
+            cancelled ? TimeSpan.FromSeconds(1) : TimeSpan.FromMilliseconds(50), caller.Token, records.Add))
+        {
+            if (cancelled) caller.Cancel();
+            else await Task.Delay(75, Token);
+            var failure = Assert.ThrowsAny<OperationCanceledException>(() =>
+                protector.Protect("new-ticket"u8.ToArray()));
+            observation.Fail(failure);
+            Assert.ThrowsAny<OperationCanceledException>(() => protector.Unprotect(ciphertext));
+        }
+        Assert.Equal(before, Snapshot());
+        Assert.Equal(cancelled ? "cancelled" : "unavailable", Assert.Single(records).Outcome);
     }
 
     [Fact]

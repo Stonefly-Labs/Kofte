@@ -162,3 +162,31 @@ session. Failure/uncertainty is not success and an uncertain commit is never
 automatically retried. Legacy migration paths, public contracts, approved
 limits and the original human approval remain unchanged. This implementation
 detail does not constitute feature acceptance or end-to-end login evidence.
+
+## Implementation follow-up: fixed HTTPS ingress and private diagnostics
+
+The approved HTTPS ingress forwards to the fixed loopback HTTP backend without
+trusting forwarded scheme/host headers. Framework antiforgery's
+`CookieSecurePolicy.Always` rejects that backend before issuing a token.
+The shared boundary instead uses the supported
+[`CookieBuilder.Build`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.cookiebuilder.build?view=aspnetcore-10.0)
+extension point to set the actual cookie's Secure flag from validated identity
+mode. OIDC retains a Secure, HttpOnly, host-only `__Host-` cookie with path `/`;
+no request header chooses that flag or changes transport metadata. A real
+Kestrel/token-pair regression exercises the fixed HTTP hop. This is a shared
+component, not a delivered production login or ingress deployment.
+
+Identity diagnostics use fixed fields/codes, generated correlation independent
+of caller trace identity, and at most 1 KiB per event. Metrics have only bounded
+operation/mode/provider/outcome labels; sanitized spans use that generated
+correlation without caller baggage. Private composition transport admits a
+strict identity-or-composition frame and serializes whole concurrent writes;
+it adds no identity lifecycle contract to Platform or module API.
+
+Stopped supervisors reproject only validated bounded records after actual
+worker exit and cleanup. Missing, malformed or lost acknowledgement cannot be
+success and is conservatively uncertain. Key-file effects and database commits
+remain separate; real worker-kill tests cover both commit boundaries.
+The pre-open SQLite header-sharing retry likewise has no database effects and
+uses only the existing deadline. No uncertain transaction is replayed, no file
+guard relaxed and no automatic journal removal added.

@@ -1,4 +1,5 @@
 using Kofte.Host.Bootstrap;
+using Microsoft.AspNetCore.Routing;
 
 namespace Kofte.Host.Features.Bootstrap;
 
@@ -17,8 +18,15 @@ public static class HealthEndpoints
         {
             context.Response.Headers.CacheControl = "no-store";
             var path = context.Request.Path.Value;
-            if (path is not ("/health/live" or "/health/ready" or "/openapi/v1.json") ||
-                path == "/openapi/v1.json" && !app.Environment.IsDevelopment())
+            if (path is not ("/health/live" or "/health/ready" or "/openapi/v1.json"))
+            {
+                if (context.GetEndpoint()?.Metadata.GetMetadata<IEndpointNameMetadata>()?.EndpointName is
+                    "bootstrapLiveness" or "bootstrapReadiness" or "bootstrapOpenApi")
+                    context.Response.StatusCode = 404;
+                else await next(context);
+                return;
+            }
+            if (path == "/openapi/v1.json" && !app.Environment.IsDevelopment())
             {
                 context.Response.StatusCode = 404;
                 return;
