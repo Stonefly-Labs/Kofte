@@ -473,7 +473,7 @@ not one passing provider job. PR #7 is now human-merged; its accepted ledger
 and all five acceptance artifact hashes were verified on updated main before
 005 began. Historical failed checks and undiagnosed causes remain unchanged.
 
-**005 / implement has completed T001–T013, not the feature**, on
+**005 / implement has completed T001–T014, not the feature**, on
 `feature/005-authentication-bootstrap`. The
 [implementation checkpoint](../specs/005-authentication-bootstrap/implementation.md)
 retains the source/signature investigation and records the adopted maintained
@@ -489,12 +489,22 @@ fingerprints verify actual v1/v2 physical definitions, including constraints,
 collations, indexes, triggers, routines, defaults and generated objects.
 Existing reconciliation/composition inventory consumers share that verifier.
 Recovery-v1 is not broadened to accept format 2.
-Serving is not wired to identity yet. T014 is blocked: the shared one-second
-budget refuses its first command, while rounding up plus SQLite cancellation
-overran the budget in a real lock experiment. Deadline-safe store execution
-must preserve the approved one-second local/four-second callback limits.
-Metadata/operations, default denial, sessions, login/enrollment and recovery
-remain dependent work (87 tasks); no end-to-end authentication is claimed.
+The deadline integration issue is resolved for identity without changing
+legacy migration execution: an owned SQLite native-handle path avoids the
+provider's uncancellable integer-timeout retry loop, checks VM progress and
+retries only documented known-not-committed boundaries. PostgreSQL uses
+cancellable async work and unpooled connection closure. Both share the clipped
+original budget with 50 ms reserved for cleanup, not added to the deadline.
+Metadata/admission uses the normal host lease and an immediate SQLite write
+transaction or PostgreSQL metadata row lock. PostgreSQL verifies the held
+host backend's shared lock from the independent operation connection, never
+executing concurrent requests on the borrowed lease connection. Checked security
+revisions, UTC windows, hashed keys, exact rate/capacity refusal and 128-row
+pruning leave module revisions untouched. Real-provider regressions cover
+contention, rollback, overflow, foreign/lost authority and concurrent quotas.
+Serving is not wired to identity yet. Transactional security evidence (T015),
+operator preparation, default denial, sessions, login/enrollment and recovery
+remain dependent work (86 tasks); no end-to-end authentication is claimed.
 
 The completed specify-through-analyze history below is retained on
 `feature/005-authentication-bootstrap`. Its

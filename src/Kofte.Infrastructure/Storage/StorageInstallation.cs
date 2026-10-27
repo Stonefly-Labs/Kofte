@@ -45,21 +45,22 @@ public sealed class StorageInstallation
         return new("postgresql", null, identity, provisioningConnection);
     }
 
-    internal async Task<System.Data.Common.DbConnection> OpenPlatformAsync(OperationBudget budget)
+    internal async Task<System.Data.Common.DbConnection> OpenPlatformAsync(OperationBudget budget,
+        bool preciseDeadline = false)
     {
         budget.Check();
         if (Postgres is { } identity)
         {
             var builder = new NpgsqlConnectionStringBuilder(identity.ConnectionString)
             {
-                Timeout = budget.CommandSeconds(),
-                CommandTimeout = budget.CommandSeconds()
+                Timeout = preciseDeadline ? budget.AsyncCommandSeconds() : budget.CommandSeconds(),
+                CommandTimeout = preciseDeadline ? budget.AsyncCommandSeconds() : budget.CommandSeconds()
             };
             var connection = new NpgsqlConnection(builder.ConnectionString);
             try
             {
                 await connection.OpenAsync(budget.Token);
-                await identity.VerifyAsync(connection, budget);
+                await identity.VerifyAsync(connection, budget, preciseDeadline);
                 return connection;
             }
             catch { await connection.DisposeAsync(); throw; }
@@ -70,6 +71,37 @@ public sealed class StorageInstallation
 
     internal static SqliteConnection OpenSqlite(string path, OperationBudget budget, bool allowOwnedEmpty = false,
         bool readOnly = false)
+    {
+        ValidateSqlite(path, budget, allowOwnedEmpty);
+        var connection = new SqliteConnection(new SqliteConnectionStringBuilder
+        {
+            DataSource = path,
+            Mode = readOnly ? SqliteOpenMode.ReadOnly : SqliteOpenMode.ReadWrite,
+            Pooling = false,
+            ForeignKeys = true,
+            DefaultTimeout = budget.CommandSeconds(sqlite: true)
+        }.ToString());
+        try { connection.Open(); budget.Check(); return connection; }
+        catch { connection.Dispose(); throw; }
+    }
+
+    internal SqliteConnection OpenSqliteHandle(OperationBudget budget)
+    {
+        ValidateSqlite(PlatformPath, budget, allowOwnedEmpty: false);
+        var connection = new SqliteConnection(new SqliteConnectionStringBuilder
+        {
+            DataSource = PlatformPath,
+            Mode = SqliteOpenMode.ReadWrite,
+            Cache = SqliteCacheMode.Private,
+            Pooling = false,
+            DefaultTimeout = 1
+        }.ToString());
+        // DeadlineStore enables and verifies foreign keys through its bounded native executor.
+        try { connection.Open(); budget.Check(); return connection; }
+        catch { connection.Dispose(); throw; }
+    }
+
+    private static void ValidateSqlite(string path, OperationBudget budget, bool allowOwnedEmpty)
     {
         budget.Check();
         UnixStorePaths.ValidateRoot(Path.GetDirectoryName(path)!, allowMissing: false);
@@ -87,15 +119,5 @@ public sealed class StorageInstallation
         }
         catch (IOException error) when (error.HResult is 11 or 35)
         { throw new StorageException(StorageCode.Busy); }
-        var connection = new SqliteConnection(new SqliteConnectionStringBuilder
-        {
-            DataSource = path,
-            Mode = readOnly ? SqliteOpenMode.ReadOnly : SqliteOpenMode.ReadWrite,
-            Pooling = false,
-            ForeignKeys = true,
-            DefaultTimeout = budget.CommandSeconds(sqlite: true)
-        }.ToString());
-        try { connection.Open(); budget.Check(); return connection; }
-        catch { connection.Dispose(); throw; }
     }
 }

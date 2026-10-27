@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement blocked; T001–T013 complete (13/100)**, on
+**Current checkpoint: 005 / implement in progress; T001–T014 complete (14/100)**, on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 [implementation record](../../specs/005-authentication-bootstrap/implementation.md)
@@ -19,12 +19,16 @@ Real SQLite/PostgreSQL format-2 migration and exact v1/v2 verification now
 preserve installation/module IDs, assignments, markers, populated EF history,
 module data and registry revision totals. Constraint/physical tampering,
 rollback, idempotence, v0/unknown formats and foreign scopes are tested.
-The next store-execution gate is blocked by reproduced one-second timeout
-incompatibility; rounding up with cancellation overran the SQLite budget.
-Resolve that engineering issue without a timeout waiver before T014.
+The one-second timeout integration issue is resolved without a waiver:
+bounded native SQLite execution and cancellable PostgreSQL pass real lock,
+commit, cancellation and rollback tests. Metadata/admission transactions
+verify normal host authority, preserve epoch/trust and module revisions,
+advance checked security revisions and enforce bounded persisted quotas.
+The focused both-provider identity/registry/lease gate passes 95 tests.
 These are foundations, not functioning login, enrollment, UI or recovery.
-Eighty-seven tasks remain unchecked. The original stage is blocked, not
-completed; no second run or later stage began.
+Eighty-six tasks remain unchecked, starting with T015 transactional security
+evidence. The original stage is running, not completed; no second run or
+later stage began.
 Use `SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap` on downstream
 commands, keep the same draft PR #8 and do not begin a second run or advance to
 converge. No intermediate merge or feature acceptance is requested.

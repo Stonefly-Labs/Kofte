@@ -134,3 +134,31 @@ explicit decision is the current authority for ADR status. Those artifacts,
 the ledger and evidence hashes remain unchanged. **Checklist remains the next
 separate stage** on this same branch/PR; recording approval executes no stage
 and does not begin implementation.
+
+## Implementation follow-up: owner-store deadlines
+
+The approved one-second local budget cannot use the existing floored
+whole-second timeout helper. Actual SQLite contention also disproved rounding
+up with cancellation: Microsoft.Data.Sqlite's synchronous retry loop does not
+observe cancellation during execution. Identity therefore uses its
+[documented native-handle interoperability](https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/interop)
+through the already locked SQLitePCLRaw package, not copied provider code,
+a new dependency or a changed journal mode.
+
+The narrow owner-local executor retains path/sidecar/header checks, enables
+and verifies foreign keys, binds parameters and caps returned rows at 128.
+Native busy waiting is disabled; retries use the original remaining budget
+only at SQLite's documented known-not-committed boundaries. A VM progress
+callback interrupts long SQL. PostgreSQL retains maintained cancellable
+Npgsql execution and closes unpooled failed transactions instead of awaiting
+an uncancellable rollback round trip. Fifty milliseconds is reserved
+**inside**, never added to, the enclosing budget for cleanup.
+
+Metadata/admission serializes writes under SQLite immediate transactions or
+the PostgreSQL metadata row lock. The borrowed normal host lease remains
+required; PostgreSQL checks its backend/shared lock from the independent
+operation connection, avoiding concurrent commands on the shared lease
+session. Failure/uncertainty is not success and an uncertain commit is never
+automatically retried. Legacy migration paths, public contracts, approved
+limits and the original human approval remain unchanged. This implementation
+detail does not constitute feature acceptance or end-to-end login evidence.

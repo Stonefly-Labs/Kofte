@@ -1,6 +1,6 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** blocked at T014's deadline integration gate; T001-T013 complete (13/100), no working login yet.
+**Result:** implement in progress; deadline integration resolved and T001-T014 complete (14/100), no working login yet.
 **Stage / date:** implement, 2026-10-26.
 **Assessed baseline:** `6df9eebdcfa6b273126b0c51c272d1b2c2f953e6`.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
@@ -556,7 +556,7 @@ measurement harness was removed after freezing the reviewed catalog values.
 These results do not prove T022's complete foundation gate, working login,
 recovery-v2 or a delivered operator preparation workflow.
 
-## Current blocker: deadline-safe store execution before T014
+## Historical blocker: deadline-safe store execution before T014
 
 The approved local identity work budget is **one second**, within the unchanged
 four-second callback envelope. The accepted shared `OperationBudget.CommandSeconds`
@@ -613,3 +613,118 @@ passed two cases, zero skips. Final solution format verification passed.
 `python3 -m unittest discover -s scripts/tests -v` (**121 passed**) and
 `git diff --check` also passed. These green shipping-code checks do not erase
 the failed deadline experiments or complete the blocked identity-store work.
+
+## Deadline correction and T014: metadata/admission transactions
+
+The user explicitly requested fixing the engineering issue and continuing.
+The original branch/open draft PR and checklist gates were reverified:
+requirements **16/16**, quality **36/36**, both read-only. The same active
+implement stage was resumed through the driver after the initial twelve
+real-provider deadline regressions passed. No second run, stage completion,
+converge or acceptance was recorded.
+
+`DeadlineStore` uses Microsoft.Data.Sqlite's documented native-handle API
+through the existing locked SQLitePCLRaw package. No third-party source,
+package, journal-mode change, infinite command timeout or detached worker
+is introduced. It reuses the existing canonical root/file/sidecar/header
+guards, enables/verifies foreign keys and binds each parameter explicitly.
+Statements are single and results capped at 128 rows. Native busy waiting
+is disabled (native `sqlite3_busy_timeout(0)` means immediate refusal, unlike
+ADO.NET `CommandTimeout=0`, which remains prohibited/infinite).
+Deadline-clipped 25 ms delays retry only SQLite's documented known-not-committed
+prepare/autocommit or busy-commit boundaries, never an arbitrary transaction
+body or uncertain outcome. VM progress checks also interrupt long CPU-bound
+SQL. No database operation is abandoned in a background task.
+
+PostgreSQL uses cancellable Npgsql operations and the existing immediate
+socket-close cancellation configuration. Failed unpooled sessions close
+without an uncancellable transaction-dispose rollback round trip.
+Fifty milliseconds is reserved **within** the remaining parent budget for
+cleanup; the local one-second and enclosing four-second limits are unchanged.
+Legacy migration timeout behavior is preserved. These are tested provider
+execution bounds, not a hard-real-time guarantee for an uninterruptible
+operating-system/kernel stall.
+
+T014 now implements stopped, caller-transaction-owned metadata initialization
+and normal-host-lease owner mutations. Exact installation/schema/mode/trust/
+epoch values are validated; trust changes require explicit future operator
+reconciliation, never implicit request conversion. Every successful mutation
+advances the checked security revision once, without changing the module
+revision total. Missing/foreign/lost authority and overflow fail explicitly.
+SQLite uses immediate write transactions; PostgreSQL locks the metadata row
+and verifies the borrowed host backend's actual database/shared advisory lock
+from each independent operation connection.
+
+Admission persists only fixed categories, bounded lower-hex digests and UTC
+minute windows. All eight categories use the exact approved limits, including
+ten login starts/browser. Paired counters and the revision share one commit;
+refusal rolls back every earlier effect. Live capacity is 4,096 and expired
+cleanup is one at-most-128-row batch, never eviction of live windows or a
+store-failure fallback. Twelve real concurrent requests admit exactly ten,
+refuse two and retain count/revision ten on both providers.
+
+### Actual red/green and broader verification
+
+Both new test files initially failed compilation because their production
+executor/store/types did not exist. The first deadline execution passed 9/11:
+two exclusive-lock-before-open cases expected cancellation but the preserved
+file/header guard correctly returned `Busy`. The tests now separately prove
+fail-closed opening and actual contention after opening; no timeout assertion
+was weakened. The subsequent twelve deadline cases passed on both stores.
+Metadata/admission then passed together with deadlines: **32/32**.
+
+A broader 93-case attempt passed 92, but the positive one-second PostgreSQL
+commit case timed out while unrelated provider fixtures ran concurrently.
+Strict wall-clock measurements now use a nonparallel xUnit collection so
+unrelated container creation/fsync is not part of the controlled profile;
+the one-second assertions and actual concurrent-request exercises remain.
+The introduced concurrent-admission test then reproduced a real
+`NpgsqlOperationInProgressException` on the borrowed shared host session.
+Verification was moved to the independent operation connection, retaining
+backend/database/lock ownership checks; both concurrency cases then passed.
+
+| Exact executed command | Result |
+| --- | --- |
+| `dotnet test tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj -c Release --no-restore --filter FullyQualifiedName~IdentityDeadlineTests --nologo` | Passed 12 cases, zero failures/skips, before subsequent metadata/concurrency additions. |
+| `dotnet test tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj -c Release --no-restore --filter FullyQualifiedName~ConcurrentRequestsShareTheRealHostLease --nologo` | Initially red on the shared PostgreSQL connection; passed both actual-provider cases after the correction. |
+| `dotnet test tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj -c Release --no-restore --filter 'FullyQualifiedName~Identity\|FullyQualifiedName~RegistryFormatTests\|FullyQualifiedName~RegistryConstraintTests\|FullyQualifiedName~LeaseLoss' --nologo` | Passed **95 cases**, zero failures/skips, including all 41 deadline/admission cases and dependent physical format, constraints, original populated data/history and lease regressions. |
+| `dotnet test tests/unit/Kofte.Host.Tests/Kofte.Host.Tests.csproj -c Release --no-restore --nologo` | Passed **228 cases**, zero failures/skips. |
+
+Commands use the existing isolated SDK 10.0.402/runtime 10.0.13; PostgreSQL
+commands explicitly set `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true`. All
+owned provider scopes/connections and test tasks are awaited and cleaned up.
+No failing measurement harness or skipped case is shipped.
+
+### Prior-head CI limitation
+
+The previous `d644a5f` push's product run **40420590690** is now observed
+failed, not pending or green: integration-postgres, recovery, contract,
+privacy and failure-propagation failed; quality, unit, integration-sqlite,
+browser and startup passed, as did the separate repository check.
+Its preserved integration artifact assesses merge revision
+`8263e7d7a7b5b415026104359d997bcf58c3ae21`; host PostgreSQL passed, while
+storage PostgreSQL reports `Corrupt` in
+`PostgresRecoveryDiagnosticsTests.CompleteRealRecoverySetsAndRefusedBoundariesEmitPrivateCorrelatedRecords`
+and
+`PostgresRecoveryExercise.CompleteCustomDumpRestoresBothSchemasToFreshOwnedTargetWithoutElevatingRuntime`.
+This is actual prior-checkpoint evidence, not a diagnosis or a claim that
+the current focused gate repairs full recovery/CI. Other failure causes
+remain unestablished. Earlier failures and accepted-feature limitations are
+preserved above.
+
+**T001-T014 are complete; T015-T100 (86 tasks) remain unchecked.** Transactional
+identity evidence is next, then dependent preparation/keys/policy/serving.
+No operator identity command, default-deny identity wiring, login/session,
+enrollment, web journey, recovery-v2 or final acceptance is delivered by this
+checkpoint.
+
+### Final deadline/T014 checkpoint checks
+
+After the final source, authority/concurrency tests and progress documentation
+updates, `python3 scripts/verify.py --suite quality` passed **all 20 steps**.
+The exact required `python3 scripts/check_repository.py`,
+`python3 -m unittest discover -s scripts/tests -v` (**121 passed**) and
+`git diff --check` also passed. The quality gate includes full solution
+format/build, locked restore, frontend lint/types/build and dependency review.
+No new dependency, public contract, approved limit or feature acceptance
+changed. This remains a partial implement checkpoint on the original draft PR.
