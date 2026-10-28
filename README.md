@@ -37,8 +37,17 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 > [!IMPORTANT]
 > **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md) and [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) is now human-merged. Its accepted ledger and evidence were verified on updated main before 005 began. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) retains prior failures and unknown causes; the historical failed local gate remains failed, not waived by acceptance or merge. Spec 005 now has [authentication/bootstrap requirements](specs/005-authentication-bootstrap/spec.md) and US1 sign-in implemented, not the complete identity feature. Nothing here claims production readiness or MVP completion.
 
-**Current stage: 005 / implement running; 51/100 tasks complete.** T001–T047
-and T049–T052 are evidenced. The
+**Current stage: 005 / implement running; 55/100 tasks complete.** T001–T055
+are evidenced. US3 now adds protected durable self-session sign-out, its exact
+Next adapter and immediate local identity clearing on confirmed or uncertain
+results, without automatic mutation retries or provider-wide logout claims.
+Twenty SQLite session/sign-out cases pass in a nineteen-case selection plus
+the new concurrent-sign-out case; 77 adapter/UI tests pass. A live key-loss
+regression exposed framework decoding that hid unavailable keys as anonymous;
+the corrected boundary returns 503. The new actual browser session journey
+still fails locally before login, after TLS trust, and now runs in hosted CI
+for both stores. US3 prerequisites and PostgreSQL evidence remain open, so
+no additional task is marked complete. The
 [implementation checkpoint](specs/005-authentication-bootstrap/implementation.md)
 records actual OIDC dependency adoption and locked inventory (403 npm / 87
 NuGet identities), an independent HTTPS issuer, owned interruption fixtures,
@@ -117,8 +126,8 @@ whole feature: broader CI still failed composition-contract timeout,
 composition recovery and failure-propagation checks. The latter exposed a
 reproduced command-matching regression from the new private diagnostic flags;
 the focused correction passes 126 Python tests and actual safe CI-report
-replay, pending new CI. No verification deadline was increased. Forty-nine
-tasks remain, including enrollment acceptance evidence, sign-out,
+replay, pending new CI. No verification deadline was increased. Forty-five
+tasks remain, including sign-out,
 development sessions and identity recovery. The feature is not complete.
 The preceding session checkpoint's CI still failed composition and PostgreSQL
 failure-propagation baseline timeouts; causes are not established or waived.
@@ -168,7 +177,11 @@ fresh `/me` and actor are exercised before its protected enrollment is denied.
 This negative fixture is not the still-unimplemented development-login endpoint.
 The seventeen SQLite matrix cases each pass across the full selection and its
 unchanged isolated replacement retry; the full selection itself retains that
-one failure. Both-store execution of the expanded matrix remains pending.
+one failure. The expanded `f80eee9` head now passes both complete provider integration jobs
+and all eight HTTPS browser recipes, including the new development/authority
+negatives and isolated crash regressions. US2 is reconciled; US3 sign-out/session
+parity is next. Complete recovery/failure-propagation/composition gates, aggregate
+`all`, the remaining stories and final human acceptance are still outstanding.
 
 The following preserves the completed design-stage context. The
 [specification](specs/005-authentication-bootstrap/spec.md) and

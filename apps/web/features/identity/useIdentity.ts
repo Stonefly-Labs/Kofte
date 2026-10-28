@@ -12,6 +12,10 @@ type BrowserContext = {
   csrfToken: string;
 };
 type LoginNotice = { cancelled: boolean; correlationId?: string };
+type SignOutNotice = {
+  kind: "pending" | "confirmed" | "expired" | "uncertain";
+  correlationId?: string;
+};
 export type IdentityView =
   | { kind: "loading" }
   | { kind: "unavailable"; correlationId?: string }
@@ -113,7 +117,11 @@ export async function readIdentityJson(response: Response): Promise<unknown> {
 
 export function useIdentity() {
   const [state, setState] = useState<IdentityView>({ kind: "loading" });
+  const [signOutNotice, setSignOutNotice] = useState<SignOutNotice>();
   const active = useRef<AbortController | null>(null);
+  const signOutController = useRef<AbortController | null>(null);
+  const locallyCleared = useRef(false);
+  const mounted = useRef(false);
   const attempt = useRef(0);
   const established = useRef(false);
   const deadline = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -128,7 +136,7 @@ export function useIdentity() {
   }, []);
 
   const retry = useCallback(function check() {
-    if (active.current || document.hidden) return;
+    if (active.current || signOutController.current || document.hidden) return;
     clearTimeout(refresh.current);
     const id = ++attempt.current;
     const controller = new AbortController();
@@ -145,14 +153,16 @@ export function useIdentity() {
       let correlationId: string | undefined;
       try {
         const [contextResponse, identityResponse] = await Promise.all(
-          ["/api/identity/v1/browser-context", "/api/identity/v1/me"].map(
-            (path) =>
-              fetch(path, {
-                cache: "no-store",
-                redirect: "error",
-                signal: controller.signal,
-                headers: { Accept: "application/json" },
-              }),
+          [
+            "/api/identity/v1/browser-context",
+            ...(locallyCleared.current ? [] : ["/api/identity/v1/me"]),
+          ].map((path) =>
+            fetch(path, {
+              cache: "no-store",
+              redirect: "error",
+              signal: controller.signal,
+              headers: { Accept: "application/json" },
+            }),
           ),
         );
         const context = await readIdentityJson(contextResponse);
@@ -161,8 +171,8 @@ export function useIdentity() {
           throw new TypeError("identity_context_invalid");
         }
         let next: IdentityView;
-        if (identityResponse.status === 401) {
-          await identityResponse.body?.cancel();
+        if (!identityResponse || identityResponse.status === 401) {
+          await identityResponse?.body?.cancel();
           next = {
             kind: established.current ? "expired" : "signed-out",
             context,
@@ -206,6 +216,7 @@ export function useIdentity() {
   }, []);
 
   useEffect(() => {
+    mounted.current = true;
     retry();
     const suspend = () => {
       cancel();
@@ -217,6 +228,8 @@ export function useIdentity() {
     window.addEventListener("focus", focus);
     document.addEventListener("visibilitychange", visibility);
     return () => {
+      mounted.current = false;
+      signOutController.current?.abort();
       cancel();
       window.removeEventListener("blur", suspend);
       window.removeEventListener("focus", focus);
@@ -229,5 +242,64 @@ export function useIdentity() {
     retry();
   }, [cancel, retry]);
 
-  return { state, retry, refreshIdentity };
+  const signOut = useCallback(async () => {
+    if (state.kind !== "signed-in" || signOutController.current) return;
+    cancel();
+    locallyCleared.current = true;
+    established.current = false;
+    setState({ kind: "loading" });
+    setSignOutNotice({ kind: "pending" });
+    const controller = new AbortController();
+    signOutController.current = controller;
+    let abort: (() => void) | undefined;
+    const interrupted = new Promise<never>((_, reject) => {
+      abort = () =>
+        reject(new DOMException("identity_sign_out_aborted", "AbortError"));
+      controller.signal.addEventListener("abort", abort, { once: true });
+    });
+    const timeout = setTimeout(() => controller.abort(), 4500);
+    try {
+      const response = await Promise.race([
+        fetch("/api/identity/v1/sign-out", {
+          method: "POST",
+          headers: { "X-Kofte-CSRF": state.context.csrfToken },
+          cache: "no-store",
+          redirect: "error",
+          signal: controller.signal,
+        }),
+        interrupted,
+      ]);
+      if (!mounted.current) return;
+      if (response.status === 204) setSignOutNotice({ kind: "confirmed" });
+      else if (response.status === 401) {
+        await Promise.race([response.body?.cancel(), interrupted]);
+        setSignOutNotice({ kind: "expired" });
+      } else {
+        const value = await Promise.race([
+          readIdentityJson(response),
+          interrupted,
+        ]);
+        if (mounted.current)
+          setSignOutNotice({
+            kind: "uncertain",
+            correlationId: problemReference(value, response.status),
+          });
+      }
+    } catch (error) {
+      if (!(
+        error instanceof TypeError ||
+        error instanceof SyntaxError ||
+        error instanceof DOMException
+      ))
+        throw error;
+      if (mounted.current) setSignOutNotice({ kind: "uncertain" });
+    } finally {
+      clearTimeout(timeout);
+      if (abort) controller.signal.removeEventListener("abort", abort);
+      signOutController.current = null;
+      if (mounted.current) retry();
+    }
+  }, [state, cancel, retry]);
+
+  return { state, retry, refreshIdentity, signOut, signOutNotice };
 }

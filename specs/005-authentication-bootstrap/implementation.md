@@ -2547,3 +2547,129 @@ despite passing individual public/browser recipes. Complete those final US2
 checks, then continue US3 sign-out/session parity, US4 development login and
 US5 recovery/final evidence. Driver remains implement/running; no acceptance,
 readiness or merge request is made.
+
+## US2 completion: expanded both-provider gates
+
+Published head `f80eee96f17d3c8fe5f2e02ae1f4312ce3c14d50`, product run
+`40648526486`, now passes both complete integration jobs and the complete
+eight-recipe HTTPS browser job. Artifacts `12799266406` (SQLite) and
+`12798554310` (PostgreSQL) independently record:
+
+| Provider   | Host integration | Storage integration | Composition integration |
+| ---------- | ---------------- | ------------------- | ----------------------- |
+| SQLite     | Passed, 196.885s | Passed, 302.515s    | Passed, 80.191s         |
+| PostgreSQL | Passed, 243.245s | Passed, 625.939s    | Passed, 225.411s        |
+
+This includes each store's expanded seventeen-case enrollment matrix,
+independently signed authority/profile/email negatives, actual stored
+development-actor refusal, full twenty-contender and populated-module restart/
+administrator-loss cases, and both actual crash boundaries. No cases,
+contention levels, failure requirements or original deadlines were removed.
+The local/intervening failures remain recorded; passing hosted execution does
+not establish their root causes.
+
+The same head's browser job `122682897465` passes all eight required individual
+recipes, retaining the already inspected named observations, real lost
+acknowledgement/fresh designation/no retry and owned cleanup. Aggregate `all`
+remains an explicit final-gate obligation, not claimed executed here.
+Existing generated contracts/component tests and fifteen focused strict
+clean-recovery regressions remain the unchanged focused evidence above.
+T048 and the prerequisite-gated T053–T055 are now complete: **T001–T055,
+55/100**. The production/fixture implementation may consolidate the proposed
+test filenames while retaining the specified assertions.
+
+US2.1 traces to the disabled-ceremony and independently signed-claim negatives;
+US2.2 to real stopped nomination, native protected completion and exact atomic
+user/generation/event; US2.3 to the full identity/mode/CSRF/expiry/replacement/
+replay matrices and non-enumerating fixed receipts; US2.4 to both twenty-way
+races, owned pre/post-commit kills and browser lost acknowledgement; US2.5 to
+three fresh hosts, actual repeated prepare, retained populated module and
+unavailable-issuer reconciliation without reopened enrollment. Initial
+designation still grants no unrelated operation, and administrator/IdP loss
+has no reset shortcut.
+
+The whole feature is not complete. Final run conclusions for this head are
+success for quality, unit, both integration jobs, recovery, privacy, browser
+and startup; contract and failure-propagation fail. These failures remain
+unresolved, not waived. Continue **US3 durable sign-out/session parity** on the
+same implement stage/branch/draft PR; do not advance to converge or request
+acceptance/merge.
+
+## US3 increment: durable sign-out and live session-boundary evidence
+
+The delivered protected POST `/api/identity/v1/sign-out` admits only the
+current session, exact Origin/CSRF pair and empty input. Revocation and its
+session event commit in one owner transaction; 204 requires known completion,
+invalid/expired sessions receive 401 and unavailable/uncertain work receives
+a safe 503. Cookie deletion precedes response-body publication, including
+concurrent-refusal paths. It deliberately does not call native `SignOutAsync`
+after explicit revocation, which would invoke ticket-store removal and mutate
+the owner a second time. No external provider logout is attempted.
+
+The exact Next adapter validates empty 204, propagates individual deletion
+cookies and never retries a mutation. The UI immediately removes personal and
+enrollment content, distinguishes confirmed/expired/uncertain results, refreshes
+browser continuity and requires deliberate login for re-entry. Focus, polling
+and explicit identity-check retries cannot silently restore a locally cleared
+identity after uncertain sign-out. The original 4.5-second adapter/UI and
+one-second local operation limits are unchanged.
+
+A new real-cookie/warmed-key regression initially failed:
+`contract-sqlite-dcd00f7b1d8b448aaeec6c65c7d410f1.json`, 11.692s, with only
+`LosingWarmedKeysIsUnavailableRatherThanAnAnonymousOrCachedIdentity` failing;
+the real stopped-epoch revocation case passed. The .NET 10.0.13
+`SecureDataFormat.Unprotect` catches decryption exceptions and returns null,
+hiding the existing key guard's failure. A narrow wrapper around the
+framework-created cookie format now verifies the retained ring outside that
+catch, before and after decoding. Missing keys return safe 503 for both `/me`
+and the actor probe, without cached identity, regenerated keys, session/event
+mutation or loss of user/mapping state. Forged-cookie decoding remains owned
+by the framework.
+
+Actual local evidence on macOS arm64, unchanged pinned tools:
+
+- The initial sign-out positive was red before route delivery. After delivery,
+  fourteen SQLite cases passed, then three expiry/race cases passed. The
+  expanded nineteen-case selection now passes as one command:
+  `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore --no-build -c Release --filter-class '*SqliteSignOutContractTests' --minimum-expected-tests 19`.
+  Safe report `contract-sqlite-3fdc056ee9fb4ed2b2dec10d995541ad.json`,
+  170.553s. This includes exact idle/absolute expiry, renewal/revocation,
+  protected negatives, actual before/after-commit failures, warmed key loss
+  and stopped epoch revocation.
+- The subsequently added simultaneous-sign-out regression passes separately:
+  the same command with `--filter-method '*ConcurrentSignOuts*'` and
+  `--minimum-expected-tests 1`; safe report
+  `contract-sqlite-0bc6105454e5420ba0af7c49bd248c8e.json`.
+  Thus twenty cases are evidenced in two selections, not a claimed combined
+  twenty-case rerun. PostgreSQL execution remains pending.
+- The complete adapter/IdentityPanel selection passes 77 tests; web and browser
+  type/lint checks and the production web build pass. Regenerated OpenAPI/types
+  and `npm run contract:check` pass; three actual native OpenAPI publication/
+  refusal cases pass. The full Release solution builds with zero warnings.
+
+The separately compiled consumer now supplies the actual test-host actor
+callback, checks ungranted-handler nonexecution and implements `session-boundary`.
+Its HTTPS browser branch covers controlled idle/absolute boundaries, sixteen
+real renewals, protected sign-out, lost acknowledgement, same-cookie direct/
+adapted next-request denial, two users, no-store SSR, focus and accessibility.
+Twenty private owned zero-byte file phases control only the test fixture;
+there is no production clock/login/TLS bypass or control endpoint. The owned
+ingress drops only the armed successful sign-out acknowledgement, and the
+parent independently requires that observation.
+
+This comprehensive browser evidence is **not green**. The first run failed
+after 48.465s with only `identity_fixture_browser_failed` retained. Follow-up
+safe phase capture (`browser-sqlite-3809c82f75c84f63b4756f36ea5292ec.json`)
+shows the fixed 45-second child deadline, exit 137, last marker
+`identity_browser_stage_trust_ready`, zero authorization/token requests and
+zero session-control phases. The ingress observed anonymous identity page/
+browser context 200 and `/me` 401. This establishes failure before sign-in,
+not a key/sign-out root cause or proof that macOS itself is responsible.
+Additional fixed phase markers distinguish activation/navigation/body progress;
+both SQLite and PostgreSQL recipes are now required by the existing hosted
+browser job. No deadline, TLS verification or cleanup requirement was relaxed.
+
+**Progress remains T001–T055, 55/100.** T056–T070 retain full parity/corpus,
+rotation/corruption, both-provider and successful public/browser prerequisites.
+T071–T100 retain development, operational/recovery and final obligations.
+Publishing this increment is not stage completion, acceptance or a merge request.

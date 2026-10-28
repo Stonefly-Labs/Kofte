@@ -25,13 +25,18 @@ internal sealed class IdentityBrowserIngress : IAsyncDisposable
     private WebApplication? application;
     private int loseEnrollmentAcknowledgement;
     private int enrollmentAcknowledgementLost;
+    private int loseSignOutAcknowledgement;
+    private int signOutAcknowledgementLost;
     private readonly ConcurrentDictionary<string, int> responseStatuses = new(StringComparer.Ordinal);
     internal Uri Origin { get; private set; } = null!;
     internal Uri Web { get; }
+    internal Uri? DirectIdentityBackend { get; set; }
     internal bool OpaqueLoginOriginObserved { get; private set; }
     internal IReadOnlyDictionary<string, int> ResponseStatuses => responseStatuses;
     internal bool EnrollmentAcknowledgementLost => Volatile.Read(ref enrollmentAcknowledgementLost) == 1;
     internal void LoseNextEnrollmentAcknowledgement() => Interlocked.Exchange(ref loseEnrollmentAcknowledgement, 1);
+    internal bool SignOutAcknowledgementLost => Volatile.Read(ref signOutAcknowledgementLost) == 1;
+    internal void LoseNextSignOutAcknowledgement() => Interlocked.Exchange(ref loseSignOutAcknowledgement, 1);
 
     private IdentityBrowserIngress()
     {
@@ -67,8 +72,10 @@ internal sealed class IdentityBrowserIngress : IAsyncDisposable
             OpaqueLoginOriginObserved |= context.Request.Headers.Origin == "null";
         using var budget = CancellationTokenSource.CreateLinkedTokenSource(context.RequestAborted);
         budget.CancelAfter(TimeSpan.FromSeconds(5));
-        using var request = new HttpRequestMessage(new(context.Request.Method),
-            Web.GetLeftPart(UriPartial.Authority) + context.Request.GetEncodedPathAndQuery());
+        var direct = context.Request.Path == "/fixture-direct-identity" && DirectIdentityBackend is not null;
+        using var request = new HttpRequestMessage(new(context.Request.Method), direct
+            ? new Uri(DirectIdentityBackend!, "/api/identity/v1/me").AbsoluteUri
+            : Web.GetLeftPart(UriPartial.Authority) + context.Request.GetEncodedPathAndQuery());
         request.Headers.Host = context.Request.Host.Value;
         if (context.Request.ContentLength is > 0 || context.Request.Headers.ContainsKey("Transfer-Encoding"))
             request.Content = new StreamContent(context.Request.Body);
@@ -86,6 +93,7 @@ internal sealed class IdentityBrowserIngress : IAsyncDisposable
             "/api/identity/v1/browser-context" => "browser_context",
             "/api/identity/v1/me" => "current_identity",
             "/api/identity/v1/first-administrator" => "enrollment",
+            "/api/identity/v1/sign-out" => "sign_out",
             _ => null
         };
         if (operation is not null) responseStatuses[operation] = (int)response.StatusCode;
@@ -95,6 +103,15 @@ internal sealed class IdentityBrowserIngress : IAsyncDisposable
         {
             await response.Content.LoadIntoBufferAsync(8192, budget.Token);
             Volatile.Write(ref enrollmentAcknowledgementLost, 1);
+            context.Abort();
+            return;
+        }
+        if (operation == "sign_out" && context.Request.Method == "POST" &&
+            response.StatusCode == HttpStatusCode.NoContent &&
+            Interlocked.Exchange(ref loseSignOutAcknowledgement, 0) == 1)
+        {
+            await response.Content.LoadIntoBufferAsync(8192, budget.Token);
+            Volatile.Write(ref signOutAcknowledgementLost, 1);
             context.Abort();
             return;
         }

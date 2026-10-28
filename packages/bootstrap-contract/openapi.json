@@ -464,6 +464,83 @@
         ]
       }
     },
+    "/api/identity/v1/sign-out": {
+      "post": {
+        "operationId": "identitySignOut",
+        "parameters": [
+          {
+            "name": "Origin",
+            "in": "header",
+            "description": "Exact configured public origin",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "X-Kofte-CSRF",
+            "in": "header",
+            "description": "Fresh identity-bound antiforgery request token with its paired cookie",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Known durable self-session revocation; no provider-wide logout",
+            "headers": {
+              "Cache-Control": { "$ref": "#/components/headers/NoStore" },
+              "Pragma": { "required": true, "schema": { "const": "no-cache", "type": "string" } },
+              "Referrer-Policy": { "required": true, "schema": { "const": "no-referrer", "type": "string" } }
+            }
+          },
+          "400": {
+            "description": "Fixed sanitized identity failure",
+            "headers": {
+              "Cache-Control": { "$ref": "#/components/headers/NoStore" },
+              "Pragma": { "required": true, "schema": { "const": "no-cache", "type": "string" } },
+              "Referrer-Policy": { "required": true, "schema": { "const": "no-referrer", "type": "string" } }
+            },
+            "content": { "application/problem+json": { "schema": { "$ref": "#/components/schemas/IdentityProblemV1" } } }
+          },
+          "401": {
+            "description": "Fixed sanitized identity failure",
+            "headers": {
+              "Cache-Control": { "$ref": "#/components/headers/NoStore" },
+              "Pragma": { "required": true, "schema": { "const": "no-cache", "type": "string" } },
+              "Referrer-Policy": { "required": true, "schema": { "const": "no-referrer", "type": "string" } }
+            },
+            "content": { "application/problem+json": { "schema": { "$ref": "#/components/schemas/IdentityProblemV1" } } }
+          },
+          "403": {
+            "description": "Fixed sanitized identity failure",
+            "headers": {
+              "Cache-Control": { "$ref": "#/components/headers/NoStore" },
+              "Pragma": { "required": true, "schema": { "const": "no-cache", "type": "string" } },
+              "Referrer-Policy": { "required": true, "schema": { "const": "no-referrer", "type": "string" } }
+            },
+            "content": { "application/problem+json": { "schema": { "$ref": "#/components/schemas/IdentityProblemV1" } } }
+          },
+          "429": {
+            "description": "Fixed sanitized identity failure",
+            "headers": {
+              "Cache-Control": { "$ref": "#/components/headers/NoStore" },
+              "Pragma": { "required": true, "schema": { "const": "no-cache", "type": "string" } },
+              "Referrer-Policy": { "required": true, "schema": { "const": "no-referrer", "type": "string" } }
+            },
+            "content": { "application/problem+json": { "schema": { "$ref": "#/components/schemas/IdentityProblemV1" } } }
+          },
+          "503": {
+            "description": "Fixed sanitized identity failure",
+            "headers": {
+              "Cache-Control": { "$ref": "#/components/headers/NoStore" },
+              "Pragma": { "required": true, "schema": { "const": "no-cache", "type": "string" } },
+              "Referrer-Policy": { "required": true, "schema": { "const": "no-referrer", "type": "string" } }
+            },
+            "content": { "application/problem+json": { "schema": { "$ref": "#/components/schemas/IdentityProblemV1" } } }
+          }
+        },
+        "security": [ { "kofteSession": [] } ]
+      }
+    },
     "/api/identity/v1/first-administrator": {
       "post": {
         "operationId": "identityEnrollFirstAdministrator",

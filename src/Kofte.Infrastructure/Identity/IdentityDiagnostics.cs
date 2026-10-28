@@ -78,7 +78,8 @@ internal static class IdentityDiagnostics
     }
 
     private static bool IsPhase(string phase) => phase is "login_before_commit" or "login_committed" or
-        "enrollment_before_commit" or "enrollment_committed" or "operator_before_commit" or
+        "enrollment_before_commit" or "enrollment_committed" or "sign_out_before_commit" or
+        "sign_out_committed" or "operator_before_commit" or
         "operator_committed" or "bootstrap_file_created" or "bootstrap_file_flushed" or
         "restore_quarantined" or "restore_before_commit" or "restore_committed";
 

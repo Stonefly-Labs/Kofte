@@ -51,6 +51,113 @@ async function settle() {
   await act(() => vi.advanceTimersByTimeAsync(0));
 }
 
+it("immediately clears identity during sign-out, then offers legitimate re-entry with a fresh token", async () => {
+  status = 200;
+  let finish: (value: Response) => void = () => {};
+  fetcher.mockImplementation((url: string) => {
+    if (url.endsWith("/sign-out"))
+      return new Promise<Response>((resolve) => {
+        finish = resolve;
+      });
+    return Promise.resolve(
+      url.endsWith("browser-context")
+        ? Response.json({ version: "1", identityMode: mode, csrfToken: token })
+        : Response.json(current, { status }),
+    );
+  });
+  render(<IdentityPanel />);
+  await settle();
+  fireEvent.click(screen.getByRole("button", { name: "Sign out" }));
+  expect(screen.queryByText("Synthetic user")).toBeNull();
+  expect(screen.queryByLabelText("One-time authorization")).toBeNull();
+  expect(document.body.textContent).toContain(
+    "Waiting for sign-out confirmation",
+  );
+  token = "fresh-after-sign-out";
+  await act(async () => finish(new Response(null, { status: 204 })));
+  await settle();
+  expect(document.body.textContent).toContain("Signed out of Köfte");
+  expect(screen.getByRole("button", { name: "Sign in" })).toBeTruthy();
+  expect(
+    document.querySelector<HTMLInputElement>(
+      'input[name="__RequestVerificationToken"]',
+    )!.value,
+  ).toBe(token);
+  expect(document.activeElement).toBe(
+    screen.getByRole("heading", { name: "Your identity" }),
+  );
+  const submissions = fetcher.mock.calls.filter(([url]) =>
+    url.endsWith("/sign-out"),
+  );
+  expect(submissions).toHaveLength(1);
+  expect(submissions[0][1].body).toBeUndefined();
+  expect(submissions[0][1].headers["X-Kofte-CSRF"]).toBe(
+    "fresh-anonymous-token",
+  );
+});
+
+it("keeps local identity cleared after uncertain sign-out, focus and explicit retry without a mutation retry", async () => {
+  status = 200;
+  fetcher.mockImplementation(async (url: string) => {
+    if (url.endsWith("/sign-out"))
+      throw new TypeError("private-sign-out-canary");
+    return url.endsWith("browser-context")
+      ? Response.json({ version: "1", identityMode: mode, csrfToken: token })
+      : Response.json(current, { status });
+  });
+  render(<IdentityPanel />);
+  await settle();
+  fireEvent.click(screen.getByRole("button", { name: "Sign out" }));
+  await settle();
+  expect(screen.queryByText("Synthetic user")).toBeNull();
+  expect(screen.getByRole("alert").textContent).toContain(
+    "Server revocation could not be confirmed",
+  );
+  expect(document.body.textContent).not.toContain("Signed out of Köfte");
+  expect(document.body.textContent).not.toContain("private-sign-out-canary");
+  act(() => window.dispatchEvent(new Event("focus")));
+  await settle();
+  fireEvent.click(screen.getByRole("button", { name: "Retry identity check" }));
+  await settle();
+  expect(screen.queryByText("Synthetic user")).toBeNull();
+  expect(
+    fetcher.mock.calls.filter(([url]) => url.endsWith("/me")),
+  ).toHaveLength(1);
+  expect(
+    fetcher.mock.calls.filter(([url]) => url.endsWith("/sign-out")),
+  ).toHaveLength(1);
+});
+
+it("bounds sign-out even if transport ignores cancellation and never accepts a late success", async () => {
+  status = 200;
+  let finish: (value: Response) => void = () => {};
+  fetcher.mockImplementation((url: string) =>
+    url.endsWith("/sign-out")
+      ? new Promise<Response>((resolve) => {
+          finish = resolve;
+        })
+      : Promise.resolve(
+          url.endsWith("browser-context")
+            ? Response.json({
+                version: "1",
+                identityMode: mode,
+                csrfToken: token,
+              })
+            : Response.json(current, { status }),
+        ),
+  );
+  render(<IdentityPanel />);
+  await settle();
+  fireEvent.click(screen.getByRole("button", { name: "Sign out" }));
+  await act(() => vi.advanceTimersByTimeAsync(4500));
+  expect(screen.getByRole("alert").textContent).toContain(
+    "Server revocation could not be confirmed",
+  );
+  await act(async () => finish(new Response(null, { status: 204 })));
+  expect(document.body.textContent).not.toContain("Signed out of Köfte");
+  expect(screen.queryByText("Synthetic user")).toBeNull();
+});
+
 it("starts with a non-personal, announced shell while verification is pending", () => {
   fetcher.mockImplementation(() => new Promise(() => {}));
   render(<IdentityPanel />);

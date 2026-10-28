@@ -85,7 +85,7 @@ internal sealed class IdentityRuntime : IDisposable
         services.AddSingleton<IDataProtectionProvider>(keys.Provider);
         services.AddSingleton(diagnostics);
         services.AddIdentityBoundary(configuration);
-        Login.IdentityLoginRegistration.Add(services, configuration);
+        Login.IdentityLoginRegistration.Add(services, configuration, keys);
     }
 
     public void Dispose()

@@ -5,13 +5,14 @@ import {
   type IdentityAdapterConfiguration,
 } from "./identityConfiguration";
 
-type Route = "context" | "login" | "callback" | "me" | "enrollment";
+type Route = "context" | "login" | "callback" | "me" | "enrollment" | "signOut";
 const routes = {
   context: ["GET", "/api/identity/v1/browser-context"],
   login: ["POST", "/auth/login"],
   callback: ["GET", "/auth/oidc/callback"],
   me: ["GET", "/api/identity/v1/me"],
   enrollment: ["POST", "/api/identity/v1/first-administrator"],
+  signOut: ["POST", "/api/identity/v1/sign-out"],
 } as const;
 const privacy = {
   "Cache-Control": "no-store",
@@ -95,6 +96,7 @@ export async function forwardIdentity(
       )
         return problem("identity_forbidden");
       if (
+        route !== "signOut" &&
         !(
           route === "login"
             ? /^application\/x-www-form-urlencoded(?:;|$)/i
@@ -103,7 +105,10 @@ export async function forwardIdentity(
       )
         return problem("identity_request_invalid");
       body = await readBody(request, expired, true);
-      if (route === "login") {
+      if (route === "signOut") {
+        if (body !== "") return problem("identity_request_invalid");
+        body = undefined;
+      } else if (route === "login") {
         const fields = new URLSearchParams(body);
         if (
           [...fields.keys()].some(
@@ -136,7 +141,8 @@ export async function forwardIdentity(
         )
           return problem("identity_request_invalid");
       }
-      headers.set("Content-Type", request.headers.get("content-type")!);
+      if (route !== "signOut")
+        headers.set("Content-Type", request.headers.get("content-type")!);
       headers.set("Origin", configuration.publicOrigin);
       const csrf = request.headers.get("x-kofte-csrf");
       if (csrf !== null) headers.set("X-Kofte-CSRF", csrf);
@@ -166,6 +172,15 @@ export async function forwardIdentity(
     const output = new Headers(privacy);
     for (const cookie of responseCookies(upstream.headers, configuration))
       output.append("Set-Cookie", cookie);
+    if (upstream.status === 204 && route === "signOut") {
+      if (
+        text !== "" ||
+        upstream.headers.has("content-type") ||
+        upstream.headers.has("location")
+      )
+        throw new TypeError("identity_upstream_invalid");
+      return new Response(null, { status: 204, headers: output });
+    }
     if (
       upstream.status === 303 &&
       (route === "login" || route === "callback")

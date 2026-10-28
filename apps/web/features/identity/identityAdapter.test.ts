@@ -7,6 +7,7 @@ import * as meRoute from "../../app/api/identity/v1/me/route";
 import * as loginRoute from "../../app/auth/login/route";
 import * as callbackRoute from "../../app/auth/oidc/callback/route";
 import * as enrollmentRoute from "../../app/api/identity/v1/first-administrator/route";
+import * as signOutRoute from "../../app/api/identity/v1/sign-out/route";
 
 vi.mock("./identityConfiguration", () => ({
   identityConfiguration: vi.fn(async () => ({
@@ -81,6 +82,95 @@ function enrollmentRequest(body: unknown = { authorization: "A".repeat(43) }) {
     },
   );
 }
+
+function signOutRequest(body?: string) {
+  return new Request("https://kofte.example/api/identity/v1/sign-out", {
+    method: "POST",
+    headers: {
+      origin: "https://kofte.example",
+      "x-kofte-csrf": "signed-in-request-token",
+      cookie: "__Host-kofte-session=session-value",
+    },
+    body,
+  });
+}
+
+it("preserves confirmed empty sign-out and its individually expired cookie without a second mutation", async () => {
+  const headers = new Headers(privateHeaders);
+  headers.append(
+    "Set-Cookie",
+    "__Host-kofte-session=; path=/; secure; httponly; samesite=lax; expires=Thu, 01 Jan 1970 00:00:00 GMT",
+  );
+  const fetch = vi
+    .fn()
+    .mockResolvedValue(new Response(null, { status: 204, headers }));
+  vi.stubGlobal("fetch", fetch);
+  const response = await signOutRoute.POST(signOutRequest());
+  expect(response.status).toBe(204);
+  expect(await response.text()).toBe("");
+  expect(response.headers.get("content-type")).toBeNull();
+  expect(response.headers.getSetCookie()).toEqual(headers.getSetCookie());
+  expect(fetch).toHaveBeenCalledTimes(1);
+  const [url, options] = fetch.mock.calls[0];
+  expect(url.href).toBe("http://127.0.0.1:5080/api/identity/v1/sign-out");
+  expect(options.method).toBe("POST");
+  expect(options.body).toBeUndefined();
+  expect(options.redirect).toBe("manual");
+  expect(new Headers(options.headers).get("x-kofte-csrf")).toBe(
+    "signed-in-request-token",
+  );
+});
+
+it("rejects a caller-selected sign-out target before dispatch", async () => {
+  const fetch = vi.fn();
+  vi.stubGlobal("fetch", fetch);
+  const response = await forwardIdentity(
+    signOutRequest('{"session":"other"}'),
+    "signOut",
+  );
+  expect(response.status).toBe(400);
+  expect(fetch).not.toHaveBeenCalled();
+});
+
+it("never turns a lost sign-out acknowledgement into confirmed revocation or retries it", async () => {
+  const fetch = vi
+    .fn()
+    .mockRejectedValue(new TypeError("private-sign-out-canary"));
+  vi.stubGlobal("fetch", fetch);
+  const response = await forwardIdentity(signOutRequest(), "signOut");
+  expect(response.status).toBe(503);
+  const problem = await response.json();
+  expect(problem.code).toBe("identity_outcome_uncertain");
+  expect(JSON.stringify(problem)).not.toContain("private-sign-out-canary");
+  expect(fetch).toHaveBeenCalledTimes(1);
+});
+
+it.each([undefined, "null", "https://foreign.example.invalid"])(
+  "requires exact Origin for empty sign-out before any dispatch",
+  async (origin) => {
+    const fetch = vi.fn();
+    vi.stubGlobal("fetch", fetch);
+    const request = signOutRequest();
+    request.headers.delete("origin");
+    if (origin !== undefined) request.headers.set("origin", origin);
+    expect((await signOutRoute.POST(request)).status).toBe(403);
+    expect(fetch).not.toHaveBeenCalled();
+  },
+);
+
+it.each(["GET", "HEAD", "OPTIONS", "PUT", "PATCH", "DELETE"] as const)(
+  "keeps the actual sign-out %s export method-bound",
+  async (method) => {
+    const fetch = vi.fn();
+    vi.stubGlobal("fetch", fetch);
+    const response = await signOutRoute[method](
+      new Request("https://kofte.example/api/identity/v1/sign-out", { method }),
+    );
+    expect(response.status).toBe(405);
+    expect(response.headers.get("allow")).toBe("POST");
+    expect(fetch).not.toHaveBeenCalled();
+  },
+);
 
 it("delivers only the protected enrollment exchange and safe committed receipt", async () => {
   const receipt = {

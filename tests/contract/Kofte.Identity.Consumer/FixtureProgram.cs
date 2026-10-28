@@ -46,7 +46,8 @@ internal static class FixtureProgram
             if (args is ["--fixture-login-bridge"])
                 return await Kofte.TestSupport.Identity.LoginCommitFixture.RunExistingChildAsync();
             if (args is ["--fixture-product-login"])
-                return await Kofte.TestSupport.Identity.LoginCommitFixture.RunExistingChildAsync(productRoutes: true);
+                return await Kofte.TestSupport.Identity.LoginCommitFixture.RunExistingChildAsync(
+                    productRoutes: true, actorProbe: ActorProbe.Observe);
             return await BootstrapProgram.RunAsync(args);
         }
         catch (Exception error) when (error is IOException or UnauthorizedAccessException or

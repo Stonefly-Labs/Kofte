@@ -149,7 +149,7 @@ internal static class EnrollmentScenarios
         }
     }
 
-    private static HttpRequestMessage Enrollment(LoginCommitFixture fixture, string csrf, string authorization)
+    internal static HttpRequestMessage Enrollment(LoginCommitFixture fixture, string csrf, string authorization)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, "/api/identity/v1/first-administrator")
         {

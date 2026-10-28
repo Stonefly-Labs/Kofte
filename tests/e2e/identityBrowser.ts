@@ -82,15 +82,20 @@ export async function withIdentityBrowser(
     }
   };
   try {
+    console.log("identity_browser_stage_initial_launch");
     context = await launch();
+    console.log("identity_browser_stage_initial_browser_ready");
     const probe = context.pages()[0];
     await expect(
       probe.goto(origin, { timeout: 5000 }),
       "identity_browser_rejects_untrusted_tls",
     ).rejects.toThrow("net::ERR_CERT_AUTHORITY_INVALID");
+    console.log("identity_browser_stage_untrusted_tls_refused");
     const manager = await context.newPage();
     await manager.goto("chrome://certificate-manager/", { timeout: 5000 });
+    console.log("identity_browser_stage_certificate_manager_ready");
     await close(context);
+    console.log("identity_browser_stage_initial_browser_closed");
     context = undefined;
 
     const database = new DatabaseSync(
@@ -133,6 +138,7 @@ export async function withIdentityBrowser(
     } finally {
       database.close();
     }
+    console.log("identity_browser_stage_private_authority_installed");
     context = await launch();
     context.setDefaultTimeout(5000);
     context.setDefaultNavigationTimeout(5000);

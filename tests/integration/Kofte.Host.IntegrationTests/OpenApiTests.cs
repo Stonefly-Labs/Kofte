@@ -50,6 +50,13 @@ public sealed class OpenApiTests
         Assert.Equal(43, authorization["maxLength"]!.GetValue<int>());
         Assert.True(authorization["writeOnly"]!.GetValue<bool>());
         Assert.NotNull(enrollment["responses"]!["409"]);
+        var signOut = actual["paths"]!["/api/identity/v1/sign-out"]!["post"]!;
+        Assert.NotEmpty(signOut["security"]!.AsArray());
+        Assert.Null(signOut["requestBody"]);
+        Assert.NotNull(signOut["responses"]!["204"]);
+        Assert.Null(signOut["responses"]!["204"]!["content"]);
+        Assert.Equal(new[] { "Origin", "X-Kofte-CSRF" },
+            signOut["parameters"]!.AsArray().Select(value => value!["name"]!.GetValue<string>()));
         Assert.Equal(1, actual["servers"]?.AsArray().Count);
         Assert.Equal(host.Client.BaseAddress?.GetLeftPart(UriPartial.Authority),
             actual["servers"]?[0]?["url"]?.GetValue<string>());

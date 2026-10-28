@@ -89,6 +89,9 @@ public sealed class LoginCommitFixture : IAsyncDisposable
     private string? capacityOriginal;
     private bool productRoutes;
     private bool failEnrollmentCommit;
+    private string? signOutFailurePhase;
+    private Func<ICurrentActorV1, AuthenticatedActorV1?>? consumerActor;
+    private int ungrantedActions;
     private string? productCallback;
     private static readonly string Browser = new('b', 64);
 
@@ -99,9 +102,15 @@ public sealed class LoginCommitFixture : IAsyncDisposable
 
     public static async Task<LoginCommitFixture> CreateAsync(string provider, CancellationToken token,
         TimeProvider? localClock = null, bool productRoutes = false, bool withBrowser = false,
-        Func<StorageProviderScope, CancellationToken, Task>? prepareStorage = null, bool development = false)
+        Func<StorageProviderScope, CancellationToken, Task>? prepareStorage = null, bool development = false,
+        Func<ICurrentActorV1, AuthenticatedActorV1?>? actorProbe = null)
     {
-        var fixture = new LoginCommitFixture { clock = localClock ?? TimeProvider.System, productRoutes = productRoutes };
+        var fixture = new LoginCommitFixture
+        {
+            clock = localClock ?? TimeProvider.System,
+            productRoutes = productRoutes,
+            consumerActor = actorProbe
+        };
         try
         {
             fixture.scope = await StorageProviderScope.CreateAsync(provider, token);
@@ -162,10 +171,13 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         return committed.User.UserId;
     }
 
-    public async Task RunBrowserAsync(Guid expectedUser, CancellationToken token, string? authorization = null)
+    public async Task RunBrowserAsync(Guid expectedUser, CancellationToken token, string? authorization = null,
+        Func<string, CancellationToken, Task>? sessionControl = null)
     {
         if (browserIngress is null || webWorker is null || webWorker.HasExited || expectedUser == Guid.Empty)
             throw new InvalidOperationException("identity_fixture_browser_required");
+        if (authorization is not null && sessionControl is not null)
+            throw new InvalidOperationException("identity_fixture_browser_scope_invalid");
         var root = Path.GetDirectoryName(serving!.ConfigurationPath)!;
         var authorityFile = Path.Combine(root, "browser-ca.pem");
         PrivateTestFiles.WriteNew(authorityFile, Encoding.ASCII.GetBytes(issuer.AuthorityCertificatePem));
@@ -174,6 +186,11 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         start.Environment["KOFTE_IDENTITY_PRIVATE_ROOT"] = root;
         start.Environment["KOFTE_IDENTITY_AUTHORITY_FILE"] = authorityFile;
         start.Environment["KOFTE_IDENTITY_EXPECTED_USER"] = expectedUser.ToString("D");
+        if (sessionControl is not null)
+        {
+            start.Environment["KOFTE_IDENTITY_SESSION_BOUNDARY"] = "1";
+            browserIngress.DirectIdentityBackend = client.BaseAddress;
+        }
         if (authorization is not null)
         {
             if (!IdentityBootstrapStore.ValidAuthorization(authorization))
@@ -190,7 +207,29 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         deadline.CancelAfter(TimeSpan.FromSeconds(45));
         ProcessOutput result;
         var timedOut = false;
-        try { result = await child.WaitAsync(deadline.Token); }
+        var controls = 0;
+        try
+        {
+            var completion = child.WaitAsync(deadline.Token);
+            if (sessionControl is not null)
+                foreach (var phase in new[] { "expire-idle" }
+                    .Concat(Enumerable.Range(1, 16).Select(index => "activity-" + index.ToString("D2", CultureInfo.InvariantCulture)))
+                    .Concat(["expire-absolute", "switch-identity", "lose-sign-out"]))
+                {
+                    var request = Path.Combine(root, "browser-control-" + phase + "-request");
+                    while (!File.Exists(request) && !completion.IsCompleted)
+                        await Task.Delay(10, deadline.Token);
+                    if (completion.IsCompleted) break;
+                    UnixStorePaths.ValidateFile(request);
+                    if (new FileInfo(request).Length != 0)
+                        throw new InvalidOperationException("identity_fixture_browser_control_invalid");
+                    if (phase == "lose-sign-out") browserIngress.LoseNextSignOutAcknowledgement();
+                    else await sessionControl(phase, deadline.Token);
+                    PrivateTestFiles.WriteNew(Path.Combine(root, "browser-control-" + phase + "-ready"), []);
+                    controls++;
+                }
+            result = await completion;
+        }
         catch (OperationCanceledException) when (deadline.IsCancellationRequested && !token.IsCancellationRequested)
         {
             timedOut = true;
@@ -202,17 +241,23 @@ public sealed class LoginCommitFixture : IAsyncDisposable
                 .Contains("identity_browser_stage_owned_browser_closed", StringComparer.Ordinal))
         {
             var observed = issuer.Observations.Skip(providerRequests).ToArray();
+            var output = Regex.Replace(result.Stdout + "\n" + result.Stderr, @"\x1b\[[0-9;]*m", "");
+            var stage = Regex.Matches(output,
+                @"\bidentity_browser_stage_[a-z_]{1,40}\b").LastOrDefault();
             Console.Error.WriteLine(JsonSerializer.Serialize(new
             {
                 eventCode = "identity_browser_protocol_observation",
                 authorizationRequests = observed.Count(value => value == "authorization"),
                 tokenRequests = observed.Count(value => value == "token"),
                 browserDeadlineExceeded = timedOut,
+                browserExitCode = result.ExitCode,
+                browserOutputObserved = result.Stdout.Length != 0 || result.Stderr.Length != 0,
+                completedControls = controls,
+                lastBrowserStage = stage?.Value,
                 responseStatuses = browserIngress.ResponseStatuses
             }));
             if (browserIngress.OpaqueLoginOriginObserved)
                 throw new InvalidOperationException("identity_browser_opaque_origin_refused");
-            var output = Regex.Replace(result.Stdout + "\n" + result.Stderr, @"\x1b\[[0-9;]*m", "");
             var failure = Regex.Match(output,
                 @"\bidentity_browser_(?:(?:page|trust)_line_[1-9][0-9]{0,3}|(?!stage_)[a-z_]{1,70})\b");
             if (failure.Success) throw new InvalidOperationException(failure.Value);
@@ -222,13 +267,13 @@ public sealed class LoginCommitFixture : IAsyncDisposable
                 throw new InvalidOperationException("identity_browser_" +
                     (location.Groups[1].Value == "identity.production" ? "page" : "trust") +
                     "_line_" + location.Groups[2].Value);
-            var stage = Regex.Matches(output,
-                @"\bidentity_browser_stage_[a-z_]{1,40}\b").LastOrDefault();
             if (stage is not null) throw new InvalidOperationException(stage.Value);
             throw new InvalidOperationException("identity_fixture_browser_failed");
         }
         if (authorization is not null && !browserIngress.EnrollmentAcknowledgementLost)
             throw new InvalidOperationException("identity_browser_enrollment_acknowledgement_not_lost");
+        if (sessionControl is not null && (controls != 20 || !browserIngress.SignOutAcknowledgementLost))
+            throw new InvalidOperationException("identity_browser_session_controls_incomplete");
         browserCompleted = true;
     }
 
@@ -286,6 +331,11 @@ public sealed class LoginCommitFixture : IAsyncDisposable
 
     public int ProductProviderRequests => issuer.Observations.Count;
     public string? ProductFailure { get; private set; }
+    public string ProductCookieHeader => cookies.GetCookieHeader(configuration.PublicOrigin);
+    public int UngrantedActions => Volatile.Read(ref ungrantedActions);
+
+    public void FailSignOutCommit(bool afterCommit) =>
+        signOutFailurePhase = afterCommit ? "sign_out_committed" : "sign_out_before_commit";
 
     public async Task<HttpResponseMessage> SendProductAsync(HttpRequestMessage request, CancellationToken token,
         bool includeCookies = true)
@@ -375,10 +425,11 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         keys = IdentityKeys.Open(configuration, metadata.InstallationId, budget);
     }
 
-    public static async Task<int> RunExistingChildAsync(bool productRoutes = false)
+    public static async Task<int> RunExistingChildAsync(bool productRoutes = false,
+        Func<ICurrentActorV1, AuthenticatedActorV1?>? actorProbe = null)
     {
         using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(120));
-        await using var fixture = new LoginCommitFixture { productRoutes = productRoutes };
+        await using var fixture = new LoginCommitFixture { productRoutes = productRoutes, consumerActor = actorProbe };
         var bootstrap = BootstrapConfiguration.FromEnvironment();
         fixture.configuration = IdentityConfiguration.Load(bootstrap, "Production");
         fixture.installation = bootstrap.PostgresConnection is { } connection
@@ -422,7 +473,7 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         if (productRoutes)
         {
             builder.Services.AddIdentityBoundary(configuration);
-            IdentityLoginRegistration.Add(builder.Services, configuration);
+            IdentityLoginRegistration.Add(builder.Services, configuration, keys!);
             if (configuration.Provider is { } configuredProvider)
                 builder.Services.AddSingleton(services => new OidcBackchannel(configuredProvider,
                     services.GetRequiredService<IHttpContextAccessor>(), workerTrust is { } authority
@@ -494,13 +545,21 @@ public sealed class LoginCommitFixture : IAsyncDisposable
             application.UseIdentityBoundary();
             application.MapIdentityEndpoints();
             application.MapGet("/fixture-actor", (ICurrentActorV1 current) =>
-                Results.Json(new
+            {
+                var actor = (consumerActor is null ? current.Actor : consumerActor(current)) ??
+                    throw new InvalidOperationException("identity_fixture_actor_missing");
+                return Results.Json(new
                 {
-                    userId = current.Actor!.UserId,
-                    identityMode = current.Actor.IdentityMode == IdentityMode.Oidc ? "oidc" : "development",
-                    isInitialAdministrator = current.Actor.IsInitialAdministrator
-                })).RequireAuthorization(IdentityRegistration.CurrentIdentityPolicy);
-            application.MapGet("/fixture-ungranted", () => Results.NoContent());
+                    userId = actor.UserId,
+                    identityMode = actor.IdentityMode == IdentityMode.Oidc ? "oidc" : "development",
+                    isInitialAdministrator = actor.IsInitialAdministrator
+                });
+            }).RequireAuthorization(IdentityRegistration.CurrentIdentityPolicy);
+            application.MapGet("/fixture-ungranted", () =>
+            {
+                Interlocked.Increment(ref ungrantedActions);
+                return Results.NoContent();
+            });
         }
         else
         {
@@ -569,6 +628,20 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         var reference = CurrentCookieTicket().Principal.Claims.Single().Value;
         return application!.Services.GetRequiredService<IdentityTicketStore>()
             .RemoveAsync(reference, new DefaultHttpContext(), token);
+    }
+
+    public void RemoveCurrentKey()
+    {
+        var path = Directory.GetFiles(configuration.KeyRingDirectory, "key-*.xml").Single();
+        UnixStorePaths.ValidateFile(path);
+        File.Delete(path);
+    }
+
+    public async Task RevokeProductSessionsAsync(CancellationToken token)
+    {
+        await StopProductAsync(token);
+        await RunIdentityOperatorAsync(["revoke-sessions"], token);
+        await StartWorkerAsync("--fixture-product-login", client.BaseAddress!.Port, token);
     }
 
     public async Task CorruptCurrentTicketAsync(CancellationToken token)
@@ -1130,6 +1203,11 @@ public sealed class LoginCommitFixture : IAsyncDisposable
             if (phase == "enrollment_before_commit" && owner.failEnrollmentCommit)
             {
                 owner.failEnrollmentCommit = false;
+                throw new StorageException(Kofte.Platform.Modules.Storage.StorageCode.Unavailable);
+            }
+            if (phase == owner.signOutFailurePhase)
+            {
+                owner.signOutFailurePhase = null;
                 throw new StorageException(Kofte.Platform.Modules.Storage.StorageCode.Unavailable);
             }
             if (owner.fault is not (LoginCommitFault.BeforeCommit or LoginCommitFault.AfterCommit)) return;

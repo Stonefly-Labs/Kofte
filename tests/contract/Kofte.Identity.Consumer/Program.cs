@@ -39,14 +39,17 @@ if (args.Length == 4)
     }
 }
 if (code == "identity_scenario_unimplemented" &&
-    scenario is "oidc-login" or "trust-refusal" or "nominated-enrollment" or "enrollment-race")
+    scenario is "oidc-login" or "trust-refusal" or "nominated-enrollment" or "enrollment-race" or "session-boundary")
 {
     using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(120));
     try
     {
-        var observations = scenario is "oidc-login" or "trust-refusal"
-            ? await LoginScenarios.RunAsync(scenario, provider!, timeout.Token)
-            : await EnrollmentScenarios.RunAsync(scenario, provider!, timeout.Token);
+        var observations = scenario switch
+        {
+            "oidc-login" or "trust-refusal" => await LoginScenarios.RunAsync(scenario, provider!, timeout.Token),
+            "session-boundary" => await SessionScenarios.RunAsync(provider!, timeout.Token),
+            _ => await EnrollmentScenarios.RunAsync(scenario, provider!, timeout.Token)
+        };
         Console.Out.WriteLine(JsonSerializer.Serialize(new
         {
             schemaVersion = 1,
@@ -71,6 +74,7 @@ if (code == "identity_scenario_unimplemented" &&
             "identity_browser_private_trust_required" or "identity_browser_current_unavailable" or
             "identity_browser_owned_fixture_required" or "identity_browser_opaque_origin_refused" ||
             error.Message == "identity_browser_enrollment_acknowledgement_not_lost" ||
+            error.Message == "identity_browser_session_controls_incomplete" ||
             error.Message is "identity_browser_cleanup_unverified" or "identity_browser_ownership_required" ||
             error.Message is "identity_scenario_native_nominee_login" or
                 "identity_scenario_first_arrival_has_no_designation" or
@@ -87,6 +91,22 @@ if (code == "identity_scenario_unimplemented" &&
             error.Message is "identity_fixture_operator_failed" or "identity_fixture_child_exited" or
                 "identity_fixture_browser_context_failed" or "identity_fixture_private_delivery_invalid" ||
             Regex.IsMatch(error.Message, @"\Aidentity_scenario_(fresh_process|restart_replay_closed)_[1-3]\z") ||
+            error.Message is "identity_scenario_session_actor_parity" or
+                "identity_scenario_session_designation_is_not_permission" or
+                "identity_scenario_session_ungranted_action_denied" or
+                "identity_scenario_session_nominee_login" or
+                "identity_scenario_session_explicit_designation" or
+                "identity_scenario_session_fresh_designation" or
+                "identity_scenario_session_anonymous_refusal" or
+                "identity_scenario_session_native_login" or
+                "identity_scenario_session_current_identity" or
+                "identity_scenario_session_separately_compiled_actor" or
+                "identity_scenario_session_mixed_credentials_refused" or
+                "identity_scenario_session_csrf_origin_no_effects" or
+                "identity_scenario_session_confirmed_revocation_racing_renewal" or
+                "identity_scenario_session_next_request_denied" or
+                "identity_scenario_session_control_invalid" or
+                "identity_scenario_session_browser_expiry_revocation_uncertainty_two_user" ||
             Regex.IsMatch(error.Message, @"\Aidentity_browser_(page|trust)_line_[1-9][0-9]{0,3}\z") ||
             Regex.IsMatch(error.Message, @"\Aidentity_browser_stage_[a-z_]{1,40}\z")
                 ? error.Message : "identity_scenario_failed";

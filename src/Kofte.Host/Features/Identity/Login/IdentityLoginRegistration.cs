@@ -11,7 +11,7 @@ namespace Kofte.Host.Features.Identity.Login;
 
 internal static class IdentityLoginRegistration
 {
-    internal static void Add(IServiceCollection services, IdentityConfiguration configuration)
+    internal static void Add(IServiceCollection services, IdentityConfiguration configuration, IdentityKeys keys)
     {
         services.AddHttpContextAccessor();
         services.TryAddSingleton(TimeProvider.System);
@@ -43,7 +43,9 @@ internal static class IdentityLoginRegistration
                     IdentityProblem.WriteAsync(context.HttpContext, IdentityFailure.Unauthenticated);
                 options.Events.OnRedirectToAccessDenied = context =>
                     IdentityProblem.WriteAsync(context.HttpContext, IdentityFailure.Forbidden);
-            });
+            })
+            .PostConfigure(options =>
+                options.TicketDataFormat = new IdentityCookieFormat(keys, options.TicketDataFormat));
         if (!oidc) return;
         services.AddSingleton(services => new OidcBackchannel(configuration.Provider!,
             services.GetRequiredService<IHttpContextAccessor>()));

@@ -13,7 +13,7 @@ namespace Kofte.Infrastructure.Identity;
 internal sealed record IdentityMetadata(Guid InstallationId, long Revision, Guid Epoch,
     string Mode, string TrustDigest, DateTime ReconciledAt);
 
-internal enum IdentityCommitKind { Login, Enrollment }
+internal enum IdentityCommitKind { Login, Enrollment, SignOut }
 
 internal sealed record IdentityMutation(DeadlineStore Database, IdentityMetadata Before, long Revision)
 {
@@ -82,6 +82,8 @@ internal sealed class IdentityStore
             (IdentityCommitKind.Login, true) => "login_committed",
             (IdentityCommitKind.Enrollment, false) => "enrollment_before_commit",
             (IdentityCommitKind.Enrollment, true) => "enrollment_committed",
+            (IdentityCommitKind.SignOut, false) => "sign_out_before_commit",
+            (IdentityCommitKind.SignOut, true) => "sign_out_committed",
             _ => throw new StorageException(StorageCode.RequestInvalid)
         });
     }

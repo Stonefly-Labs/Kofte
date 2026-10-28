@@ -76,6 +76,7 @@ public static class IdentityRegistration
     {
         Login.LoginEndpoints.Map(app);
         CurrentUser.CurrentUserEndpoints.Map(app);
+        SignOut.SignOutEndpoints.Map(app);
         Enrollment.EnrollmentEndpoints.Map(app);
     }
 

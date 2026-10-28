@@ -87,7 +87,7 @@ internal static class LoginScenarios
         return await fixture.CompleteProductAsync(start, token);
     }
 
-    private static async Task<Current> CurrentAsync(LoginCommitFixture fixture, CancellationToken token)
+    internal static async Task<Current> CurrentAsync(LoginCommitFixture fixture, CancellationToken token)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, "/api/identity/v1/me");
         using var response = await fixture.SendProductAsync(request, token);
@@ -112,11 +112,11 @@ internal static class LoginScenarios
             flags.Contains("path=/") && !flags.Any(value => value.StartsWith("domain=", StringComparison.OrdinalIgnoreCase));
     }
 
-    private static void Require(bool condition, string observation, ICollection<string> observations)
+    internal static void Require(bool condition, string observation, ICollection<string> observations)
     {
         if (!condition) throw new InvalidOperationException("identity_scenario_" + observation);
         observations.Add(observation);
     }
 
-    private sealed record Current(Guid Id, string? DisplayName, string Mode, bool Designated);
+    internal sealed record Current(Guid Id, string? DisplayName, string Mode, bool Designated);
 }

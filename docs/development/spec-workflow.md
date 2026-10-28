@@ -6,16 +6,21 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement running; 51/100 complete** (T001–T047
-and T049–T052), on
+**Current checkpoint: 005 / implement running; 55/100 complete** (T001–T055), on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 `a0c1fb0` Ubuntu browser job passes all eight HTTPS recipes, including both
 stores' enrollment/lost-acknowledgement and twenty-way race journeys; its
 complete PostgreSQL integration also passes. Real development-session and
 signed authority/profile/email negatives are added without claiming a delivered
-development-login endpoint. The expanded negative matrix still needs PostgreSQL
-execution; later stories and final gates remain unfinished. The
+development-login endpoint. The expanded `f80eee9` head now passes both full
+provider integrations and the complete HTTPS browser job, closing US2.
+US3 sign-out/session parity is in progress: native durable revocation, exact
+Next/UI clearing and generated contracts are delivered, with twenty focused
+SQLite cases passing in two selections. Missing live keys now produce 503,
+not anonymous identity. The actual browser session journey still fails locally
+before login after verified TLS trust; both-provider hosted execution is wired.
+US3 tasks, development sessions, recovery and final gates remain unfinished. The
 [implementation record](../../specs/005-authentication-bootstrap/implementation.md)
 preserves the initial 404/SAML failures and their resolved provenance proof.
 The actual OIDC package and closure are now adopted, centrally pinned,

@@ -37,6 +37,7 @@ internal sealed class IdentityKeys : IDisposable
     internal IDataProtectionProvider Provider { get; }
     internal bool PreparationChanged { get; }
     internal IDataProtector Protector(string purpose) => Provider.CreateProtector(purpose);
+    internal void Verify() => _ = Use(static () => true);
 
     internal static async Task<IdentityKeys> PrepareAsync(IdentityConfiguration configuration, Guid installationId,
         StorageInstallation installation, MaintenanceScope scope, OperationBudget budget, bool existingOnly = false)

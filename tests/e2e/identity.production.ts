@@ -1,8 +1,8 @@
 import { expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { lstat, readFile } from "node:fs/promises";
-import { dirname } from "node:path";
-import type { Page } from "@playwright/test";
+import { lstat, readFile, writeFile } from "node:fs/promises";
+import { dirname, join } from "node:path";
+import type { BrowserContext, Page } from "@playwright/test";
 import { withIdentityBrowser } from "./identityBrowser.ts";
 
 async function verifyLogin() {
@@ -25,6 +25,7 @@ async function verifyLogin() {
       console.log("identity_browser_stage_trust_ready");
       const page = context.pages()[0];
       await page.bringToFront();
+      console.log("identity_browser_stage_page_active");
       const paths: string[] = [];
       page.on("request", (request) => {
         const path = new URL(request.url()).pathname;
@@ -35,6 +36,7 @@ async function verifyLogin() {
         }
       });
       const shell = await page.goto(new URL("/identity", origin).href);
+      console.log("identity_browser_stage_shell_received");
       expect(shell?.headers()["cache-control"]).toContain("no-store");
       expect(shell?.headers()["referrer-policy"]).toBe("no-referrer");
       expect(await shell!.text()).not.toContain(
@@ -104,6 +106,10 @@ async function verifyLogin() {
         "/authorize",
         "/auth/oidc/callback",
       ]);
+      if (process.env.KOFTE_IDENTITY_SESSION_BOUNDARY === "1") {
+        await verifySession(page, context, root, user);
+        return;
+      }
       const enrollmentFile = process.env.KOFTE_IDENTITY_ENROLLMENT_FILE;
       if (enrollmentFile) {
         await verifyEnrollment(page, root, enrollmentFile);
@@ -152,6 +158,240 @@ async function verifyLogin() {
     }
   });
   console.log("identity_browser_stage_owned_browser_closed");
+}
+
+async function browserControl(root: string, phase: string) {
+  await writeFile(join(root, `browser-control-${phase}-request`), "", {
+    flag: "wx",
+    mode: 0o600,
+  });
+  const until = performance.now() + 5000;
+  while (performance.now() < until) {
+    try {
+      const file = await lstat(join(root, `browser-control-${phase}-ready`));
+      if (
+        !file.isFile() ||
+        file.isSymbolicLink() ||
+        file.size !== 0 ||
+        (file.mode & 0o077) !== 0 ||
+        file.uid !== process.getuid?.()
+      )
+        throw new Error("identity_browser_private_control_invalid");
+      return;
+    } catch (error) {
+      if (!(
+        error instanceof Error &&
+        "code" in error &&
+        error.code === "ENOENT"
+      ))
+        throw error;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 10));
+  }
+  throw new Error("identity_browser_private_control_timeout");
+}
+
+async function verifySession(
+  page: Page,
+  context: BrowserContext,
+  root: string,
+  user: string,
+) {
+  const panel = page.getByRole("region", {
+    name: "Your identity",
+    exact: true,
+  });
+  const heading = panel.getByRole("heading", {
+    name: "Your identity",
+    exact: true,
+  });
+  let submissions = 0;
+  page.on("request", (request) => {
+    if (
+      request.method() === "POST" &&
+      new URL(request.url()).pathname === "/api/identity/v1/sign-out"
+    )
+      submissions++;
+  });
+  const invalid = await page.evaluate(async () => {
+    const response = await fetch("/api/identity/v1/sign-out", {
+      method: "POST",
+      cache: "no-store",
+      redirect: "error",
+      headers: { "X-Kofte-CSRF": "invalid-pair" },
+    });
+    return response.status;
+  });
+  expect(invalid).toBe(403);
+  expect(submissions).toBe(1);
+  await expect(page.getByText(user, { exact: true })).toBeVisible();
+  const direct = await page.evaluate(async () => {
+    const response = await fetch("/fixture-direct-identity", {
+      cache: "no-store",
+    });
+    return response.json();
+  });
+  expect(direct).toEqual({
+    version: "1",
+    userId: user,
+    displayName: "<script>synthetic profile</script>",
+    identityMode: "oidc",
+    isInitialAdministrator: false,
+  });
+
+  async function denied() {
+    const statuses = await page.evaluate(async () => {
+      const results = [];
+      for (const path of ["/api/identity/v1/me", "/fixture-direct-identity"]) {
+        const response = await fetch(path, {
+          cache: "no-store",
+          redirect: "error",
+        });
+        const body = await response.json();
+        results.push({
+          status: response.status,
+          code: body.code,
+          noStore: response.headers.get("cache-control"),
+          location: response.headers.get("location"),
+        });
+      }
+      return results;
+    });
+    expect(statuses).toEqual(
+      Array.from({ length: 2 }, () => ({
+        status: 401,
+        code: "identity_unauthenticated",
+        noStore: "no-store",
+        location: null,
+      })),
+    );
+  }
+
+  async function enter(expected?: string) {
+    await panel.getByRole("button", { name: "Sign in", exact: true }).click();
+    await expect(panel.getByRole("status")).toHaveText("You are signed in", {
+      timeout: 5000,
+    });
+    const identity = await page.evaluate(async () => {
+      const response = await fetch("/api/identity/v1/me", {
+        cache: "no-store",
+      });
+      return response.json();
+    });
+    expect(identity.identityMode).toBe("oidc");
+    expect(identity.isInitialAdministrator).toBe(false);
+    expect(identity.displayName).toBe("<script>synthetic profile</script>");
+    expect(identity.userId).toMatch(
+      /^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/,
+    );
+    if (expected) expect(identity.userId).toBe(expected);
+    else expect(identity.userId).not.toBe(user);
+    await expect(
+      page.getByText(identity.userId, { exact: true }),
+    ).toBeVisible();
+    return identity.userId as string;
+  }
+
+  await browserControl(root, "expire-idle");
+  await panel.getByRole("button", { name: "Retry identity check" }).click();
+  await expect(panel.getByRole("status")).toHaveText(
+    "Your session has expired",
+    { timeout: 5000 },
+  );
+  await expect(page.getByText(user, { exact: true })).toHaveCount(0);
+  await denied();
+  await enter(user);
+  for (let index = 1; index <= 16; index++) {
+    await browserControl(root, `activity-${String(index).padStart(2, "0")}`);
+    expect(
+      await page.evaluate(
+        async () =>
+          (
+            await fetch("/api/identity/v1/me", {
+              cache: "no-store",
+              redirect: "error",
+            })
+          ).status,
+      ),
+    ).toBe(200);
+  }
+  await browserControl(root, "expire-absolute");
+  await panel.getByRole("button", { name: "Retry identity check" }).click();
+  await expect(panel.getByRole("status")).toHaveText(
+    "Your session has expired",
+    { timeout: 5000 },
+  );
+  await expect(page.getByText(user, { exact: true })).toHaveCount(0);
+  await denied();
+  await enter(user);
+
+  const oldCookie = (await context.cookies()).find(
+    (cookie) => cookie.name === "__Host-kofte-session",
+  );
+  expect(oldCookie).toBeDefined();
+  const began = performance.now();
+  await panel.getByRole("button", { name: "Sign out", exact: true }).focus();
+  await page.keyboard.press("Enter");
+  await expect(
+    panel.getByText("Signed out of Köfte.", { exact: false }),
+  ).toBeVisible({ timeout: 5000 });
+  expect(performance.now() - began).toBeLessThan(5000);
+  await expect(page.getByText(user, { exact: true })).toHaveCount(0);
+  await expect(heading).toBeFocused();
+  expect(submissions).toBe(2);
+  await context.addCookies([oldCookie!]);
+  await denied();
+  const shell = await page.reload();
+  expect(shell?.headers()["cache-control"]).toContain("no-store");
+  expect(await shell!.text()).not.toContain(user);
+  await expect(panel.getByRole("status")).toHaveText("You are signed out", {
+    timeout: 5000,
+  });
+  await browserControl(root, "switch-identity");
+  const other = await enter();
+  await expect(page.getByText(user, { exact: true })).toHaveCount(0);
+  await browserControl(root, "lose-sign-out");
+  const uncertain = performance.now();
+  await panel.getByRole("button", { name: "Sign out", exact: true }).click();
+  await expect(panel.getByRole("alert")).toContainText(
+    "Server revocation could not be confirmed",
+    { timeout: 5000 },
+  );
+  expect(performance.now() - uncertain).toBeLessThan(5000);
+  await expect(page.getByText(other, { exact: true })).toHaveCount(0);
+  await denied();
+  await panel.getByRole("button", { name: "Retry identity check" }).click();
+  await expect(
+    panel.getByRole("button", { name: "Sign in", exact: true }),
+  ).toBeVisible();
+  expect(submissions).toBe(3);
+  await expect(page.getByText(other, { exact: true })).toHaveCount(0);
+  expect(
+    await page.evaluate(() => localStorage.length + sessionStorage.length),
+  ).toBe(0);
+  await page.setViewportSize({ width: 320, height: 900 });
+  await page.evaluate(() => {
+    document.documentElement.style.fontSize = "200%";
+  });
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+  const axe = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+    .analyze();
+  expect(
+    axe.violations.filter(
+      ({ impact }) => impact === "serious" || impact === "critical",
+    ),
+  ).toEqual([]);
+  await page.bringToFront();
+  await expect(
+    panel.getByRole("button", { name: "Sign in", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText(other, { exact: true })).toHaveCount(0);
+  console.log("identity_browser_stage_session_boundaries_verified");
 }
 
 async function verifyEnrollment(page: Page, root: string, file: string) {

@@ -11,28 +11,31 @@ export function IdentityPanel({
 }: {
   returnPath?: string;
 }) {
-  const { state, retry, refreshIdentity } = useIdentity();
+  const { state, retry, refreshIdentity, signOut, signOutNotice } =
+    useIdentity();
   const [enrollmentNotice, setEnrollmentNotice] = useState<EnrollmentNotice>();
   const [starting, startTransition] = useTransition();
   const [loginFailure, setLoginFailure] = useState<LoginStartFailure>();
   const heading = useRef<HTMLHeadingElement>(null);
-  const enrollmentFocus = useRef(false);
+  const identityFocus = useRef(false);
   useEffect(() => {
-    if (enrollmentFocus.current && state.kind !== "loading") {
-      enrollmentFocus.current = false;
+    if (identityFocus.current && state.kind !== "loading") {
+      identityFocus.current = false;
       heading.current?.focus();
     }
   }, [state]);
   const validReturn = returnPath === "/" || returnPath === "/identity";
   const label = !validReturn
     ? "Identity navigation is unavailable"
-    : {
-        loading: "Checking your identity",
-        "signed-out": "You are signed out",
-        "signed-in": "You are signed in",
-        expired: "Your session has expired",
-        unavailable: "Identity verification is unavailable",
-      }[state.kind];
+    : signOutNotice?.kind === "uncertain"
+      ? "Your local identity has been cleared"
+      : {
+          loading: "Checking your identity",
+          "signed-out": "You are signed out",
+          "signed-in": "You are signed in",
+          expired: "Your session has expired",
+          unavailable: "Identity verification is unavailable",
+        }[state.kind];
   const context = "context" in state ? state.context : undefined;
   return (
     <section className="panel" aria-labelledby="identity-heading">
@@ -46,6 +49,20 @@ export function IdentityPanel({
         <p>
           <strong>Development identity</strong> — local use only. This is not
           production authentication.
+        </p>
+      )}
+      {signOutNotice && (
+        <p role={signOutNotice.kind === "uncertain" ? "alert" : "status"}>
+          {signOutNotice.kind === "pending"
+            ? "Waiting for sign-out confirmation. No identity is being assumed."
+            : signOutNotice.kind === "confirmed"
+              ? "Signed out of Köfte. This does not sign you out of your identity provider."
+              : signOutNotice.kind === "expired"
+                ? "Your session is no longer valid. Sign in again to continue."
+                : "Server revocation could not be confirmed. Your local identity has been cleared. Sign in again to continue; no automatic sign-out retry was made."}
+          {signOutNotice.correlationId && (
+            <> Reference: {signOutNotice.correlationId}</>
+          )}
         </p>
       )}
       {enrollmentNotice && (
@@ -78,12 +95,23 @@ export function IdentityPanel({
               <EnrollmentForm
                 csrfToken={state.context.csrfToken}
                 onRefresh={(notice) => {
-                  enrollmentFocus.current = true;
+                  identityFocus.current = true;
                   setEnrollmentNotice(notice);
                   refreshIdentity();
                 }}
               />
             )}
+          <Button
+            type="button"
+            onClick={() => {
+              identityFocus.current = true;
+              setEnrollmentNotice(undefined);
+              setLoginFailure(undefined);
+              void signOut();
+            }}
+          >
+            Sign out
+          </Button>
         </>
       )}
       {(state.kind === "signed-out" || state.kind === "expired") && (

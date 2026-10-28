@@ -8,7 +8,7 @@ internal static class IdentityOpenApi
 {
     internal static bool IsOperation(string? id) =>
         id is "identityBrowserContext" or "identityLogin" or "identityCallback" or "identityCurrent" or
-            "identityEnrollFirstAdministrator";
+            "identityEnrollFirstAdministrator" or "identitySignOut";
 
     internal static void Configure(OpenApiDocument document, IdentityConfiguration configuration)
     {
@@ -68,7 +68,8 @@ internal static class IdentityOpenApi
             {
                 if (!IsOperation(operation.OperationId)) continue;
                 operation.Tags?.Clear();
-                operation.Security = operation.OperationId is "identityCurrent" or "identityEnrollFirstAdministrator"
+                operation.Security = operation.OperationId is "identityCurrent" or "identityEnrollFirstAdministrator" or
+                    "identitySignOut"
                     ? [new() { [new OpenApiSecuritySchemeReference("kofteSession", document)] = [] }]
                     : [];
                 operation.Responses = new();
@@ -79,6 +80,15 @@ internal static class IdentityOpenApi
                     operation.Responses["200"] = Response(document,
                         operation.OperationId == "identityCurrent" ? "CurrentIdentityV1" : "BrowserContextV1",
                         "Verified self identity or public browser continuity");
+                else if (operation.OperationId == "identitySignOut")
+                {
+                    operation.Responses["204"] = new OpenApiResponse
+                    {
+                        Description = "Known durable self-session revocation; no provider-wide logout",
+                        Headers = Headers(document)
+                    };
+                    operation.RequestBody = null;
+                }
                 else if (operation.OperationId == "identityEnrollFirstAdministrator")
                 {
                     operation.Responses["200"] = Response(document, "EnrollmentResultV1",
@@ -106,21 +116,6 @@ internal static class IdentityOpenApi
                             }
                         }
                     };
-                    operation.Parameters =
-                    [
-                        new OpenApiParameter
-                        {
-                            Name = "Origin", In = ParameterLocation.Header, Required = true,
-                            Description = "Exact configured public origin",
-                            Schema = new OpenApiSchema { Type = JsonSchemaType.String }
-                        },
-                        new OpenApiParameter
-                        {
-                            Name = "X-Kofte-CSRF", In = ParameterLocation.Header, Required = true,
-                            Description = "Fresh identity-bound antiforgery request token with its paired cookie",
-                            Schema = new OpenApiSchema { Type = JsonSchemaType.String }
-                        }
-                    ];
                 }
                 else
                 {
@@ -158,6 +153,22 @@ internal static class IdentityOpenApi
                             }
                         };
                 }
+                if (operation.OperationId is "identityEnrollFirstAdministrator" or "identitySignOut")
+                    operation.Parameters =
+                    [
+                        new OpenApiParameter
+                        {
+                            Name = "Origin", In = ParameterLocation.Header, Required = true,
+                            Description = "Exact configured public origin",
+                            Schema = new OpenApiSchema { Type = JsonSchemaType.String }
+                        },
+                        new OpenApiParameter
+                        {
+                            Name = "X-Kofte-CSRF", In = ParameterLocation.Header, Required = true,
+                            Description = "Fresh identity-bound antiforgery request token with its paired cookie",
+                            Schema = new OpenApiSchema { Type = JsonSchemaType.String }
+                        }
+                    ];
             }
         }
     }
