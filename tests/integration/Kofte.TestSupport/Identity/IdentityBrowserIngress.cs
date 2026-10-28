@@ -23,11 +23,15 @@ internal sealed class IdentityBrowserIngress : IAsyncDisposable
     })
     { Timeout = TimeSpan.FromSeconds(5) };
     private WebApplication? application;
+    private int loseEnrollmentAcknowledgement;
+    private int enrollmentAcknowledgementLost;
     private readonly ConcurrentDictionary<string, int> responseStatuses = new(StringComparer.Ordinal);
     internal Uri Origin { get; private set; } = null!;
     internal Uri Web { get; }
     internal bool OpaqueLoginOriginObserved { get; private set; }
     internal IReadOnlyDictionary<string, int> ResponseStatuses => responseStatuses;
+    internal bool EnrollmentAcknowledgementLost => Volatile.Read(ref enrollmentAcknowledgementLost) == 1;
+    internal void LoseNextEnrollmentAcknowledgement() => Interlocked.Exchange(ref loseEnrollmentAcknowledgement, 1);
 
     private IdentityBrowserIngress()
     {
@@ -85,6 +89,15 @@ internal sealed class IdentityBrowserIngress : IAsyncDisposable
             _ => null
         };
         if (operation is not null) responseStatuses[operation] = (int)response.StatusCode;
+        if (operation == "enrollment" && context.Request.Method == "POST" &&
+            response.StatusCode == HttpStatusCode.OK &&
+            Interlocked.Exchange(ref loseEnrollmentAcknowledgement, 0) == 1)
+        {
+            await response.Content.LoadIntoBufferAsync(8192, budget.Token);
+            Volatile.Write(ref enrollmentAcknowledgementLost, 1);
+            context.Abort();
+            return;
+        }
         context.Response.StatusCode = (int)response.StatusCode;
         foreach (var header in response.Headers.Concat(response.Content.Headers))
             if (!HopByHop(header.Key)) context.Response.Headers[header.Key] = header.Value.ToArray();

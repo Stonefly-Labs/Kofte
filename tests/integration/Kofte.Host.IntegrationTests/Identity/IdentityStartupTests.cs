@@ -129,18 +129,18 @@ public abstract class IdentityStartupTests
 }
 
 [Trait("Provider", "sqlite")]
-[Collection("identity-startup")]
+[Collection("identity-deadlines")]
 public sealed class SqliteIdentityStartupTests : IdentityStartupTests
 {
     protected override string Provider => "sqlite";
 }
 
 [Trait("Provider", "postgres")]
-[Collection("identity-startup")]
+[Collection("identity-deadlines")]
 public sealed class PostgresIdentityStartupTests : IdentityStartupTests
 {
     protected override string Provider => "postgres";
 }
 
-[CollectionDefinition("identity-startup", DisableParallelization = true)]
-public sealed class IdentityStartupCollection;
+[CollectionDefinition("identity-deadlines", DisableParallelization = true)]
+public sealed class IdentityDeadlineCollection;

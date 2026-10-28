@@ -105,7 +105,10 @@ async function verifyLogin() {
         "/auth/oidc/callback",
       ]);
       const enrollmentFile = process.env.KOFTE_IDENTITY_ENROLLMENT_FILE;
-      if (enrollmentFile) await verifyEnrollment(page, root, enrollmentFile);
+      if (enrollmentFile) {
+        await verifyEnrollment(page, root, enrollmentFile);
+        return;
+      }
 
       await context.clearCookies();
       await page.goto(new URL("/identity?returnPath=%2F", origin).href);
@@ -120,7 +123,7 @@ async function verifyLogin() {
       });
       expect(repeated).toEqual({
         ...current,
-        isInitialAdministrator: Boolean(enrollmentFile),
+        isInitialAdministrator: false,
       });
       expect(paths).toEqual([
         "login-action",
@@ -165,7 +168,11 @@ async function verifyEnrollment(page: Page, root: string, file: string) {
   const authorization = await readFile(file, "ascii");
   if (!/^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$/.test(authorization))
     throw new Error("identity_browser_owned_fixture_required");
-  const entry = page.getByLabel("One-time authorization", { exact: true });
+  const panel = page.getByRole("region", {
+    name: "Your identity",
+    exact: true,
+  });
+  const entry = panel.getByLabel("One-time authorization", { exact: true });
   await expect(entry).toHaveAttribute("type", "password");
   await expect(entry).toHaveAttribute("autocomplete", "off");
   await expect(entry).toHaveValue("");
@@ -229,44 +236,16 @@ async function verifyEnrollment(page: Page, root: string, file: string) {
     entry.press("Enter"),
   ]);
   expect(refused.status()).toBe(409);
-  try {
-    await expect(page.getByRole("alert")).toContainText(
-      "Enrollment was not completed",
-    );
-  } catch (error) {
-    const result =
-      typeof error === "object" && error !== null && "matcherResult" in error
-        ? error.matcherResult
-        : undefined;
-    const actual =
-      typeof result === "object" && result !== null && "actual" in result
-        ? result.actual
-        : undefined;
-    const notice =
-      typeof actual !== "string"
-        ? "unavailable"
-        : actual.includes("Enrollment could not be confirmed")
-          ? "uncertain"
-          : actual === "" || actual === "<element(s) not found>"
-            ? "missing"
-            : "unexpected";
-    throw new Error(`identity_browser_enrollment_notice_${notice}`, {
-      cause: error,
-    });
-  }
+  await expect(panel.getByRole("alert")).toContainText(
+    "Enrollment was not completed",
+  );
   await expect(entry).toHaveValue("");
   await expect(entry).toBeFocused();
   const queriesBefore = identityQueries;
-  await page.route("**/api/identity/v1/first-administrator", async (route) => {
-    const confirmed = await route.fetch({ maxRedirects: 0, maxRetries: 0 });
-    expect(confirmed.status()).toBe(200);
-    await confirmed.dispose();
-    await route.abort("failed");
-  });
   await entry.fill(authorization);
   const began = performance.now();
   await entry.press("Enter");
-  await expect(page.getByRole("alert")).toContainText(
+  await expect(panel.getByRole("alert")).toContainText(
     "Enrollment could not be confirmed. No additional enrollment was attempted.",
     { timeout: 5000 },
   );
@@ -286,7 +265,6 @@ async function verifyEnrollment(page: Page, root: string, file: string) {
   expect(
     await page.evaluate(() => localStorage.length + sessionStorage.length),
   ).toBe(0);
-  await page.unroute("**/api/identity/v1/first-administrator");
   console.log("identity_browser_stage_enrollment_verified");
 }
 

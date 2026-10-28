@@ -2384,3 +2384,74 @@ and immediate stop on cleanup failure; the focused 54-test verifier suite passes
 typecheck/lint, `npm run format:check` and `git diff --check` all pass.
 No test count, original timeout, provider requirement or success condition is
 weakened. All task markers remain unchanged at **44/100**.
+
+## US2 continuation: scoped announcements and real lost acknowledgement
+
+The published `d3813dd` SQLite integration artifact `12796593019` reports
+**passed** for all three independent projects: host integration (210.543s),
+storage integration (310.011s) and composition integration (100.495s).
+The earlier host failure no longer prevents collecting storage evidence.
+This is an assessed-head result, not evidence for the following unpushed edits.
+The same head's PostgreSQL artifact `12796914363` fails host integration only
+at the twenty-contender test and storage integration only at the populated
+twenty-contender/restart test; composition integration passes. Those are the
+two timing-sensitive cases receiving collection isolation below. Their failures
+are retained, not counted as PostgreSQL preservation evidence. Other final
+gates remain outstanding.
+
+The installed Next.js accessibility guide documents its built-in route
+announcer; installed source places its accessible alert in an open shadow root.
+Both enrollment alerts now resolve within the named **Your identity** region,
+instead of the page-wide alert locator. Actual execution then passed the
+wrong-secret announcement, secret clearing and focus assertions and reached
+the old `route.fetch` interception at source line 240, where it failed before
+a successful enrollment response. No product announcement defect was demonstrated.
+The speculative matcher-result classifier and its public error allowlist are
+removed; fixed source-line and protocol observations remain.
+
+Acknowledgement loss now happens in the **test-owned HTTPS ingress**, after
+the real browser's POST has received the adapter's successful, bounded response.
+The ingress consumes that response, drops the connection once and records only
+that the intended drop occurred. The owning fixture independently requires
+this observation before reporting browser success. This avoids replacing the
+browser's trusted transport with Playwright's separate API-request transport;
+no certificate bypass, retry or production fault-injection interface is added.
+The browser must still observe uncertainty, query fresh designation, submit
+exactly twice including the prior refusal, clear secret material and satisfy
+keyboard/focus, width/text, axe and five-second UI assertions.
+
+One local execution reached and passed all enrollment assertions and the
+subsequent safe-return assertions, recording actual enrollment 200, but exceeded
+the original 45-second child limit during final browser cleanup. It is
+**not a passing complete recipe**. The dedicated enrollment branch now returns
+after its own required journey; duplicate repeated-login/safe-return checks
+remain in the separately required ordinary-login recipe. Subsequent local
+executions still fail earlier in sign-in or native setup. No total deadline,
+TLS trust check, cleanup requirement or enrollment success condition is relaxed.
+Fresh hosted proof remains required.
+
+The twenty-contender host tests now share the existing exclusive startup
+collection, renamed `identity-deadlines`; populated-module storage tests use
+the existing storage deadline collection. Their **twenty simultaneous protected
+submissions**, one-second production operations and restart assertions are
+unchanged. This removes unrelated test scheduling from their timing evidence,
+but is not a diagnosis of the earlier PostgreSQL race failure.
+
+Executed after these changes:
+
+| Exact command | Result |
+| --- | --- |
+| `dotnet build Kofte.slnx --no-restore -c Release -warnaserror --nologo` | Passed, zero warnings/errors. |
+| `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteEnrollmentConcurrencyTests' --minimum-expected-tests 1` | Passed through the owned verifier. |
+| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteEnrollmentRestartTests' --minimum-expected-tests 1` | Owned-verifier attempt failed; unchanged private xUnit diagnostic rerun passed, 38.5s. No intermittent-failure cause is claimed. |
+| `dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario nominated-enrollment --provider sqlite` | Still failing overall: preserved old interception failure, final cleanup timeout after complete assertions, and earlier sign-in/native-setup failures. |
+| `dotnet format Kofte.slnx --verify-no-changes --no-restore` | Passed. |
+| `python3 scripts/check_repository.py` | Passed. |
+| `python3 -m unittest discover -s scripts/tests -v` | All 128 passed. |
+| `npm run typecheck --workspace tests/e2e`; `npm run lint --workspace tests/e2e`; `npm run format:check`; `git diff --check` | All passed after targeted Prettier correction. |
+
+An initial combined native class selector using `|` failed before executing the
+intended selection; the subsequent individual supported selectors above are
+the actual evidence. All 44 checked task markers, reviewer-owned checklists and
+the implement/running driver state remain unchanged. Continue implementation
+on the original branch/draft PR, without a feature-completion or merge claim.

@@ -149,6 +149,15 @@ CI also exposed an obsolete SQLite crash-retry expectation; the corrected two
 interruption cases and fifteen retained clean-recovery cases pass. Browser
 enrollment remains under diagnosis. Independent integration projects now all run
 after a safely cleaned-up test failure, while the overall suite still fails.
+Current-head Ubuntu SQLite integration now passes all three projects. Enrollment
+browser assertions are scoped to the identity panel rather than Next.js's
+additional route-announcement alert. The owned ingress now drops only the next
+successful enrollment acknowledgement, preserving the real browser TLS/request
+path and independently requiring that the drop occurred. One local run passed
+the enrollment and safe-return assertions but exceeded the unchanged child
+deadline during final cleanup; the complete recipe is not yet a pass.
+Timing-sensitive twenty-way tests now use existing exclusive test collections;
+their internal contention and production deadlines are unchanged.
 
 The following preserves the completed design-stage context. The
 [specification](specs/005-authentication-bootstrap/spec.md) and

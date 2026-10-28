@@ -154,6 +154,7 @@ public sealed class LoginCommitFixture : IAsyncDisposable
             var authorizationFile = Path.Combine(root, "browser-enrollment");
             PrivateTestFiles.WriteNew(authorizationFile, Encoding.ASCII.GetBytes(authorization));
             start.Environment["KOFTE_IDENTITY_ENROLLMENT_FILE"] = authorizationFile;
+            browserIngress.LoseNextEnrollmentAcknowledgement();
         }
         browserCompleted = false;
         var providerRequests = issuer.Observations.Count;
@@ -199,6 +200,8 @@ public sealed class LoginCommitFixture : IAsyncDisposable
             if (stage is not null) throw new InvalidOperationException(stage.Value);
             throw new InvalidOperationException("identity_fixture_browser_failed");
         }
+        if (authorization is not null && !browserIngress.EnrollmentAcknowledgementLost)
+            throw new InvalidOperationException("identity_browser_enrollment_acknowledgement_not_lost");
         browserCompleted = true;
     }
 

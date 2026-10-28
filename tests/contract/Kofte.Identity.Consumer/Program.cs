@@ -70,9 +70,7 @@ if (code == "identity_scenario_unimplemented" &&
             "identity_browser_trust_schema_changed" or "identity_browser_authority_import_failed" or
             "identity_browser_private_trust_required" or "identity_browser_current_unavailable" or
             "identity_browser_owned_fixture_required" or "identity_browser_opaque_origin_refused" ||
-            error.Message is "identity_browser_enrollment_notice_missing" or
-                "identity_browser_enrollment_notice_uncertain" or "identity_browser_enrollment_notice_unexpected" or
-                "identity_browser_enrollment_notice_unavailable" ||
+            error.Message == "identity_browser_enrollment_acknowledgement_not_lost" ||
             error.Message is "identity_browser_cleanup_unverified" or "identity_browser_ownership_required" ||
             error.Message is "identity_scenario_native_nominee_login" or
                 "identity_scenario_first_arrival_has_no_designation" or
