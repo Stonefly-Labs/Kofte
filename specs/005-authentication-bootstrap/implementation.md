@@ -1,6 +1,6 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement in progress; 74/100 complete (T001-T065, T068, T071-T078); complete both-provider HTTP/Development public corpus and regenerated identity/health contracts evidenced; remaining US3 browser/story, operations/recovery and final evidence unfinished.
+**Result:** implement in progress; 79/100 complete (T001-T079); both-provider strengthened session/browser stories, complete HTTP/Development corpus, generated contracts and upgrade preservation evidenced; recovery/maintenance and final evidence unfinished.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-28.
 **Assessed baseline:** `6df9eebdcfa6b273126b0c51c272d1b2c2f953e6`.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
@@ -3673,3 +3673,173 @@ Release warnings-as-errors build and native format verification pass.
 Progress is **74/100, 26 remaining**: T066/T067/T069/T070 plus T079-T100.
 T078 now unblocks operations/recovery on this same branch and draft PR; the
 driver remains **005 / implement / running**, without acceptance or merge.
+
+## T066-T070: strengthened both-provider session/browser evidence
+
+The pending execution above now has actual hosted proof, not a local passing
+rerun. Run `40685809468`, browser job `122807740299`, tests published head
+`49ef96e47aee5972c420257161205f9f799c8eea` through actual merge
+`f50722bbea4a6181c22bd85d10d879c50fe099d5`. Its browser job passes all twelve
+public HTTPS recipes. A private independent parent validates the exact
+eight-field schema, generated correlation, successful outcome and complete
+frozen catalogs: nineteen ordered `session-boundary` observations and 135
+unique `development-isolation` observations on **each** real provider.
+
+The exact delivered session commands pass:
+
+```bash
+dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario session-boundary --provider sqlite
+dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario session-boundary --provider postgres
+```
+
+These execute the strengthened actual browser file, including both users'
+direct/adapted identities and non-personal SSR, post-switch DOM mutation
+monitoring, genuine current CSRF with invalid Origin, private ungranted-action
+refusal, idle and absolute expiry, sixteen activity renewals, terminal old-cookie
+refusal, sign-out and lost acknowledgement without automatic retry. The native
+parent also verifies exact durable final users/sessions/events; named browser
+completion alone is not the storage oracle.
+
+| US3 scenario | Actual evidence |
+| --- | --- |
+| US3.1 | Direct/adapted anonymous refusals, protected actor refusal and safe fixed problem shapes; no provider HTML/challenge. |
+| US3.2 | Ordinary/designated direct/adapted/separately compiled actor equality, two independent users, fresh designation and spoof/credential corpus. |
+| US3.3 | Ungranted action denied for ordinary/designated actors; actual browser invalid-Origin/current-CSRF refusal leaves the valid session intact; full independent CSRF/Origin corpus has no protected effects. |
+| US3.4 | Actual controlled idle/absolute expiry, renew/revoke race, next-request saved-cookie denial, visible stale-state clearing and explicit re-entry; uncertain acknowledgement is not known revocation. |
+| US3.5 | Original health/OpenAPI four-case selection and unchanged generated health contract pass; authenticated SSR/no-store and two-user DOM checks prevent personal cached/SSR reuse. |
+
+Focused prerequisite evidence is retained above: complete thirty-case SQLite
+session/sign-out selection; unchanged both-provider native session/storage
+gates; current-user/HTTPS three-case and original health/OpenAPI four-case
+selections; regenerated contracts and four package shape tests. At this
+assessed hosted head, `unit`, `browser`, `privacy`, `quality` and `startup`
+also pass. This closes T066/T067/T069/T070, not the complete feature or matrix.
+Immediate upstream IdP revocation and a general permission engine remain
+outside 005; first-administrator designation grants no module permission.
+The earlier local 45-second pre-login browser failure remains failed.
+
+## T079: consolidated real upgrade and read-only preservation
+
+The planned new `IdentityUpgradeTests.cs` would duplicate existing actual
+provider cases. Coverage is consolidated in `IdentityFormatTests.cs`,
+`IdentityPreparationTests.cs` and `IdentityStartupTests.cs` instead:
+independent accepted migration-1 fixtures, clean v0 refusal followed by explicit
+registry upgrade and identity preparation, populated two-migration Alpha plus
+stateless module preservation, unchanged allocator/owner/marker/revision/data/
+history, original migration digest, transactional rollback, current retry,
+unknown versions and physical/history/object tampering, and both empty/composed
+read-only startup without provider discovery or storage/key changes.
+
+Run `40684022214` tests actual merge
+`0b3f0e0bdf0e15b77335927eac99b80a8dae6c61`; downloaded exact provider reports
+record these commands and all three integration phases passing:
+
+```bash
+dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore -c Release --filter-trait Provider=sqlite --minimum-expected-tests 1
+dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-trait Provider=sqlite --filter-not-class '*Composition*' --minimum-expected-tests 1
+dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore -c Release --filter-trait Provider=postgres --minimum-expected-tests 1
+dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-trait Provider=postgres --filter-not-class '*Composition*' --minimum-expected-tests 1
+```
+
+Host/storage phases take 203.220/269.834 seconds on SQLite and
+243.765/535.670 seconds on PostgreSQL. Composition phases also pass in
+72.832/195.636 seconds. The relevant three source files and shared
+`IdentityFixture` are independently compared unchanged from that tested merge.
+Fresh SQLite selections also pass in
+`contract-sqlite-b5a24545ed8f4bc38824d8de1b30d3bd.json`:
+
+```bash
+dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityFormatTests' --minimum-expected-tests 20
+dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityPreparationTests' '*SqliteIdentityStartupTests' --filter-method '*ExplicitPreparationRequiresRegistryUpgradeAndPreservesCurrentStateOnRetry' '*BothEntryPathsRequireExplicitPreparedIdentityAndServeReadOnlyWithoutDiscovery' '*ProductionOidcStartupNeedsNoDiscoveryAndPreservesPreparedStorageAndEncryptedKeys' --minimum-expected-tests 5
+```
+
+These are actual passing minimum selectors; no unextracted total is invented.
+The newer `49ef96e` SQLite storage/composition phases also pass
+(321.601/101.732 seconds), but its host phase fails one separate enrollment
+replacement login at `EnrollmentTests.cs:213` (calling sites 158/181).
+An unchanged focused reproduction passes in
+`integration-sqlite-4e7b9a5bf67a486d8c8a432c18a0b8ed.json`:
+
+```bash
+dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteEnrollmentTests' --filter-method '*ActualStoppedReplacementRefusesTheOriginalSecretAndConsumesOnlyTheNewGeneration' --minimum-expected-tests 1
+```
+
+This neither diagnoses that callback failure nor makes its hosted run pass.
+No bound, assertion, contention or migration byte changes. T079 closes on its
+own exact preservation evidence; full integration/final gates remain open.
+
+## T080-T081: recovery-v2 backup and actual security verification in progress
+
+New inherited provider regressions first fail compilation with five genuine
+missing-format/summary/snapshot API errors. The implementation then adds
+`kofte-storage-recovery-v2` exclusively for actual platform format 2, retaining
+recovery-v1 exclusively for actual format 1. V1 serialization still omits
+identity; even an explicit `identity:null` on a v1 input remains rejected.
+Strict unknown/duplicate/null handling, artifact/directory inventory, all module
+assignments/history and physical schema/constraints remain in the verifier.
+
+The private summary contains schema/security revision, epoch, bootstrap state,
+consumed generation, six exact row counts and a SHA-256 digest. The digest
+streams all eight actual tables in fixed primary-key order, with domain/table/
+column and length/null/row/count framing. Protected ticket bytes stream through
+an 8-KiB buffer rather than loading complete tickets/events into memory.
+Text preflight rejects corrupt oversized cells before materialization.
+Metadata ownership, exact physical schema/history, one-to-one mappings,
+consumed enrollment-event correspondence and event revision bounds are read
+from actual data, not accepted from the manifest.
+
+This scan is explicit stopped recovery work, not added to ordinary startup or
+registry inventory. Borrowed read queries reuse the existing bounded connection/
+progress handling without introducing an uncancellable transaction rollback.
+Both actual test-owned backup producers capture/verify the summary and recheck
+source identity state while retaining complete platform/all-module artifacts.
+No key/client/certificate secret is added to recovery artifacts or logs.
+
+The new tests use actual prepared databases, a consumed user/mapping/history,
+a native session with a protected 24-KiB opaque payload, and a populated
+two-migration module. They reject wrong format/digest/counts/consumed history
+and actual profile/ticket mutations even after artifact rehashing, with the
+same counts and security revision. The initial SQLite runtime failure was a
+test seed's non-roundtrip timestamp; correcting its provider-specific stored
+UTC representation yields passing real execution without changing product
+timestamp parsing.
+
+Until T082 supplies outside-snapshot quarantine and stopped reconciliation,
+the existing complete-set restore paths **explicitly refuse identity-bearing
+sets before modifying a target**. A new inherited guard regression verifies
+that refusal. This is safe partial delivery, not a claim that identity restore
+is implemented. Decision, crash/resume and complete recovery acceptance
+obligations keep T080/T081/T082/T085 unchecked.
+
+Actual final SQLite regression selection passes in
+`recovery-sqlite-2c20f46143034a828768ccba51e97693.json`:
+
+```bash
+dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityRecoveryTests' '*RecoverySetTests' '*SqliteIdentityAdmissionTests' '*SqliteIdentityFormatTests' --minimum-expected-tests 45
+```
+
+It includes the new snapshot/streaming/tamper/restore-refusal cases, retained
+complete v1 backup/restore and strict shape cases, physical format preservation
+and borrowed-store admission regressions. Earlier narrower SQLite passes are
+retained in `recovery-sqlite-e68fb37a0a8a4aa6af3f47f8ef914208.json` and
+`recovery-sqlite-94bc26e313e94300861cb40ec3813b9b.json`.
+
+The fresh actual PostgreSQL selection fails during owned fixture creation,
+at `IdentityRecoveryTests.cs:27`, before the new product logic:
+
+```bash
+KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore --no-build -c Release --filter-class '*PostgresIdentityRecoveryTests' --filter-method '*CompleteFormatTwoBackupBindsActualConsumedIdentityAndPopulatedModuleState' --minimum-expected-tests 1
+```
+
+`recovery-postgres-9ce5437b63b14e2b9980dd76871d636b.json` retains that failure.
+It is not a PostgreSQL pass or independent new diagnosis of the previously
+confirmed local network-pool exhaustion. Shared Docker resources are untouched.
+
+Progress is **79/100, 21 remaining**: T080-T100. The original branch/draft PR,
+read-only checklists and **005 / implement / running** ledger remain unchanged.
+
+The required repository checker passes, exact Python discovery passes **132
+tests**, and `git diff --check` passes. Full Release warnings-as-errors build
+and native format verification pass. Task parsing verifies 100 unique tasks,
+79 checked and every checked prerequisite satisfied. No dependencies, locks,
+original migrations, reviewer-owned checklist or acceptance state changed.

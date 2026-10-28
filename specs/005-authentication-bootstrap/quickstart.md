@@ -154,6 +154,17 @@ actor equality and pending/consumed persisted transitions, with 135 independentl
 checked named observations. Hosted `c5e65f2` also passes the exact frozen catalog
 on SQLite and PostgreSQL, closing T078; see [implementation evidence](implementation.md).
 
+Hosted `49ef96e` now also passes the strengthened `session-boundary` command
+on each provider with all nineteen ordered observations independently checked.
+Two-user SSR/DOM isolation, invalid-Origin/ungranted denial, expiry and
+sign-out/uncertainty close T066/T067/T069/T070. Consolidated real format,
+preparation and read-only-startup preservation closes T079.
+Recovery-v2 backup/actual-state verification has passing SQLite coverage, but
+quarantine/decision/reconciliation and its complete both-provider proof remain
+unfinished. Identity-bearing sets refuse the legacy ungated restore path.
+This progress does not make the remaining operations recipes executable or
+turn the non-green full matrix into accepted feature evidence.
+
 Proposed invocation, after implementation/build, with provider-owned fixture
 admission (PostgreSQL remains the wrapper's responsibility):
 

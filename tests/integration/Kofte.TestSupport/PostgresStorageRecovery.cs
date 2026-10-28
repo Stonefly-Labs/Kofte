@@ -1,3 +1,4 @@
+using Kofte.Infrastructure.Identity;
 using Kofte.Infrastructure.Storage;
 using Kofte.Infrastructure.Storage.Recovery;
 using Npgsql;
@@ -14,6 +15,8 @@ public sealed partial class PostgresResources
         var maintenance = new StorageMaintenance(installation);
         await using var scope = await maintenance.AcquireAsync(token);
         var inventory = await RecoverySetVerifier.InspectStoppedAsync(installation, scope, token);
+        var identity = inventory.RegistryVersion == 2
+            ? await IdentityRecoverySnapshot.CaptureStoppedAsync(installation, scope, token) : null;
         var previous = (int)(await AdminAsync(
             $"SELECT datconnlimit FROM pg_catalog.pg_database WHERE oid={databaseOid}", token)
             ?? throw new InvalidOperationException("postgres_database_record_missing"));
@@ -36,11 +39,13 @@ public sealed partial class PostgresResources
             await AdminAsync($"ALTER DATABASE \"{database}\" CONNECTION LIMIT {previous}", cleanup.Token);
         }
         var artifact = await RecoverySetVerifier.DescribeArtifactAsync(directory, "installation.dump", token);
-        var manifest = new RecoveryManifest(RecoveryManifest.CurrentFormat, true, Guid.NewGuid(),
+        var manifest = new RecoveryManifest(identity is null ? RecoveryManifest.CurrentFormat : RecoveryManifest.IdentityFormat,
+            true, Guid.NewGuid(),
             inventory.InstallationId, inventory.Provider, inventory.RegistryVersion, inventory.RegistryRevision,
-            inventory.Allocations, [artifact]);
+            inventory.Allocations, [artifact], identity);
         var after = await RecoverySetVerifier.InspectStoppedAsync(installation, scope, token);
-        if (!RecoverySetVerifier.SameInventory(manifest, after))
+        if (!RecoverySetVerifier.SameInventory(manifest, after) ||
+            identity is not null && await IdentityRecoverySnapshot.CaptureStoppedAsync(installation, scope, token) != identity)
             throw new InvalidOperationException("recovery_source_changed");
         await RecoverySetVerifier.WriteManifestAsync(directory, manifest, token);
         await RecoverySetVerifier.VerifyAsync(directory, installation, scope, token);
@@ -100,7 +105,9 @@ public sealed partial class PostgresResources
         var installation = StorageInstallation.PostgreSql(ConnectionString);
         var maintenance = new StorageMaintenance(installation);
         await using var scope = await maintenance.AcquireAsync(token);
-        await RecoverySetVerifier.VerifyAsync(directory, installation, scope, token);
+        var manifest = await RecoverySetVerifier.VerifyAsync(directory, installation, scope, token);
+        if (manifest.Identity is not null)
+            throw new InvalidOperationException("identity_restore_reconciliation_required");
         return await freshTarget.RestoreStorageSetAsync(directory, token);
     }
 }

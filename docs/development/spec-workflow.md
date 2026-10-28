@@ -6,8 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement running; 74/100 complete** (T001–T065,
-T068 and T071–T078), on
+**Current checkpoint: 005 / implement running; 79/100 complete** (T001–T079), on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 `a0c1fb0` Ubuntu browser job passes all eight HTTPS recipes, including both
@@ -105,13 +104,26 @@ observations on each provider, independently checked against the exact catalog;
 T078 is complete. Its browser job passes all twelve public recipes.
 T068's regenerated types, independent required/nullable/additive/version shapes
 and original health/OpenAPI compatibility also pass.
-Strengthened production browser isolation/story gates remain open.
+Strengthened production browser isolation and public session recipes now pass
+on both real providers at `49ef96e`, closing T066/T067/T069/T070. The private
+parent independently verifies all nineteen ordered session observations and
+all 135 unique Development observations per provider. Existing format,
+preparation and read-only-startup cases close T079 without duplicating them
+under the plan's proposed filename.
+Recovery-v2 complete-set backup/actual-state verification and streamed security
+digests now pass the new SQLite and retained v1 checks; the fresh PostgreSQL
+probe fails during owned fixture creation, before product execution. T080/T081
+remain open for their complete both-provider/quarantine/decision obligations.
+Identity-bearing sets explicitly refuse the legacy ungated restore path while
+T082 is unfinished. Current hosted SQLite enrollment replacement fails at its
+callback assertion; an unchanged focused reproduction passes without diagnosing
+that failure. The full matrix remains non-green.
 No budget or required case is relaxed, and intermittent native readiness
 failures remain recorded without an established cause.
 A new owned creation probe confirms local Docker
 network-pool exhaustion without removing existing resources; this diagnoses that
-probe, not every historical generic failure. Remaining US3 browser/story,
-recovery and final gates remain unfinished. The
+probe, not every historical generic failure. Recovery/maintenance and final
+gates remain unfinished. The
 [implementation record](../../specs/005-authentication-bootstrap/implementation.md)
 preserves the initial 404/SAML failures and their resolved provenance proof.
 The actual OIDC package and closure are now adopted, centrally pinned,

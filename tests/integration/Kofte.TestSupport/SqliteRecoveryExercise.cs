@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using Kofte.Infrastructure.Identity;
 using Kofte.Infrastructure.Storage;
 using Kofte.Infrastructure.Storage.Recovery;
 using Microsoft.Data.Sqlite;
@@ -14,6 +15,8 @@ public static class SqliteRecoveryExercise
         var maintenance = new StorageMaintenance(installation);
         await using var scope = await maintenance.AcquireAsync(token);
         var inventory = await RecoverySetVerifier.InspectStoppedAsync(installation, scope, token);
+        var identity = inventory.RegistryVersion == 2
+            ? await IdentityRecoverySnapshot.CaptureStoppedAsync(installation, scope, token) : null;
         CreateFreshDirectory(recoveryRoot);
         var artifacts = new List<RecoveryArtifact>();
         foreach (var name in inventory.Allocations.Where(row => row.Relational)
@@ -26,13 +29,15 @@ public static class SqliteRecoveryExercise
             if (Digest(source) != before) throw new InvalidOperationException("recovery_source_changed");
             artifacts.Add(await RecoverySetVerifier.DescribeArtifactAsync(recoveryRoot, name, token));
         }
-        var manifest = new RecoveryManifest(RecoveryManifest.CurrentFormat, true, Guid.NewGuid(),
+        var manifest = new RecoveryManifest(identity is null ? RecoveryManifest.CurrentFormat : RecoveryManifest.IdentityFormat,
+            true, Guid.NewGuid(),
             inventory.InstallationId, inventory.Provider, inventory.RegistryVersion,
-            inventory.RegistryRevision, inventory.Allocations, artifacts);
+            inventory.RegistryRevision, inventory.Allocations, artifacts, identity);
         await RecoverySetVerifier.WriteManifestAsync(recoveryRoot, manifest, token);
         await RecoverySetVerifier.VerifyAsync(recoveryRoot, cancellationToken: token);
         var after = await RecoverySetVerifier.InspectStoppedAsync(installation, scope, token);
-        if (!RecoverySetVerifier.SameInventory(manifest, after))
+        if (!RecoverySetVerifier.SameInventory(manifest, after) ||
+            identity is not null && await IdentityRecoverySnapshot.CaptureStoppedAsync(installation, scope, token) != identity)
             throw new InvalidOperationException("recovery_source_changed");
         return manifest;
     }
@@ -42,6 +47,8 @@ public static class SqliteRecoveryExercise
     {
         var manifest = await RecoverySetVerifier.VerifyAsync(recoveryRoot, cancellationToken: token);
         if (manifest.Provider != "sqlite") throw new InvalidOperationException("recovery_provider_invalid");
+        if (manifest.Identity is not null)
+            throw new InvalidOperationException("identity_restore_reconciliation_required");
         CreateFreshDirectory(targetRoot);
         using var lease = StoreLease.Acquire(targetRoot);
         foreach (var artifact in manifest.Artifacts)

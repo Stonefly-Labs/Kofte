@@ -740,6 +740,22 @@ for all 135 independently validated named observations; hosted `c5e65f2` also
 passes the exact frozen catalog on SQLite and PostgreSQL, closing T078.
 The recipe remains bounded at 120 seconds and reports no private values.
 
+The strengthened `session-boundary` recipe now also passes on both providers
+at hosted `49ef96e`, with all nineteen ordered observations independently
+verified. It exercises two-user direct/adapted/SSR isolation, transient stale
+DOM refusal, genuine-CSRF/invalid-Origin and ungranted-action denial, idle/
+absolute expiry, durable sign-out and uncertain-response clearing. Local
+pre-login browser timeouts remain historical failures, not successful runs.
+
+Identity-bearing complete-set backups now use recovery-v2 and verify actual
+identity rows, consumed history, counts and a streamed SHA-256 security snapshot.
+Keys/client/certificate secrets remain outside the artifacts. The new SQLite
+and retained v1 regression selection passes; fresh local PostgreSQL creation
+still fails before executing the new recovery case. Supported identity restore
+is **not delivered yet**: these sets explicitly refuse the legacy ungated
+restore helper until outside-snapshot quarantine and stopped reconciliation
+are implemented. Do not copy such a set into a serving installation.
+
 **Sign out** revokes only the current durable local session, not the upstream
 provider or other sessions. Confirmed, expired and uncertain results all clear
 local personal/enrollment content. Uncertainty is not known server revocation;

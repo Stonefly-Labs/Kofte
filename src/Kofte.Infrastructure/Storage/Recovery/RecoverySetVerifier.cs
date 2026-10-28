@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
+using Kofte.Infrastructure.Identity;
 using Kofte.Infrastructure.Storage.Allocation;
 using Kofte.Infrastructure.Storage.Registry;
 using Kofte.Platform.Modules.Storage;
@@ -93,8 +94,12 @@ public static class RecoverySetVerifier
         try
         {
             await using var json = File.OpenRead(metadata);
-            manifest = await JsonSerializer.DeserializeAsync<RecoveryManifest>(json, Options, budget.Token)
+            using var document = await JsonDocument.ParseAsync(json, cancellationToken: budget.Token);
+            manifest = document.RootElement.Deserialize<RecoveryManifest>(Options)
                 ?? throw new StorageException(StorageCode.Corrupt);
+            if (manifest.Format == RecoveryManifest.CurrentFormat &&
+                document.RootElement.TryGetProperty("identity", out _))
+                throw new StorageException(StorageCode.Corrupt);
         }
         catch (JsonException) { throw new StorageException(StorageCode.Corrupt); }
         ValidateManifest(manifest);
@@ -141,6 +146,13 @@ public static class RecoverySetVerifier
         }
         var inventory = await ReadInventoryAsync(installation, budget);
         if (!SameInventory(manifest, inventory)) throw new StorageException(StorageCode.ReconciliationRequired);
+        if (manifest.Identity is { } identity)
+        {
+            await using var platform = installation.Provider == "sqlite"
+                ? OpenReadOnly(installation.PlatformPath) : await installation.OpenPlatformAsync(budget);
+            if (await IdentityRecoverySnapshot.ReadAsync(installation, platform, budget) != identity)
+                throw new StorageException(StorageCode.ReconciliationRequired);
+        }
         if (scope is MaintenanceScope held) await held.VerifyAsync(installation, budget);
         return manifest;
     }
@@ -155,13 +167,16 @@ public static class RecoverySetVerifier
 
     private static void ValidateManifest(RecoveryManifest manifest)
     {
-        if (manifest.Format != RecoveryManifest.CurrentFormat || !manifest.Complete ||
+        if (!(manifest.Format == RecoveryManifest.CurrentFormat && manifest.RegistryVersion == 1 && manifest.Identity is null ||
+                manifest.Format == RecoveryManifest.IdentityFormat && manifest.RegistryVersion == 2 && manifest.Identity is not null) ||
+            !manifest.Complete ||
             manifest.RecoverySetId == Guid.Empty || manifest.InstallationId == Guid.Empty ||
             manifest.Provider is not ("sqlite" or "postgresql") ||
-            manifest.RegistryVersion != 1 || manifest.RegistryRevision < 0 ||
+            manifest.RegistryRevision < 0 ||
             manifest.Allocations is null || manifest.Artifacts is null ||
             manifest.Allocations.Count > 4096 || manifest.Artifacts.Count > 4097)
             throw new StorageException(StorageCode.Corrupt);
+        if (manifest.Identity is { } identity) IdentityRecoverySnapshot.Validate(identity);
         var owners = new HashSet<string>(StringComparer.Ordinal);
         var keys = new HashSet<string>(StringComparer.Ordinal);
         var tokens = new HashSet<Guid>();

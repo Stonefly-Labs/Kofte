@@ -53,6 +53,7 @@ public sealed class RecoverySetTests
     [InlineData("hash")]
     [InlineData("length")]
     [InlineData("format")]
+    [InlineData("identity-null")]
     [InlineData("incomplete")]
     [InlineData("revision")]
     [InlineData("marker")]
@@ -78,6 +79,7 @@ public sealed class RecoverySetTests
             case "hash": await File.AppendAllTextAsync(member, "corruption", TestContext.Current.CancellationToken); break;
             case "length": json["artifacts"]![0]!["length"] = 1; break;
             case "format": json["format"] = "kofte-storage-recovery-v999"; break;
+            case "identity-null": json["identity"] = null; break;
             case "incomplete": json["complete"] = false; break;
             case "revision": json["registryRevision"] = 999999; break;
             case "marker": json["allocations"]![0]!["allocationId"] = Guid.NewGuid(); break;

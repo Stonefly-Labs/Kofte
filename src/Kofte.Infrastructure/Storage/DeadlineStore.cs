@@ -22,9 +22,10 @@ internal sealed class DeadlineStore : IAsyncDisposable
     private DeadlineStore(DbConnection connection, OperationBudget work, bool ownsConnection = true)
         => (this.connection, this.work, this.ownsConnection) = (connection, work, ownsConnection);
 
-    internal static DeadlineStore Borrow(DbConnection connection, DbTransaction transaction, OperationBudget budget)
+    internal static DeadlineStore Borrow(DbConnection connection, DbTransaction? transaction, OperationBudget budget)
     {
-        if (transaction.Connection != connection) throw new StorageException(StorageCode.RequestInvalid);
+        if (transaction is not null && transaction.Connection != connection)
+            throw new StorageException(StorageCode.RequestInvalid);
         budget.Check();
         var store = new DeadlineStore(connection, new OperationBudget(budget.Remaining, budget.Token), false)
         { transaction = transaction };
