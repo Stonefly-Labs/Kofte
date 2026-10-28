@@ -37,8 +37,8 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 > [!IMPORTANT]
 > **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md) and [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) is now human-merged. Its accepted ledger and evidence were verified on updated main before 005 began. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) retains prior failures and unknown causes; the historical failed local gate remains failed, not waived by acceptance or merge. Spec 005 now has [authentication/bootstrap requirements](specs/005-authentication-bootstrap/spec.md) and US1 sign-in implemented, not the complete identity feature. Nothing here claims production readiness or MVP completion.
 
-**Current stage: 005 / implement running; 44/100 tasks complete.** T001–T040,
-T042, T049–T050 and T052 are evidenced. The
+**Current stage: 005 / implement running; 51/100 tasks complete.** T001–T047
+and T049–T052 are evidenced. The
 [implementation checkpoint](specs/005-authentication-bootstrap/implementation.md)
 records actual OIDC dependency adoption and locked inventory (403 npm / 87
 NuGet identities), an independent HTTPS issuer, owned interruption fixtures,
@@ -117,7 +117,7 @@ whole feature: broader CI still failed composition-contract timeout,
 composition recovery and failure-propagation checks. The latter exposed a
 reproduced command-matching regression from the new private diagnostic flags;
 the focused correction passes 126 Python tests and actual safe CI-report
-replay, pending new CI. No verification deadline was increased. Fifty-six
+replay, pending new CI. No verification deadline was increased. Forty-nine
 tasks remain, including enrollment acceptance evidence, sign-out,
 development sessions and identity recovery. The feature is not complete.
 The preceding session checkpoint's CI still failed composition and PostgreSQL
@@ -135,8 +135,8 @@ four real enrollment-owner crash cases. SQLite additionally passes all sixteen
 HTTP enrollment cases, fifteen retained recovery checks and three actual native
 OpenAPI checks. The generated enrollment contract preserves accepted health;
 82 identity UI tests, lint/types and production build pass. New browser
-enrollment/lost-acknowledgement evidence is wired into the existing Ubuntu job,
-not claimed passed: local HTTPS stalls before enrollment. Docker's default
+enrollment/lost-acknowledgement evidence now passes the existing Ubuntu job on
+both databases. Docker's default
 network pool is exhausted, blocking fresh local PostgreSQL fixtures; no
 unrelated resources were removed. US2 and the complete feature remain unfinished.
 The next SQLite preservation regression also passes: twenty eligible submissions
@@ -144,20 +144,31 @@ produce one designation, and nonempty module data, assignment and EF history
 survive three fresh hosts, actual repeated preparation
 and loss/replacement of the administrator's issuer. Enrollment stays consumed
 for the newly authenticated ordinary user and stopped renomination is refused;
-the PostgreSQL counterpart still needs fresh CI.
+the PostgreSQL counterpart now passes the complete storage integration project.
 CI also exposed an obsolete SQLite crash-retry expectation; the corrected two
 interruption cases and fifteen retained clean-recovery cases pass. Browser
 enrollment remains under diagnosis. Independent integration projects now all run
 after a safely cleaned-up test failure, while the overall suite still fails.
-Current-head Ubuntu SQLite integration now passes all three projects. Enrollment
+Published `d3813dd` Ubuntu SQLite integration passes all three projects. Enrollment
 browser assertions are scoped to the identity panel rather than Next.js's
 additional route-announcement alert. The owned ingress now drops only the next
 successful enrollment acknowledgement, preserving the real browser TLS/request
 path and independently requiring that the drop occurred. One local run passed
 the enrollment and safe-return assertions but exceeded the unchanged child
-deadline during final cleanup; the complete recipe is not yet a pass.
+deadline during final cleanup. The corrected `a0c1fb0` Ubuntu browser job now
+passes all eight real HTTPS recipes, including both stores' lost-acknowledgement
+and twenty-way enrollment journeys. Its complete PostgreSQL integration also
+passes all three projects. SQLite host/composition pass; one SQLite storage
+crash regression fails in that broader run, with later isolated cases passing.
 Timing-sensitive twenty-way tests now use existing exclusive test collections;
 their internal contention and production deadlines are unchanged.
+Additional signed administrator/verified-email claims cannot designate or
+change nominee eligibility. A real stored development session, framework cookie,
+fresh `/me` and actor are exercised before its protected enrollment is denied.
+This negative fixture is not the still-unimplemented development-login endpoint.
+The seventeen SQLite matrix cases each pass across the full selection and its
+unchanged isolated replacement retry; the full selection itself retains that
+one failure. Both-store execution of the expanded matrix remains pending.
 
 The following preserves the completed design-stage context. The
 [specification](specs/005-authentication-bootstrap/spec.md) and

@@ -2455,3 +2455,95 @@ intended selection; the subsequent individual supported selectors above are
 the actual evidence. All 44 checked task markers, reviewer-owned checklists and
 the implement/running driver state remain unchanged. Continue implementation
 on the original branch/draft PR, without a feature-completion or merge claim.
+
+## US2 verified browser/preservation and remaining negative evidence
+
+Assessed correction head `a0c1fb030ba4c94a7d3a5f817c4d08d901e309d2`
+has a **passing complete Ubuntu browser job** in product run
+`40645635458`, job `122673679859`. All eight actual HTTPS recipe commands pass:
+
+| Exact consumer scenario arguments | SQLite | PostgreSQL |
+| --- | --- | --- |
+| `--scenario oidc-login --provider PROVIDER` | Passed, 8 named observations. | Passed, 8 named observations. |
+| `--scenario trust-refusal --provider PROVIDER` | Passed, 11 named observations. | Passed, 11 named observations. |
+| `--scenario nominated-enrollment --provider PROVIDER` | Passed, 17 named observations. | Passed, 17 named observations. |
+| `--scenario enrollment-race --provider PROVIDER` | Passed, 15 named observations. | Passed, 15 named observations. |
+
+Each command uses
+`dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll`
+with the exact arguments above and the named provider substituted. The native
+examples observe stopped private nomination, exact atomic designation/event,
+three distinct fresh processes, replay refusal, actual repeated preparation and
+denied unrelated action. The nominated browser independently completes the
+wrong-secret refusal, real commit with deliberately lost ingress acknowledgement,
+fresh identity/designation, exactly two submissions/no automatic retry, secret
+and browser-storage checks, keyboard/focus, 320px/200%, axe and original UI bound.
+The fixture confirms the intended acknowledgement was actually lost and owned
+browser cleanup completes. These are passing **hosted** results; earlier local
+failures remain failures and their causes are not erased.
+
+The same head's complete PostgreSQL integration artifact `12797783473` passes
+all three commands: host integration **234.704s**, storage integration
+**583.371s**, composition integration **225.140s**. In particular, both prior
+twenty-contender failures now pass in their existing exclusive collections.
+Together with SQLite preservation evidence, this closes **T051**: exact
+populated-module assignment/data/EF history, consumed generation/designated
+user/immutable event, original authorization replay, three fresh processes,
+repeated prepare and actual administrator-issuer loss/reconciliation.
+The provider-loss limitation still has no reset/reassignment backdoor.
+
+The same head's SQLite integration artifact `12797976924` passes host
+integration (216.816s) and composition integration (101.985s), but storage
+integration fails (313.438s) only at the enrollment crash regression. This is
+not a complete green feature gate. Crash tests now also use the existing
+exclusive deadline collection, retaining both real pre/post-commit kills,
+their original readiness/operation budgets and all exact durability assertions.
+A local diagnostic run still fails both at child readiness; a subsequent
+unchanged run passes both in 33.7s. No scheduling or platform root cause is
+claimed from those passes. The PostgreSQL failure-propagation baseline also
+retains its 900.315s `failure_exercise_timeout`.
+
+### Real development actor and independently signed authority claims
+
+The independent issuer can now include a verified-email claim, Administrator
+role, administrator-shaped boolean and administrator display text in an
+otherwise valid signed ID token. Existing no-ceremony and exact-nominee matrix
+cases use this evidence: it cannot designate an initial administrator or
+change the nominated identity. The focused eight-case SQLite selection passes.
+No product identity/authorization logic changed.
+
+The test-owned host can also explicitly prepare its normal **Development**
+configuration and create a real development user, separate namespaced mapping,
+protected durable minimal session and native framework cookie. The new
+negative test proves both fresh `/me` and the public actor report that actual
+development user, then submits with its legitimate identity-bound CSRF pair.
+Enrollment returns non-enumerating **403**, preserving exact bootstrap,
+users/mappings/events and registry revision. This is not a forged JSON mode,
+mocked principal or positive development-login endpoint/UI claim. Creation is
+a fixture-only owner operation, not a deployed route or test bypass in product.
+Default OIDC fixture behavior stays unchanged; no OIDC backchannel is registered
+for development configuration.
+
+Executed on this increment with the existing isolated SDK:
+
+| Exact command | Result |
+| --- | --- |
+| `dotnet build Kofte.slnx --no-restore -c Release -warnaserror --nologo` | Passed, zero warnings/errors. |
+| `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteEnrollmentTests' --filter-method '*OrdinaryProductionLogin*' --filter-method '*EnrollmentChecksCurrentCeremony*' --minimum-expected-tests 8` | All eight passed with independent signed authority/profile/email claims. |
+| `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteEnrollmentTests' --filter-method '*ARealStoredDevelopmentSession*' --minimum-expected-tests 1` | Passed: real development actor/session, 403 and exact unchanged protected state. |
+| `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteEnrollmentTests' --minimum-expected-tests 17` | Sixteen passed; existing stopped-replacement case failed. Not an all-green matrix. |
+| Same host project with `--filter-class '*SqliteEnrollmentTests' --filter-method '*ActualStoppedReplacement*' --minimum-expected-tests 1` | Unchanged private xUnit diagnostic rerun passed, 19.9s. Across those selections all seventeen cases pass; the full-run failure is retained, not diagnosed. |
+| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteEnrollmentCrashTests' --minimum-expected-tests 2` | Initial private readiness failures; unchanged diagnostic rerun passes both real commit-boundary cases, 33.7s. |
+| `dotnet format Kofte.slnx --verify-no-changes --no-restore` | Passed. |
+| `python3 scripts/check_repository.py`; `python3 -m unittest discover -s scripts/tests -v`; `git diff --check` | Passed; 128 Python tests. |
+
+**51/100 tasks are now complete:** T001–T047 and T049–T052. T041 now
+includes real development-session and independently signed profile/authority
+negatives; T043–T047's delivered core is reconciled with real hosted browser
+proof, and T051 has actual both-provider populated-module/admin-loss evidence.
+**T048 remains unchecked** until the expanded negative matrix executes on
+PostgreSQL. T053–T055 still retain their prerequisite/focused-gate obligations,
+despite passing individual public/browser recipes. Complete those final US2
+checks, then continue US3 sign-out/session parity, US4 development login and
+US5 recovery/final evidence. Driver remains implement/running; no acceptance,
+readiness or merge request is made.

@@ -99,7 +99,7 @@ public sealed class LoginCommitFixture : IAsyncDisposable
 
     public static async Task<LoginCommitFixture> CreateAsync(string provider, CancellationToken token,
         TimeProvider? localClock = null, bool productRoutes = false, bool withBrowser = false,
-        Func<StorageProviderScope, CancellationToken, Task>? prepareStorage = null)
+        Func<StorageProviderScope, CancellationToken, Task>? prepareStorage = null, bool development = false)
     {
         var fixture = new LoginCommitFixture { clock = localClock ?? TimeProvider.System, productRoutes = productRoutes };
         try
@@ -111,7 +111,10 @@ public sealed class LoginCommitFixture : IAsyncDisposable
                 if (!productRoutes) throw new InvalidOperationException("identity_fixture_product_required");
                 fixture.browserIngress = await IdentityBrowserIngress.CreateAsync(fixture.issuer.ServerCertificate, token);
             }
-            fixture.serving = new("Production", fixture.issuer, fixture.browserIngress?.Origin);
+            if (development && (withBrowser || !productRoutes))
+                throw new InvalidOperationException("identity_fixture_development_scope_invalid");
+            var environment = development ? "Development" : "Production";
+            fixture.serving = new(environment, development ? null : fixture.issuer, fixture.browserIngress?.Origin);
             await fixture.serving.PrepareAsync(start => fixture.scope.ConfigureChild(start, offlineMaintenance: true), token);
             var bootstrap = new BootstrapConfiguration(provider == "sqlite" ? "local-sqlite" : "test-postgres",
                 new("http://127.0.0.1:5080"), fixture.serving.WebUrl, new("http://127.0.0.1:5080"),
@@ -119,7 +122,7 @@ public sealed class LoginCommitFixture : IAsyncDisposable
             {
                 AuthenticationConfigurationFile = fixture.serving.ConfigurationPath
             };
-            fixture.configuration = IdentityConfiguration.Load(bootstrap, "Production");
+            fixture.configuration = IdentityConfiguration.Load(bootstrap, environment);
             fixture.installation = fixture.scope.Postgres is { } postgres
                 ? StorageInstallation.PostgreSql(postgres.ConnectionString)
                 : StorageInstallation.Sqlite(fixture.scope.DataRoot);
@@ -134,6 +137,30 @@ public sealed class LoginCommitFixture : IAsyncDisposable
 
     public static Task<LoginCommitFixture> CreateProductAsync(string provider, CancellationToken token) =>
             CreateAsync(provider, token, productRoutes: true);
+
+    public async Task<Guid> CreateStoredDevelopmentSessionAsync(CancellationToken token)
+    {
+        if (configuration.Mode != IdentityMode.Development || !productRoutes || application is null)
+            throw new InvalidOperationException("identity_fixture_development_required");
+        using var services = application.Services.CreateScope();
+        var context = new DefaultHttpContext { RequestServices = services.ServiceProvider, RequestAborted = token };
+        var tickets = services.ServiceProvider.GetRequiredService<IdentityTicketStore>();
+        var reference = IdentityTicketStore.NewReference();
+        using var budget = new OperationBudget(TimeSpan.FromSeconds(1), token);
+        var committed = await store.MutateAsync(budget, async change =>
+        {
+            var now = clock.GetUtcNow().UtcDateTime;
+            var user = await IdentityUserStore.ResolveAsync(change, "kofte:development:v1", "synthetic", null, now);
+            var ticket = IdentityTicketStore.CreateTicket(user, now);
+            await IdentitySessionStore.CreateAsync(change, user, reference.Digest, tickets.Protect(ticket), now);
+            return (User: user, Ticket: ticket);
+        });
+        IdentityTicketStore.BindCommitted(context, reference.Reference, committed.Ticket);
+        await context.SignInAsync(OidcConfiguration.SessionScheme, committed.Ticket.Principal, committed.Ticket.Properties);
+        foreach (var value in context.Response.Headers.SetCookie)
+            cookies.SetCookies(configuration.PublicOrigin, value!);
+        return committed.User.UserId;
+    }
 
     public async Task RunBrowserAsync(Guid expectedUser, CancellationToken token, string? authorization = null)
     {
@@ -341,9 +368,10 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         }
         await using var database = await DeadlineStore.OpenAsync(installation, budget);
         var metadata = await IdentityStore.ReadMetadataAsync(database);
+        var mode = configuration.Mode == IdentityMode.Oidc ? "oidc" : "development";
         await IdentityPreparation.VerifyAsync(installation, metadata.InstallationId,
-            "oidc", configuration.TrustDigest, budget);
-        store = new(installation, metadata.InstallationId, "oidc", configuration.TrustDigest, fileLease, hostLease);
+            mode, configuration.TrustDigest, budget);
+        store = new(installation, metadata.InstallationId, mode, configuration.TrustDigest, fileLease, hostLease);
         keys = IdentityKeys.Open(configuration, metadata.InstallationId, budget);
     }
 
@@ -373,7 +401,7 @@ public sealed class LoginCommitFixture : IAsyncDisposable
     {
         var builder = WebApplication.CreateSlimBuilder(new WebApplicationOptions
         {
-            EnvironmentName = "Production",
+            EnvironmentName = configuration.Mode == IdentityMode.Oidc ? "Production" : "Development",
             ContentRootPath = Path.GetDirectoryName(serving?.ConfigurationPath ?? configuration.KeyRingDirectory)
         });
         builder.Configuration.Sources.Clear();
@@ -387,16 +415,18 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         builder.Services.AddSingleton(clock);
         builder.Services.AddSingleton<IdentityTicketStore>();
         builder.Services.AddScoped<ValidatedLogin>();
-        builder.Services.AddSingleton(services => new OidcBackchannel(configuration.Provider!,
-            services.GetRequiredService<IHttpContextAccessor>(), workerTrust is { } authority
-                ? OidcIssuer.CreateSocketsHandler(authority) : issuer.CreateSocketsHandler(), ResolveProtocolAsync));
+        if (configuration.Provider is { } provider)
+            builder.Services.AddSingleton(services => new OidcBackchannel(provider,
+                services.GetRequiredService<IHttpContextAccessor>(), workerTrust is { } authority
+                    ? OidcIssuer.CreateSocketsHandler(authority) : issuer.CreateSocketsHandler(), ResolveProtocolAsync));
         if (productRoutes)
         {
             builder.Services.AddIdentityBoundary(configuration);
             IdentityLoginRegistration.Add(builder.Services, configuration);
-            builder.Services.AddSingleton(services => new OidcBackchannel(configuration.Provider!,
-                services.GetRequiredService<IHttpContextAccessor>(), workerTrust is { } authority
-                    ? OidcIssuer.CreateSocketsHandler(authority) : issuer.CreateSocketsHandler(), ResolveProtocolAsync));
+            if (configuration.Provider is { } configuredProvider)
+                builder.Services.AddSingleton(services => new OidcBackchannel(configuredProvider,
+                    services.GetRequiredService<IHttpContextAccessor>(), workerTrust is { } authority
+                        ? OidcIssuer.CreateSocketsHandler(authority) : issuer.CreateSocketsHandler(), ResolveProtocolAsync));
         }
         else
         {

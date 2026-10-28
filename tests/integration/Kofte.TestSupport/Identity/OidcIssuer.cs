@@ -70,6 +70,7 @@ public sealed class OidcIssuer : IAsyncDisposable
     public Uri? RegisteredRedirectUri { get; set; }
     public string Subject { get; set; } = "synthetic-subject";
     public string? DisplayName { get; set; }
+    public bool IncludeAdministratorClaims { get; set; }
     public IdTokenMutation Mutation { get; set; }
     public bool CancelAuthorization { get; set; }
     public bool PublishSigningKey { get; set; } = true;
@@ -278,6 +279,13 @@ public sealed class OidcIssuer : IAsyncDisposable
         };
         if (Mutation == IdTokenMutation.MissingNonce) claims.Remove("nonce");
         if (DisplayName is { } display) claims["name"] = display;
+        if (IncludeAdministratorClaims)
+        {
+            claims["email"] = "administrator@example.invalid";
+            claims["email_verified"] = true;
+            claims["roles"] = new[] { "Administrator" };
+            claims["isInitialAdministrator"] = true;
+        }
         var algorithm = Mutation switch
         {
             IdTokenMutation.WrongAlgorithm => "RS384",

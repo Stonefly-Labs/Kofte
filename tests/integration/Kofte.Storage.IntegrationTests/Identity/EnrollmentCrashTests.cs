@@ -70,12 +70,14 @@ public abstract class EnrollmentCrashTests
 }
 
 [Trait("Provider", "sqlite")]
+[Collection("identity-deadlines")]
 public sealed class SqliteEnrollmentCrashTests : EnrollmentCrashTests
 {
     protected override string Provider => "sqlite";
 }
 
 [Trait("Provider", "postgres")]
+[Collection("identity-deadlines")]
 public sealed class PostgresEnrollmentCrashTests : EnrollmentCrashTests
 {
     protected override string Provider => "postgres";

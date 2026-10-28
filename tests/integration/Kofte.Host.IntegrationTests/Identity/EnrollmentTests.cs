@@ -12,9 +12,42 @@ public abstract class EnrollmentTests
     private CancellationToken Token => TestContext.Current.CancellationToken;
 
     [Fact]
+    public async Task ARealStoredDevelopmentSessionHasAnActorButCannotEnroll()
+    {
+        await using var fixture = await LoginCommitFixture.CreateAsync(Provider, Token,
+            productRoutes: true, development: true);
+        var user = await fixture.CreateStoredDevelopmentSessionAsync(Token);
+        foreach (var path in new[] { "/api/identity/v1/me", "/fixture-actor" })
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, path);
+            using var response = await fixture.SendProductAsync(request, Token);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            using var body = JsonDocument.Parse(await response.Content.ReadAsByteArrayAsync(Token));
+            Assert.Equal(user, body.RootElement.GetProperty("userId").GetGuid());
+            Assert.Equal("development", body.RootElement.GetProperty("identityMode").GetString());
+            Assert.False(body.RootElement.GetProperty("isInitialAdministrator").GetBoolean());
+        }
+        var csrf = await fixture.ProductContextAsync(Token);
+        var before = await fixture.SnapshotAsync(Token);
+        var bootstrap = await fixture.BootstrapAsync(Token);
+        using var enrollment = Enrollment(fixture, csrf);
+        using var refused = await fixture.SendProductAsync(enrollment, Token);
+        Assert.Equal(HttpStatusCode.Forbidden, refused.StatusCode);
+        await RequireProblemAsync(refused, "identity_forbidden");
+        var after = await fixture.SnapshotAsync(Token);
+        Assert.Equal(bootstrap, await fixture.BootstrapAsync(Token));
+        Assert.Equal(before.Users, after.Users);
+        Assert.Equal(before.Mappings, after.Mappings);
+        Assert.Equal(before.Events, after.Events);
+        Assert.Equal(before.RegistryRevision, after.RegistryRevision);
+    }
+
+    [Fact]
     public async Task OrdinaryProductionLoginCannotDesignateAndProtectedEnrollmentNeedsAnOperatorCeremony()
     {
         await using var fixture = await LoginCommitFixture.CreateProductAsync(Provider, Token);
+        fixture.Protocol.DisplayName = "Initial administrator";
+        fixture.Protocol.IncludeAdministratorClaims = true;
         await LoginAsync(fixture);
         var before = await fixture.SnapshotAsync(Token);
         Assert.Equal("disabled", before.BootstrapState);
@@ -77,6 +110,7 @@ public abstract class EnrollmentTests
     public async Task EnrollmentChecksCurrentCeremonyAndExactNomineeWithoutReopeningHistory(string state, int status)
     {
         await using var fixture = await LoginCommitFixture.CreateProductAsync(Provider, Token);
+        fixture.Protocol.IncludeAdministratorClaims = true;
         await LoginAsync(fixture);
         if (state == "consumed") await fixture.SeedCurrentProfileAndDesignationAsync(Token);
         else if (state == "recovery-locked") await fixture.SeedRecoveryLockedBootstrapAsync(Token);
