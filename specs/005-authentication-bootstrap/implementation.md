@@ -4605,3 +4605,50 @@ Its SQLite integration report
 `expected_303_actual_503` for initial OIDC setup in the invalid-evidence and
 provider-failure tests. The underlying cause remains unknown; composition
 integration also fails. No unchanged passing subset is a fix or full-gate waiver.
+
+## T086: real authority, ticket and required-record refusals
+
+The key-inventory increment is published as
+`d0fe6b6d9224bfea3e750fef4c007d1b95f999b2` on the same draft PR 8; implementation
+continues without changing **80/100** task markers or the running ledger.
+New `IdentityFailureTests.cs` exercises four inherited cases through actual
+native production routes. After successful identity/actor requests, closing
+only the fixture's serving lease/session or corrupting its durable ticket must
+return private 503 on both routes, never cached identity or a success cookie.
+Exact users/mappings/events and damaged ticket bytes remain retained.
+Explicit restart, or stopped epoch revocation for the corrupt-ticket case,
+followed by fresh deliberate login retains the original user/mapping and cannot
+grant initial-administrator status.
+
+The existing revocation-record injection helper is generalized with a closed
+three-event allowlist, preserving its original wrapper. Actual SQLite and
+PostgreSQL triggers now reject the required `session_created` or
+`initial_administrator_enrolled` insert. Failed login retains its pending
+attempt and rolls back user/mapping/session/events; `/me` remains 401.
+Failed enrollment retains the exact nomination generation/authority and original
+identity/session/events. Both return bounded private 503 with no success cookie.
+Only explicit removal of the test-owned fault followed by a fresh deliberate
+request commits once; enrollment replay conflicts and cannot repeat designation.
+These exercise existing transaction behavior, not a newly fixed production bug
+or a fabricated initial red.
+
+Final SQLite report `integration-sqlite-f927b3428e6c47d5a32dd88b56665c5c.json`
+passes:
+
+```bash
+dotnet build Kofte.slnx --no-restore -c Release -warnaserror --nologo
+dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityFailureTests' --minimum-expected-tests 4
+dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore --no-build -c Release --filter-trait Provider=sqlite --filter-method '*RejectedRequiredRevocationRecord*' --minimum-expected-tests 1
+dotnet format Kofte.slnx --verify-no-changes --no-restore
+```
+
+The same four cases and retained revocation regression also pass with
+`*PostgresIdentityFailureTests` / `Provider=postgres` in
+`integration-postgres-0d7bea744b0f4be9930aec83c8f77ff4.json`. The private native
+PostgreSQL 17.9 cluster has verified readiness, PID/port ownership and clean
+shutdown; it is not the supported pinned-image/full-suite profile. Required
+repository checker, complete **133 Python tests** and whitespace checks pass.
+No production endpoint, diagnostic, migration, dependency or budget changed.
+T086 remains open for its complete outage/corruption/commit-uncertainty and
+assessed supported-provider evidence. No cause or fix for historical initial
+login 503/readiness failures is inferred from these passing cases.

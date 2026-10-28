@@ -164,6 +164,13 @@ writes and owned-image PostgreSQL execution of the new recovery negatives remain
 open. The published `ec01770` both-provider recovery job passes, but integration,
 contract and failure propagation still fail; initial-login HTTP 503 is observed
 without an established cause. Progress remains **80/100**, not feature acceptance.
+The next T086 increment passes four actual failure cases on SQLite and isolated
+native PostgreSQL: lost host authority/corrupt session tickets refuse warmed
+identity/actor requests, and real database rejection of required session or
+enrollment evidence rolls back login/designation. Explicit correction/retry
+preserves mapping and ceremony history; the existing revocation-record rollback
+case also passes on both. No production behavior/budget changes or full T086
+completion is claimed.
 Stopped bounded `maintain` is now implemented using the existing retention
 helpers, with passing actual SQLite batch, prepared-authority and live-host
 refusal regressions. It preserves consumed designation, active sessions and

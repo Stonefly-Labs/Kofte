@@ -120,6 +120,13 @@ constraint/history tampering and missing module-bearing artifacts are refused.
 Published `ec01770` both-provider recovery passes; its integration, contract and
 failure-propagation jobs still fail. Initial login now has concrete 503-versus-303
 evidence, not a diagnosed cause or a passing full matrix.
+Four new failure cases now pass on SQLite and isolated native PostgreSQL:
+lost serving authority or corrupt durable tickets cannot serve warmed identity/
+actor requests, and database rejection of required session/enrollment records
+rolls back their owning mutations. Responses stay private 503 with no success
+cookie/designation; only explicit restart/revocation or trusted correction/retry
+recovers, preserving original users and mappings. These strengthen T086 without
+closing its complete failure/uncertainty or supported-provider gate.
 Hosted `49ef96e`
 enrollment-replacement login fails at its callback
 assertion; the focused SQLite reproduction passes, without establishing a cause

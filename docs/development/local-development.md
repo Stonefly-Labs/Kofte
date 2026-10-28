@@ -882,6 +882,16 @@ cases pass on SQLite and a private native PostgreSQL 17.9 cluster. This is not
 recovery of a partial initial owner or partial key XML, permission to delete
 arbitrary files, or a replacement for the pinned-image backup/restore profile.
 
+Actual native HTTP tests also verify that loss of serving authority or a corrupt
+durable ticket returns private 503 for warmed identity/actor requests rather
+than cached identity. Explicit host restart, or stopped session revocation
+followed by fresh login for corrupt tickets, preserves the original user and
+mapping. Test-owned database triggers reject required session/enrollment event
+inserts: the owning mutation rolls back without a success cookie/designation,
+and explicit trusted correction/retry works once. SQLite and private native
+PostgreSQL cases pass; this is not full outage/uncertainty or production recovery
+acceptance, and does not permit automatic repair or a second administrator.
+
 Stopped prepared installations now accept `--identity maintain` through the
 same admitted host supervisor and exclusive lease. Each explicit invocation
 removes at most 128 expired session-class evidence records (at least 30 days old),
