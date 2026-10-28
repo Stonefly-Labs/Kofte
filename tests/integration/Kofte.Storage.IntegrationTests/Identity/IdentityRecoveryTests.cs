@@ -496,6 +496,31 @@ public abstract class IdentityRecoveryTests
             Assert.Equal(StorageCode.Cancelled, rejected.Code);
         }
         Assert.Equal("{"u8.ToArray(), await File.ReadAllBytesAsync(pending, token));
+        if (installation.Postgres is { } postgresIdentity)
+        {
+            await using var lost = await MaintenanceScope.AcquireAsync(installation, token);
+            await using var connection = new Npgsql.NpgsqlConnection(postgresIdentity.ConnectionString);
+            await connection.OpenAsync(token);
+            await using var terminate = new Npgsql.NpgsqlCommand("""
+                SELECT pg_catalog.pg_terminate_backend(l.pid) FROM pg_catalog.pg_locks l
+                  JOIN pg_catalog.pg_stat_activity a ON a.pid=l.pid
+                  WHERE l.locktype='advisory' AND l.granted AND l.mode='ExclusiveLock'
+                    AND l.classid=(($1::bigint >> 32) & 4294967295)::oid
+                    AND l.objid=($1::bigint & 4294967295)::oid AND l.objsubid=1
+                    AND a.datname=current_database() AND a.usename=current_user AND l.pid<>pg_backend_pid()
+                """, connection) { CommandTimeout = 3 };
+            terminate.Parameters.AddWithValue(Kofte.Infrastructure.Storage.Postgres.PostgresIdentity.LeaseKey);
+            Assert.Equal(true, await terminate.ExecuteScalarAsync(token));
+            var failure = await Record.ExceptionAsync(() => quarantine.ResumeAsync(decision,
+                "oidc", new string('a', 64), installation, lost, budget));
+            Assert.True(failure is Npgsql.NpgsqlException or StorageException { Code: StorageCode.Unavailable });
+            Assert.True(lost.Lifetime.IsCancellationRequested);
+            var rejected = await Assert.ThrowsAsync<StorageException>(() => quarantine.ResumeAsync(decision,
+                "oidc", new string('a', 64), installation, lost, budget));
+            Assert.Equal(StorageCode.Cancelled, rejected.Code);
+            Assert.Equal("{"u8.ToArray(), await File.ReadAllBytesAsync(pending, token));
+            Assert.Equal(original, await File.ReadAllBytesAsync(marker, token));
+        }
         await using (var scope = await MaintenanceScope.AcquireAsync(installation, token))
         {
             using var expired = new OperationBudget(TimeSpan.FromMilliseconds(1), token);
@@ -504,6 +529,14 @@ public abstract class IdentityRecoveryTests
                 "oidc", new string('a', 64), installation, scope, expired));
             Assert.Equal("{"u8.ToArray(), await File.ReadAllBytesAsync(pending, token));
             Assert.Equal(original, await File.ReadAllBytesAsync(marker, token));
+            await File.AppendAllTextAsync(marker, "\n", token);
+            var changed = await File.ReadAllBytesAsync(marker, token);
+            var conflict = await Assert.ThrowsAsync<StorageException>(() => quarantine.ResumeAsync(decision,
+                "oidc", new string('a', 64), installation, scope, budget));
+            Assert.Equal(StorageCode.Conflict, conflict.Code);
+            Assert.Equal(changed, await File.ReadAllBytesAsync(marker, token));
+            Assert.Equal("{"u8.ToArray(), await File.ReadAllBytesAsync(pending, token));
+            await File.WriteAllBytesAsync(marker, original, token);
             _ = await quarantine.ResumeAsync(decision, "oidc", new string('a', 64), installation, scope, budget);
         }
         Assert.False(File.Exists(pending));

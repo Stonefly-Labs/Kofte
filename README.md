@@ -59,6 +59,9 @@ limit; only that fixture's framing headroom changed, not product limits.
 Native failure reports now retain only allowlisted repository source locations
 and in-file line numbers, so recurring hosted assertions can be diagnosed
 without publishing private arguments, values, exception text or stack traces.
+Host failures additionally retain finite expected/actual HTTP status categories
+and source-known identity fixture/readiness codes, including owned helper
+locations. These improve diagnosis, not the outcome of earlier failed runs.
 Actual empty/composed hosts and production Next now
 verify concurrent two-user request isolation, direct/adapted identity equality and
 first-protected-request rejection of both original cookies after stopped epoch

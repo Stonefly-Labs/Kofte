@@ -229,7 +229,11 @@ public abstract class OidcBudgetTests
         using var request = fixture.ProductLoginRequest("/identity", csrf);
         var start = await fixture.SendProductAsync(request, Token);
         if (allowStartRefusal && (int)start.StatusCode != 303) return start;
-        try { return await fixture.CompleteProductAsync(start, Token); }
+        try
+        {
+            Assert.Equal(303, (int)start.StatusCode);
+            return await fixture.CompleteProductAsync(start, Token);
+        }
         finally { start.Dispose(); }
     }
 

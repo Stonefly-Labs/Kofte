@@ -352,9 +352,13 @@ class VerifyTests(unittest.TestCase):
                 "DeliveredDnsChangesAreReadmittedBeforeTheRealTokenConnection")
         owner, method = name.rsplit(".", 1)
         location = "tests/integration/Kofte.Host.IntegrationTests/Identity/OidcBudgetTests.cs"
+        fixture_location = "tests/integration/Kofte.TestSupport/Identity/LoginCommitFixture.cs"
+        fixture_code = "identity_fixture_child_readiness_http_503_serving"
         xml = (f'<assemblies><test type="{owner}" method="{method}" result="Fail" '
                'name="credential-canary"><failure><message>StorageException : DeadlineExceeded '
+               f'{fixture_code} identity_fixture_child_readiness_credential_canary '
                f'/private/credential-canary</message><stack-trace>/private/credential-canary/{location}:line 133'
+               f'\n/private/credential-canary/{fixture_location}:line 1300'
                '</stack-trace>'
                '</failure></test><test type="credential-canary" method="unknown" result="Fail"/>'
                '</assemblies>')
@@ -369,8 +373,8 @@ class VerifyTests(unittest.TestCase):
                            diagnostics=diagnostic)
         step = runner.report.data["steps"][-1]
         self.assertEqual([name], step["failedHostTests"])
-        self.assertEqual(["DeadlineExceeded"], step["hostFailureCodes"])
-        self.assertEqual([location + ":133"], step["hostFailureLocations"])
+        self.assertEqual(["DeadlineExceeded", fixture_code], step["hostFailureCodes"])
+        self.assertEqual([location + ":133", fixture_location + ":1300"], step["hostFailureLocations"])
         self.assertFalse(list((self.root / "artifacts/verification/.private").rglob("storage.xml")))
         self.assertNotIn("credential", runner.report.path.read_text())
         self.assertEqual(set(), diagnostic.failed_tests)

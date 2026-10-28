@@ -200,9 +200,10 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
                 operation_key = f"{kind}FailureOperations"
                 scenario_key = f"{kind}FailureScenarios"
                 location_key = f"{kind}FailureLocations"
+                status_key = f"{kind}FailureStatuses"
                 report_key = f"{kind}DiagnosticCode"
                 if not any(key in step for key in (
-                    test_key, code_key, operation_key, scenario_key, location_key, report_key,
+                    test_key, code_key, operation_key, scenario_key, location_key, status_key, report_key,
                 )):
                     continue
                 diagnostic = api.command_diagnostics(step["command"])
@@ -212,6 +213,11 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
                     (test_key, diagnostic.tests), (code_key, diagnostic.codes),
                     (operation_key, diagnostic.storage_operations),
                     (scenario_key, diagnostic.scenarios),
+                    (status_key, {
+                        f"expected_{expected}_actual_{actual}"
+                        for expected in diagnostic.http_statuses.values()
+                        for actual in diagnostic.http_statuses.values()
+                    } if kind == "host" else ()),
                 ):
                     if key not in step:
                         continue

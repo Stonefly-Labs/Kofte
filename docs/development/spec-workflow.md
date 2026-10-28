@@ -81,6 +81,11 @@ Native failure projection now also retains at most 32 source-allowlisted
 repository paths with valid in-file line numbers. Private traces/values remain
 discarded; isolated failure-propagation reports revalidate the same whitelist.
 This improves the next failed run's evidence, not the outcome of prior failures.
+Host projection now also retains bounded finite HTTP status assertion pairs and
+source-known identity fixture/readiness codes and helper locations. Isolated
+reports revalidate these fields; raw protocol, identity values and traces remain
+discarded. The unresolved initial-login and intermittent worker-readiness
+failures are not relabeled fixes by this diagnostic increment.
 The prior composition-privacy failure remains recorded: both a local unchanged recipe
 and the subsequently published `135fe80` privacy job pass, without establishing
 the failed job's cause. Its wrapper now retains the consumer result in private

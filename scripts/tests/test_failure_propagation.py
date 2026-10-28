@@ -214,6 +214,7 @@ class FailurePropagationTests(unittest.TestCase):
             command=command, failedHostTests=[name],
             hostFailureCodes=["Busy"], hostDiagnosticCode="unavailable",
             hostFailureLocations=[location],
+            hostFailureStatuses=["expected_303_actual_503"],
         )
 
         def checked():
@@ -222,7 +223,8 @@ class FailurePropagationTests(unittest.TestCase):
             )
 
         result = checked()
-        for key in ("failedHostTests", "hostFailureCodes", "hostDiagnosticCode", "hostFailureLocations"):
+        for key in ("failedHostTests", "hostFailureCodes", "hostDiagnosticCode",
+                    "hostFailureLocations", "hostFailureStatuses"):
             self.assertEqual(evidence["steps"][0][key], result["steps"][0][key])
         self.assertNotIn("credential-canary", json.dumps(result))
         for key, value in (
@@ -234,6 +236,10 @@ class FailurePropagationTests(unittest.TestCase):
             ("hostFailureLocations", [location, location]),
             ("hostFailureLocations", [location.rsplit(":", 1)[0] + ":999999"]),
             ("hostFailureLocations", ["tests/integration/Unknown.cs:1"]),
+            ("hostFailureStatuses", ["expected_303_actual_123"]),
+            ("hostFailureStatuses", ["expected_303_actual_credential_canary"]),
+            ("hostFailureStatuses", ["expected_303_actual_503", "expected_303_actual_503"]),
+            ("hostFailureStatuses", []),
         ):
             with self.subTest(key=key):
                 evidence["steps"][0][key] = value

@@ -36,6 +36,19 @@ class Failures:
 class CommandDiagnostics:
     storage_report_codes = frozenset(("unavailable", "invalid", "too_large", "no_known_failure"))
     storage_operations = frozenset(("acquire", "register", "setup"))
+    http_statuses = {
+        "OK": "200", "NoContent": "204", "MovedPermanently": "301", "Found": "302", "SeeOther": "303",
+        "TemporaryRedirect": "307", "PermanentRedirect": "308",
+        "BadRequest": "400", "Unauthorized": "401", "Forbidden": "403", "NotFound": "404",
+        "MethodNotAllowed": "405", "Conflict": "409", "RequestEntityTooLarge": "413",
+        "TooManyRequests": "429", "RequestHeaderFieldsTooLarge": "431",
+        "InternalServerError": "500", "BadGateway": "502", "ServiceUnavailable": "503", "GatewayTimeout": "504",
+    }
+    http_assertion = re.compile(
+        r"Assert\.Equal\(\) Failure: Values differ\r?\n"
+        r"Expected: *([A-Za-z]{2,32}|[0-9]{3})\r?\n"
+        r"Actual: *([A-Za-z]{2,32}|[0-9]{3})\s*",
+    )
     locations = re.compile(
         rb"(?<![A-Za-z0-9_.-])("
         rb"accessibility\.spec\.ts|bootstrap\.spec\.ts|recovery\.spec\.ts|"
@@ -63,6 +76,7 @@ class CommandDiagnostics:
         self.failed_tests, self.storage_codes = set(), set()
         self.failed_operations = set()
         self.failed_scenarios = set()
+        self.failed_statuses = set()
         self.storage_report_code = None
         self.lock = threading.Lock()
         self.closed = False
@@ -138,8 +152,16 @@ class CommandDiagnostics:
                 self.failed_tests.add(name)
             for message in test.findall("failure/message"):
                 text = message.text or ""
+                if self.kind == "host" and len(text) <= 256:
+                    assertion = self.http_assertion.fullmatch(text.strip())
+                    if assertion and len(self.failed_statuses) < 32:
+                        expected, actual = (
+                            self.http_statuses.get(value, value) for value in assertion.groups()
+                        )
+                        if expected in self.http_statuses.values() and actual in self.http_statuses.values():
+                            self.failed_statuses.add(f"expected_{expected}_actual_{actual}")
                 found = {
-                    code for code in re.findall(r"\b(?:storage|composition)_[a-z_]{1,60}\b", text)
+                    code for code in re.findall(r"\b(?:storage|composition|identity)_[a-z0-9_]{1,120}\b", text)
                     if code in self.codes
                 }
                 if text.strip() in self.codes:
@@ -210,6 +232,8 @@ class CommandDiagnostics:
                     **({f"{prefix}FailureOperations": sorted(self.failed_operations)} if self.failed_operations else {}),
                     **({f"{prefix}FailureScenarios": sorted(self.failed_scenarios)} if self.failed_scenarios else {}),
                     **({f"{prefix}FailureLocations": sorted(self.sources)} if self.sources else {}),
+                    **({"hostFailureStatuses": sorted(self.failed_statuses)} if self.kind == "host"
+                       and self.failed_statuses else {}),
                     **({f"{prefix}DiagnosticCode": self.storage_report_code} if self.storage_report_code else {}),
                 }
             return {}
@@ -223,6 +247,7 @@ class CommandDiagnostics:
             self.storage_codes.clear()
             self.failed_operations.clear()
             self.failed_scenarios.clear()
+            self.failed_statuses.clear()
             self.storage_report_code = None
 
 

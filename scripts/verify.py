@@ -397,10 +397,26 @@ def command_diagnostics(command):
         for path in (ROOT / "tests/contract/Kofte.Composition.Consumer").rglob("*.cs"):
             if not {"bin", "obj"}.intersection(path.relative_to(ROOT).parts):
                 composition_codes.update(re.findall(r'"(composition_[a-z0-9_]{1,160})"', path.read_text()))
+        identity_codes = set()
+        if kind == "host":
+            for path in (ROOT / "tests/integration/Kofte.TestSupport/Identity").glob("*.cs"):
+                source = path.read_text()
+                source_lines[path.relative_to(ROOT).as_posix()] = len(source.splitlines())
+                identity_codes.update(re.findall(r'"(identity_[a-z0-9_]{1,110})"', source))
+            for observed in ("no_response", *(f"http_{value}" for value in
+                    runtime_support.CommandDiagnostics.http_statuses.values()),
+                    *(f"transport_{value}" for value in (
+                        "Unknown", "NameResolutionError", "ConnectionError", "SecureConnectionError",
+                        "HttpProtocolError", "ExtendedConnectNotSupported", "VersionNegotiationError",
+                        "UserAuthenticationError", "ProxyTunnelError", "InvalidResponse",
+                        "ResponseEnded", "ConfigurationLimitExceeded",
+                    ))):
+                for phase in ("configured", "owner_opened", "built", "mapped", "serving", "unknown"):
+                    identity_codes.add(f"identity_fixture_child_readiness_{observed}_{phase}")
         return runtime_support.CommandDiagnostics(kind, (
             *codes, *("storage_" + re.sub(r"(?<!^)(?=[A-Z])", "_", code).lower() for code in codes),
             "composition_consumer_failed", "composition_consumer_output_limit", "composition_consumer_result_invalid",
-            *composition_codes,
+            *composition_codes, *identity_codes,
         ), tests, scenarios=(*COMPOSITION_OBSERVATIONS, "all"), source_lines=source_lines)
     return None
 

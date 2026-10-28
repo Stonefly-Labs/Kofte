@@ -1099,12 +1099,17 @@ also builds `Kofte.Storage.Consumer` before its timed browser exercise.
 Host integration now uses the same private bounded xUnit XML diagnostic path
 as storage/contract tests. Only source-known failed test symbols, admitted fixed
 codes and at most 32 allowlisted repository source locations enter safe reports.
+Host reports additionally retain at most 32 finite `expected_NNN_actual_NNN`
+HTTP status assertions, never arbitrary assertion values. Fixed source-known
+identity fixture codes and closed readiness-status/worker-phase combinations
+are admitted; unknown codes are discarded. Known identity helper paths/lines
+can identify the actual failing worker boundary without exposing private paths.
 `hostFailureLocations`, `storageFailureLocations` and `contractFailureLocations`
 contain project-relative `.cs` paths with positive line numbers bounded by the
 actual source file, never private checkout prefixes. Locations come only from
 known failed tests; successful/unknown tests and invalid/out-of-file lines cannot
 publish them. Isolated failure-propagation evidence revalidates this whitelist.
-Raw arguments, assertion values, exceptions, traces, output and private XML are
+Raw arguments, other assertion values, exceptions, traces, output and private XML are
 not retained or uploaded. This makes failing host CI diagnosable without exposing
 identity exchanges.
 

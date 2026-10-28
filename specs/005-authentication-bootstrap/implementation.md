@@ -4436,3 +4436,94 @@ the enclosing harness ends at **1028.559 seconds**. The previously observed
 SQLite login/setup failure remains unresolved. Neither unchanged recovery
 success nor this later observation erases prior failures or executes the
 unpublished journal increment.
+
+## T084/T086: rejected restore authority and safe failure evidence
+
+The verified partial-journal increment is published as
+`efac4657bc7a6bbd267ffb6b32e13ec14552d687` on the same draft PR 8; implementation
+continues with **80/100** evidenced tasks. Added an actual current-gate change
+after a previously read valid quarantine: live matching authority still refuses
+partial-scratch cleanup with `Conflict`, preserving the changed gate and pending
+bytes. Only explicit test-owned correction restores the original gate before
+the legitimate retry. Fresh build, this actual SQLite restored-state/authority
+case and native format verification pass in
+`recovery-sqlite-79cba38a408b4eb7808a45a4e7084f83.json`:
+
+```bash
+dotnet build Kofte.slnx --no-restore -c Release -warnaserror --nologo
+dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityRecoveryTests' --filter-method '*CompleteIdentityRestoreRemainsQuarantinedOutsideTheSnapshotWithItsExactRecoveryPointBinding' --minimum-expected-tests 1
+dotnet format Kofte.slnx --no-restore --verify-no-changes --verbosity quiet
+```
+
+The inherited PostgreSQL case additionally terminates only the actual exclusive
+advisory session in its independently owned database/current role, using the
+accepted lease-loss test's lock-key/query pattern. It requires failure,
+cancelled authority, unchanged gate/pending bytes and a second cancelled refusal,
+never automatic reacquisition. It is compiled but not yet executed locally:
+the last owned PostgreSQL attempt fails at Compose creation before product
+execution. No serving `ShareLock` probe is substituted for maintenance authority.
+
+### Preserve finite native failure details instead of guessing
+
+Previously published key-head `1c6448b` PostgreSQL report
+`integration-postgres-01c2db4fbc6d4f2396896380d04f911e.json` is now downloaded.
+Host integration fails the OIDC invalid-evidence case at initial login setup
+(`OidcBudgetTests.cs:232/34/53`, **453.609 seconds**); subsequent storage and
+composition PostgreSQL integrations pass. This does not establish the missing
+actual response status or inner cause, nor prove every later increment.
+
+Actual local combined reproduction on the `efac465` baseline, with the new
+explicit login-start status assertion, builds successfully but fails the
+certificate-overlap case at the restart call
+(`IdentityKeyTests.cs:61/68`), not initial login:
+`integration-sqlite-941f4639abcf46d682e26a2daa31004c.json`, **676.729 seconds**.
+The same unchanged isolated certificate case subsequently passes in
+`integration-sqlite-3a3ff9de19d242a2a1bf92e8ff12408b.json`, **22.543 seconds**.
+That is an unchanged passing diagnostic attempt, not a root-cause fix.
+Hosted journal-head SQLite report
+`integration-sqlite-3455afd9720e4c909be5f38107cf23fb.json` also fails key cases
+at initial login and certificate restart; later SQLite storage passes.
+No provider, certificate, CPU, timing or networking cause is assigned.
+
+Native projection now retains only closed expected/actual HTTP status
+categories from complete framework equality assertions in source-known failed
+host tests, at most 32 pairs. It also retains exact identity-fixture literals,
+closed readiness-status/worker-phase combinations and valid in-file locations
+from the known owned identity helper sources. Raw assertion/exception text,
+arguments, private checkout prefixes and XML still disappear. Unknown, extra,
+successful-test and unrecognized status/code data cannot be published; all
+new fields are revalidated in isolated failure-propagation reports. OIDC test
+setup now asserts its actual initial HTTP status before the generic fixture
+challenge exception can erase it.
+
+The new status-projection regression genuinely fails before implementation.
+After implementation, focused runtime/verifier and full Python discovery pass
+(**133 tests**). No product flow, timeout, retry, concurrency, endpoint,
+migration, dependency, task marker or reviewer-owned checklist is changed by
+this diagnostic increment. Original initial-login and readiness failures remain
+open; another passing subset is not a full-gate/provider waiver.
+
+All six actual SQLite key lifecycle cases also pass together with the new
+finite diagnostic projection in
+`integration-sqlite-7eeeae1d623b4f2fad08c6835cc4ffb0.json`:
+
+```bash
+dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityKeyTests' --minimum-expected-tests 6
+```
+
+Final repository checker, complete 133 Python tests and whitespace checks pass.
+The Release warnings-as-errors build and native format command above also pass.
+These results do not diagnose the earlier combined or hosted failures.
+
+Fetched journal-head tested merge
+`517079e4457ad3d53a5d998b143134012e4d2812`, with actual parents
+`3e416813233c9d291eb20cf72d5882dbddf3e1b6` and `efac4657bc7a6bbd267ffb6b32e13ec14552d687`.
+Quarantine/host restore cases/storage recovery source blobs match the published
+feature parent. Its both-provider recovery suite passes in
+`recovery-both-8861841bbd8443a1abad45f4a4b28f95.json`, including actual PostgreSQL
+storage/public recovery. Failure propagation still times out its nested
+PostgreSQL baseline at **900.319 seconds** in
+`failure-propagation-none-96c9c50be3a145a3860bc606815b44dc.json`; the enclosing
+harness takes **1015.810 seconds**. This assesses published `efac465`, not the
+later diagnostic/changed-gate/lost-session test increment. Full provider,
+operations and final acceptance obligations remain open.
