@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text;
 using System.Text.Json;
 using Kofte.TestSupport.Identity;
 using Xunit;
@@ -69,11 +70,7 @@ public abstract class LoginEndpointContractTests
     {
         await using var fixture = await LoginCommitFixture.CreateProductAsync(Provider, Token);
         var csrf = await fixture.ProductContextAsync(Token);
-        foreach (var path in new[]
-        {
-            "https://foreign.invalid", "//foreign.invalid", "/identity/", "/Identity",
-            "/%69dentity", "/identity?x=1", "/identity#x", "/\\foreign.invalid"
-        })
+        foreach (var path in IdentityCorpus.RejectedReturns)
         {
             using var request = fixture.ProductLoginRequest(path, csrf);
             using var response = await fixture.SendProductAsync(request, Token);
@@ -93,6 +90,113 @@ public abstract class LoginEndpointContractTests
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
         Assert.Empty((await fixture.SnapshotAsync(Token)).Attempts);
+        Assert.Equal(0, fixture.ProductProviderRequests);
+    }
+
+    [Fact]
+    public async Task DeliveredLoginRefusesAmbiguousOriginFetchMetadataAndAntiforgeryHeadersBeforeEffects()
+    {
+        await using var fixture = await LoginCommitFixture.CreateProductAsync(Provider, Token);
+        var csrf = await fixture.ProductContextAsync(Token);
+        var before = await fixture.SnapshotAsync(Token);
+        foreach (var (header, values) in new[]
+        {
+            ("Origin", new[] { "null" }),
+            ("Origin", [fixture.PublicOrigin.OriginalString + "/"]),
+            ("Origin", ["https://foreign.example.invalid"]),
+            ("Origin", [fixture.PublicOrigin.OriginalString, fixture.PublicOrigin.OriginalString]),
+            ("Sec-Fetch-Site", ["cross-site"]),
+            ("Sec-Fetch-Site", ["same-origin", "same-origin"]),
+            ("X-Kofte-CSRF", [csrf, csrf])
+        })
+        {
+            using var request = fixture.ProductLoginRequest("/identity", csrf);
+            request.Headers.Remove(header);
+            Assert.True(request.Headers.TryAddWithoutValidation(header, values));
+            using var response = await fixture.SendProductAsync(request, Token);
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+            await AssertProblemAsync(response, "identity_forbidden", Token);
+            Assert.False(response.Headers.Contains("Set-Cookie"));
+        }
+        var after = await fixture.SnapshotAsync(Token);
+        Assert.Empty(after.Attempts);
+        Assert.Empty(after.Users);
+        Assert.Empty(after.Sessions);
+        Assert.Equal(before.Events, after.Events);
+        Assert.Equal(before.Revision, after.Revision);
+        Assert.Equal(before.RegistryRevision, after.RegistryRevision);
+        Assert.Equal(0, fixture.ProductProviderRequests);
+    }
+
+    [Fact]
+    public async Task DeliveredCombinedHeaderBytesAdmitExactlySixteenKiBAndRefuseOneByteOver()
+    {
+        await using var fixture = await LoginCommitFixture.CreateProductAsync(Provider, Token);
+        var before = await fixture.SnapshotAsync(Token);
+        var limit = IdentityCorpus.Limits.Single(value => value.Name == "headers-and-cookies");
+        const string framing = "Host: boundary.invalid\r\nX-Identity-Padding: \r\n";
+        foreach (var size in new[] { (int)limit.AtLimit, (int)limit.OneOutside })
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, "/api/identity/v1/browser-context")
+            {
+                Version = HttpVersion.Version11,
+                VersionPolicy = HttpVersionPolicy.RequestVersionExact
+            };
+            request.Headers.Host = "boundary.invalid";
+            request.Headers.Add("X-Identity-Padding", new string('a', size - Encoding.ASCII.GetByteCount(framing)));
+            using var response = await fixture.SendProductAsync(request, Token, includeCookies: false);
+            AssertPrivate(response);
+            if (size == limit.AtLimit)
+            {
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                Assert.Equal(2, response.Headers.GetValues("Set-Cookie").Count());
+                before = await fixture.SnapshotAsync(Token);
+            }
+            else
+            {
+                Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+                await AssertProblemAsync(response, "identity_request_invalid", Token);
+                Assert.False(response.Headers.Contains("Set-Cookie"));
+            }
+        }
+        var after = await fixture.SnapshotAsync(Token);
+        Assert.Empty(after.Attempts);
+        Assert.Empty(after.Users);
+        Assert.Empty(after.Sessions);
+        Assert.Equal(before.Events, after.Events);
+        Assert.Equal(before.Revision, after.Revision);
+        Assert.Equal(before.RegistryRevision, after.RegistryRevision);
+        Assert.Equal(0, fixture.ProductProviderRequests);
+    }
+
+    [Fact]
+    public async Task DeliveredRouteInventoryRefusesEveryOtherMethodWithoutExecutingAnOperation()
+    {
+        await using var fixture = await LoginCommitFixture.CreateProductAsync(Provider, Token);
+        var before = await fixture.SnapshotAsync(Token);
+        var routes = IdentityCorpus.Http.Where(value =>
+                value.Name is "context" or "login" or "me" or "sign-out" or "enroll")
+            .Select(value => (value.Method, value.Path)).Append(("GET", "/auth/oidc/callback"));
+        foreach (var (allowed, path) in routes)
+            foreach (var method in new[] { "GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS" }
+                .Where(value => value != allowed))
+            {
+                using var request = new HttpRequestMessage(new HttpMethod(method), path);
+                using var response = await fixture.SendProductAsync(request, Token, includeCookies: false);
+                Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
+                Assert.Equal(allowed, Assert.Single(response.Content.Headers.Allow));
+                AssertPrivate(response);
+                Assert.Empty(await response.Content.ReadAsByteArrayAsync(Token));
+                Assert.Null(response.Headers.Location);
+                Assert.False(response.Headers.Contains("Set-Cookie"));
+            }
+        var after = await fixture.SnapshotAsync(Token);
+        Assert.Equal(before.Revision, after.Revision);
+        Assert.Equal(before.RegistryRevision, after.RegistryRevision);
+        Assert.Equal(before.Attempts, after.Attempts);
+        Assert.Equal(before.Users, after.Users);
+        Assert.Equal(before.Sessions, after.Sessions);
+        Assert.Equal(before.Events, after.Events);
         Assert.Equal(0, fixture.ProductProviderRequests);
     }
 

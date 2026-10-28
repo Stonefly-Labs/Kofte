@@ -37,8 +37,19 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 > [!IMPORTANT]
 > **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md) and [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) is now human-merged. Its accepted ledger and evidence were verified on updated main before 005 began. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) retains prior failures and unknown causes; the historical failed local gate remains failed, not waived by acceptance or merge. Spec 005 now has [authentication/bootstrap requirements](specs/005-authentication-bootstrap/spec.md) and US1 sign-in implemented, not the complete identity feature. Nothing here claims production readiness or MVP completion.
 
-**Current stage: 005 / implement running; 64/100 tasks complete.** T001–T056,
-T058–T061 and T071–T074 are evidenced. Native explicit Development selection now
+**Current stage: 005 / implement running; 67/100 tasks complete.** T001–T062
+and T071–T075 are evidenced. Sixteen SQLite native/HTTPS parity cases now pass
+together, including all frozen unsafe returns, every unsupported protocol/API
+method, exact combined-header bounds, ambiguous Origin/CSRF/Fetch Metadata
+refusal and fixed private 401/403/503 responses without protected effects.
+Full both-provider/corpus acceptance remains open. The local supervisor now refuses broader
+host/web binding even with unsafe opt-in, sets both .NET environment variables
+to Development and never performs stopped initialization or key repair.
+All 88 actual SQLite invalid-startup cases pass across empty/composed hosts and
+both unsafe-switch settings, preserving prepared storage and keys. Full
+Development acceptance remains open. A fresh owned PostgreSQL creation probe
+confirms Docker network-pool exhaustion; no existing resources were removed.
+Native explicit Development selection now
 uses configured synthetic keys, the separate cookie and the existing atomic
 user/session/evidence boundary. Four actual SQLite cases verify stable mapping,
 strict input, fresh identity-bound CSRF and stopped OIDC↔Development transitions;

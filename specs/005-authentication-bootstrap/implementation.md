@@ -1,6 +1,6 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement in progress; 64/100 complete (T001-T056, T058-T061, T071-T074); native/web Development selection and durable sign-out delivered, remaining US3/both-provider/operations/final evidence unfinished.
+**Result:** implement in progress; 67/100 complete (T001-T062, T071-T075); native/web Development selection, explicit loopback supervisor, request/error parity and durable sign-out delivered, remaining US3/both-provider/operations/final evidence unfinished.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-28.
 **Assessed baseline:** `6df9eebdcfa6b273126b0c51c272d1b2c2f953e6`.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
@@ -3045,3 +3045,120 @@ T057/T062â€“T070 retain full boundary/corpus/both-provider/story evidence; T075â
 retain supervisor/environment/both-provider/public-recipe acceptance. Operations,
 recovery and final local/hosted gates remain. Driver stays 005/implement/running;
 no reviewer checklist, acceptance, readiness or merge decision changes.
+
+## T075: explicit loopback supervisor and actual startup-matrix progress
+
+The local supervisor now rejects non-loopback host/web addresses even when
+`KOFTE_ALLOW_UNSAFE_EXPOSURE=true`, and normalizes both `ASPNETCORE_ENVIRONMENT`
+and `DOTNET_ENVIRONMENT` to `Development`. The owned verifier uses the same
+explicit environment, instead of inheriting a contradictory production setting.
+Authentication configuration is forwarded unchanged. Serving still executes
+only builds and the two serving children: it does not initialize, migrate,
+prepare, generate configuration or repair keys. Owned fresh verification retains
+its separate explicit `--store init`, `--registry upgrade`, `--identity prepare`
+sequence, private synthetic configuration and separate private key directory.
+
+The initial focused Python run failed eight subcases: six broader-listener
+combinations and the two inherited environment conflicts. After correcting the
+supervisor/runtime, all **131 Python tests** and the repository checker pass.
+`contract-sqlite-888c6c1960a24371894dbb24faddd1c5.json` records thirteen passing
+actual native/Next build, preparation, contract, restoration, exit and output-scan
+steps while the verifier itself receives `DOTNET_ENVIRONMENT=Production`.
+
+The test-owned startup fixture now supports explicit child launch customization
+and shares the existing persistent storage/key snapshot helper. New
+`DevelopmentBoundaryTests` exercise 22 invalid configurations through actual
+empty/composed startup with unsafe opt-in both false and true: production,
+staging, wrong-case/conflicting environment; absent/malformed mode/configuration/
+opt-in/choices; injected administrator field; wrong public origin; and
+host/web/backend wildcard IPv4, wildcard IPv6 and non-loopback addresses.
+Every configuration refuses within the existing five-second limit, exposes no
+private fixture path, exits with descendants verified, and releases its listener.
+Prepared storage/key snapshots remain identical. No product TLS/principal bypass
+or new deadline is introduced.
+
+The first matrix runs failed test assumptions, not an observed admitted invalid
+startup: composed bootstrap diagnostics use `code` rather than `eventCode`, and
+the initial closed-port HTTP assertion did not consistently throw the assumed
+exception. The corrected test checks the exact existing diagnostic schema and
+directly proves its owned port can be rebound after refusal.
+`integration-sqlite-3c8883c635564d7790099fb4cf3d8435.json` passes the Release
+warnings-as-errors solution build and all **eight** selected cases:
+four matrix cases covering **88 actual invalid starts**, plus four retained
+Development/production startup cases. The earlier failed matrix reports
+`integration-sqlite-4d51a683adad47beaed1ce2f6e0ed9eb.json`,
+`integration-sqlite-644d56a5fc254785bf7e29e0ebb204a8.json` and
+`integration-sqlite-1ec8b6e7fea9426daaecd18b9692ab01.json` remain failed history.
+
+A separate fresh owned Compose creation probe now identifies the local
+PostgreSQL blocker as **network-pool exhaustion**, from the daemon's fixed
+address-pool failure category. Its owned-resource labels were checked and its
+`down --volumes` cleanup returned zero; no existing resource was removed.
+This identifies that probe's cause, not every earlier generic Docker failure.
+Hosted `ebffa72` PostgreSQL integration subsequently passes, while its SQLite
+integration and nested failure-propagation jobs fail; other jobs remain incomplete
+at observation. Published `8367771` repository checks pass; its product matrix is
+still running, with quality/unit/browser/startup/privacy passed at observation.
+
+T075 is complete: **65/100**. T076 retains complete actual direct/adapted
+Development acceptance; T077 retains both-provider transitions, and T078 retains
+its complete public recipe. T057/T062-T070 and operations/final gates remain.
+Driver stays 005/implement/running on the same draft PR; no stage transition,
+human acceptance or merge is requested.
+
+## T057/T062: complete request-test and shared error-policy assertions
+
+The planned request-test additions are consolidated into the existing
+`LoginEndpointContractTests`, `IdentityParityTests` and actual TypeScript corpus,
+rather than duplicating their fixtures in a new host-integration file.
+Both provider subclasses remain wired; this checkpoint executes SQLite, while
+T064/T065 retain mandatory full-corpus/both-provider acceptance.
+
+The native login tests now execute **every** independently frozen unsafe return,
+not the earlier eight-item subset. New cases reject null, foreign, slash-suffixed
+and duplicate Origin, cross-site/duplicate Fetch Metadata and duplicate CSRF
+headers before attempts, users, sessions, events or provider egress. Exact
+HTTP/1.1 wire header framing verifies admission at 16,384 combined header bytes
+and a fixed private 400 one byte over, with no further security revision/event.
+The admitted browser-context request legitimately advances admission revision;
+the rejected request is compared to that exact admitted snapshot.
+Every other GET/POST/PUT/DELETE/HEAD/OPTIONS method across the six production
+protocol/API routes returns empty private 405 with exact Allow, no cookies,
+redirect, provider access or persistent security mutation.
+
+Retained executed cases cover exact path/case/slash/query/body refusals,
+unknown/duplicate JSON/form fields, individual cookie count/attributes and body/
+callback-target limits; fresh identity-bound CSRF versus stale/missing pairs;
+and successful GET callback's independent protocol binding. Actual native/HTTPS
+Next/separately compiled actor comparisons verify ordinary/designated identity,
+signed provider-token and mixed-credential 401, authenticated ungranted-action
+403, unavailable-key 503, exact five-field problem schema/content type/private
+headers/correlation and no redirect, HTML or success-shaped anonymous actor.
+The earlier shared native/Next defects and fixes remain in their historical
+sections; these additions expose no new product-policy defect.
+
+Actual final command:
+`dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore --no-build -c Release --filter-class '*SqliteLoginEndpointContractTests' '*SqliteIdentityParityTests' --minimum-expected-tests 16`
+**passes all sixteen cases together**, after a passing Release
+warnings-as-errors solution build, in
+`contract-sqlite-a44fd6f7289342d1bd02395aa1cb1b18.json`. The focused two new
+header cases also pass in `contract-sqlite-f9c3cdf81d0e475abd629b04f8d30807.json`.
+Initial failures in `contract-sqlite-2c8fe2f70aca4f82a8161e97a5215d90.json`,
+`contract-sqlite-4a88ddb3ce174b9e94a92b2b2719a6b1.json` and
+`contract-sqlite-22aff8cf1e6d4fddbf0f697e71a884cd.json` were incorrect fixture
+expectations about retained `keys_prepared` evidence and admitted-context
+revision. Exact before/after snapshots correct those assumptions; no product
+mutation or policy check was removed. Full native format verification passes.
+
+The final repository checker, all **131 Python tests** and whitespace check
+pass. Completed `ebffa72` product run `40662173786` now passes contract, recovery,
+PostgreSQL integration, unit, quality, browser, startup and privacy; SQLite
+integration and failure-propagation remain failed. Current `8367771` adds passing
+SQLite integration at observation; the other incomplete jobs are not called
+green. Local PostgreSQL network-pool exhaustion still prevents new provider
+execution; existing resources remain untouched.
+
+T057/T062 and T075 are now complete: **67/100**, with no checked task depending on
+an unchecked prerequisite. T063-T070, T076-T100 remain. Driver stays
+005/implement/running on the original draft PR; final review, explicit human
+acceptance and merge remain separate.

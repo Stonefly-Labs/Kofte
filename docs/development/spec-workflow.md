@@ -6,8 +6,8 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement running; 64/100 complete** (T001–T056,
-T058–T061 and T071–T074), on
+**Current checkpoint: 005 / implement running; 67/100 complete** (T001–T062
+and T071–T075), on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 `a0c1fb0` Ubuntu browser job passes all eight HTTPS recipes, including both
@@ -44,7 +44,18 @@ choices, persistent mode label, fresh identity-bound CSRF, sign-out and no perso
 SSR. Denied/uncertain switching clears stale identity without retrying the mutation.
 All thirty SQLite session/sign-out cases pass in one selection, including actual
 required-record insertion failure/rollback and explicit correction. T058–T060 and
-T074 are now reconciled; both-provider/full-corpus US3, Development acceptance,
+T074 are now reconciled. T057/T062 now additionally close the request-test/shared
+policy assertions: all sixteen SQLite native/HTTPS cases pass together, including
+exact header bytes, ambiguous headers, complete frozen unsafe returns and
+every unsupported method. Broader both-provider/full-corpus gates remain open.
+T075 additionally preserves explicit stopped preparation,
+loopback-only serving and matching Development environments in the supervisor
+and owned runtime. The actual SQLite negative startup matrix passes all 88
+configurations across both entry paths and unsafe-switch settings, with unchanged
+prepared storage/keys and verified exits. T076 remains open for its complete
+direct/adapted evidence. A new owned creation probe confirms local Docker
+network-pool exhaustion without removing existing resources; this diagnoses that
+probe, not every historical generic failure. Both-provider/full-corpus US3, Development acceptance,
 recovery and final gates remain unfinished. The
 [implementation record](../../specs/005-authentication-bootstrap/implementation.md)
 preserves the initial 404/SAML failures and their resolved provenance proof.

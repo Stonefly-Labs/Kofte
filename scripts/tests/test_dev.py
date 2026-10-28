@@ -12,13 +12,65 @@ from scripts import dev
 
 class DevTests(unittest.TestCase):
     def test_adapter_default_follows_the_selected_host_port(self):
-        for hostname in ("127.0.0.1", "0.0.0.0"):
+        for hostname in ("127.0.0.1", "127.0.0.2"):
             with self.subTest(hostname=hostname):
                 config = dev.configuration({
                     "KOFTE_HOST_URL": f"http://{hostname}:5081",
                     "KOFTE_ALLOW_UNSAFE_EXPOSURE": "true",
                 })
-                self.assertEqual("http://127.0.0.1:5081", config.backend)
+                self.assertEqual(f"http://{hostname}:5081", config.backend)
+
+    def test_identity_loopback_restrictions_cannot_be_overridden_by_unsafe_opt_in(self):
+        for key in ("KOFTE_HOST_URL", "KOFTE_WEB_URL", "KOFTE_BACKEND_ORIGIN"):
+            for hostname in ("0.0.0.0", "192.0.2.1", "[::]"):
+                with self.subTest(key=key, hostname=hostname):
+                    with self.assertRaises(dev.DevError) as caught:
+                        dev.configuration({
+                            "KOFTE_ALLOW_UNSAFE_EXPOSURE": "true",
+                            key: f"http://{hostname}:{3000 if key == 'KOFTE_WEB_URL' else 5080}",
+                        })
+                    self.assertEqual("configuration_invalid", caught.exception.code)
+
+    def test_local_identity_children_use_the_same_explicit_development_environment(self):
+        config = dev.configuration({
+            "ASPNETCORE_ENVIRONMENT": "Production",
+            "DOTNET_ENVIRONMENT": "Staging",
+            "KOFTE_AUTH_CONFIG_FILE": "/owned/private/identity.json",
+        })
+        self.assertEqual("Development", config.environment["ASPNETCORE_ENVIRONMENT"])
+        self.assertEqual("Development", config.environment["DOTNET_ENVIRONMENT"])
+        self.assertEqual("/owned/private/identity.json", config.environment["KOFTE_AUTH_CONFIG_FILE"])
+
+    def test_supervisor_forwards_explicit_identity_without_creating_or_preparing_storage_or_keys(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            identity = root / "identity.json"
+            identity.write_text('{"version":"1"}')
+            config = dev.configuration({
+                "KOFTE_AUTH_CONFIG_FILE": str(identity),
+                "KOFTE_DATA_ROOT": str(root / "absent-data"),
+            })
+            with patch.object(dev, "check_tools"), patch.object(dev, "check_ports"), \
+                    patch.object(dev, "run_step") as build, patch.object(dev, "wait_ready"), \
+                    patch.object(dev, "emit"), patch.object(dev, "Children") as children:
+                children.return_value.check.side_effect = KeyboardInterrupt
+                with self.assertRaises(KeyboardInterrupt):
+                    dev.supervise(config)
+                self.assertEqual([
+                    ["dotnet", "build", "src/Kofte.Host", "--no-restore", "-c", "Release", "-warnaserror"],
+                    ["npm", "run", "build", "--workspace", "apps/web"],
+                ], [call.args[0] for call in build.call_args_list])
+                launches = children.return_value.start.call_args_list
+                self.assertEqual(2, len(launches))
+                self.assertEqual(["dotnet", "src/Kofte.Host/bin/Release/net10.0/Kofte.Host.dll"],
+                                 launches[0].args[0])
+                self.assertEqual(["npm", "run", "start", "--workspace", "apps/web", "--",
+                                  "--hostname", "127.0.0.1", "--port", "3000"], launches[1].args[0])
+                for launch in launches:
+                    self.assertEqual(str(identity), launch.args[2]["KOFTE_AUTH_CONFIG_FILE"])
+                children.return_value.stop.assert_called_once()
+            self.assertEqual('{"version":"1"}', identity.read_text())
+            self.assertFalse((root / "absent-data").exists())
 
     def test_dotenv_is_data_and_explicit_environment_wins(self):
         with tempfile.TemporaryDirectory() as directory:

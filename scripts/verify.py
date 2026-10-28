@@ -829,6 +829,7 @@ def runtime(runner, provider, disposable, external_connection=None, privacy_cana
             child_environment(runner.environment), KOFTE_PROFILE="local-sqlite",
             KOFTE_HOST_URL=host, KOFTE_WEB_URL=web, KOFTE_BACKEND_ORIGIN=host,
             KOFTE_DATA_ROOT=str(directory / "data"), ASPNETCORE_ENVIRONMENT="Development",
+            DOTNET_ENVIRONMENT="Development",
         )
         (directory / "data").mkdir(mode=0o700)
         control = directory / "control"

@@ -822,6 +822,7 @@ class VerifyTests(unittest.TestCase):
             "BOOTSTRAP_TEST_RUN_ID": "foreign",
             "BOOTSTRAP_PRIVACY_CANARY": "foreign-canary",
             "DOTNET_ROOT": "/pinned/sdk",
+            "DOTNET_ENVIRONMENT": "Production",
         })
         groups = []
 
@@ -860,6 +861,15 @@ class VerifyTests(unittest.TestCase):
                 identity = Path(session.environment["KOFTE_AUTH_CONFIG_FILE"])
                 self.assertEqual(0o600, identity.stat().st_mode & 0o777)
                 self.assertFalse(identity.is_relative_to(Path(session.environment["KOFTE_DATA_ROOT"])))
+                self.assertEqual("Development", session.environment["ASPNETCORE_ENVIRONMENT"])
+                self.assertEqual("Development", session.environment["DOTNET_ENVIRONMENT"])
+                configuration = json.loads(identity.read_text())
+                self.assertEqual("development", configuration["mode"])
+                self.assertEqual(session.environment["KOFTE_WEB_URL"], configuration["publicOrigin"])
+                self.assertEqual({"enabled": True, "identities": [{"key": "synthetic"}]},
+                                 configuration["development"])
+                self.assertFalse(Path(configuration["keyRingDirectory"]).is_relative_to(
+                    Path(session.environment["KOFTE_DATA_ROOT"])))
                 self.assertEqual([
                     ("isolated-store-init", ["dotnet", verify.HOST, "--store", "init"]),
                     ("isolated-registry-upgrade", ["dotnet", verify.HOST, "--registry", "upgrade"]),

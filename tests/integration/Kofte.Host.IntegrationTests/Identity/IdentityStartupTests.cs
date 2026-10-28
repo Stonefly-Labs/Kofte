@@ -1,5 +1,4 @@
 using System.Net;
-using System.Security.Cryptography;
 using System.Text.Json;
 using Kofte.TestSupport.Identity;
 using Kofte.TestSupport;
@@ -120,12 +119,8 @@ public abstract class IdentityStartupTests
             development = new { enabled = true, identities = new[] { new { key } } }
         }));
 
-    private async Task<string> SnapshotAsync(IdentityFixture fixture, string? keys = null)
-    {
-        var storage = await CompositionStoreSnapshot.CaptureAsync(fixture.Storage, Token);
-        return storage + ":" + string.Join(":", Directory.GetFiles(keys ?? fixture.KeyRingDirectory)
-            .Order(StringComparer.Ordinal).Select(path => Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)))));
-    }
+    private Task<string> SnapshotAsync(IdentityFixture fixture, string? keys = null) =>
+        fixture.PersistentSnapshotAsync(Token, keys);
 }
 
 [Trait("Provider", "sqlite")]

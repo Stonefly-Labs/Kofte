@@ -658,13 +658,16 @@ Defaults are `local-sqlite`, host `http://127.0.0.1:5080`, web
 When changing ports, set host/web to distinct free ports. The backend origin
 defaults to the selected host's loopback address and port; an explicit value
 must match that listener, not an unrelated local service. Embedded URL credentials, paths,
-queries and fragments are refused. Broader binding needs
-`KOFTE_ALLOW_UNSAFE_EXPOSURE=true` plus a loopback backend origin; it emits a
-warning and remains unsupported for production.
-An explicit non-loopback IP host binding also retains its selected loopback
-backend listener; wildcard IPv4 bindings require an IPv4 loopback destination.
+queries and fragments are refused. The local identity-serving supervisor requires
+loopback host, web and backend addresses. `KOFTE_ALLOW_UNSAFE_EXPOSURE=true` does
+not override those identity restrictions; wildcard IPv4/IPv6 and non-loopback
+addresses are refused before building or starting either serving process.
 
-The supervisor sets Development and disables Next telemetry for its children.
+The supervisor sets both `ASPNETCORE_ENVIRONMENT` and `DOTNET_ENVIRONMENT` to
+`Development` and disables Next telemetry for its children. The authentication
+configuration is explicitly supplied and forwarded; serving never initializes,
+upgrades or prepares storage, or repairs a missing key ring. Use the separate
+stopped preparation commands documented above.
 `OTEL_EXPORTER_OTLP_ENDPOINT` is optional trusted-operator configuration; no
 collector/cloud service is required. Do not put credentials in command arguments,
 browser-public variables or checked-in files. Raw child/framework output is not

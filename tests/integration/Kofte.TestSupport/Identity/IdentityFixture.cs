@@ -50,7 +50,7 @@ public sealed class IdentityFixture : IAsyncDisposable
     }
 
     public IdentityProcess Start(IReadOnlyList<string> arguments, string environment = "Development",
-        IdentityCommitBarrier? barrier = null, bool composed = false)
+        IdentityCommitBarrier? barrier = null, bool composed = false, Action<ProcessStartInfo>? configure = null)
     {
         ObjectDisposedException.ThrowIf(disposed, this);
         Storage.Token.ThrowIfCancellationRequested();
@@ -102,6 +102,7 @@ public sealed class IdentityFixture : IAsyncDisposable
             start.Environment.Remove("DOTNET_STARTUP_HOOKS");
             start.Environment.Remove("IDENTITY_TEST_BARRIER_FILE");
         }
+        configure?.Invoke(start);
         var process = new IdentityProcess(OwnedProcesses.Start(start, captureOutput: false), Canary);
         processes.Add(process);
         return process;
@@ -112,6 +113,13 @@ public sealed class IdentityFixture : IAsyncDisposable
         ObjectDisposedException.ThrowIf(disposed, this);
         if (processes.Any(item => !item.HasExited))
             throw new InvalidOperationException("identity_fixture_requires_stopped_processes");
+    }
+
+    public async Task<string> PersistentSnapshotAsync(CancellationToken token, string? keys = null)
+    {
+        var storage = await CompositionStoreSnapshot.CaptureAsync(Storage, token);
+        return storage + ":" + string.Join(":", Directory.GetFiles(keys ?? KeyRingDirectory)
+            .Order(StringComparer.Ordinal).Select(path => Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)))));
     }
 
     private static Uri LoopbackAddress()
