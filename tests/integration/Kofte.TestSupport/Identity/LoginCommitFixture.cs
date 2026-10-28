@@ -156,6 +156,7 @@ public sealed class LoginCommitFixture : IAsyncDisposable
             start.Environment["KOFTE_IDENTITY_ENROLLMENT_FILE"] = authorizationFile;
         }
         browserCompleted = false;
+        var providerRequests = issuer.Observations.Count;
         await using var child = OwnedProcesses.Start(start);
         using var deadline = CancellationTokenSource.CreateLinkedTokenSource(token);
         deadline.CancelAfter(TimeSpan.FromSeconds(45));
@@ -172,6 +173,15 @@ public sealed class LoginCommitFixture : IAsyncDisposable
             !result.Stdout.Split('\n', StringSplitOptions.TrimEntries)
                 .Contains("identity_browser_stage_owned_browser_closed", StringComparer.Ordinal))
         {
+            var observed = issuer.Observations.Skip(providerRequests).ToArray();
+            Console.Error.WriteLine(JsonSerializer.Serialize(new
+            {
+                eventCode = "identity_browser_protocol_observation",
+                authorizationRequests = observed.Count(value => value == "authorization"),
+                tokenRequests = observed.Count(value => value == "token"),
+                browserDeadlineExceeded = timedOut,
+                responseStatuses = browserIngress.ResponseStatuses
+            }));
             if (browserIngress.OpaqueLoginOriginObserved)
                 throw new InvalidOperationException("identity_browser_opaque_origin_refused");
             var output = Regex.Replace(result.Stdout + "\n" + result.Stderr, @"\x1b\[[0-9;]*m", "");

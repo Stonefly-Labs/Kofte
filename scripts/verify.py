@@ -1125,21 +1125,29 @@ def execute_suite(runner, suite, provider, arguments):
             "python3", "-m", "unittest", "discover", "-s", "scripts/tests", "-v",
         ])
     elif suite == "integration":
-        runner.command(
-            f"integration-{provider}", integration_command(provider),
-            environment=provider_environment(runner, arguments, provider),
-        )
-        runner.command(
-            f"storage-integration-{provider}", [
+        environment = provider_environment(runner, arguments, provider)
+        commands = (
+            (f"integration-{provider}", integration_command(provider)),
+            (f"storage-integration-{provider}", [
                 *integration_command(provider, project=STORAGE_INTEGRATION)[:-2],
                 "--filter-not-class", "*Composition*", "--minimum-expected-tests", "1",
-            ],
-            environment=provider_environment(runner, arguments, provider),
+            ]),
+            (f"composition-integration-{provider}", [
+                *integration_command(provider, project=STORAGE_INTEGRATION)[:-2],
+                "--filter-class", "*Composition*", "--minimum-expected-tests", "50",
+            ]),
         )
-        runner.command(f"composition-integration-{provider}", [
-            *integration_command(provider, project=STORAGE_INTEGRATION)[:-2],
-            "--filter-class", "*Composition*", "--minimum-expected-tests", "50",
-        ], environment=provider_environment(runner, arguments, provider))
+        first_failure = None
+        for name, command in commands:
+            try:
+                runner.command(name, command, environment=environment)
+            except VerificationError as error:
+                if error.code not in ("command_failed", "command_timeout"):
+                    raise
+                if first_failure is None:
+                    first_failure = error
+        if first_failure is not None:
+            raise first_failure
     elif suite in ("recovery", "contract", "privacy"):
         if suite == "contract":
             public_environment = provider_environment(

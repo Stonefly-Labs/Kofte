@@ -145,6 +145,10 @@ survive three fresh hosts, actual repeated preparation
 and loss/replacement of the administrator's issuer. Enrollment stays consumed
 for the newly authenticated ordinary user and stopped renomination is refused;
 the PostgreSQL counterpart still needs fresh CI.
+CI also exposed an obsolete SQLite crash-retry expectation; the corrected two
+interruption cases and fifteen retained clean-recovery cases pass. Browser
+enrollment remains under diagnosis. Independent integration projects now all run
+after a safely cleaned-up test failure, while the overall suite still fails.
 
 The following preserves the completed design-stage context. The
 [specification](specs/005-authentication-bootstrap/spec.md) and

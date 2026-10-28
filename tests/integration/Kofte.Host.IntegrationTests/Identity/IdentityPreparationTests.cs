@@ -50,25 +50,14 @@ public abstract class IdentityPreparationTests
             "SELECT registry_version FROM {0}__kofte_installation"), CultureInfo.InvariantCulture));
         if (committed)
             Assert.Equal(1L, await ScalarAsync(fixture, "SELECT COUNT(*) FROM {0}__kofte_identity_events"));
-        if (Provider == "sqlite" && !committed)
-        {
-            var database = Path.Combine(fixture.Storage.DataRoot, "platform", "platform.db");
-            var before = await File.ReadAllBytesAsync(database, Token);
-            var journal = await File.ReadAllBytesAsync(database + "-journal", Token);
-            var refused = await RunOutputAsync(fixture, "--identity", "prepare");
-            Assert.NotEqual(0, refused.ExitCode);
-            Assert.Contains("\"eventCode\":\"identity_reconciliation_required\"", refused.Stderr,
-                StringComparison.Ordinal);
-            Assert.Equal(before, await File.ReadAllBytesAsync(database, Token));
-            Assert.Equal(journal, await File.ReadAllBytesAsync(database + "-journal", Token));
-        }
-        else
-        {
-            var retry = await RunOutputAsync(fixture, "--identity", "prepare");
-            Assert.True(retry.ExitCode == 0, retry.Stdout + retry.Stderr);
-            Assert.Equal(1L, await ScalarAsync(fixture, "SELECT COUNT(*) FROM {0}__kofte_identity_events"));
-            Assert.Equal(1L, await ScalarAsync(fixture, "SELECT security_revision FROM {0}__kofte_identity_metadata"));
-        }
+        var retry = await RunOutputAsync(fixture, "--identity", "prepare");
+        Assert.True(retry.ExitCode == 0, retry.Stdout + retry.Stderr);
+        Assert.Equal(2L, Convert.ToInt64(await ScalarAsync(fixture,
+            "SELECT registry_version FROM {0}__kofte_installation"), CultureInfo.InvariantCulture));
+        Assert.Equal(1L, await ScalarAsync(fixture, "SELECT COUNT(*) FROM {0}__kofte_identity_events"));
+        Assert.Equal(1L, await ScalarAsync(fixture, "SELECT security_revision FROM {0}__kofte_identity_metadata"));
+        Assert.Equal("disabled", await ScalarAsync(fixture, "SELECT state FROM {0}__kofte_bootstrap"));
+        Assert.Equal(0L, await ScalarAsync(fixture, "SELECT COUNT(*) FROM {0}__kofte_users"));
         Assert.Equal(keys, Directory.GetFiles(fixture.KeyRingDirectory).Order(StringComparer.Ordinal)
             .Select(File.ReadAllBytes).Select(bytes => Convert.ToHexString(
                 System.Security.Cryptography.SHA256.HashData(bytes))).ToArray());

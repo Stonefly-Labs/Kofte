@@ -2334,3 +2334,53 @@ twenty-way enrollment and PostgreSQL invalid OIDC evidence. The browser suite
 itself passes, but the subsequent configured-HTTPS public-recipe step fails;
 the complete run's logs are not yet available. These are retained failures, not
 passing evidence for this follow-up, and their cause remains under investigation.
+
+### CI continuation: crash-retry compatibility and independent evidence
+
+The completed `68b483f` product run `40640319468` passes quality, unit, privacy,
+startup and recovery, but fails host integration on each provider, configured
+HTTPS recipes, composition contracts at the original 900-second deadline and
+the PostgreSQL failure-propagation baseline. The repository run passes.
+`e1e28c6` publishes the populated-module preservation regression on the same
+draft PR; its separate repository run passes, and its product run remains
+incomplete. Neither run contains the following corrections.
+
+The SQLite preparation crash test reproducibly failed `Assert.NotEqual` at its
+old line 59 because explicit stopped retry now correctly succeeds through the
+verified existing connection, instead of treating SQLite's inactive crash
+journal as a clean backup. Correcting that obsolete expectation does not relax
+backup admission: both actual pre/post-commit interruption cases pass with one
+event, revision 1, disabled bootstrap, zero users, format 2 and byte-identical
+retained keys. All fifteen clean-recovery regressions still pass.
+
+The hosted browser's ordinary SQLite login and trust-refusal recipes pass.
+The nominated-enrollment recipe reaches the real form and fails its wrong-secret
+refusal announcement assertion at original source line 237. Locally, an owned
+HTTPS observation confirms callback 303, current identity/context 200 and actual
+wrong-secret enrollment 409; no raw response, credentials, query, path, nominee
+or profile is projected. Other local runs expire during browser setup or sign-in.
+The original browser-child 45-second bound is unchanged.
+
+The browser recipe now explicitly restores focus after axe's temporary analysis
+page, rechecks the signed-in view and independently asserts the real 409
+before its UI assertion. Failed UI assertions project only an allowlisted
+missing/uncertain/unexpected/unavailable notice category; diagnostic reporting
+does not initiate another browser request. Owned fixture diagnostics expose
+only protocol request counts, fixed route-category status integers and whether
+the child deadline expired. These changes are not yet a passing browser result
+or a diagnosis of the remaining refusal-announcement failure.
+
+The host failure also prevented either independent storage integration project
+from running, withholding PostgreSQL preservation evidence. Verification now
+attempts all three independent projects after a normal failed/zero-case or timed
+out child whose cleanup completed, retaining each failed report and rethrowing
+the first failure. Cleanup/ownership/tooling failures still stop immediately.
+Two focused Python regressions cover continued execution with a nonzero suite
+and immediate stop on cleanup failure; the focused 54-test verifier suite passes.
+`python3 scripts/check_repository.py`, the full
+`python3 -m unittest discover -s scripts/tests -v` (128 tests),
+`dotnet build Kofte.slnx --no-restore -c Release -warnaserror --nologo`,
+`dotnet format Kofte.slnx --verify-no-changes --no-restore`, browser-workspace
+typecheck/lint, `npm run format:check` and `git diff --check` all pass.
+No test count, original timeout, provider requirement or success condition is
+weakened. All task markers remain unchanged at **44/100**.

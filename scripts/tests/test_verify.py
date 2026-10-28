@@ -88,6 +88,29 @@ class VerifyTests(unittest.TestCase):
                 runner.command(name, ["python3", "-c", f"raise SystemExit({exit_code})"])
             self.assertEqual("failed", runner.report.data["steps"][-1]["outcome"])
 
+    def test_independent_integration_projects_run_after_a_failed_child_but_the_suite_still_fails(self):
+        for code in ("command_failed", "command_timeout"):
+            with self.subTest(code=code):
+                runner = verify.Runner(self.root, self.report("integration"), {})
+                with patch.object(runner, "versions"), \
+                        patch.object(runner, "command", side_effect=[
+                            verify.VerificationError(code), None, None,
+                        ]) as command, \
+                        self.assertRaisesRegex(verify.VerificationError, f"^{code}$"):
+                    verify.execute_suite(runner, "integration", "sqlite", Mock())
+                self.assertEqual([
+                    "integration-sqlite", "storage-integration-sqlite", "composition-integration-sqlite",
+                ], [call.args[0] for call in command.call_args_list])
+
+    def test_integration_cleanup_failure_stops_before_another_project_can_start(self):
+        runner = verify.Runner(self.root, self.report("integration"), {})
+        with patch.object(runner, "versions"), \
+                patch.object(runner, "command", side_effect=verify.VerificationError(
+                    "owned_process_cleanup_timeout")) as command, \
+                self.assertRaisesRegex(verify.VerificationError, "^owned_process_cleanup_timeout$"):
+            verify.execute_suite(runner, "integration", "sqlite", Mock())
+        self.assertEqual(1, command.call_count)
+
     def test_composition_inventory_requires_every_project_capture_case_and_quality_build_edge(self):
         verify.composition_inventory(self.root)
         for name in verify.COMPOSITION_REQUIRED_FILES:

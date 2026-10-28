@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
@@ -22,9 +23,11 @@ internal sealed class IdentityBrowserIngress : IAsyncDisposable
     })
     { Timeout = TimeSpan.FromSeconds(5) };
     private WebApplication? application;
+    private readonly ConcurrentDictionary<string, int> responseStatuses = new(StringComparer.Ordinal);
     internal Uri Origin { get; private set; } = null!;
     internal Uri Web { get; }
     internal bool OpaqueLoginOriginObserved { get; private set; }
+    internal IReadOnlyDictionary<string, int> ResponseStatuses => responseStatuses;
 
     private IdentityBrowserIngress()
     {
@@ -72,6 +75,16 @@ internal sealed class IdentityBrowserIngress : IAsyncDisposable
                 request.Content?.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
         }
         using var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, budget.Token);
+        var operation = context.Request.Path.Value switch
+        {
+            "/identity" => "identity_page",
+            "/auth/oidc/callback" => "callback",
+            "/api/identity/v1/browser-context" => "browser_context",
+            "/api/identity/v1/me" => "current_identity",
+            "/api/identity/v1/first-administrator" => "enrollment",
+            _ => null
+        };
+        if (operation is not null) responseStatuses[operation] = (int)response.StatusCode;
         context.Response.StatusCode = (int)response.StatusCode;
         foreach (var header in response.Headers.Concat(response.Content.Headers))
             if (!HopByHop(header.Key)) context.Response.Headers[header.Key] = header.Value.ToArray();

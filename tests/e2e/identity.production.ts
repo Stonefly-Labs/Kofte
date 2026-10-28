@@ -50,26 +50,10 @@ async function verifyLogin() {
         .getByRole("button", { name: "Sign in", exact: true })
         .click({ timeout: 5000 });
       console.log("identity_browser_stage_submitted");
-      try {
-        await expect(
-          page.getByRole("status"),
-          "identity_browser_signed_in",
-        ).toHaveText("You are signed in", { timeout: 5000 });
-      } catch (error) {
-        const labels = await page.getByRole("status").allTextContents();
-        const state =
-          labels.length !== 1
-            ? "missing"
-            : labels[0] === "Checking your identity"
-              ? "loading"
-              : labels[0] === "Identity verification is unavailable"
-                ? "unavailable"
-                : labels[0] === "You are signed out"
-                  ? "signed_out"
-                  : "other";
-        console.log("identity_browser_stage_return_" + state);
-        throw error;
-      }
+      await expect(
+        page.getByRole("status"),
+        "identity_browser_signed_in",
+      ).toHaveText("You are signed in", { timeout: 5000 });
       console.log("identity_browser_stage_signed_in");
       await expect(page).toHaveURL(new URL("/identity", origin).href);
       await expect(page.getByText(user, { exact: true })).toBeVisible();
@@ -218,6 +202,8 @@ async function verifyEnrollment(page: Page, root: string, file: string) {
       ({ impact }) => impact === "serious" || impact === "critical",
     ),
   ).toEqual([]);
+  await page.bringToFront();
+  await expect(page.getByRole("status")).toHaveText("You are signed in");
   let submissions = 0;
   let identityQueries = 0;
   page.on("request", (request) => {
@@ -233,10 +219,41 @@ async function verifyEnrollment(page: Page, root: string, file: string) {
   const wrong =
     authorization.slice(0, -1) + (authorization.endsWith("A") ? "Q" : "A");
   await entry.fill(wrong);
-  await entry.press("Enter");
-  await expect(page.getByRole("alert")).toContainText(
-    "Enrollment was not completed",
-  );
+  const [refused] = await Promise.all([
+    page.waitForResponse(
+      (response) =>
+        new URL(response.url()).pathname ===
+          "/api/identity/v1/first-administrator" &&
+        response.request().method() === "POST",
+    ),
+    entry.press("Enter"),
+  ]);
+  expect(refused.status()).toBe(409);
+  try {
+    await expect(page.getByRole("alert")).toContainText(
+      "Enrollment was not completed",
+    );
+  } catch (error) {
+    const result =
+      typeof error === "object" && error !== null && "matcherResult" in error
+        ? error.matcherResult
+        : undefined;
+    const actual =
+      typeof result === "object" && result !== null && "actual" in result
+        ? result.actual
+        : undefined;
+    const notice =
+      typeof actual !== "string"
+        ? "unavailable"
+        : actual.includes("Enrollment could not be confirmed")
+          ? "uncertain"
+          : actual === "" || actual === "<element(s) not found>"
+            ? "missing"
+            : "unexpected";
+    throw new Error(`identity_browser_enrollment_notice_${notice}`, {
+      cause: error,
+    });
+  }
   await expect(entry).toHaveValue("");
   await expect(entry).toBeFocused();
   const queriesBefore = identityQueries;
