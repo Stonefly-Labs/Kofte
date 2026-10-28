@@ -141,6 +141,13 @@ PostgreSQL attempt fails during Docker fixture creation, before product
 execution; T083 remains unchecked. Earlier SQLite backup-worker readiness
 failures and the unchanged later passing selection are retained, not assigned
 an unverified cause or treated as a full-matrix pass.
+The next T084 increment now passes sixteen actual SQLite restore cases,
+including worker death with empty/partially flushed intent, key inventory and
+post-commit result journals. Only bounded syntactically incomplete pending
+scratch is discarded under reverified exclusive authority/current marker;
+complete unknown/conflicting/invalid state stays unchanged and refused.
+Foreign/disposed/cancelled/expired authority cannot remove pending state.
+Staging-key/remaining authority/new PostgreSQL proof is still pending.
 Stopped bounded `maintain` is now implemented using the existing retention
 helpers, with passing actual SQLite batch, prepared-authority and live-host
 refusal regressions. It preserves consumed designation, active sessions and

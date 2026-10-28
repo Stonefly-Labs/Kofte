@@ -23,7 +23,8 @@ internal static class IdentityRestore
         var decision = await IdentityRestoreDecision.ReadAsync(decisionPath, quarantine, budget.Token);
         var mode = configuration.Mode == IdentityMode.Oidc ? "oidc" : "development";
         await scope.VerifyAsync(installation, budget);
-        if (gated) quarantine = await quarantine.ResumeAsync(decision, mode, configuration.TrustDigest, budget);
+        if (gated) quarantine = await quarantine.ResumeAsync(decision, mode, configuration.TrustDigest,
+            installation, scope, budget);
         if (Overlaps(quarantine.StagingDirectory, managedRoot))
             throw new StorageException(StorageCode.PathRejected);
         if (!gated && quarantine.Plan is not { Keys: not null, Result: not null })

@@ -299,6 +299,8 @@ public abstract class IdentityRecoveryTests
             await Assert.ThrowsAsync<StorageException>(() =>
                 IdentityRestoreDecision.ReadAsync(decisionPath, quarantine, fixture.Token));
         }
+        await scope.DisposeAsync();
+        await VerifyIncompleteJournalAuthorityAsync(installation, quarantine, keyDirectory, fixture.Token);
     }
 
     [Fact]
@@ -456,6 +458,57 @@ public abstract class IdentityRecoveryTests
         await using var context = await binding.CreateContextAsync(ModuleFixture.AlphaFactory, token);
         context.Records.Add(new AlphaRecord { Id = 1, Payload = "retained-identity-module", Note = "retained-note" });
         await context.SaveChangesAsync(token);
+    }
+
+    private static async Task VerifyIncompleteJournalAuthorityAsync(StorageInstallation installation,
+        IdentityRestoreQuarantine quarantine, string directory, CancellationToken token)
+    {
+        var marker = Path.Combine(directory, IdentityRestoreQuarantine.FileName);
+        var original = await File.ReadAllBytesAsync(marker, token);
+        var pending = marker + ".next";
+        PrivateTestFiles.WriteNew(pending, "{"u8);
+        var decision = new IdentityRestoreDecision(quarantine.Manifest.RecoverySetId,
+            quarantine.Manifest.InstallationId, quarantine.ManifestSha256, "not-established");
+        var foreign = installation.Postgres is { } postgres
+            ? StorageInstallation.PostgreSql(postgres.ConnectionString) : StorageInstallation.Sqlite(installation.Root!);
+        using var budget = new OperationBudget(OperationBudget.Register, token);
+        await using (var scope = await MaintenanceScope.AcquireAsync(installation, token))
+        {
+            var unbound = decision with { ExpectedManifestSha256 = new string('0', 64) };
+            var invalid = await Assert.ThrowsAsync<StorageException>(() => quarantine.ResumeAsync(unbound,
+                "oidc", new string('a', 64), installation, scope, budget));
+            Assert.Equal(StorageCode.ReconciliationRequired, invalid.Code);
+            var rejected = await Assert.ThrowsAsync<StorageException>(() => quarantine.ResumeAsync(decision,
+                "oidc", new string('a', 64), foreign, scope, budget));
+            Assert.Equal(StorageCode.RequestInvalid, rejected.Code);
+            await scope.DisposeAsync();
+            rejected = await Assert.ThrowsAsync<StorageException>(() => quarantine.ResumeAsync(decision,
+                "oidc", new string('a', 64), installation, scope, budget));
+            Assert.Equal(StorageCode.RequestInvalid, rejected.Code);
+        }
+        Assert.Equal("{"u8.ToArray(), await File.ReadAllBytesAsync(pending, token));
+        using (var caller = CancellationTokenSource.CreateLinkedTokenSource(token))
+        {
+            await using var cancelled = await MaintenanceScope.AcquireAsync(installation, caller.Token);
+            caller.Cancel();
+            var rejected = await Assert.ThrowsAsync<StorageException>(() => quarantine.ResumeAsync(decision,
+                "oidc", new string('a', 64), installation, cancelled, budget));
+            Assert.Equal(StorageCode.Cancelled, rejected.Code);
+        }
+        Assert.Equal("{"u8.ToArray(), await File.ReadAllBytesAsync(pending, token));
+        await using (var scope = await MaintenanceScope.AcquireAsync(installation, token))
+        {
+            using var expired = new OperationBudget(TimeSpan.FromMilliseconds(1), token);
+            await Task.Delay(20, token);
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => quarantine.ResumeAsync(decision,
+                "oidc", new string('a', 64), installation, scope, expired));
+            Assert.Equal("{"u8.ToArray(), await File.ReadAllBytesAsync(pending, token));
+            Assert.Equal(original, await File.ReadAllBytesAsync(marker, token));
+            _ = await quarantine.ResumeAsync(decision, "oidc", new string('a', 64), installation, scope, budget);
+        }
+        Assert.False(File.Exists(pending));
+        Assert.Equal(original, await File.ReadAllBytesAsync(marker, token));
+        Assert.True(IdentityRestoreQuarantine.IsRequired(directory));
     }
 
     private async Task<StorageInstallation> PrepareAsync(StorageProviderScope fixture, bool consumed = true)

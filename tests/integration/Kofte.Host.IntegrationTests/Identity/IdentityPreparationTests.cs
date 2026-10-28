@@ -331,7 +331,22 @@ public abstract class IdentityPreparationTests
     public Task ActualRestoreCommandKeepsItsDecisionEpochAndFreshKeysAcrossInterruptedRetry(string phase) =>
         RestoreCommandAsync(phase);
 
-    private async Task RestoreCommandAsync(string? phase, bool legacy = false)
+    [Theory]
+    [InlineData("restore_intent_partial")]
+    [InlineData("restore_keys_partial")]
+    [InlineData("restore_result_partial")]
+    [InlineData("restore_intent_empty")]
+    public Task ActualRestoreCommandResumesARealPartiallyFlushedJournal(string phase) =>
+        RestoreCommandAsync(phase);
+
+    [Theory]
+    [InlineData("unknown")]
+    [InlineData("binding")]
+    [InlineData("invalid")]
+    public Task ActualRestoreCommandNeverDiscardsACompleteConflictingOrInvalidJournal(string fault) =>
+        RestoreCommandAsync("restore_state_written", invalidPending: fault);
+
+    private async Task RestoreCommandAsync(string? phase, bool legacy = false, string? invalidPending = null)
     {
         await using var fixture = await IdentityFixture.CreateAsync(Provider, Token);
         Configure(fixture);
@@ -388,27 +403,61 @@ public abstract class IdentityPreparationTests
             Assert.True(interrupted.ExitVerified && interrupted.DescendantExitsVerified);
             Assert.True(IdentityRestoreQuarantine.IsRequired(fixture.KeyRingDirectory));
             var marker = Path.Combine(fixture.KeyRingDirectory, IdentityRestoreQuarantine.FileName);
+            var partial = phase.EndsWith("_partial", StringComparison.Ordinal) || phase == "restore_intent_empty";
+            if (partial)
+            {
+                var incomplete = await File.ReadAllBytesAsync(marker + ".next", Token);
+                Assert.ThrowsAny<JsonException>(() => JsonDocument.Parse(incomplete));
+            }
             using var state = JsonDocument.Parse(await File.ReadAllBytesAsync(
-                File.Exists(marker + ".next") ? marker + ".next" : marker, Token));
-            plannedEpoch = state.RootElement.GetProperty("plan").GetProperty("epoch").GetGuid();
-            plannedRing = state.RootElement.GetProperty("plan").GetProperty("ringId").GetGuid();
+                !partial && File.Exists(marker + ".next") ? marker + ".next" : marker, Token));
+            if (state.RootElement.TryGetProperty("plan", out var plan) && plan.ValueKind == JsonValueKind.Object)
+            {
+                plannedEpoch = plan.GetProperty("epoch").GetGuid();
+                plannedRing = plan.GetProperty("ringId").GetGuid();
+            }
             foreach (var path in Directory.GetFiles(fixture.KeyRingDirectory)
                 .Where(path => Path.GetFileName(path).StartsWith("key-", StringComparison.Ordinal) ||
                     Path.GetFileName(path) == "identity-owner.json"))
                 copied.Add(Path.GetFileName(path), await File.ReadAllBytesAsync(path, Token));
-            var original = await File.ReadAllBytesAsync(decision, Token);
-            var other = JsonNode.Parse(original)!;
-            other["priorEnrollment"] = "known-never-enrolled";
-            await File.WriteAllTextAsync(decision, other.ToJsonString(), Token);
-            await using (var refused = fixture.Start(["--identity", "reconcile-restore", "--decision-file", decision],
-                configure: Target))
+            if (invalidPending is not null)
             {
-                var output = await refused.WaitAsync(fixture.Storage.Token);
-                Assert.NotEqual(0, output.ExitCode);
-                Assert.Contains("identity_reconciliation_required", output.Stdout + output.Stderr, StringComparison.Ordinal);
+                var pending = marker + ".next";
+                var original = await File.ReadAllBytesAsync(pending, Token);
+                var invalid = JsonNode.Parse(original)!;
+                if (invalidPending == "unknown") invalid["unexpected"] = true;
+                else if (invalidPending == "binding")
+                    invalid["plan"]!["decision"]!["expectedManifestSha256"] = new string('0', 64);
+                var damaged = invalidPending == "invalid" ? "{\"version\":!" : invalid.ToJsonString();
+                await File.WriteAllTextAsync(pending, damaged, Token);
+                var before = await File.ReadAllBytesAsync(marker, Token);
+                await using (var refused = fixture.Start(["--identity", "reconcile-restore", "--decision-file", decision],
+                    configure: Target))
+                {
+                    Assert.NotEqual(0, (await refused.WaitAsync(fixture.Storage.Token)).ExitCode);
+                    Assert.True(refused.ExitVerified && refused.DescendantExitsVerified);
+                }
+                Assert.Equal(damaged, await File.ReadAllTextAsync(pending, Token));
+                Assert.Equal(before, await File.ReadAllBytesAsync(marker, Token));
+                Assert.True(IdentityRestoreQuarantine.IsRequired(fixture.KeyRingDirectory));
+                await File.WriteAllBytesAsync(pending, original, Token);
             }
-            Assert.True(IdentityRestoreQuarantine.IsRequired(fixture.KeyRingDirectory));
-            await File.WriteAllBytesAsync(decision, original, Token);
+            if (plannedEpoch is not null)
+            {
+                var original = await File.ReadAllBytesAsync(decision, Token);
+                var other = JsonNode.Parse(original)!;
+                other["priorEnrollment"] = "known-never-enrolled";
+                await File.WriteAllTextAsync(decision, other.ToJsonString(), Token);
+                await using (var refused = fixture.Start(["--identity", "reconcile-restore", "--decision-file", decision],
+                    configure: Target))
+                {
+                    var output = await refused.WaitAsync(fixture.Storage.Token);
+                    Assert.NotEqual(0, output.ExitCode);
+                    Assert.Contains("identity_reconciliation_required", output.Stdout + output.Stderr, StringComparison.Ordinal);
+                }
+                Assert.True(IdentityRestoreQuarantine.IsRequired(fixture.KeyRingDirectory));
+                await File.WriteAllBytesAsync(decision, original, Token);
+            }
         }
         var installation = postgresTarget?.Postgres is { } restored
             ? StorageInstallation.PostgreSql(restored.ConnectionString)

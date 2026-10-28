@@ -14,7 +14,8 @@ public sealed class IdentityCommitBarrier
         "enrollment_before_commit", "enrollment_committed", "operator_before_commit",
         "operator_committed", "bootstrap_file_created", "bootstrap_file_flushed",
         "restore_quarantined", "restore_before_commit", "restore_committed",
-        "restore_state_written", "restore_key_copied"
+        "restore_state_written", "restore_key_copied",
+        "restore_intent_partial", "restore_keys_partial", "restore_result_partial", "restore_intent_empty"
     ];
     private static IDisposable? startupObserver;
     private readonly string nonce = Convert.ToHexStringLower(RandomNumberGenerator.GetBytes(16));

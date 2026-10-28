@@ -82,7 +82,9 @@ internal static class IdentityDiagnostics
         "sign_out_committed" or "operator_before_commit" or
         "operator_committed" or "bootstrap_file_created" or "bootstrap_file_flushed" or
         "restore_quarantined" or "restore_before_commit" or "restore_committed" or
-        "restore_state_written" or "restore_key_copied";
+        "restore_state_written" or "restore_key_copied" or
+        "restore_intent_partial" or "restore_keys_partial" or "restore_result_partial" or
+        "restore_pending_incomplete" or "restore_intent_empty";
 
     internal static string ActionName(IdentityAction action) => action switch
     {

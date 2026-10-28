@@ -178,6 +178,11 @@ artifact separation. The optional private `keyDecryptionCertificates` member
 retains old decryptors while the separate current pair encrypts new keys;
 see the local guide for bounds/custody/retirement limitations. New PostgreSQL
 key evidence is pending, so T083 remains unchecked.
+Sixteen actual SQLite restore cases now also prove explicit retry after empty/
+partially flushed intent, key-inventory and committed-result journals, plus
+unchanged refusal of complete conflicting/unknown/invalid pending state.
+Live installation-specific exclusive authority is required for partial-scratch
+cleanup; staging-key and new PostgreSQL journal proof remain pending.
 This progress does not make the remaining operations recipes executable or
 turn the non-green full matrix into accepted feature evidence.
 

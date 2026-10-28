@@ -4312,3 +4312,127 @@ with both certificates present. It passes in
 `unit-none-878733a871214befbf7f13d303fac0e9.json` using the initial single-method
 command above. Final Release warnings-as-errors build, native format
 verification, repository checker, 132 Python tests and whitespace checks pass.
+
+## T084: real partially flushed reconciliation journal recovery in progress
+
+Continued after publishing `1c6448ba985b899e779c6cca93bf492800fe26c5` to the same
+draft PR 8; no voluntary implementation handoff or stage advance. Progress
+remains **80/100**. T080-T086 and T088-T100 are still unchecked.
+
+Added actual maintenance-worker barriers after creating the empty pending
+intent file and after physically writing/flushing half of the intent,
+key-inventory and committed-result journal. These are bounded existing
+DiagnosticListener checkpoints, with the same test-only nonce/startup-hook/
+worker admission and verified root/descendant termination. No deployed bypass,
+larger timeout or changed database migration is introduced.
+
+The initial test runs
+`recovery-sqlite-e765c85429c649069e216cf7c9daea13.json` and
+`recovery-sqlite-f6e0a3aa3b5e4e4ba22ca659cc019074.json` expose the test's exact
+`JsonException` assertion, not the core retry: the framework throws a derived
+reader exception. After correcting that assertion to `ThrowsAny`, the actual
+old incomplete-journal refusal is retained and the regression genuinely fails
+at the explicit retry-success assertion in
+`recovery-sqlite-18db4e5d517240f8b1c99210b80da858.json`:
+
+```bash
+dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityPreparationTests' --filter-method '*ActualRestoreCommandResumesARealPartiallyFlushedJournal' --minimum-expected-tests 3
+```
+
+Implemented narrow explicit retry in `IdentityRestoreQuarantine.ResumeAsync`.
+It now requires the actual installation/scope, verifies live authority before
+any cleanup/promotion and preserves the exact current gate fingerprint.
+Pending bytes remain private, regular, bounded and completely read. The
+maintained non-final-block UTF-8 reader / `JsonDocument.TryParseValue`
+distinguishes a genuinely incomplete object from complete semantic corruption
+or invalid syntax. Empty/unfinished pending scratch alone may be removed,
+after reverified authority and an unchanged-byte reread, with a fixed correlated
+diagnostic phase. Complete state still goes through every original strict
+schema/manifest/decision/configuration/monotonic-plan check and atomic
+promotion. Unknown fields, changed binding and invalid syntax never get
+silently replaced. Neither keys nor database sidecars are deleted.
+
+The writer splits and flushes the real journal for honest interruption
+boundaries; its file/operation bounds and atomic final rename remain unchanged.
+An interrupted first intent has no durably committed plan/published keys/
+database effect and is safely recomputed. Once intent is durable, its exact
+decision/epoch/ring and published keys remain fixed. An interrupted result
+write after the database commit is independently verified rather than
+replayed, keeping one revision/event. Official .NET documentation for
+`JsonDocument.TryParseValue` was actually consulted; no package was added.
+
+The complete **sixteen-case** v1/v2 SQLite restore selection passes in
+`recovery-sqlite-ab3d2a38431144d1a3eb1453aa8c0e0e.json`:
+
+```bash
+dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityPreparationTests' --filter-method '*Restore*' --minimum-expected-tests 16
+```
+
+It includes the prior nine actual v1/v2/committed-upgrade/six-boundary cases,
+four genuine empty/half-flushed journal kills and three complete unknown/
+binding/syntax refusal-and-trusted-correction cases. Every damaged complete
+journal and current gate remains byte-identical after refusal. Corrected
+explicit retry preserves previously frozen IDs and all published key bytes;
+completed receipt retry remains read-only. Changed decisions still fail when
+an intent is durable, and after activation. All children/descendants exit.
+
+Retained actual recovery/security/private-diagnostic and host units pass in
+`recovery-sqlite-d3ba4ff7c8574ed9a981b6886f411612.json`:
+
+```bash
+dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityRecoveryTests' '*SqliteRecoveryDiagnosticsTests' --minimum-expected-tests 20
+dotnet test --project tests/unit/Kofte.Host.Tests --no-restore --no-build -c Release --minimum-expected-tests 1
+```
+
+The same native storage selection then passes with the additional real
+foreign-installation, disposed-scope, cancelled-caller and expired-budget
+cleanup refusals in
+`recovery-sqlite-e3051861cc1e4ed7a4a3812d926f59cb.json`. It uses actual restored
+complete identity data/private quarantine, proves gate/pending bytes untouched
+for every refusal, then permits only a new live matching exclusive scope to
+remove incomplete scratch while leaving the gate unchanged and active.
+
+These are local results for this uncommitted increment on the `1c6448b`
+baseline, not unchanged published source or new PostgreSQL proof. Incomplete
+staging-key/initial quarantine/import writes, further scope/deadline/cleanup/
+public operations cases and final feature gates remain pending. No broader
+arbitrary-corruption resumption, accepted stage, full gate or feature acceptance
+is inferred.
+
+### Actual published key-increment CI limitation
+
+Run **40703888949** tests merge
+`46614c3c095fc5eb7a06350c8eb27d90c27c27b4` for published `1c6448b`.
+Its SQLite host step fails in **275.706 seconds**:
+`integration-sqlite-692d1c01176843c4944ec0b03e34dfdd.json` names the existing
+enrollment ceremony case, two OIDC-budget cases and new
+`KeyFailureCannotRepairItselfOrReplaceConsumedAuthority`. Key-test locations
+include **IdentityKeyTests.cs:23/130/147/50**: enrollment setup/initial
+login-start assertion, before the ring fault is applied. The unexpected status/
+inner cause and individual theory row are not retained; do not assign a
+certificate, timing or provider cause. Storage does not subsequently execute.
+Quality/unit/privacy/browser/startup pass; new PostgreSQL/key, recovery,
+contract and failure-propagation jobs are still running at this observation.
+The local green subset does not waive this non-green hosted result.
+
+Final journal review also requires the decision's exact current manifest
+binding before any partial-scratch cleanup, even when no intent is durable.
+The actual restored-store authority matrix rejects an unbound decision without
+changing either file. Fresh final Release warnings-as-errors build, the same
+SQLite recovery/storage selection, full host units and native formatting pass
+in `recovery-sqlite-1bad02a7ce39445c8285e4c0f56dbda3.json`. Repository checks,
+132 Python tests and whitespace checks pass.
+
+Fetched tested key-head merge `46614c3c095fc5eb7a06350c8eb27d90c27c27b4`;
+its actual parents are `3e416813233c9d291eb20cf72d5882dbddf3e1b6` and
+`1c6448ba985b899e779c6cca93bf492800fe26c5`. Restore-store, login-endpoint and
+fixture blobs match the published feature parent. Its completed both-provider
+recovery suite now **passes**, including public PostgreSQL recovery, in
+`recovery-both-6b7fa764fc994b43b626d64095d8e27c.json`. The separate
+failure-propagation report
+`failure-propagation-none-dc20cadfa03943ffbff672fe07e49903.json` still fails:
+nested `baseline-postgres` reaches the original **900.315-second** bound;
+the enclosing harness ends at **1028.559 seconds**. The previously observed
+SQLite login/setup failure remains unresolved. Neither unchanged recovery
+success nor this later observation erases prior failures or executes the
+unpublished journal increment.

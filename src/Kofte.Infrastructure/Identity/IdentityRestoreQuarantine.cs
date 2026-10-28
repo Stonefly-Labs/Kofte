@@ -81,12 +81,29 @@ public sealed class IdentityRestoreQuarantine
         ReadCoreAsync(keyDirectory, budget, receipt: true);
 
     internal async Task<IdentityRestoreQuarantine> ResumeAsync(IdentityRestoreDecision decision, string mode,
-        string digest, OperationBudget budget)
+        string digest, StorageInstallation installation, MaintenanceScope scope, OperationBudget budget)
     {
+        await scope.VerifyAsync(installation, budget);
+        decision.Validate(this);
         MatchPlan(Plan, decision, mode, digest);
         var next = Path.Combine(directory, FileName + ".next");
         if (!UnixStorePaths.ValidateFile(next, allowMissing: true)) return this;
-        var pending = await ReadStateAsync(directory, next, budget);
+        var bytes = await ReadBytesAsync(next, budget, allowEmpty: true);
+        if (Incomplete(bytes))
+        {
+            await VerifyCurrentAsync(budget);
+            await scope.VerifyAsync(installation, budget);
+            var unchanged = await ReadBytesAsync(next, budget, allowEmpty: true);
+            if (!bytes.AsSpan().SequenceEqual(unchanged))
+                throw new StorageException(StorageCode.Conflict);
+            budget.Check();
+            IdentityDiagnostics.Current?.PossibleCommit();
+            File.Delete(next);
+            IdentityDiagnostics.Current?.Committed();
+            IdentityDiagnostics.Checkpoint("restore_pending_incomplete");
+            return this;
+        }
+        var pending = ParseState(directory, bytes);
         MatchPlan(pending.Plan, decision, mode, digest);
         if (!state.Manifest.AsSpan().SequenceEqual(pending.state.Manifest) ||
             state.RestoredManifest is { } restored &&
@@ -100,6 +117,7 @@ public sealed class IdentityRestoreQuarantine
                  plan.Result is not null && plan.Result != after.Result))
             throw new StorageException(StorageCode.Conflict);
         await VerifyCurrentAsync(budget);
+        await scope.VerifyAsync(installation, budget);
         budget.Check();
         IdentityDiagnostics.Current?.PossibleCommit();
         File.Move(next, Path.Combine(directory, FileName), overwrite: true);
@@ -173,7 +191,9 @@ public sealed class IdentityRestoreQuarantine
         await VerifyCurrentAsync(budget);
         var next = Path.Combine(directory, FileName + ".next");
         IdentityDiagnostics.Current?.PossibleCommit();
-        WriteNew(next, JsonSerializer.SerializeToUtf8Bytes(nextState, Options), budget);
+        WriteNew(next, JsonSerializer.SerializeToUtf8Bytes(nextState, Options), budget,
+            nextState.Plan is { Result: not null } ? "restore_result_partial" :
+            nextState.Plan is { Keys: not null } ? "restore_keys_partial" : "restore_intent_partial");
         IdentityDiagnostics.Checkpoint("restore_state_written");
         budget.Check();
         File.Move(next, Path.Combine(directory, FileName), overwrite: true);
@@ -223,15 +243,38 @@ public sealed class IdentityRestoreQuarantine
             Path.Combine(directory, FileName), budget);
     }
 
-    private static async Task<IdentityRestoreQuarantine> ReadStateAsync(string directory, string path, OperationBudget budget)
+    private static async Task<IdentityRestoreQuarantine> ReadStateAsync(string directory, string path,
+        OperationBudget budget) => ParseState(directory, await ReadBytesAsync(path, budget));
+
+    private static async Task<byte[]> ReadBytesAsync(string path, OperationBudget budget, bool allowEmpty = false)
     {
         UnixStorePaths.ValidateFile(path);
         await using var file = File.OpenRead(path);
-        if (file.Length is < 2 or > MaximumBytes) throw new StorageException(StorageCode.Corrupt);
+        if (file.Length < (allowEmpty ? 0 : 2) || file.Length > MaximumBytes)
+            throw new StorageException(StorageCode.Corrupt);
         var bytes = new byte[checked((int)file.Length)];
         await file.ReadExactlyAsync(bytes, budget.Token);
         var extra = new byte[1];
         if (await file.ReadAsync(extra, budget.Token) != 0) throw new StorageException(StorageCode.Corrupt);
+        return bytes;
+    }
+
+    private static bool Incomplete(byte[] bytes)
+    {
+        if (bytes.Length == 0) return true;
+        if (bytes[0] != '{') throw new StorageException(StorageCode.Corrupt);
+        try
+        {
+            var reader = new Utf8JsonReader(bytes, isFinalBlock: false, state: default);
+            if (!JsonDocument.TryParseValue(ref reader, out var document)) return true;
+            document.Dispose();
+            return false;
+        }
+        catch (JsonException) { throw new StorageException(StorageCode.Corrupt); }
+    }
+
+    private static IdentityRestoreQuarantine ParseState(string directory, byte[] bytes)
+    {
         try
         {
             var state = JsonSerializer.Deserialize<State>(bytes, Options)
@@ -304,7 +347,7 @@ public sealed class IdentityRestoreQuarantine
             right.StartsWith(left.TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar, comparison);
     }
 
-    private static void WriteNew(string path, byte[] bytes, OperationBudget budget)
+    private static void WriteNew(string path, byte[] bytes, OperationBudget budget, string? partialCheckpoint = null)
     {
         if (OperatingSystem.IsWindows()) throw new StorageException(StorageCode.PathRejected);
         if (bytes.Length is < 2 or > MaximumBytes) throw new StorageException(StorageCode.Corrupt);
@@ -317,7 +360,18 @@ public sealed class IdentityRestoreQuarantine
             Share = FileShare.None,
             UnixCreateMode = UnixStorePaths.FileMode
         });
-        file.Write(bytes);
+        if (partialCheckpoint is not null)
+        {
+            if (partialCheckpoint == "restore_intent_partial")
+                IdentityDiagnostics.Checkpoint("restore_intent_empty");
+            var split = bytes.Length / 2;
+            file.Write(bytes.AsSpan(0, split));
+            file.Flush(flushToDisk: true);
+            IdentityDiagnostics.Checkpoint(partialCheckpoint);
+            budget.Check();
+            file.Write(bytes.AsSpan(split));
+        }
+        else file.Write(bytes);
         file.Flush(flushToDisk: true);
         UnixStorePaths.ValidateFile(path);
         budget.Check();

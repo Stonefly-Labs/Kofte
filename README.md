@@ -102,6 +102,11 @@ replacement and complete backup separation now pass. Optional private
 encryptor, session epoch, mapping or consumed designation. New PostgreSQL key
 evidence remains pending after owned local Docker fixture creation fails;
 T083 stays unchecked.
+Explicit reconciliation now also retries actually empty/partially flushed
+intent, key-inventory and committed-result journals under verified exclusive
+authority. Complete conflicting/unknown/invalid journals remain refused and
+unchanged. All sixteen SQLite restore cases pass; staging-key interruption and
+new PostgreSQL journal evidence remain pending.
 Hosted `49ef96e`
 enrollment-replacement login fails at its callback
 assertion; the focused SQLite reproduction passes, without establishing a cause

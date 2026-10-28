@@ -856,6 +856,21 @@ remain pending; this is not complete recovery acceptance. The legacy ungated
 helper still refuses identity-bearing sets. Fence the old instance; direct
 OS/database copies bypass this marker and remain outside its guarantee.
 
+Explicit reconciliation retry now also handles an actually empty or partially
+flushed pending intent/key-inventory/result journal. It validates the existing
+marker and live installation-specific exclusive scope, bounds and rereads the
+private pending bytes, and removes only known syntactically incomplete scratch
+before recomputing from verified state. A complete journal with unknown fields,
+changed binding or invalid syntax is refused unchanged; no malformed complete
+decision becomes a default. Persisted intent/epoch/ring and already-published
+key bytes remain fixed. A first intent interrupted before it was durably
+recorded has no published key/database effects to replay.
+The gate stays present throughout. Foreign/disposed/cancelled/expired authority
+cannot perform this cleanup. Actual SQLite killed-worker and negative-authority
+tests pass; this does not prove arbitrary initial quarantine/staging-key
+corruption recoverable, waive later PostgreSQL proof or permit manual gate
+deletion.
+
 Stopped prepared installations now accept `--identity maintain` through the
 same admitted host supervisor and exclusive lease. Each explicit invocation
 removes at most 128 expired session-class evidence records (at least 30 days old),
