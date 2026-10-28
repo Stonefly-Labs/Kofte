@@ -804,18 +804,27 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         worker = OwnedProcesses.Start(start);
         using var deadline = CancellationTokenSource.CreateLinkedTokenSource(token);
         deadline.CancelAfter(TimeSpan.FromSeconds(15));
-        while (true)
+        var observed = "no_response";
+        try
         {
-            deadline.Token.ThrowIfCancellationRequested();
-            if (worker.HasExited) throw new InvalidOperationException("identity_fixture_child_exited");
-            try
+            while (true)
             {
-                using var ready = await client.GetAsync(operation == "--fixture-product-login"
-                    ? "/api/identity/v1/me" : "/fixture-live", deadline.Token);
-                if ((int)ready.StatusCode == (operation == "--fixture-product-login" ? 401 : 204)) break;
+                deadline.Token.ThrowIfCancellationRequested();
+                if (worker.HasExited) throw new InvalidOperationException("identity_fixture_child_exited");
+                try
+                {
+                    using var ready = await client.GetAsync(operation == "--fixture-product-login"
+                        ? "/api/identity/v1/me" : "/fixture-live", deadline.Token);
+                    observed = "http_" + ((int)ready.StatusCode).ToString(CultureInfo.InvariantCulture);
+                    if ((int)ready.StatusCode == (operation == "--fixture-product-login" ? 401 : 204)) break;
+                }
+                catch (HttpRequestException error) { observed = "transport_" + error.HttpRequestError; }
+                await Task.Delay(5, deadline.Token);
             }
-            catch (HttpRequestException) { }
-            await Task.Delay(5, deadline.Token);
+        }
+        catch (OperationCanceledException error) when (deadline.IsCancellationRequested && !token.IsCancellationRequested)
+        {
+            throw new InvalidOperationException("identity_fixture_child_readiness_" + observed, error);
         }
     }
 

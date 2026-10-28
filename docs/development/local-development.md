@@ -715,13 +715,18 @@ the same bounded fixed-backend adapter; null Origin is still refused.
 It publishes separately validated cookies before the framework redirect and
 does not retry mutations. Local HTTPS login/callback/current-user executes,
 but browser lifecycle/cleanup remains failing. The existing Ubuntu browser
-job now additionally runs public `oidc-login` and `trust-refusal` on each
-real store; results are pending. The private fixture admits only its CA in a
+job passed public `oidc-login` and `trust-refusal` on each real store at
+`6be0ee8`; this does not waive the local macOS failure. The private fixture admits only its CA in a
 fresh owned profile, retains ordinary TLS checks, verifies the exact browser
 group is absent after normal close, and retains private configuration/profile
 files if browser completion cannot be confirmed. No OS trust changes or
 TLS-ignore switches are used.
-This is not yet a complete browser login journey or operator-ready identity profile.
+The corrected local protocol matrix passes 123/123 and mapping/restart passes
+20/20. An intervening SQLite restart-readiness failure remains recorded; a
+later isolated/serial pass does not establish its cause. Readiness now
+projects only a bounded HTTP status/transport category on timeout without
+changing the existing budget. PostgreSQL host CI remains failed with no
+established cause. This is not a complete or operator-ready identity profile.
 
 The existing status browser uses only `/backend/health/ready`. This server-only fixed adapter
 forwards no caller credentials/headers and validates status, content type and
@@ -873,6 +878,11 @@ selected provider environment. PostgreSQL requires explicit disposable opt-in
 before any child; single-provider runs exclude the other provider's trait
 without excluding provider-neutral manifest/harness tests. Startup verification
 also builds `Kofte.Storage.Consumer` before its timed browser exercise.
+Host integration now uses the same private bounded xUnit XML diagnostic path
+as storage/contract tests. Only source-known failed test symbols and admitted
+fixed codes enter safe reports; raw arguments, exceptions, output and private
+XML are not retained or uploaded. This makes failing host CI diagnosable
+without exposing identity exchanges.
 
 | Suite                      | Underlying runner                                                                                                                                                                                                                     |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

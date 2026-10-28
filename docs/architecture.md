@@ -473,7 +473,7 @@ not one passing provider job. PR #7 is now human-merged; its accepted ledger
 and all five acceptance artifact hashes were verified on updated main before
 005 began. Historical failed checks and undiagnosed causes remain unchanged.
 
-**005 / implement is running after T001–T036, not a completed feature**, on
+**005 / implement is running after T001–T036 and T038, not a completed feature**, on
 `feature/005-authentication-bootstrap`. The
 [implementation checkpoint](../specs/005-authentication-bootstrap/implementation.md)
 retains the source/signature investigation and records the adopted maintained
@@ -581,13 +581,16 @@ explicit CSRF pair through the same bounded fixed-backend adapter; validated
 cookies are published before the framework redirect. This is transport, not
 another authentication authority or a contract relaxation. A real native
 form under required `no-referrer` produced `Origin: null`, which remains
-refused. Local HTTPS runs still fail browser lifecycle/cleanup; the existing
-Ubuntu browser job now executes both public login/trust recipes on both
-stores, with no passing result claimed yet. Full browser
-login evidence, enrollment, sign-out, development sessions and identity
-recovery remain dependent work (64 unchecked tasks). Published `f89c1ec`
-passed all eleven CI contexts; no complete browser journey or feature
-acceptance is claimed.
+refused. Actual Ubuntu login/trust browser recipes pass on both stores at
+`6be0ee8`, with ordinary TLS and exact-group cleanup verification. Local
+macOS browser lifecycle/cleanup still fails. The corrected local protocol
+matrix passes 123/123; mapping/restart passes 20/20, retaining the intervening
+SQLite readiness failure and unknown cause. PostgreSQL host CI still fails;
+private source-known diagnostics are being extended to expose the failing
+case without raw test arguments/output. Final US1 reconciliation, enrollment,
+sign-out, development sessions and identity recovery remain (63 unchecked
+tasks). Published `f89c1ec` passed all eleven CI contexts; no feature
+acceptance or current complete gate is claimed.
 
 The completed specify-through-analyze history below is retained on
 `feature/005-authentication-bootstrap`. Its

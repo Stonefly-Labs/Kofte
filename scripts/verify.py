@@ -366,6 +366,7 @@ def command_diagnostics(command):
     ):
         return runtime_support.CommandDiagnostics("dependency", check_dependencies.FAILURE_CODES)
     native_projects = {
+        "tests/integration/Kofte.Host.IntegrationTests": ("host", "Kofte.Host.IntegrationTests"),
         STORAGE_INTEGRATION: ("storage", "Kofte.Storage.IntegrationTests"),
         "tests/contract/Kofte.Platform.ContractTests": ("contract", "Kofte.Platform.ContractTests"),
     }
@@ -615,7 +616,7 @@ class Runner:
 
         def execute(step):
             diagnostic = diagnostics or command_diagnostics(command)
-            if diagnostic and diagnostic.kind in ("storage", "contract"):
+            if diagnostic and diagnostic.kind in ("host", "storage", "contract"):
                 with private_root(self.root) as directory:
                     step["command"] = safe_command([
                         *command, "--report-xunit-xml",

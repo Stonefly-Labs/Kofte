@@ -329,7 +329,7 @@ That checkpoint required human merge before 005. PR #7 is now human-merged;
 004's accepted ledger and all five acceptance artifact hashes were verified
 on updated main before beginning the new feature.
 
-**005 / implement is running, with T001–T036 complete (36/100)**, on
+**005 / implement is running, with T001–T036 and T038 complete (37/100)**, on
 `feature/005-authentication-bootstrap` and the same draft PR #8.
 The [implementation record](specs/005-authentication-bootstrap/implementation.md)
 preserves the provenance investigation and records actual reviewed OIDC
@@ -383,12 +383,15 @@ the accessible non-personal `/identity` page, bounded no-store checks, token
 renewal and safe stale-state/failure/retry handling. All 98 web units,
 lint/types/build pass. The sign-in Server Action preserves the actual Origin,
 CSRF and fixed bounded backend; it corrects confirmed native-form `Origin:
-null` under `no-referrer`, without admitting that Origin. Actual local HTTPS
-browser runs still fail lifecycle/cleanup. The existing Ubuntu browser job
-now executes both public login/trust recipes on both stores; no pass is
-claimed before those executions finish. The original implement stage is resumed; continue
-T037–T100 without an intermediate handoff. Full browser login and remaining
-stories are not yet delivered. Published `f89c1ec` passed all eleven CI contexts.
+null` under `no-referrer`, without admitting that Origin. Actual Ubuntu
+login/trust browser recipes pass on both stores at `6be0ee8`; local macOS
+browser lifecycle/cleanup still fails. The corrected protocol matrix passes
+123/123 and mapping/restarts pass 20/20, retaining the intervening 19/20
+SQLite readiness failure and unknown cause. PostgreSQL host CI still fails;
+the existing private XML/source-symbol diagnostics now cover host integration
+without retaining raw exceptions, arguments or private output. Continue
+the remaining tasks without an intermediate handoff. Full US1 reconciliation
+and later stories remain. Published `f89c1ec` passed all eleven CI contexts.
 The preceding
 session-head CI's composition and PostgreSQL baseline timeouts remain failed
 with unknown causes, not waived or replaced by local passes.

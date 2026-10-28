@@ -44,7 +44,7 @@ class CommandDiagnostics:
     )
 
     storage_test = re.compile(
-        rb"^\s*failed (Kofte\.(?:Storage\.IntegrationTests|Platform\.ContractTests)\."
+        rb"^\s*failed (Kofte\.(?:Host\.IntegrationTests|Storage\.IntegrationTests|Platform\.ContractTests)\."
         rb"[A-Za-z0-9_.+]{1,240})(?=[( ])",
     )
     storage_code = re.compile(rb"\b(?:StorageException|XunitException)\s*:\s*([A-Za-z_]{1,64})\b")
@@ -81,7 +81,7 @@ class CommandDiagnostics:
                 with self.lock:
                     if not self.closed and len(self.dependency_codes) < 2:
                         self.dependency_codes.add(event["eventCode"])
-        elif self.kind in ("storage", "contract"):
+        elif self.kind in ("host", "storage", "contract"):
             test = self.storage_test.match(line)
             code = self.storage_code.search(line)
             with self.lock:
@@ -185,7 +185,7 @@ class CommandDiagnostics:
                 return {"sourceLocations": sorted(self.sources)}
             if self.kind == "dependency" and len(self.dependency_codes) == 1:
                 return {"dependencyFailureCode": next(iter(self.dependency_codes))}
-            if self.kind in ("storage", "contract"):
+            if self.kind in ("host", "storage", "contract"):
                 prefix = self.kind
                 return {
                     **({f"failed{prefix.title()}Tests": sorted(self.failed_tests)} if self.failed_tests else {}),

@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement running; T001–T036 complete (36/100)**, on
+**Current checkpoint: 005 / implement running; T001–T036 and T038 complete (37/100)**, on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 [implementation record](../../specs/005-authentication-bootstrap/implementation.md)
@@ -82,10 +82,13 @@ clearing. All 98 web units, lint/types and production build pass.
 The real HTTPS fixture confirmed native-form opaque Origin under required
 `no-referrer`; a bounded Next Server Action now preserves real Origin/CSRF
 without weakening either policy. Local browser lifecycle/cleanup still fails.
-The original Ubuntu browser job now executes `oidc-login` and `trust-refusal`
-on SQLite and PostgreSQL; those executions are pending, not accepted evidence.
-Sixty-four tasks remain, starting with T037/T038 delivered protocol/restart
-evidence; the complete browser journey and remaining stories are not claimed.
+The original Ubuntu browser job passed `oidc-login` and `trust-refusal`
+on SQLite and PostgreSQL at `6be0ee8`; this does not waive the local macOS
+cleanup failure. Corrected local protocol evidence passes 123/123, and T038's
+mapping/restart matrix passes 20/20 after an intervening 19/20 readiness
+failure with unknown cause. PostgreSQL host CI still fails; private
+source-known diagnostics are being added before claiming complete US1
+reconciliation. Sixty-three tasks remain. No feature acceptance is claimed.
 Session-head `ad21b2b` CI failed composition and PostgreSQL baseline timeouts;
 their causes remain unestablished. They are not erased by local passes.
 The unchanged both-provider composition selector passed locally in 588.596s

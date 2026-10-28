@@ -1,6 +1,6 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement in progress; T001-T036 complete (36/100); original stage resumed after verified live-adapter cleanup.
+**Result:** implement in progress; T001-T036 and T038 complete (37/100); actual Ubuntu login/trust browser recipes pass on both stores, but PostgreSQL host CI remains failed.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-27.
 **Assessed baseline:** `6df9eebdcfa6b273126b0c51c272d1b2c2f953e6`.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
@@ -2047,3 +2047,55 @@ The job keeps ordinary certificate verification and imports only the owned
 CA into its fresh profile; no OS trust, personal profile, certificate-ignore
 switch or private artifact upload is introduced. All eleven checks on
 published `f89c1ec` passed, but are not evidence for this newer source.
+
+## `6be0ee8` reconciliation: real browser recipes pass; host CI still fails
+
+The verified entry/transport and test candidates were committed and immediately
+pushed as `6be0ee8` on the original draft PR #8. No stage transition,
+acceptance or merge occurred.
+
+- The complete corrected local command
+  `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test tests/integration/Kofte.Host.IntegrationTests/Kofte.Host.IntegrationTests.csproj -c Release --no-restore --no-build --filter 'FullyQualifiedName~OidcBudgetTests|FullyQualifiedName~OidcProtocolTests|FullyQualifiedName~OidcBackchannelTests' --nologo`
+  passed **123/123, zero skips**, in **20m08.394s**. Earlier failures are retained.
+- Actual [Ubuntu browser job 122614125497](https://github.com/Stonefly-Labs/Kofte/actions/runs/40626971026/job/122614125497)
+  passed both named browser verification and the added HTTPS recipe step.
+  The completed job's four JSON result records were independently retrieved
+  and checked for the exact provider/scenario inventory, passed status and
+  distinct named assertion count. `oidc-login` passed **eight observations**
+  and `trust-refusal` **eleven observations** on **each** store. These are
+  actual direct API/actor/native-handler/Next/browser/TLS/cleanup executions,
+  not fabricated principals or an empty summary.
+- `dotnet test tests/integration/Kofte.Host.IntegrationTests/Kofte.Host.IntegrationTests.csproj -c Release --no-restore --no-build --filter 'FullyQualifiedName~IdentityPolicyTests' --nologo`
+  passed **4/4**, zero skips, in **33.349s**: safe health/missing auth,
+  default denial, exact Origin/framework pair and callback binding remain.
+- The fresh mapping command
+  `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj -c Release --no-restore --no-build --filter 'FullyQualifiedName~IdentityMappingTests' --nologo`
+  initially passed **19/20**, with SQLite's delivered restart case timing out
+  at worker readiness. A separate policy selection overlapped that run;
+  causation is **not established**. Safe last-status/transport classification
+  was added without changing the existing fifteen-second budget. The exact
+  isolated SQLite restart selector then passed **1/1** in **27.790s**.
+  The entire twenty-case command, run alone on the current fixture, then
+  passed **20/20**, zero skips, in **1m50.205s**. This verifies T038, including
+  distinct process IDs/profile/issuer preservation, but does not diagnose or
+  waive the prior failed run.
+
+Current markers are T001–T036 plus T038 (**37/100**). T037's local matrix is
+green, and actual T039 recipe evidence exists, but their final reconciliation
+is held while current-head PostgreSQL host integration CI fails. The safe
+report identifies only `integration-postgres`, exit 2, after 245.211s; it does
+not identify the failing test. No cause is invented. Other observed passed
+contexts include repository, quality, unit, SQLite integration, browser,
+privacy and startup; the complete run is not yet green.
+
+The existing source-whitelisted private XML diagnostic path previously
+covered storage and public-contract tests but **not host integration**.
+It now includes host integration with the same bounded parsing, private-file
+cleanup and no raw argument/exception/output retention. The new focused
+regression first failed because the host diagnostic was `None`, then passed
+after wiring; complete Python discovery passed **124 tests**. The real native
+runner was also exercised through `Runner.command` with
+`dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-class '*IdentityPolicyTests' --minimum-expected-tests 4`;
+it passed with private XML enabled. Full .NET formatting verification,
+repository and whitespace checks passed. These diagnostics are to establish
+the CI cause, not a claimed repair of the PostgreSQL failure.

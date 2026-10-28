@@ -319,6 +319,36 @@ class VerifyTests(unittest.TestCase):
         self.assertEqual(set(), diagnostic.failed_tests)
         self.assertEqual(set(), diagnostic.storage_codes)
 
+    def test_failed_host_command_retains_known_case_without_private_framework_output(self):
+        runner = verify.Runner(self.root, self.report("integration"), {})
+        diagnostic = verify.command_diagnostics([
+            "dotnet", "test", "--project", "tests/integration/Kofte.Host.IntegrationTests",
+        ])
+        self.assertIsNotNone(diagnostic)
+        name = ("Kofte.Host.IntegrationTests.Identity.PostgresOidcBudgetTests."
+                "DeliveredDnsChangesAreReadmittedBeforeTheRealTokenConnection")
+        owner, method = name.rsplit(".", 1)
+        xml = (f'<assemblies><test type="{owner}" method="{method}" result="Fail" '
+               'name="credential-canary"><failure><message>StorageException : DeadlineExceeded '
+               '/private/credential-canary</message><stack-trace>credential-canary</stack-trace>'
+               '</failure></test><test type="credential-canary" method="unknown" result="Fail"/>'
+               '</assemblies>')
+        script = (
+            "import sys; from pathlib import Path; "
+            "directory=Path(sys.argv[sys.argv.index('--results-directory')+1]); "
+            f"(directory/'storage.xml').write_text({xml!r}); "
+            "print('/private/credential-canary'); sys.exit(2)"
+        )
+        with self.assertRaisesRegex(verify.VerificationError, "command_failed"):
+            runner.command("host-integration-postgres", ["python3", "-c", script],
+                           diagnostics=diagnostic)
+        step = runner.report.data["steps"][-1]
+        self.assertEqual([name], step["failedHostTests"])
+        self.assertEqual(["DeadlineExceeded"], step["hostFailureCodes"])
+        self.assertFalse(list((self.root / "artifacts/verification/.private").rglob("storage.xml")))
+        self.assertNotIn("credential", runner.report.path.read_text())
+        self.assertEqual(set(), diagnostic.failed_tests)
+
     def test_successful_browser_command_never_publishes_failure_diagnostics(self):
         report = self.report("browser")
         runner = verify.Runner(self.root, report, {})
