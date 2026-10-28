@@ -171,6 +171,13 @@ attestation. New PostgreSQL reconciliation and remaining partial-write/key/
 public operations recipe evidence are still pending. See the
 [delivered command and custody limits](../../docs/development/local-development.md).
 Identity-bearing sets continue to refuse the legacy ungated restore path.
+Actual SQLite key-custody tests now also cover live missing/foreign/undecryptable
+rings, stopped original-custody correction and epoch revocation, actual retained
+key/certificate overlap, coordinated client-secret correction and recovery
+artifact separation. The optional private `keyDecryptionCertificates` member
+retains old decryptors while the separate current pair encrypts new keys;
+see the local guide for bounds/custody/retirement limitations. New PostgreSQL
+key evidence is pending, so T083 remains unchecked.
 This progress does not make the remaining operations recipes executable or
 turn the non-green full matrix into accepted feature evidence.
 

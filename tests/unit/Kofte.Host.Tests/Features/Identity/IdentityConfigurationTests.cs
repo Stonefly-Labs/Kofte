@@ -254,6 +254,61 @@ public sealed class IdentityConfigurationTests : IDisposable
         Reject(configuration, "Production");
     }
 
+    [Theory]
+    [InlineData(7, true)]
+    [InlineData(8, false)]
+    public void RetainedDecryptorsHaveAFiniteSevenCertificateLimit(int count, bool accepted)
+    {
+        var configuration = Oidc();
+        var retained = new JsonArray();
+        using var key = RSA.Create(2048);
+        for (var index = 0; index < count; index++)
+        {
+            var request = new CertificateRequest("CN=Kofte retained test-only certificate " + index, key,
+                HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+            using var certificate = request.CreateSelfSigned(DateTimeOffset.UtcNow.AddMinutes(-5),
+                DateTimeOffset.UtcNow.AddDays(1));
+            var certificateFile = Path.Combine(root.Path, $"retained-{index}.pem");
+            var privateKeyFile = Path.Combine(root.Path, $"retained-key-{index}.pem");
+            PrivateTestFiles.WriteNew(certificateFile, Encoding.ASCII.GetBytes(certificate.ExportCertificatePem()));
+            PrivateTestFiles.WriteNew(privateKeyFile, Encoding.ASCII.GetBytes(key.ExportPkcs8PrivateKeyPem()));
+            retained.Add(new JsonObject { ["certificateFile"] = certificateFile, ["privateKeyFile"] = privateKeyFile });
+        }
+        configuration["keyDecryptionCertificates"] = retained;
+        if (accepted)
+        {
+            using var parsed = Parse(configuration, "Production");
+            Assert.Equal(8, parsed.KeyDecryptionCertificates.Count);
+        }
+        else Reject(configuration, "Production");
+    }
+
+    [Theory]
+    [InlineData("duplicate")]
+    [InlineData("mismatch")]
+    [InlineData("shared")]
+    public void RetainedDecryptorsCannotBeDuplicateMismatchedOrPubliclyReadable(string damage)
+    {
+        if (OperatingSystem.IsWindows()) throw new InvalidOperationException("test_platform_unsupported");
+        var configuration = Oidc();
+        var retainedKey = Path.Combine(root.Path, "retained-key.pem");
+        using var key = RSA.Create(2048);
+        PrivateTestFiles.WriteNew(retainedKey, damage == "mismatch"
+            ? Encoding.ASCII.GetBytes(key.ExportPkcs8PrivateKeyPem()) : File.ReadAllBytes(PrivateKeyFile));
+        if (damage == "shared")
+            File.SetUnixFileMode(retainedKey, Paths.FileMode | UnixFileMode.GroupRead);
+        configuration["keyDecryptionCertificates"] = new JsonArray(new JsonObject
+        {
+            ["certificateFile"] = CertificateFile,
+            ["privateKeyFile"] = retainedKey
+        });
+        var error = Reject(configuration, "Production");
+        Assert.DoesNotContain(retainedKey, error.Message);
+        File.Delete(retainedKey);
+        using var stopped = IdentityConfiguration.Parse(JsonSerializer.SerializeToUtf8Bytes(configuration),
+            Bootstrap, "Production", IdentityOperation.RevokeSessions);
+    }
+
     [Fact]
     public void PrivateReferencesRejectSymlinksSharedPermissionsDirectoriesAndMissingFiles()
     {

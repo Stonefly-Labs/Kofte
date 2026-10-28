@@ -110,6 +110,50 @@ public sealed class IdentityKeysTests : IDisposable
     }
 
     [Fact]
+    public async Task CertificateOverlapRetainsOldTicketsWhileNewKeysUseTheCurrentCertificate()
+    {
+        WriteCertificate();
+        using var original = Configuration(oidc: true);
+        await Prepare(original);
+        var retiredKey = Assert.Single(KeyFiles());
+        byte[] oldTicket;
+        using (var first = Open(original))
+            oldTicket = first.Protector("session").Protect("retained-ticket"u8.ToArray());
+        var oldCertificate = Path.Combine(root.Path, "retained-certificate.pem");
+        var oldPrivateKey = Path.Combine(root.Path, "retained-private-key.pem");
+        PrivateTestFiles.WriteNew(oldCertificate, File.ReadAllBytes(Path.Combine(root.Path, "certificate.pem")));
+        PrivateTestFiles.WriteNew(oldPrivateKey, File.ReadAllBytes(Path.Combine(root.Path, "private-key.pem")));
+        AgeKey(DateTimeOffset.UtcNow.AddDays(-1));
+        WriteCertificate(replace: true);
+        using var overlap = Configuration(oidc: true, decryptors: new JsonArray(new JsonObject
+        {
+            ["certificateFile"] = oldCertificate,
+            ["privateKeyFile"] = oldPrivateKey
+        }));
+        Assert.Equal(original.TrustDigest, overlap.TrustDigest);
+        byte[] newTicket;
+        using (var rotating = Open(overlap))
+        {
+            Assert.Equal("retained-ticket"u8.ToArray(), rotating.Protector("session").Unprotect(oldTicket));
+            newTicket = rotating.Protector("session").Protect("new-ticket"u8.ToArray());
+        }
+        Assert.Equal(2, KeyFiles().Length);
+        var generated = Assert.Single(KeyFiles(), file => file != retiredKey);
+        Assert.Contains(XElement.Load(generated).Descendants(), element =>
+            element.Name.LocalName == "X509Certificate" &&
+            element.Value == Convert.ToBase64String(overlap.KeyEncryptionCertificate!.RawData));
+        var before = Snapshot();
+        using (var restarted = Open(overlap))
+        {
+            Assert.Equal("retained-ticket"u8.ToArray(), restarted.Protector("session").Unprotect(oldTicket));
+            Assert.Equal("new-ticket"u8.ToArray(), restarted.Protector("session").Unprotect(newTicket));
+        }
+        using var withoutRetained = Configuration(oidc: true);
+        Reject(() => Open(withoutRetained));
+        Assert.Equal(before, Snapshot());
+    }
+
+    [Fact]
     public async Task OidcCannotAdoptADevelopmentRingOrACleartextRingWithEditedMode()
     {
         using var development = Configuration();
@@ -421,7 +465,7 @@ public sealed class IdentityKeysTests : IDisposable
         }
     }
 
-    private IdentityConfiguration Configuration(bool oidc = false)
+    private IdentityConfiguration Configuration(bool oidc = false, JsonArray? decryptors = null)
     {
         var bootstrap = BootstrapConfiguration.Parse(new Dictionary<string, string?>
         {
@@ -438,6 +482,7 @@ public sealed class IdentityKeysTests : IDisposable
         {
             value["keyEncryptionCertificateFile"] = Path.Combine(root.Path, "certificate.pem");
             value["keyEncryptionPrivateKeyFile"] = Path.Combine(root.Path, "private-key.pem");
+            if (decryptors is not null) value["keyDecryptionCertificates"] = decryptors;
             value["provider"] = new JsonObject
             {
                 ["issuer"] = "https://offline-issuer.invalid",

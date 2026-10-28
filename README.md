@@ -95,6 +95,13 @@ retry tests. Its private durable intent preserves the chosen epoch/ring and
 decision; unknown history stays locked and consumed enrollment is preserved.
 New PostgreSQL reconciliation proof and remaining operations evidence are
 pending; identity-bearing sets still refuse the legacy ungated restore path.
+Actual SQLite live key-loss/foreign/undecryptable-ring refusals, explicit
+custody correction/revocation, retained-key/certificate overlap, client-secret
+replacement and complete backup separation now pass. Optional private
+`keyDecryptionCertificates` retains old decryptors without changing the current
+encryptor, session epoch, mapping or consumed designation. New PostgreSQL key
+evidence remains pending after owned local Docker fixture creation fails;
+T083 stays unchecked.
 Hosted `49ef96e`
 enrollment-replacement login fails at its callback
 assertion; the focused SQLite reproduction passes, without establishing a cause

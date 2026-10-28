@@ -24,6 +24,7 @@ Configuration version 1:
 | `publicOrigin` | Exact HTTPS origin in OIDC; exact configured loopback web HTTP origin in development. No userinfo/path/query/fragment. |
 | `keyRingDirectory` | Absolute separate private owned directory outside the managed database recovery root; no symlink, traversal or shared writable location. Installation/purpose-bound marker required. |
 | `keyEncryptionCertificateFile`, `keyEncryptionPrivateKeyFile` | Referenced private certificate/key in OIDC; certificate protection is mandatory there. Optional only in explicit local development. No cloud service requirement. |
+| `keyDecryptionCertificates` | Optional rotation-only array of one to seven retained `{ "certificateFile": "...", "privateKeyFile": "..." }` pairs, in addition to the current encryption pair. Same private-file/path/64-KiB/RSA requirements; duplicate certificates and unknown fields are refused. Does not change provider trust or the session epoch. |
 | `provider` | Required only for OIDC: exact issuer/metadata/authorization destinations, client ID, private `clientSecretFile`, exact backchannel endpoint and network allowlists. No caller-selected authority/provider. |
 | `development` | Required only for development: `enabled:true`, one to eight synthetic configured identity keys/display names. No arbitrary email/subject request input or administrator flag. |
 
@@ -174,6 +175,16 @@ decryptors until the longest active session/attempt is invalidated/expired;
 client-secret replacement affects future code exchange, not existing local
 session identity. A leaked session requires revocation/epoch change, not just
 generating another key.
+
+The current encryption pair protects newly generated keys. Explicit retained
+pairs decrypt existing keys only; they never become the default encryptor.
+Keep every decryptor required by the retained ring, even after its certificate
+or protected sessions expire: opening verifies **all** retained keys. There is
+no automatic key deletion, certificate retirement or rewrapping. Removing a
+needed reference refuses startup without repairing or replacing the ring.
+Existing single-pair configuration and PEM interpretation are unchanged.
+Stopped revocation/maintenance still validate their operation-specific subset
+when private decryption material is unavailable.
 
 Lost/undecryptable key ring fails closed. Stop, revoke old sessions/attempts,
 explicitly provision a new owned protected ring and restart; users sign in

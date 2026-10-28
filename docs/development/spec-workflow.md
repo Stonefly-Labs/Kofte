@@ -132,6 +132,15 @@ readers stay strict; explicit stopped retry separately verifies the owned live
 connection when SQLite retains an inactive crash journal. New PostgreSQL
 reconciliation and remaining partial-write/key/complete operations evidence
 remain pending; T080-T082 stay unchecked.
+T083 now has actual SQLite live key-loss/foreign/undecryptable-ring,
+stopped custody correction/revocation, certificate-overlap/retained rotation,
+client-secret correction and complete backup-separation proof. The optional
+strict retained-decryptor references preserve the current encryptor, trusted
+configuration, epoch, mappings and consumed designation. A new owned local
+PostgreSQL attempt fails during Docker fixture creation, before product
+execution; T083 remains unchecked. Earlier SQLite backup-worker readiness
+failures and the unchanged later passing selection are retained, not assigned
+an unverified cause or treated as a full-matrix pass.
 Stopped bounded `maintain` is now implemented using the existing retention
 helpers, with passing actual SQLite batch, prepared-authority and live-host
 refusal regressions. It preserves consumed designation, active sessions and

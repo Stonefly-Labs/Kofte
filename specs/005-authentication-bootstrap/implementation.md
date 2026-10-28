@@ -4178,3 +4178,137 @@ Full Release warnings-as-errors build, native format verification,
 finds 100 unique tasks, 80 checked and all checked prerequisites satisfied.
 No dependency, original migration, reviewer-owned checklist, ledger or human
 acceptance state changed.
+
+## T083: real key custody, certificate overlap and secret correction in progress
+
+Continued implementation on the original feature branch/draft PR. Progress
+remains **80/100**; T083 is not closed without actual new PostgreSQL evidence.
+No reviewer-owned checklist, task marker, ledger, dependency or migration changed.
+
+The real encrypted-ring overlap regression first fails in
+`unit-none-3a2f64599fe84a5a83f27c54087d897b.json`:
+
+```bash
+dotnet test --project tests/unit/Kofte.Host.Tests --no-restore --no-build -c Release --filter-class '*IdentityKeysTests' --filter-method '*CertificateOverlapRetainsOldTicketsWhileNewKeysUseTheCurrentCertificate' --minimum-expected-tests 1
+```
+
+Implemented optional strict `keyDecryptionCertificates` with one to seven
+private certificate/key pairs beside the unchanged primary encryption pair.
+The installed framework's `UnprotectKeysWithAnyCertificate` handles retained
+decryptors; `ProtectKeysWithCertificate` still selects only the current pair.
+The existing 64-KiB/private-file/path/RSA checks apply to every pair, duplicate
+certificates fail closed, and all loaded certificates are disposed on success
+or partial failure. Rotation does not change the provider-trust digest.
+Revocation/maintenance keep their existing secret-independent subset.
+This explicit additive field, rationale and custody limits are documented in
+the operator contract and ADR 0007; PEM-chain interpretation is unchanged.
+Microsoft Learn's .NET 10 Data Protection guidance was actually consulted;
+Microsoft Learn/Context7 MCP tools are not connected in this session.
+
+Strict configuration/real-ring unit tests then pass in
+`unit-none-11dc65c66af149b9a1df3ee95b4ae293.json`:
+
+```bash
+dotnet test --project tests/unit/Kofte.Host.Tests --no-restore --no-build -c Release --filter-class '*IdentityKeysTests' '*IdentityConfigurationTests' --minimum-expected-tests 50
+```
+
+Cases prove old/new protected tickets survive retained-certificate rotation and
+restart, missing required decryptors cannot repair a ring, seven retained pairs
+are accepted/eight refused, duplicate/unmatched/shared-readable pairs fail,
+and explicit revocation can still load configuration after secret loss.
+Existing purpose/installation/mode separation, unreadable/foreign/missing/
+corrupt/path/private-mode/no-serve-repair cases remain passing.
+
+New inherited `IdentityKeyTests` execute **actual** native OIDC, delivered
+nomination/enrollment, real protected requests and stopped operator commands.
+The initial SQLite class selection fails only at the new backup test's
+incorrect root-only artifact assertion
+(`integration-sqlite-2f551266fa074d4b97fc31c3856033b8.json`, line 116).
+The test now compares every actual recursive relative artifact path with the
+exact manifest inventory; no recovery validation is weakened.
+
+The corrected isolated backup test then fails during worker restart/readiness
+in `integration-sqlite-b7cb6a2d75ba433ea7092c6b481b6364.json` and
+`integration-sqlite-434931f6f2d04661be60410f06228575.json`.
+Transient private XML was scanned only for allowlisted codes/known source
+locations. The latter identifies `BackupProductAsync`'s post-backup
+`StartWorkerAsync` path; no unexpected status or underlying cause was retained.
+The unchanged isolated case later passes in
+`integration-sqlite-70249699929445fcb0dfb45fb2d88a75.json`, not proof that those
+readiness failures were fixed.
+
+The final **entire six-case SQLite key class and full host unit suite pass**
+in `integration-sqlite-a26e2555a5c2438b8bbff475d211a616.json`:
+
+```bash
+dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityKeyTests' --minimum-expected-tests 6
+dotnet test --project tests/unit/Kofte.Host.Tests --no-restore --no-build -c Release --minimum-expected-tests 1
+```
+
+Actual live key loss, foreign ownership and hash-consistent undecryptable RSA
+ciphertext return 503, issue no new cookie and leave damaged files unchanged.
+Exact original custody is restored only while stopped under independently
+verified exclusive scope; the same consumed actor works again without changed
+mapping/epoch/designation. Actual `revoke-sessions` then advances epoch and
+rejects the next protected request. Real expired retained-key rotation with a
+new primary certificate and explicit old decryptor creates the second key and
+preserves the consumed actor across another worker restart.
+
+The issuer actually changes its accepted client secret: old-process future
+code exchange is rejected, while the established actor remains valid. Stopped
+private-file correction/restart makes future exchange succeed with the same
+user ID, original mapping/creation time, epoch, keys and consumed designation.
+The complete actual database backup has exactly the recursive manifest
+artifacts and no protected ring/owner/private certificate/client-secret files;
+the original encrypted custody and enrolled actor remain unchanged.
+
+The six-case PostgreSQL attempt fails before product execution in
+`integration-postgres-c57f7349ecfc4ed4af30733fd7d68dfa.json`.
+A narrowed actual fresh-fixture diagnostic preserves
+`postgres_docker_command_failed` at `PostgresService.StartAsync`'s Compose-up
+boundary (`PostgresService.cs:148`) in
+`integration-postgres-1057f7fafb9f418aba40b8630448cfee.json`. It does not expose
+raw Docker errors, prove a product failure, or re-diagnose the previously
+independently observed network-pool exhaustion. Already-installed native
+PostgreSQL server/dump tools are unavailable. No shared Docker resources or
+address pools were removed/changed and no unrelated service was adopted.
+T083 and the remaining twenty tasks stay open pending full actual obligations.
+
+All local reports assess this uncommitted increment on the `fa4390e` baseline,
+not unchanged published `fa4390e` source. No native test total is inferred
+from selector minima; the final class has three failure-theory rows and three
+facts. No full-matrix, production-readiness or feature-acceptance claim is made.
+
+### Additional published recovery observation
+
+Finished f7454ea recovery report
+`recovery-both-792b2c5c6ed74b6bb1e1910062e7b13d.json` passes both native provider
+steps at previously verified merge `36bfcd482e6862284b57d9ff02223b3a4d59f15b`.
+This proves that published quarantine/decision source, not later reconciliation
+or certificate changes. Published fa4390e SQLite host/storage integration now
+passes in `integration-sqlite-96f3e712d6a84df3bbdae47800b08377.json` at merge
+`e73d602ee74f4f29ed572b249ee5a9133e60f619`; exact parent/source verification and
+the new PostgreSQL reconciliation result remain to be observed.
+
+Subsequent exact verification fetches PR 8's tested merge and confirms parents
+`3e416813233c9d291eb20cf72d5882dbddf3e1b6` and published
+`fa4390ebcdc130a57469721da8f58d9c09d1410a`.
+`IdentityRestoreStore.cs` blob `8cca81ed1ca536a17a7e2926d19b73ed41772888`
+matches both. The finished PostgreSQL integration report
+`integration-postgres-5a99389fe7e1402e9cd4bda60233d42b.json` passes host/storage
+integration, establishing actual published v1/v2 reconciliation coverage, not
+this later certificate increment. Both native recovery steps also pass in
+`recovery-both-47817cd05bac4c5db3a911a10b1b3f3f.json`, but the subsequent
+`storage-public-recovery-postgres` step fails at 178.713 seconds without a
+retained inner cause. Failure propagation again times out `baseline-postgres`
+at 900.315 seconds in
+`failure-propagation-none-d37bd7da9be54c1fa602591bb5987485.json`. Neither
+successful integration nor the unchanged later native pass waives those
+failures or closes remaining restore/authority/public-operations obligations.
+
+An additional focused unit observation explicitly checks the newly generated
+encrypted key's embedded current certificate, not only successful decryption
+with both certificates present. It passes in
+`unit-none-878733a871214befbf7f13d303fac0e9.json` using the initial single-method
+command above. Final Release warnings-as-errors build, native format
+verification, repository checker, 132 Python tests and whitespace checks pass.

@@ -747,6 +747,62 @@ DOM refusal, genuine-CSRF/invalid-Origin and ungranted-action denial, idle/
 absolute expiry, durable sign-out and uncertain-response clearing. Local
 pre-login browser timeouts remain historical failures, not successful runs.
 
+### Identity key and certificate custody
+
+OIDC keys remain encrypted at rest using the configured
+`keyEncryptionCertificateFile` / `keyEncryptionPrivateKeyFile` pair.
+For certificate rotation, stop the installation, retain the original private
+files separately, select the new current pair and add the old pair through
+the optional configuration member:
+
+```json
+"keyDecryptionCertificates": [
+  {
+    "certificateFile": "/srv/kofte-identity/retained-certificate.pem",
+    "privateKeyFile": "/srv/kofte-identity/retained-private-key.pem"
+  }
+]
+```
+
+This is a member of the existing private version-1 configuration, not a
+standalone document. It admits one to seven retained pairs, plus the current
+pair. Each referenced file remains an absolute canonical owner-only regular
+file, at most 64 KiB, outside managed database recovery data; each RSA
+certificate/private key must match and use at least 2048 bits. Duplicate
+certificates, extra fields or unreadable/unmatched pairs fail closed.
+Newly generated ring keys use only the current encryptor. Retained decryptors
+keep existing cookies/state/server-side tickets readable across rotation and
+restart. Their references and contents do not change provider trust, epoch,
+user mapping or consumed designation. Existing single-pair files are unchanged;
+PEM bundles do not select rotation behavior.
+
+Retain every certificate/private key required by **any** retained ring key.
+Certificate/session expiry alone is not permission to remove it: opening
+validates the entire ring. There is no automatic retirement, deletion or
+rewrapping. A needed missing decryptor refuses startup, not silent key repair.
+Lost/foreign/undecryptable live rings return 503 without cached successful
+identity or replacement keys. Stop before correcting custody from the exact
+original private material under exclusive installation authority. Revocation
+is separate: stopped `--identity revoke-sessions` advances epoch, and the next
+protected request rejects the old session without changing mappings or a
+consumed first administrator. Without trusted original material, use the
+explicit gated complete-set recovery/reconciliation path; never manufacture a
+new owner marker or reopen bootstrap.
+
+Replace a provider client secret through its private `clientSecretFile` and
+restart to load it. It affects future code exchange, not established local
+sessions, trust digest, consumed designation or local identity. Coordinate
+with the provider: a changed provider secret rejects exchanges from a process
+still using the original value. Neither certificate rotation nor client-secret
+replacement is a session-revocation mechanism. Keep all private key/certificate/
+client-secret custody outside ordinary database recovery artifacts.
+
+Actual SQLite tests now execute these live failure/correction, retained-key/
+certificate-overlap, client-secret replacement and complete backup-separation
+cases using real OIDC and consumed enrollment. PostgreSQL cases exist but
+the new local attempt fails during owned Docker fixture creation; no new
+PostgreSQL key-rotation pass is inferred.
+
 Identity-bearing complete-set backups now use recovery-v2 and verify actual
 identity rows, consumed history, counts and a streamed SHA-256 security snapshot.
 Keys/client/certificate secrets remain outside the artifacts. The new SQLite

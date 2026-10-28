@@ -13,6 +13,7 @@ using Kofte.Host.Features.Identity.Login;
 using Kofte.Infrastructure.Identity;
 using Kofte.Infrastructure.Storage;
 using Kofte.Infrastructure.Storage.Postgres;
+using Kofte.Infrastructure.Storage.Recovery;
 using Kofte.Platform.Modules.Storage;
 using Kofte.Platform.Identity;
 using Microsoft.AspNetCore.Authentication;
@@ -94,6 +95,7 @@ public sealed class LoginCommitFixture : IAsyncDisposable
     private Func<ICurrentActorV1, AuthenticatedActorV1?>? consumerActor;
     private int ungrantedActions;
     private string? productCallback;
+    private Dictionary<string, byte[]>? damagedKeyCustody;
     private static readonly string Browser = new('b', 64);
 
     public string Issuer => issuer.Issuer.AbsoluteUri;
@@ -784,6 +786,90 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         IdentityKeyFixture.AgeRetainedKey(configuration.KeyRingDirectory, DateTimeOffset.UtcNow.AddDays(-1));
         await StartWorkerAsync("--fixture-product-login", client.BaseAddress!.Port, token);
         return worker!.Id;
+    }
+
+    public async Task RotateProductCertificateAsync(CancellationToken token)
+    {
+        await StopProductAsync(token);
+        serving!.RotateEncryptionCertificate();
+        IdentityKeyFixture.AgeRetainedKey(configuration.KeyRingDirectory, DateTimeOffset.UtcNow.AddDays(-1));
+        await StartWorkerAsync("--fixture-product-login", client.BaseAddress!.Port, token);
+    }
+
+    public async Task ReloadProductClientSecretAsync(CancellationToken token)
+    {
+        await StopProductAsync(token);
+        var value = JsonNode.Parse(await File.ReadAllTextAsync(serving!.ConfigurationPath, token))!;
+        var secret = value["provider"]!["clientSecretFile"]!.GetValue<string>();
+        UnixStorePaths.ValidateFile(secret);
+        await File.WriteAllTextAsync(secret, issuer.ClientSecret, token);
+        await StartWorkerAsync("--fixture-product-login", client.BaseAddress!.Port, token);
+    }
+
+    public string KeyRingFingerprint => string.Join("\n",
+        Directory.GetFiles(configuration.KeyRingDirectory).Order(StringComparer.Ordinal)
+            .Select(file => Path.GetFileName(file) + ":" +
+                Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(file)))));
+
+    public void DamageProductKeys(string fault)
+    {
+        if (fault is not ("lost" or "foreign" or "undecryptable") || damagedKeyCustody is not null)
+            throw new InvalidOperationException("identity_fixture_key_damage_invalid");
+        var ring = configuration.KeyRingDirectory;
+        damagedKeyCustody = Directory.GetFiles(ring).ToDictionary(file => Path.GetFileName(file),
+            File.ReadAllBytes, StringComparer.Ordinal);
+        var key = Directory.GetFiles(ring, "key-*.xml").Single();
+        var marker = Path.Combine(ring, "identity-owner.json");
+        if (fault == "lost") File.Delete(key);
+        else
+        {
+            var owner = JsonNode.Parse(File.ReadAllText(marker))!;
+            if (fault == "foreign") owner["installationId"] = Guid.NewGuid().ToString("D");
+            else
+            {
+                var xml = System.Xml.Linq.XElement.Load(key);
+                var cipher = xml.Descendants().First(element => element.Name.LocalName == "CipherValue");
+                cipher.Value = Convert.ToBase64String(new byte[Convert.FromBase64String(cipher.Value).Length]);
+                File.WriteAllText(key, xml.ToString(System.Xml.Linq.SaveOptions.DisableFormatting));
+                owner["keys"]![Path.GetFileName(key)] =
+                    Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(key)));
+            }
+            File.WriteAllText(marker, owner.ToJsonString());
+        }
+    }
+
+    public async Task RepairProductKeysFromRetainedCustodyAsync(CancellationToken token)
+    {
+        var custody = damagedKeyCustody ?? throw new InvalidOperationException("identity_fixture_key_damage_missing");
+        await StopProductAsync(token);
+        using var budget = new OperationBudget(OperationBudget.Register, token);
+        await using (var authority = await MaintenanceScope.AcquireAsync(installation, token))
+        {
+            await authority.VerifyAsync(installation, budget);
+            foreach (var file in custody)
+            {
+                var path = Path.Combine(configuration.KeyRingDirectory, file.Key);
+                if (File.Exists(path))
+                {
+                    UnixStorePaths.ValidateFile(path);
+                    await File.WriteAllBytesAsync(path, file.Value, token);
+                }
+                else PrivateTestFiles.WriteNew(path, file.Value);
+            }
+            await authority.VerifyAsync(installation, budget);
+        }
+        damagedKeyCustody = null;
+        await StartWorkerAsync("--fixture-product-login", client.BaseAddress!.Port, token);
+    }
+
+    public async Task<RecoveryManifest> BackupProductAsync(string destination, CancellationToken token)
+    {
+        await StopProductAsync(token);
+        var manifest = scope!.Postgres is { } postgres
+            ? await postgres.BackupStorageSetAsync(destination, token)
+            : await SqliteRecoveryExercise.BackupAsync(scope.DataRoot, destination, token);
+        await StartWorkerAsync("--fixture-product-login", client.BaseAddress!.Port, token);
+        return manifest;
     }
 
     public async Task CorruptCurrentTicketAsync(CancellationToken token)

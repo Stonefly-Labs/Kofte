@@ -60,14 +60,15 @@ public sealed class IdentityConfiguration : IDisposable
     private static readonly UTF8Encoding StrictUtf8 = new(false, true);
 
     private IdentityConfiguration(IdentityMode mode, Uri origin, string keys, IdentityProviderConfiguration? provider,
-        IReadOnlyDictionary<string, string?> identities, X509Certificate2? certificate, string digest)
+        IReadOnlyDictionary<string, string?> identities, X509Certificate2[] certificates, string digest)
     {
         Mode = mode;
         PublicOrigin = origin;
         KeyRingDirectory = keys;
         Provider = provider;
         DevelopmentIdentities = identities;
-        KeyEncryptionCertificate = certificate;
+        KeyEncryptionCertificate = certificates.FirstOrDefault();
+        KeyDecryptionCertificates = Array.AsReadOnly(certificates);
         TrustDigest = digest;
     }
 
@@ -78,8 +79,12 @@ public sealed class IdentityConfiguration : IDisposable
     public IReadOnlyDictionary<string, string?> DevelopmentIdentities { get; }
     public string TrustDigest { get; }
     internal X509Certificate2? KeyEncryptionCertificate { get; }
+    internal IReadOnlyList<X509Certificate2> KeyDecryptionCertificates { get; }
     public override string ToString() => nameof(IdentityConfiguration);
-    public void Dispose() => KeyEncryptionCertificate?.Dispose();
+    public void Dispose()
+    {
+        foreach (var certificate in KeyDecryptionCertificates) certificate.Dispose();
+    }
 
     public static IdentityConfiguration Load(BootstrapConfiguration bootstrap, string environment,
         IdentityOperation operation = IdentityOperation.Serve)
@@ -107,7 +112,8 @@ public sealed class IdentityConfiguration : IDisposable
                 new() { AllowDuplicateProperties = false, MaxDepth = 8 });
             var root = document.RootElement;
             Object(root, "version", "mode", "publicOrigin", "keyRingDirectory",
-                "keyEncryptionCertificateFile", "keyEncryptionPrivateKeyFile", "provider", "development");
+                "keyEncryptionCertificateFile", "keyEncryptionPrivateKeyFile", "keyDecryptionCertificates",
+                "provider", "development");
             if (Text(root, "version") != "1") throw Invalid();
             var mode = Text(root, "mode") switch
             {
@@ -131,6 +137,7 @@ public sealed class IdentityConfiguration : IDisposable
             var readCertificate = readSecrets || operation == IdentityOperation.BootstrapAuthorize;
             var certificateFile = OptionalText(root, "keyEncryptionCertificateFile");
             var keyFile = OptionalText(root, "keyEncryptionPrivateKeyFile");
+            var certificateFiles = new List<(string Certificate, string Key)>();
             if ((certificateFile is null) != (keyFile is null) ||
                 mode == IdentityMode.Oidc && certificateFile is null) throw Invalid();
             if (certificateFile is not null && keyFile is not null)
@@ -138,6 +145,22 @@ public sealed class IdentityConfiguration : IDisposable
                 FileReference(certificateFile, allowMissing: !readCertificate);
                 FileReference(keyFile, allowMissing: !readCertificate);
                 if (Within(certificateFile, bootstrap.DataRoot) || Within(keyFile, bootstrap.DataRoot)) throw Invalid();
+                certificateFiles.Add((certificateFile, keyFile));
+            }
+            if (root.TryGetProperty("keyDecryptionCertificates", out var retained))
+            {
+                if (certificateFile is null || retained.ValueKind != JsonValueKind.Array ||
+                    retained.GetArrayLength() is < 1 or > 7) throw Invalid();
+                foreach (var entry in retained.EnumerateArray())
+                {
+                    Object(entry, "certificateFile", "privateKeyFile");
+                    var certificate = Text(entry, "certificateFile");
+                    var privateKey = Text(entry, "privateKeyFile");
+                    FileReference(certificate, allowMissing: !readCertificate);
+                    FileReference(privateKey, allowMissing: !readCertificate);
+                    if (Within(certificate, bootstrap.DataRoot) || Within(privateKey, bootstrap.DataRoot)) throw Invalid();
+                    certificateFiles.Add((certificate, privateKey));
+                }
             }
             IdentityProviderConfiguration? provider = null;
             var identities = new Dictionary<string, string?>(StringComparer.Ordinal);
@@ -164,11 +187,9 @@ public sealed class IdentityConfiguration : IDisposable
                 }
             }
             var digest = Digest(mode, originText, provider, identities.Keys);
-            X509Certificate2? certificate = null;
-            if (readCertificate && certificateFile is not null && keyFile is not null)
-                certificate = ReadCertificate(certificateFile, keyFile);
+            var certificates = readCertificate ? ReadCertificates(certificateFiles) : [];
             return new(mode, origin, keys, provider, new ReadOnlyDictionary<string, string?>(identities),
-                certificate, digest);
+                certificates, digest);
         }
         catch (Exception error) when (error is JsonException or KeyNotFoundException or InvalidOperationException or
             IOException or UnauthorizedAccessException or ArgumentException or StorePathException or
@@ -361,6 +382,27 @@ public sealed class IdentityConfiguration : IDisposable
             return certificate;
         }
         catch (CryptographicException) { throw Invalid("certificate_invalid"); }
+    }
+
+    private static X509Certificate2[] ReadCertificates(IReadOnlyList<(string Certificate, string Key)> files)
+    {
+        var certificates = new List<X509Certificate2>();
+        try
+        {
+            foreach (var file in files)
+            {
+                var certificate = ReadCertificate(file.Certificate, file.Key);
+                certificates.Add(certificate);
+                if (certificates.Count(item => item.RawData.AsSpan().SequenceEqual(certificate.RawData)) != 1)
+                    throw Invalid("certificate_invalid");
+            }
+            return certificates.ToArray();
+        }
+        catch
+        {
+            foreach (var certificate in certificates) certificate.Dispose();
+            throw;
+        }
     }
 
     private static IdentityConfigurationException Invalid(string category = "invalid") => new(category);

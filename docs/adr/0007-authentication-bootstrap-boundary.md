@@ -190,3 +190,24 @@ remain separate; real worker-kill tests cover both commit boundaries.
 The pre-open SQLite header-sharing retry likewise has no database effects and
 uses only the existing deadline. No uncertain transaction is replayed, no file
 guard relaxed and no automatic journal removal added.
+
+## Implementation follow-up: explicit certificate overlap
+
+The approved retained-key/certificate rotation requirement uses the maintained
+[Data Protection certificate overlap API](https://learn.microsoft.com/en-us/aspnet/core/security/data-protection/configuration/overview#unprotect-keys-with-any-certificate-unprotectkeyswithanycertificate).
+Version-1 operator configuration adds only optional `keyDecryptionCertificates`:
+one to seven strict private certificate/key references, alongside the unchanged
+current encryption pair. Explicit references avoid reinterpreting a previously
+accepted PEM certificate chain or silently selecting a different encryptor.
+All pairs require matching RSA keys of at least 2048 bits and existing bounded
+owner-only file/path checks. Duplicate certificates fail closed. Loaded
+certificates are disposed together, including partial-load failure.
+
+Only the current certificate encrypts newly generated keys; the current and
+retained certificates decrypt existing keys. Secret/certificate rotation does
+not change the provider-trust digest, mapping, consumed designation or session
+epoch. Every retained key must remain decryptable: expiry alone does not permit
+removing a decryptor, and no serve-time replacement, automatic retirement,
+rewrapping, new command, cloud dependency or provider-trust relaxation is added.
+Explicit session revocation remains the invalidation mechanism. This implements
+005's existing rotation requirement, not human acceptance or production readiness.

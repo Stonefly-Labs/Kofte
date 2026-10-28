@@ -36,16 +36,8 @@ public sealed class ServingIdentity : IDisposable
             };
             if (oidc)
             {
-                using var key = RSA.Create(2048);
-                var request = new CertificateRequest("CN=Kofte test-only offline key protection",
-                    key, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-                using var certificate = request.CreateSelfSigned(DateTimeOffset.UtcNow.AddMinutes(-5),
-                    DateTimeOffset.UtcNow.AddDays(1));
-                var certificateFile = Path.Combine(root.Path, "certificate.pem");
-                var keyFile = Path.Combine(root.Path, "private-key.pem");
+                var (certificateFile, keyFile) = WriteEncryptionCertificate("");
                 var secretFile = Path.Combine(root.Path, "client-secret");
-                PrivateTestFiles.WriteNew(certificateFile, Encoding.ASCII.GetBytes(certificate.ExportCertificatePem()));
-                PrivateTestFiles.WriteNew(keyFile, Encoding.ASCII.GetBytes(key.ExportPkcs8PrivateKeyPem()));
                 PrivateTestFiles.WriteNew(secretFile, Encoding.ASCII.GetBytes(issuer?.ClientSecret ??
                     Convert.ToHexString(RandomNumberGenerator.GetBytes(32))));
                 value["keyEncryptionCertificateFile"] = certificateFile;
@@ -84,6 +76,36 @@ public sealed class ServingIdentity : IDisposable
     public Uri WebUrl { get; }
     public string ConfigurationPath => Path.Combine(root.Path, "identity.json");
     public string KeyRingDirectory => Path.Combine(root.Path, "keys");
+
+    public void RotateEncryptionCertificate()
+    {
+        var value = JsonNode.Parse(File.ReadAllText(ConfigurationPath))!.AsObject();
+        if (value["mode"]!.GetValue<string>() != "oidc" || value.ContainsKey("keyDecryptionCertificates"))
+            throw new InvalidOperationException("identity_fixture_rotation_invalid");
+        value["keyDecryptionCertificates"] = new JsonArray(new JsonObject
+        {
+            ["certificateFile"] = value["keyEncryptionCertificateFile"]!.GetValue<string>(),
+            ["privateKeyFile"] = value["keyEncryptionPrivateKeyFile"]!.GetValue<string>()
+        });
+        var (certificate, key) = WriteEncryptionCertificate("-" + Guid.NewGuid().ToString("N"));
+        value["keyEncryptionCertificateFile"] = certificate;
+        value["keyEncryptionPrivateKeyFile"] = key;
+        File.WriteAllBytes(ConfigurationPath, JsonSerializer.SerializeToUtf8Bytes(value));
+    }
+
+    private (string Certificate, string Key) WriteEncryptionCertificate(string suffix)
+    {
+        using var key = RSA.Create(2048);
+        var request = new CertificateRequest("CN=Kofte test-only offline key protection",
+            key, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+        using var certificate = request.CreateSelfSigned(DateTimeOffset.UtcNow.AddMinutes(-5),
+            DateTimeOffset.UtcNow.AddDays(1));
+        var certificateFile = Path.Combine(root.Path, "certificate" + suffix + ".pem");
+        var keyFile = Path.Combine(root.Path, "private-key" + suffix + ".pem");
+        PrivateTestFiles.WriteNew(certificateFile, Encoding.ASCII.GetBytes(certificate.ExportCertificatePem()));
+        PrivateTestFiles.WriteNew(keyFile, Encoding.ASCII.GetBytes(key.ExportPkcs8PrivateKeyPem()));
+        return (certificateFile, keyFile);
+    }
 
     public void ConfigureChild(ProcessStartInfo start)
     {

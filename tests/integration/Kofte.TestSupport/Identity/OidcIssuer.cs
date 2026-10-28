@@ -66,7 +66,8 @@ public sealed class OidcIssuer : IAsyncDisposable
 
     public Uri Issuer { get; private set; } = null!;
     public string ClientId { get; } = "kofte-identity-fixture";
-    public string ClientSecret { get; } = Base64Url(RandomNumberGenerator.GetBytes(32));
+    public string ClientSecret { get; private set; } = Base64Url(RandomNumberGenerator.GetBytes(32));
+    public void ReplaceClientSecret() => ClientSecret = Base64Url(RandomNumberGenerator.GetBytes(32));
     public Uri? RegisteredRedirectUri { get; set; }
     public string Subject { get; set; } = "synthetic-subject";
     public string? DisplayName { get; set; }

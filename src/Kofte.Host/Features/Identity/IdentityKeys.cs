@@ -156,7 +156,8 @@ internal sealed class IdentityKeys : IDisposable
                 options.NewKeyLifetime = TimeSpan.FromDays(90);
             });
         if (repository.Configuration.KeyEncryptionCertificate is { } certificate)
-            builder.ProtectKeysWithCertificate(certificate).UnprotectKeysWithAnyCertificate(certificate);
+            builder.ProtectKeysWithCertificate(certificate)
+                .UnprotectKeysWithAnyCertificate([.. repository.Configuration.KeyDecryptionCertificates]);
         return collection.BuildServiceProvider();
     }
 
