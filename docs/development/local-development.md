@@ -736,8 +736,8 @@ dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity
 It owns its fixtures and checks all 88 environment/exposure refusals, exact
 visible browser/API/actor equality, explicit selection/sign-out and persisted
 pending/consumed OIDC-to-Development-to-OIDC isolation. SQLite has actual evidence
-for all 135 independently validated named observations; the new PostgreSQL
-invocation is wired into the browser workflow but has not yet been verified.
+for all 135 independently validated named observations; hosted `c5e65f2` also
+passes the exact frozen catalog on SQLite and PostgreSQL, closing T078.
 The recipe remains bounded at 120 seconds and reports no private values.
 
 **Sign out** revokes only the current durable local session, not the upstream

@@ -1,6 +1,6 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement in progress; 72/100 complete (T001-T065, T071-T077); complete both-provider HTTP corpus, native/web Development selection, provider exposure/persisted isolation and durable sign-out delivered; remaining US3/public Development/operations/final evidence unfinished.
+**Result:** implement in progress; 74/100 complete (T001-T065, T068, T071-T078); complete both-provider HTTP/Development public corpus and regenerated identity/health contracts evidenced; remaining US3 browser/story, operations/recovery and final evidence unfinished.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-28.
 **Assessed baseline:** `6df9eebdcfa6b273126b0c51c272d1b2c2f953e6`.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
@@ -3599,3 +3599,77 @@ T064/T076/T077 bring progress to **72/100**. T078 remains unchecked until the ne
 public PostgreSQL recipe and its focused gates execute. The earlier full-matrix
 integration/readiness/timeouts are not waived; operations and final evidence
 remain unfinished on the same draft PR and implement/running stage.
+
+## T068 and T078: generated contracts and complete public Development proof
+
+Published `c5e65f2d2a697a2e04d9982e74293b124a3f0be7`, run `40684022214`,
+browser job `122801679572`, passes all twelve actual HTTPS/Development recipes:
+six scenarios on each real provider. Its completed log is captured privately.
+An independent parent validates the exact eight-field output schema, generated
+correlation, provider/scenario, passed outcome and all **135 unique frozen named
+Development observations per provider**, not only their count. The actual
+tested merge is `0b3f0e0bdf0e15b77335927eac99b80a8dae6c61`, verified against
+the checkout log and fetched Git object.
+
+`dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario development-isolation --provider sqlite`
+and its `--provider postgres` counterpart both pass. This closes T078/US4.1-3:
+all 88 exposure refusals/provider; explicit visible synthetic selection with
+exact browser/API/separately compiled actor equality; separate pending/consumed
+mode transitions, exact original mapping/history/designation and cookie refusal.
+The previously passing focused configuration/storage/HTTP/browser prerequisites
+and current unit/quality/startup jobs remain separate evidence. Other jobs are
+still running at this observation; no full-matrix pass is inferred.
+
+T068 now also closes from the independent existing current-identity C#,
+TypeScript HTTP and package shape assertions: exact required fields/version,
+nullable safe display text, both admitted modes, nonempty ID, boolean designation,
+safe additive response tolerance and strict mutation requests. The original
+health schema is compared structurally, not replaced by a new baseline.
+Actual current commands:
+
+- `npm run generate --workspace packages/bootstrap-contract` — passes; generated
+  types have no diff.
+- `npm run contract:check` — passes; accepted bootstrap operations/components
+  and generated types match.
+- `npm run test:unit --workspace packages/bootstrap-contract` — all four
+  health/identity shape cases pass, including each omitted required field,
+  null/additive values and invalid version/mode/text/ID/designation.
+- `npm run typecheck --workspace packages/bootstrap-contract` — passes.
+- `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore --no-build -c Release --filter-class '*SqliteCurrentIdentityContractTests' '*SqliteIdentityParityTests' --filter-method '*EveryRequestProjectsTheFreshDurableProfileAndDesignationIntoApiAndReadOnlyActor' '*DeliveredCurrentIdentityHasOnlyTheRequiredSelfFieldsAndNeverChallengesAnonymousClients' '*ActualHttpsAdapterAndSeparateActorRetainTheSameIdentityThroughNominationAndSignOut' --minimum-expected-tests 3`
+  — passes all three, including the complete ordinary/designated HTTPS
+  TypeScript corpus and authenticated private non-personal SSR assertions.
+- `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-class '*HealthEndpointTests' 'Kofte.Host.IntegrationTests.OpenApiTests' --filter-not-class '*Composition*' --minimum-expected-tests 4`
+  — passes all four health/Development publication/Production-Staging absence
+  cases. Both native selections are recorded in
+  `contract-sqlite-e91860003c464ed3b597969768bdb84a.json`.
+
+The existing consolidated `CurrentIdentityContractTests`, `OpenApiTests` and
+HTTPS TypeScript corpus own these assertions; no duplicate project/test file
+is introduced just to match a proposed filename.
+
+## T066-T067: strengthened production browser isolation, execution pending
+
+The actual session browser now additionally compares both users against
+direct and adapted identity, requires authenticated SSR to contain neither ID,
+and observes every subsequent/current document mutation after switching for
+the previous user's ID. It uses actual responses, not fabricated identities or
+browser storage. Explicit invalid Origin with a genuine current CSRF token and
+an ungranted-action request must return private 403 without clearing the valid
+user. A new fixed test-only ingress alias reaches the existing test-only native
+ungranted probe. Node browser-context API calls trust only the fixture's existing
+private CA through `NODE_EXTRA_CA_CERTS`; browser TLS verification and all
+production configuration remain unchanged.
+
+Initial local `session-boundary` execution is **failed**, not proof that the
+new assertions ran: `contract-sqlite-9739be769b9c4bc2856305f9062cc619.json`
+reaches `identity_browser_stage_signed_out` then its original 45-second child
+deadline, with zero authorization/token requests and zero session controls.
+This is the existing pre-login browser limitation, not an established fault in
+the new isolation assertions. No timeout or coverage is weakened. The new
+test-only alias is subsequently wired; fresh hosted execution remains required.
+Browser/contract lint, type checks and changed-file Prettier all pass. Full
+Release warnings-as-errors build and native format verification pass.
+
+Progress is **74/100, 26 remaining**: T066/T067/T069/T070 plus T079-T100.
+T078 now unblocks operations/recovery on this same branch and draft PR; the
+driver remains **005 / implement / running**, without acceptance or merge.

@@ -75,9 +75,15 @@ internal sealed class IdentityBrowserIngress : IAsyncDisposable
             OpaqueLoginOriginObserved |= context.Request.Headers.Origin == "null";
         using var budget = CancellationTokenSource.CreateLinkedTokenSource(context.RequestAborted);
         budget.CancelAfter(TimeSpan.FromSeconds(5));
-        var direct = context.Request.Path == "/fixture-direct-identity" && DirectIdentityBackend is not null;
+        var directPath = context.Request.Path.Value switch
+        {
+            "/fixture-direct-identity" => "/api/identity/v1/me",
+            "/fixture-direct-ungranted" => "/fixture-ungranted",
+            _ => null
+        };
+        var direct = directPath is not null && DirectIdentityBackend is not null;
         using var request = new HttpRequestMessage(new(context.Request.Method), direct
-            ? new Uri(DirectIdentityBackend!, "/api/identity/v1/me").AbsoluteUri
+            ? new Uri(DirectIdentityBackend!, directPath).AbsoluteUri
             : Web.GetLeftPart(UriPartial.Authority) + context.Request.GetEncodedPathAndQuery());
         request.Headers.Host = context.Request.Host.Value;
         if (context.Request.ContentLength is > 0 || context.Request.Headers.ContainsKey("Transfer-Encoding"))

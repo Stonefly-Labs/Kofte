@@ -116,6 +116,10 @@ it("compares exact independent current identity and separately compiled actor wi
     denied.status,
     denied.code,
   );
+  const shell = await send(webOrigin, "/identity", { headers: session });
+  expect(shell.status).toBe(200);
+  privateResponse(shell);
+  expect(await shell.text()).not.toContain(expected.userId);
 });
 
 if (!expected.isInitialAdministrator) {

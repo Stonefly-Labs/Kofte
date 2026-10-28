@@ -225,6 +225,43 @@ async function verifySession(
   expect(invalid).toBe(403);
   expect(submissions).toBe(1);
   await expect(page.getByText(user, { exact: true })).toBeVisible();
+  const origin = new URL(page.url()).origin;
+  const browserContext = await context.request.get(
+    new URL("/api/identity/v1/browser-context", origin).href,
+    { timeout: 5000 },
+  );
+  expect(browserContext.status()).toBe(200);
+  const continuity = await browserContext.json();
+  expect(continuity.csrfToken).toEqual(expect.any(String));
+  const invalidOrigin = await context.request.post(
+    new URL("/api/identity/v1/sign-out", origin).href,
+    {
+      headers: { Origin: "null", "X-Kofte-CSRF": continuity.csrfToken },
+      timeout: 5000,
+    },
+  );
+  expect(invalidOrigin.status()).toBe(403);
+  expect(invalidOrigin.headers()["cache-control"]).toBe("no-store");
+  await expect(page.getByText(user, { exact: true })).toBeVisible();
+  const ungranted = await page.evaluate(async () => {
+    const response = await fetch("/fixture-direct-ungranted", {
+      cache: "no-store",
+      redirect: "error",
+    });
+    const body = await response.json();
+    return {
+      status: response.status,
+      code: body.code,
+      noStore: response.headers.get("cache-control"),
+      location: response.headers.get("location"),
+    };
+  });
+  expect(ungranted).toEqual({
+    status: 403,
+    code: "identity_forbidden",
+    noStore: "no-store",
+    location: null,
+  });
   const direct = await page.evaluate(async () => {
     const response = await fetch("/fixture-direct-identity", {
       cache: "no-store",
@@ -286,6 +323,30 @@ async function verifySession(
     );
     if (expected) expect(identity.userId).toBe(expected);
     else expect(identity.userId).not.toBe(user);
+    const direct = await page.evaluate(async () => {
+      const response = await fetch("/fixture-direct-identity", {
+        cache: "no-store",
+        redirect: "error",
+      });
+      return {
+        status: response.status,
+        noStore: response.headers.get("cache-control"),
+        body: await response.json(),
+      };
+    });
+    expect(direct).toEqual({
+      status: 200,
+      noStore: "no-store",
+      body: identity,
+    });
+    const shell = await context.request.get(new URL("/identity", origin).href, {
+      timeout: 5000,
+    });
+    expect(shell.status()).toBe(200);
+    expect(shell.headers()["cache-control"]).toBe("no-store");
+    const html = await shell.text();
+    expect(html).not.toContain(user);
+    expect(html).not.toContain(identity.userId);
     await expect(
       page.getByText(identity.userId, { exact: true }),
     ).toBeVisible();
@@ -348,6 +409,23 @@ async function verifySession(
     timeout: 5000,
   });
   await browserControl(root, "switch-identity");
+  let previousIdentityObserved = false;
+  page.on("console", (message) => {
+    if (message.text() === "identity_browser_previous_user_observed")
+      previousIdentityObserved = true;
+  });
+  function watchPreviousIdentity(previousUser: string) {
+    new MutationObserver(() => {
+      if (document.body?.textContent?.includes(previousUser))
+        console.error("identity_browser_previous_user_observed");
+    }).observe(document, {
+      childList: true,
+      characterData: true,
+      subtree: true,
+    });
+  }
+  await page.addInitScript(watchPreviousIdentity, user);
+  await page.evaluate(watchPreviousIdentity, user);
   const other = await enter();
   await expect(page.getByText(user, { exact: true })).toHaveCount(0);
   await browserControl(root, "lose-sign-out");
@@ -360,6 +438,8 @@ async function verifySession(
   expect(performance.now() - uncertain).toBeLessThan(5000);
   await expect(page.getByText(other, { exact: true })).toHaveCount(0);
   await denied();
+  await page.addInitScript(watchPreviousIdentity, other);
+  await page.evaluate(watchPreviousIdentity, other);
   await panel.getByRole("button", { name: "Retry identity check" }).click();
   await expect(
     panel.getByRole("button", { name: "Sign in", exact: true }),
@@ -391,6 +471,7 @@ async function verifySession(
     panel.getByRole("button", { name: "Sign in", exact: true }),
   ).toBeVisible();
   await expect(page.getByText(other, { exact: true })).toHaveCount(0);
+  expect(previousIdentityObserved).toBe(false);
   console.log("identity_browser_stage_session_boundaries_verified");
 }
 

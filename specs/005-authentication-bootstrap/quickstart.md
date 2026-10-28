@@ -151,8 +151,8 @@ Release/Next builds and pinned Chromium setup:
 `dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario development-isolation --provider sqlite`.
 Its actual SQLite run validates all 88 exposure refusals, visible browser/API/
 actor equality and pending/consumed persisted transitions, with 135 independently
-checked named observations. The new PostgreSQL execution and T078 acceptance
-remain pending; see [implementation evidence](implementation.md).
+checked named observations. Hosted `c5e65f2` also passes the exact frozen catalog
+on SQLite and PostgreSQL, closing T078; see [implementation evidence](implementation.md).
 
 Proposed invocation, after implementation/build, with provider-owned fixture
 admission (PostgreSQL remains the wrapper's responsibility):

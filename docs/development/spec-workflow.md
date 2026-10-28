@@ -6,8 +6,8 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement running; 72/100 complete** (T001–T065
-and T071–T077), on
+**Current checkpoint: 005 / implement running; 74/100 complete** (T001–T065,
+T068 and T071–T078), on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 `a0c1fb0` Ubuntu browser job passes all eight HTTPS recipes, including both
@@ -100,13 +100,17 @@ Development cases pass on both stores. Later composition timeout remains failed.
 The new public `development-isolation` recipe runs the shared 88-case exposure
 matrix, actual browser/API/separately compiled actor equality, and independent
 pending/consumed mode transitions. SQLite passes all 135 independently validated
-named observations. PostgreSQL execution and T078 acceptance remain pending;
-the browser workflow now executes the recipe for both providers.
+named observations locally. Hosted `c5e65f2` now passes all 135 frozen named
+observations on each provider, independently checked against the exact catalog;
+T078 is complete. Its browser job passes all twelve public recipes.
+T068's regenerated types, independent required/nullable/additive/version shapes
+and original health/OpenAPI compatibility also pass.
+Strengthened production browser isolation/story gates remain open.
 No budget or required case is relaxed, and intermittent native readiness
 failures remain recorded without an established cause.
 A new owned creation probe confirms local Docker
 network-pool exhaustion without removing existing resources; this diagnoses that
-probe, not every historical generic failure. Both-provider/full-corpus US3, Development acceptance,
+probe, not every historical generic failure. Remaining US3 browser/story,
 recovery and final gates remain unfinished. The
 [implementation record](../../specs/005-authentication-bootstrap/implementation.md)
 preserves the initial 404/SAML failures and their resolved provenance proof.

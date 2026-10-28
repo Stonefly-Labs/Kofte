@@ -186,6 +186,7 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         start.Environment["KOFTE_IDENTITY_WEB_URL"] = browserIngress.Origin.AbsoluteUri;
         start.Environment["KOFTE_IDENTITY_PRIVATE_ROOT"] = root;
         start.Environment["KOFTE_IDENTITY_AUTHORITY_FILE"] = authorityFile;
+        start.Environment["NODE_EXTRA_CA_CERTS"] = authorityFile;
         start.Environment["KOFTE_IDENTITY_EXPECTED_USER"] = expectedUser.ToString("D");
         if (sessionControl is not null)
         {

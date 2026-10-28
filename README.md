@@ -37,8 +37,8 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 > [!IMPORTANT]
 > **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md) and [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) is now human-merged. Its accepted ledger and evidence were verified on updated main before 005 began. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) retains prior failures and unknown causes; the historical failed local gate remains failed, not waived by acceptance or merge. Spec 005 now has [authentication/bootstrap requirements](specs/005-authentication-bootstrap/spec.md) and US1 sign-in implemented, not the complete identity feature. Nothing here claims production readiness or MVP completion.
 
-**Current stage: 005 / implement running; 72/100 tasks complete.** T001–T065
-and T071–T077 are evidenced. The expanded actual HTTPS TypeScript corpus now
+**Current stage: 005 / implement running; 74/100 tasks complete.** T001–T065,
+T068 and T071–T078 are evidenced. The expanded actual HTTPS TypeScript corpus now
 passes thirteen ordinary cases plus the designated-actor case. It exposed and
 corrected Node's bare 431 at the admitted header boundary: all Next serving
 launchers now give the parser 32 KiB of headroom while Köfte still admits exactly
@@ -76,7 +76,10 @@ now reconcile passing actual provider exposure, HTTP and persisted mode-transiti
 evidence. The new public `development-isolation` recipe passes 135 independently
 validated SQLite observations: all 88 exposure refusals, exact visible
 browser/API/actor identity and pending/consumed persisted mode transitions.
-Its PostgreSQL execution and T078 acceptance remain pending.
+Hosted execution now passes all 135 named observations on each real provider,
+closing T078. Regenerated contracts, independent required/nullable/additive/
+version shapes and original health/OpenAPI compatibility also close T068.
+Strengthened production browser isolation/story gates remain open.
 A fresh owned PostgreSQL creation probe
 confirms Docker network-pool exhaustion; no existing resources were removed.
 Native explicit Development selection now
