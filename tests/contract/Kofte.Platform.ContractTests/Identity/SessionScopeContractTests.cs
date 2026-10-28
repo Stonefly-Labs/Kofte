@@ -55,6 +55,7 @@ public abstract class SessionScopeContractTests
             Assert.NotEqual(firstId, secondId);
             var concurrent = await Task.WhenAll(CurrentAsync(fixture, first), CurrentAsync(fixture, second));
             Assert.Equal(new[] { firstId, secondId }, concurrent);
+            await fixture.RunDevelopmentContractsAsync(Token);
             using (var caller = new HttpClient { BaseAddress = fixture.WebUrl })
             using (var request = new HttpRequestMessage(HttpMethod.Get, "/api/identity/v1/me"))
             {

@@ -3284,3 +3284,99 @@ fails web-build cleanup/input handling despite child exit 0. The unchanged retry
 does not diagnose that inherited intermittent local failure.
 Repository checking, all 131 Python tests, whitespace, contract/e2e lint and
 strict types, full web formatting and the public web start-script help pass.
+
+## T064 Development increment: independent corpus in both serving scopes
+
+The existing Development HTTP case now independently exercises both actual
+native and Next paths with all seven methods across the API inventory, absent
+OIDC/control/case/version/slash routes, exact Allow/404/405/private headers,
+missing/foreign/null/ambiguous Origin, cross-site Fetch Metadata, missing/wrong/
+stale CSRF, malformed/unknown/duplicate/caller-authority selection fields,
+unsupported and mixed credentials, wrong-mode cookie namespaces, exact cookie
+attributes, enrollment refusal and confirmed sign-out. It measures the admitted
+8,192-byte selection body and refused 8,193-byte body, plus independently framed
+16,384/16,385 header bytes. Exact identity fields and values are frozen acceptance
+expectations, not the product's response type guard.
+
+Shared independent method/header framing avoids duplicating the production
+corpus. The existing private TypeScript execution/report validation is extracted
+without changing its 45-second child limit, owner-only report handling, exact
+passed-case requirement or sanitized numeric/source-line failure projection.
+Both empty/composed Development scope facts invoke the complete selected case
+while their owned real host and Next are running. Both provider subclasses
+inherit it, so it executes in the native contract phase before the currently
+timed-out later composition phase. The TypeScript case retains its original
+20-second deadline. Other adapter cases are not claimed covered by that
+selection; the complete retained Runtime executes them separately.
+
+The first expanded run is retained in
+`contract-sqlite-130dfa4d8ce4439e98ad5e509e7315ab.json`: the production corpus
+passes, while the missing-CSRF Development request also omitted valid JSON
+media and therefore correctly received 400 instead of the expected 403.
+Correcting only that fixture makes the complete Runtime's
+`npm run test --workspace tests/contract -- --no-file-parallelism bootstrap.test.ts adapter.test.ts`
+pass all thirteen build/preparation/HTTP/cleanup/output-scan steps in
+`contract-sqlite-09548dbbb1254b32b5aba455bcde22e6.json`.
+
+The Release warnings-as-errors build and
+`dotnet format Kofte.slnx --no-restore --verify-no-changes --verbosity quiet`
+pass in `contract-sqlite-7b0e83e60c4f4ec986f26973b8a9f9fa.json`, together with:
+`dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityParityTests' '*SqliteSessionScopeContractTests' --filter-method '*ActualHttpsAdapterAndSeparateActorRetainTheSameIdentityThroughNominationAndSignOut' '*ActualEntryPathsKeepDirectAndAdaptedUsersRequestScopedAndRefuseThePreviousEpoch' --minimum-expected-tests 3`.
+All three actual facts pass, requiring the thirteen ordinary production cases,
+designated actor case and both empty/composed full Development cases.
+Final contract lint, strict types, full web formatting, repository checking,
+all 131 Python tests and whitespace checking pass.
+
+Published `135fe80` hosted native platform contracts pass on both providers in
+713.028 seconds (`contract-both-b517e92a8e314f118d9c9a8a4e69a059.json`).
+That includes the session classes, but not this new Development invocation.
+Its later composition-public command times out at the unchanged 900-second
+limit. Its host integrations fail named enrollment/invalid-evidence facts;
+the safe report does not establish their assertion or cause.
+Published `dfb26a7` SQLite host integration fails
+`DeliveredBrowserLoginRateRefusesTheEleventhAttemptBeforeProviderOrIdentityEffects`,
+while storage and composition integrations pass. Its recovery job passes
+storage recovery but fails the `bounded-stop` public composition correction
+recipe. These are retained failures, not green gates or diagnosed product bugs.
+Local PostgreSQL fixture creation remains blocked by network-pool exhaustion.
+No deadline, TLS/ownership rule or expected effect is weakened. T064/T076 and
+the other remaining acceptance/operations gates stay open at **68/100**;
+the driver remains **implement/running**.
+
+## T065: both-provider durable session and stopped trust evidence
+
+The fresh complete command
+`dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore --no-build -c Release --filter-class '*SqliteSignOutContractTests' '*SqliteSessionPersistenceContractTests' --minimum-expected-tests 30`
+passes all thirty cases in
+`contract-sqlite-e68092d307b54948b87d83bda0073bce.json` (449.761 seconds).
+The exact controlled 30-minute idle and eight-hour absolute boundaries retain
+terminal timestamps and immutable original absolute expiry. Activity cannot
+resurrect confirmed revocation. Corrupt tickets and lost live keys return
+unavailable instead of a cached actor. Per-user/installation capacity, retained
+keys across two fresh workers, actual stopped epoch revocation, wrong-mode
+credentials, concurrent sign-out, renewal races, required-event rollback and
+before/after-commit interruption remain asserted with exact rows/events.
+
+Both-provider evidence is the completed `135fe80` hosted native platform
+selection, not a local PostgreSQL claim: `platform-public-contracts` passes in
+`contract-both-b517e92a8e314f118d9c9a8a4e69a059.json` using
+`dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore -c Release --filter-not-class '*Composition*' --minimum-expected-tests 1`.
+It includes both provider subclasses of the complete session/sign-out suites.
+Both storage integration selections also pass with
+`dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-trait Provider=sqlite --filter-not-class '*Composition*' --minimum-expected-tests 1`
+and its `Provider=postgres` counterpart, in
+`integration-sqlite-52a56acc4584404b9c2efd9e89590f75.json` (318.699 seconds)
+and `integration-postgres-4fba340d62a8441a83bd9521beed34b1.json`
+(708.933 seconds). Those include actual stopped provider/client-trust replacement,
+next-request old-cookie denial, stable prior users/mappings/creation events,
+new issuer identity separation and preserved consumed designation/module data.
+
+These are the existing `SessionPersistenceContractTests`,
+`SignOutContractTests`, `IdentityMappingTests` and `EnrollmentRestartTests`
+consolidated under their dedicated test projects, as permitted by the task
+file. A source comparison against the passing hosted revision confirms no
+change to these files or production `src/`. New Development corpus wiring is
+separately evidenced above and is not inferred executed on PostgreSQL.
+T065 is now checked; **69/100 tasks are complete, 31 remain**. The unchanged
+lifetimes/deadlines, retained full-matrix failures, original branch/draft PR,
+reviewer-owned checklists and implement/running driver are preserved.

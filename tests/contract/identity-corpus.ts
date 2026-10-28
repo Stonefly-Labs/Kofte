@@ -1,3 +1,13 @@
+export const identityMethods = [
+  "GET",
+  "POST",
+  "PUT",
+  "PATCH",
+  "DELETE",
+  "HEAD",
+  "OPTIONS",
+] as const;
+
 export const identityRoutes = [
   ["GET", "/api/identity/v1/browser-context", "public", 200],
   ["POST", "/auth/login", "origin_csrf", 303],

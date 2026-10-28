@@ -6,8 +6,8 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement running; 68/100 complete** (T001–T063
-and T071–T075), on
+**Current checkpoint: 005 / implement running; 69/100 complete** (T001–T063,
+T065 and T071–T075), on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 `a0c1fb0` Ubuntu browser job passes all eight HTTPS recipes, including both
@@ -58,8 +58,19 @@ plus the designated actor case through actual native/Next HTTPS routes. Exact
 header-byte testing exposed Node's bare 431 before application policy; all Next
 serving launchers now provide 32 KiB parser headroom while the unchanged 16 KiB
 identity boundary admits its limit and returns a private 400 one byte over.
-T064 remains open for its complete Development/both-provider corpus. The prior
-composition-privacy failure remains recorded: both a local unchanged recipe
+T064 remains open for its complete Development/both-provider corpus. The
+Development increment now exercises the same independent seven-method and exact
+header framing helpers, strict configured selection and body limits, ambiguous
+Origin/CSRF/Fetch Metadata, credential namespaces, cookie attributes, enrollment
+refusal and durable sign-out through both actual paths. The actual
+empty/composed scope facts now invoke that complete case on both providers;
+both SQLite facts and the retained owned runtime pass locally. Fresh hosted
+execution of the PostgreSQL counterpart remains required.
+T065 now closes with a fresh complete thirty-case SQLite session/sign-out
+selection and verified unchanged both-provider hosted session and storage/trust
+suites. This does not close the separate HTTP/Development gates or turn retained
+host integration, recovery-recipe and timeout failures into a green full matrix.
+The prior composition-privacy failure remains recorded: both a local unchanged recipe
 and the subsequently published `135fe80` privacy job pass, without establishing
 the failed job's cause. Its wrapper now retains the consumer result in private
 test output for existing source-allowlisted diagnostic projection.

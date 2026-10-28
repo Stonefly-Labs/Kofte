@@ -1,6 +1,26 @@
 import { request as httpRequest, type IncomingHttpHeaders } from "node:http";
 import { request as httpsRequest } from "node:https";
 
+export function requestWithHeaderBytes(url: URL, bytes: number) {
+  const headers = {
+    Host: url.host,
+    "X-Forwarded-Host": "boundary.invalid",
+    "X-Forwarded-Port": "443",
+    "X-Forwarded-Proto": "https",
+    "X-Forwarded-For": "127.0.0.1",
+    "X-Identity-Padding": "",
+  };
+  const fixedBytes = Object.entries(headers).reduce(
+    (total, [name, value]) =>
+      total + Buffer.byteLength(`${name}: ${value}\r\n`),
+    0,
+  );
+  return requestWithBody(url, "", {
+    ...headers,
+    "X-Identity-Padding": "a".repeat(bytes - fixedBytes),
+  });
+}
+
 export function requestWithBody(
   url: URL,
   body: string,

@@ -151,6 +151,34 @@ public sealed class IdentityFixture : IAsyncDisposable
         return process;
     }
 
+    public async Task RunDevelopmentContractsAsync(CancellationToken token)
+    {
+        ObjectDisposedException.ThrowIf(disposed, this);
+        var repository = OwnedProcesses.FindRepository();
+        var reportFile = Path.Combine(privateRoot.Path, "development-contract-" + Guid.NewGuid().ToString("N") + ".json");
+        PrivateTestFiles.WriteNew(reportFile, []);
+        var start = new ProcessStartInfo("node")
+        {
+            WorkingDirectory = Path.Combine(repository, "tests", "contract"),
+            UseShellExecute = false,
+            RedirectStandardInput = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true
+        };
+        foreach (var argument in new[]
+        {
+            Path.Combine(repository, "node_modules", "vitest", "vitest.mjs"),
+            "run", "adapter.test.ts", "--no-file-parallelism",
+            "--testNamePattern=^establishes only configured Development identities",
+            "--reporter=json", "--outputFile=" + reportFile
+        })
+            start.ArgumentList.Add(argument);
+        OwnedProcesses.ClearSensitiveEnvironment(start);
+        start.Environment["KOFTE_HOST_URL"] = HostUrl.GetLeftPart(UriPartial.Authority);
+        start.Environment["KOFTE_WEB_URL"] = WebUrl.GetLeftPart(UriPartial.Authority);
+        await IdentityTypeScriptContracts.RunAsync(start, reportFile, 1, token);
+    }
+
     public async Task<string> PersistentSnapshotAsync(CancellationToken token, string? keys = null)
     {
         var storage = await CompositionStoreSnapshot.CaptureAsync(Storage, token);

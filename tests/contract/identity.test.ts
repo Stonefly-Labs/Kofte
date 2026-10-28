@@ -2,13 +2,14 @@ import { readFileSync } from "node:fs";
 import { expect, it } from "vitest";
 import {
   allowedIdentityReturns,
+  identityMethods,
   identityNumericBoundaries,
   identityRefusals,
   identityRoutes,
   identityTransport,
   rejectedIdentityReturns,
 } from "./identity-corpus";
-import { requestWithBody } from "./http";
+import { requestWithBody, requestWithHeaderBytes } from "./http";
 
 const file = process.env.KOFTE_IDENTITY_CONTRACT_FILE;
 if (!file) throw new Error("owned_identity_contract_fixture_required");
@@ -145,15 +146,7 @@ if (!expected.isInitialAdministrator) {
     );
     for (const origin of origins)
       for (const [allowed, path] of routes)
-        for (const method of [
-          "GET",
-          "POST",
-          "PUT",
-          "PATCH",
-          "DELETE",
-          "HEAD",
-          "OPTIONS",
-        ]) {
+        for (const method of identityMethods) {
           if (method === allowed) continue;
           const response = await send(origin, path, {
             method,
@@ -182,15 +175,7 @@ if (!expected.isInitialAdministrator) {
         "/auth/login/",
         "/auth/oidc/callback/",
       ].entries())
-        for (const method of [
-          "GET",
-          "POST",
-          "PUT",
-          "PATCH",
-          "DELETE",
-          "HEAD",
-          "OPTIONS",
-        ]) {
+        for (const method of identityMethods) {
           const response = await send(origin, path, {
             method,
             headers: session,
@@ -314,28 +299,11 @@ if (!expected.isInitialAdministrator) {
     );
     if (!boundary) throw new Error("independent_header_boundary_required");
     for (const [transport, origin] of origins.entries()) {
-      const headers = {
-        Host: new URL(origin).host,
-        "X-Forwarded-Host": "boundary.invalid",
-        "X-Forwarded-Port": "443",
-        "X-Forwarded-Proto": "https",
-        "X-Forwarded-For": "127.0.0.1",
-        "X-Identity-Padding": "",
-      };
-      const fixedBytes = Object.entries(headers).reduce(
-        (total, [name, value]) =>
-          total + Buffer.byteLength(`${name}: ${value}\r\n`),
-        0,
-      );
       const lengths: readonly number[] = [boundary[1], boundary[2]];
       for (const length of lengths) {
-        const response = await requestWithBody(
+        const response = await requestWithHeaderBytes(
           new URL("/api/identity/v1/browser-context", origin),
-          "",
-          {
-            ...headers,
-            "X-Identity-Padding": "a".repeat(length - fixedBytes),
-          },
+          length,
         );
         if (response.status !== (length === boundary[1] ? 200 : 400))
           throw new Error(
