@@ -6,7 +6,8 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement running; T001–T040 complete (40/100)**, on
+**Current checkpoint: 005 / implement running; 44/100 complete** (T001–T040,
+T042, T049–T050 and T052), on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 [implementation record](../../specs/005-authentication-bootstrap/implementation.md)
@@ -92,13 +93,22 @@ Broader composition-contract/recovery failures remain. The isolated propagation
 wrapper now preserves/revalidates safe host diagnostics and admits only the
 exact additional private XML-report flags; the actual published false failure
 replays correctly and all 126 Python tests pass. No deadline is increased.
-Sixty tasks remain. No feature acceptance is claimed.
+Fifty-six tasks remain. No feature acceptance is claimed.
 Session-head `ad21b2b` CI failed composition and PostgreSQL baseline timeouts;
 their causes remain unestablished. They are not erased by local passes.
 The unchanged both-provider composition selector passed locally in 588.596s
 within its original 900-second limit; this does not diagnose Linux CI timeouts.
 Published `f89c1ec` subsequently passed all eleven CI contexts. The original
 stage is resumed, not completed; no second run or later stage began.
+The [US2 continuation](../../specs/005-authentication-bootstrap/implementation.md#us2-nominated-enrollment-and-real-interruption-evidence)
+adds actual private nomination, protected atomic enrollment and masked UI.
+Both-store operator/interruption, twenty-way race and enrollment crash evidence
+is recorded; full SQLite HTTP, retained recovery and generated OpenAPI checks
+pass. New browser enrollment privacy/uncertainty checks are wired into the
+existing Ubuntu recipes but are not yet passing evidence. Local browser login
+stalls before enrollment; fresh PostgreSQL fixtures are blocked by Docker network
+pool exhaustion. No global cleanup, deadline change, completed US2 gate or
+feature acceptance is inferred.
 Use `SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap` on downstream
 commands, keep the same draft PR #8 and do not begin a second run or advance to
 converge. No intermediate merge or feature acceptance is requested.

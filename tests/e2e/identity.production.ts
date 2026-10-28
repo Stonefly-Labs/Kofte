@@ -1,4 +1,8 @@
 import { expect } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
+import { lstat, readFile } from "node:fs/promises";
+import { dirname } from "node:path";
+import type { Page } from "@playwright/test";
 import { withIdentityBrowser } from "./identityBrowser.ts";
 
 async function verifyLogin() {
@@ -116,6 +120,8 @@ async function verifyLogin() {
         "/authorize",
         "/auth/oidc/callback",
       ]);
+      const enrollmentFile = process.env.KOFTE_IDENTITY_ENROLLMENT_FILE;
+      if (enrollmentFile) await verifyEnrollment(page, root, enrollmentFile);
 
       await context.clearCookies();
       await page.goto(new URL("/identity?returnPath=%2F", origin).href);
@@ -128,7 +134,10 @@ async function verifyLogin() {
         });
         return response.json();
       });
-      expect(repeated).toEqual(current);
+      expect(repeated).toEqual({
+        ...current,
+        isInitialAdministrator: Boolean(enrollmentFile),
+      });
       expect(paths).toEqual([
         "login-action",
         "/authorize",
@@ -156,6 +165,112 @@ async function verifyLogin() {
     }
   });
   console.log("identity_browser_stage_owned_browser_closed");
+}
+
+async function verifyEnrollment(page: Page, root: string, file: string) {
+  const metadata = await lstat(file);
+  if (
+    dirname(file) !== root ||
+    !metadata.isFile() ||
+    metadata.isSymbolicLink() ||
+    (metadata.mode & 0o077) !== 0 ||
+    metadata.uid !== process.getuid?.() ||
+    metadata.size !== 43
+  )
+    throw new Error("identity_browser_private_trust_required");
+  const authorization = await readFile(file, "ascii");
+  if (!/^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$/.test(authorization))
+    throw new Error("identity_browser_owned_fixture_required");
+  const entry = page.getByLabel("One-time authorization", { exact: true });
+  await expect(entry).toHaveAttribute("type", "password");
+  await expect(entry).toHaveAttribute("autocomplete", "off");
+  await expect(entry).toHaveValue("");
+  await page.setViewportSize({ width: 320, height: 900 });
+  await page.evaluate(() => {
+    document.documentElement.style.fontSize = "200%";
+  });
+  const heading = page.getByRole("heading", {
+    name: "Your identity",
+    exact: true,
+  });
+  await heading.focus();
+  await page.keyboard.press("Tab");
+  await expect(entry).toBeFocused();
+  expect(
+    await entry.evaluate((input) => {
+      const style = getComputedStyle(input);
+      return (
+        style.outlineStyle !== "none" &&
+        Number.parseFloat(style.outlineWidth) > 0
+      );
+    }),
+  ).toBe(true);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+  const axe = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+    .analyze();
+  expect(
+    axe.violations.filter(
+      ({ impact }) => impact === "serious" || impact === "critical",
+    ),
+  ).toEqual([]);
+  let submissions = 0;
+  let identityQueries = 0;
+  page.on("request", (request) => {
+    expect(request.url()).not.toContain(authorization);
+    if (
+      request.method() === "POST" &&
+      new URL(request.url()).pathname === "/api/identity/v1/first-administrator"
+    )
+      submissions++;
+    if (new URL(request.url()).pathname === "/api/identity/v1/me")
+      identityQueries++;
+  });
+  const wrong =
+    authorization.slice(0, -1) + (authorization.endsWith("A") ? "Q" : "A");
+  await entry.fill(wrong);
+  await entry.press("Enter");
+  await expect(page.getByRole("alert")).toContainText(
+    "Enrollment was not completed",
+  );
+  await expect(entry).toHaveValue("");
+  await expect(entry).toBeFocused();
+  const queriesBefore = identityQueries;
+  await page.route("**/api/identity/v1/first-administrator", async (route) => {
+    const confirmed = await route.fetch({ maxRedirects: 0, maxRetries: 0 });
+    expect(confirmed.status()).toBe(200);
+    await confirmed.dispose();
+    await route.abort("failed");
+  });
+  await entry.fill(authorization);
+  const began = performance.now();
+  await entry.press("Enter");
+  await expect(page.getByRole("alert")).toContainText(
+    "Enrollment could not be confirmed. No additional enrollment was attempted.",
+    { timeout: 5000 },
+  );
+  await expect(
+    page.getByText(
+      "Initial administrator designated. This does not grant unrelated permissions.",
+      { exact: true },
+    ),
+  ).toBeVisible({ timeout: 5000 });
+  expect(performance.now() - began).toBeLessThan(5000);
+  await expect(heading).toBeFocused();
+  await expect(entry).toHaveCount(0);
+  expect(submissions).toBe(2);
+  expect(identityQueries).toBeGreaterThan(queriesBefore);
+  expect(await page.content()).not.toContain(authorization);
+  expect(await page.content()).not.toContain(wrong);
+  expect(
+    await page.evaluate(() => localStorage.length + sessionStorage.length),
+  ).toBe(0);
+  await page.unroute("**/api/identity/v1/first-administrator");
+  console.log("identity_browser_stage_enrollment_verified");
 }
 
 function reportFailure(error: unknown) {

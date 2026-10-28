@@ -5,12 +5,13 @@ import {
   type IdentityAdapterConfiguration,
 } from "./identityConfiguration";
 
-type Route = "context" | "login" | "callback" | "me";
+type Route = "context" | "login" | "callback" | "me" | "enrollment";
 const routes = {
   context: ["GET", "/api/identity/v1/browser-context"],
   login: ["POST", "/auth/login"],
   callback: ["GET", "/auth/oidc/callback"],
   me: ["GET", "/api/identity/v1/me"],
+  enrollment: ["POST", "/api/identity/v1/first-administrator"],
 } as const;
 const privacy = {
   "Cache-Control": "no-store",
@@ -94,22 +95,47 @@ export async function forwardIdentity(
       )
         return problem("identity_forbidden");
       if (
-        !/^application\/x-www-form-urlencoded(?:;|$)/i.test(
-          request.headers.get("content-type") ?? "",
-        )
+        !(
+          route === "login"
+            ? /^application\/x-www-form-urlencoded(?:;|$)/i
+            : /^application\/json(?:;|$)/i
+        ).test(request.headers.get("content-type") ?? "")
       )
         return problem("identity_request_invalid");
       body = await readBody(request, expired, true);
-      const fields = new URLSearchParams(body);
-      if (
-        [...fields.keys()].some(
-          (key) =>
-            !["returnPath", "__RequestVerificationToken"].includes(key) ||
-            fields.getAll(key).length !== 1,
-        ) ||
-        !["/", "/identity"].includes(fields.get("returnPath") ?? "/identity")
-      )
-        return problem("identity_request_invalid");
+      if (route === "login") {
+        const fields = new URLSearchParams(body);
+        if (
+          [...fields.keys()].some(
+            (key) =>
+              !["returnPath", "__RequestVerificationToken"].includes(key) ||
+              fields.getAll(key).length !== 1,
+          ) ||
+          !["/", "/identity"].includes(fields.get("returnPath") ?? "/identity")
+        )
+          return problem("identity_request_invalid");
+      } else {
+        let value: unknown;
+        try {
+          value = JSON.parse(body);
+        } catch (error) {
+          if (!(error instanceof SyntaxError)) throw error;
+          throw new IdentityInputError();
+        }
+        if (
+          typeof value !== "object" ||
+          value === null ||
+          Array.isArray(value) ||
+          Object.keys(value).length !== 1 ||
+          !("authorization" in value) ||
+          typeof value.authorization !== "string" ||
+          !/^[A-Za-z0-9_-]{43}$/.test(value.authorization) ||
+          Buffer.from(value.authorization, "base64url").toString(
+            "base64url",
+          ) !== value.authorization
+        )
+          return problem("identity_request_invalid");
+      }
       headers.set("Content-Type", request.headers.get("content-type")!);
       headers.set("Origin", configuration.publicOrigin);
       const csrf = request.headers.get("x-kofte-csrf");
@@ -207,6 +233,23 @@ export async function forwardIdentity(
       );
     const code = object.code;
     if (
+      upstream.status === 200 &&
+      route === "enrollment" &&
+      object.version === "1" &&
+      object.status === "enrolled" &&
+      typeof object.correlationId === "string" &&
+      /^[0-9a-f]{32}$/.test(object.correlationId)
+    )
+      return json(
+        {
+          version: "1",
+          status: "enrolled",
+          correlationId: object.correlationId,
+        },
+        200,
+        output,
+      );
+    if (
       typeof code !== "string" ||
       !Object.hasOwn(failures, code) ||
       !isFailure(code) ||
@@ -235,7 +278,7 @@ export async function forwardIdentity(
     ))
       throw error;
     return problem(
-      dispatched && (route === "login" || route === "callback")
+      dispatched && (method === "POST" || route === "callback")
         ? "identity_outcome_uncertain"
         : "identity_unavailable",
     );

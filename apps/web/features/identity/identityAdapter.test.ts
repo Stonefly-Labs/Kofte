@@ -6,6 +6,7 @@ import * as contextRoute from "../../app/api/identity/v1/browser-context/route";
 import * as meRoute from "../../app/api/identity/v1/me/route";
 import * as loginRoute from "../../app/auth/login/route";
 import * as callbackRoute from "../../app/auth/oidc/callback/route";
+import * as enrollmentRoute from "../../app/api/identity/v1/first-administrator/route";
 
 vi.mock("./identityConfiguration", () => ({
   identityConfiguration: vi.fn(async () => ({
@@ -63,6 +64,76 @@ beforeEach(() => {
 afterEach(() => {
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
+});
+
+function enrollmentRequest(body: unknown = { authorization: "A".repeat(43) }) {
+  return new Request(
+    "https://kofte.example/api/identity/v1/first-administrator",
+    {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        origin: "https://kofte.example",
+        "x-kofte-csrf": "signed-in-request-token",
+        cookie: "__Host-kofte-session=session-value",
+      },
+      body: JSON.stringify(body),
+    },
+  );
+}
+
+it("delivers only the protected enrollment exchange and safe committed receipt", async () => {
+  const receipt = {
+    version: "1",
+    status: "enrolled",
+    correlationId: "a".repeat(32),
+  };
+  const fetch = vi
+    .fn()
+    .mockResolvedValue(upstream({ ...receipt, futureField: true }));
+  vi.stubGlobal("fetch", fetch);
+  const response = await enrollmentRoute.POST(enrollmentRequest());
+  expect(response.status).toBe(200);
+  expect(await response.json()).toEqual(receipt);
+  const [url, options] = fetch.mock.calls[0];
+  expect(url.href).toBe(
+    "http://127.0.0.1:5080/api/identity/v1/first-administrator",
+  );
+  expect(options.method).toBe("POST");
+  expect(options.body).toBe(JSON.stringify({ authorization: "A".repeat(43) }));
+  expect(new Headers(options.headers).get("x-kofte-csrf")).toBe(
+    "signed-in-request-token",
+  );
+  expect(options.redirect).toBe("manual");
+  expect(options.cache).toBe("no-store");
+});
+
+it.each([
+  { authorization: "A".repeat(43), nominee: "caller-chosen" },
+  { authorization: "A".repeat(42) },
+  { authorization: "A".repeat(42) + "B" },
+])(
+  "rejects caller authority or noncanonical enrollment before dispatch",
+  async (body) => {
+    const fetch = vi.fn();
+    vi.stubGlobal("fetch", fetch);
+    const response = await enrollmentRoute.POST(enrollmentRequest(body));
+    expect(response.status).toBe(400);
+    expect(fetch).not.toHaveBeenCalled();
+  },
+);
+
+it("does not turn a lost enrollment reply into success or retry the mutation", async () => {
+  const fetch = vi
+    .fn()
+    .mockRejectedValue(new TypeError("private synthetic exchange"));
+  vi.stubGlobal("fetch", fetch);
+  const response = await enrollmentRoute.POST(enrollmentRequest());
+  expect(response.status).toBe(503);
+  const problem = await response.json();
+  expect(problem.code).toBe("identity_outcome_uncertain");
+  expect(JSON.stringify(problem)).not.toContain("private synthetic exchange");
+  expect(fetch).toHaveBeenCalledTimes(1);
 });
 
 it.each([

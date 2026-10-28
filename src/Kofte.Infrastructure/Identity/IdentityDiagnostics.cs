@@ -10,7 +10,8 @@ namespace Kofte.Infrastructure.Identity;
 internal enum IdentityAction
 {
     Startup, Prepare, ReconcileConfiguration, RevokeSessions, BrowserContext, Login, Callback,
-    Current, SignOut, Enrollment, DevelopmentSession, Maintain, ReconcileRestore, OwnerMutation, Access
+    Current, SignOut, Enrollment, DevelopmentSession, Maintain, ReconcileRestore, OwnerMutation, Access,
+    BootstrapAuthorize, BootstrapDisablePending
 }
 
 internal enum IdentityDiagnosticOutcome
@@ -78,12 +79,15 @@ internal static class IdentityDiagnostics
 
     private static bool IsPhase(string phase) => phase is "login_before_commit" or "login_committed" or
         "enrollment_before_commit" or "enrollment_committed" or "operator_before_commit" or
-        "operator_committed" or "restore_quarantined" or "restore_before_commit" or "restore_committed";
+        "operator_committed" or "bootstrap_file_created" or "bootstrap_file_flushed" or
+        "restore_quarantined" or "restore_before_commit" or "restore_committed";
 
     internal static string ActionName(IdentityAction action) => action switch
     {
         IdentityAction.Startup => "startup",
         IdentityAction.Prepare => "prepare",
+        IdentityAction.BootstrapAuthorize => "bootstrap_authorize",
+        IdentityAction.BootstrapDisablePending => "bootstrap_disable_pending",
         IdentityAction.ReconcileConfiguration => "reconcile_configuration",
         IdentityAction.RevokeSessions => "revoke_sessions",
         IdentityAction.BrowserContext => "browser_context",
@@ -224,7 +228,9 @@ internal sealed class IdentityObservation : IDisposable
     internal void Phase(string phase)
     {
         if (published || ++phases > 32) throw IdentityDiagnostics.Invalid();
-        IdentityDiagnostics.Trace(Record(outcome), phase);
+        var phaseOutcome = outcome == IdentityDiagnosticOutcome.Ready &&
+            evidence.Durability == StorageDurability.Uncertain ? IdentityDiagnosticOutcome.OutcomeUncertain : outcome;
+        IdentityDiagnostics.Trace(Record(phaseOutcome), phase);
     }
 
     internal void Fail(Exception error) => outcome = error switch

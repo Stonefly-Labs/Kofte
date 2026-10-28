@@ -79,7 +79,7 @@ internal static class LoginScenarios
         return observations;
     }
 
-    private static async Task<HttpResponseMessage> LoginAsync(LoginCommitFixture fixture, CancellationToken token)
+    internal static async Task<HttpResponseMessage> LoginAsync(LoginCommitFixture fixture, CancellationToken token)
     {
         var csrf = await fixture.ProductContextAsync(token);
         using var request = fixture.ProductLoginRequest("/identity", csrf);

@@ -7,7 +7,8 @@ namespace Kofte.Host.Features.Identity;
 internal static class IdentityOpenApi
 {
     internal static bool IsOperation(string? id) =>
-        id is "identityBrowserContext" or "identityLogin" or "identityCallback" or "identityCurrent";
+        id is "identityBrowserContext" or "identityLogin" or "identityCallback" or "identityCurrent" or
+            "identityEnrollFirstAdministrator";
 
     internal static void Configure(OpenApiDocument document, IdentityConfiguration configuration)
     {
@@ -46,6 +47,12 @@ internal static class IdentityOpenApi
             },
             ["correlationId"] = new OpenApiSchemaReference("CorrelationId", document)
         });
+        schemas["EnrollmentResultV1"] = Object(new()
+        {
+            ["version"] = Literal("1"),
+            ["status"] = Literal("enrolled"),
+            ["correlationId"] = new OpenApiSchemaReference("CorrelationId", document)
+        });
         components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
         components.SecuritySchemes["kofteSession"] = new OpenApiSecurityScheme
         {
@@ -61,7 +68,7 @@ internal static class IdentityOpenApi
             {
                 if (!IsOperation(operation.OperationId)) continue;
                 operation.Tags?.Clear();
-                operation.Security = operation.OperationId == "identityCurrent"
+                operation.Security = operation.OperationId is "identityCurrent" or "identityEnrollFirstAdministrator"
                     ? [new() { [new OpenApiSecuritySchemeReference("kofteSession", document)] = [] }]
                     : [];
                 operation.Responses = new();
@@ -72,6 +79,49 @@ internal static class IdentityOpenApi
                     operation.Responses["200"] = Response(document,
                         operation.OperationId == "identityCurrent" ? "CurrentIdentityV1" : "BrowserContextV1",
                         "Verified self identity or public browser continuity");
+                else if (operation.OperationId == "identityEnrollFirstAdministrator")
+                {
+                    operation.Responses["200"] = Response(document, "EnrollmentResultV1",
+                        "Known committed enrollment; retrieve current identity to verify designation");
+                    operation.Responses["409"] = Response(document, "IdentityProblemV1",
+                        "Enrollment unavailable without disclosing nominee or ceremony history", "application/problem+json");
+                    operation.RequestBody = new OpenApiRequestBody
+                    {
+                        Required = true,
+                        Content = new Dictionary<string, OpenApiMediaType>
+                        {
+                            ["application/json"] = new()
+                            {
+                                Schema = Object(new()
+                                {
+                                    ["authorization"] = new OpenApiSchema
+                                    {
+                                        Type = JsonSchemaType.String,
+                                        MinLength = 43,
+                                        MaxLength = 43,
+                                        Pattern = "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$",
+                                        WriteOnly = true
+                                    }
+                                })
+                            }
+                        }
+                    };
+                    operation.Parameters =
+                    [
+                        new OpenApiParameter
+                        {
+                            Name = "Origin", In = ParameterLocation.Header, Required = true,
+                            Description = "Exact configured public origin",
+                            Schema = new OpenApiSchema { Type = JsonSchemaType.String }
+                        },
+                        new OpenApiParameter
+                        {
+                            Name = "X-Kofte-CSRF", In = ParameterLocation.Header, Required = true,
+                            Description = "Fresh identity-bound antiforgery request token with its paired cookie",
+                            Schema = new OpenApiSchema { Type = JsonSchemaType.String }
+                        }
+                    ];
+                }
                 else
                 {
                     operation.Responses["303"] = new OpenApiResponse

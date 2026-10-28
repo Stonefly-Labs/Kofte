@@ -707,7 +707,7 @@ fresh no-store verification/token pairs and accessible failure/retry. Hiding or
 blurring clears the displayed identity; returning revalidates it. Checks expire
 after 4.5 seconds and never retain failed/stale identity or browser storage.
 Only `/` and `/identity` are admitted returns. Development is labeled explicitly,
-but development selection, sign-out and enrollment remain later tasks.
+but development selection and sign-out remain later tasks.
 Sign-in uses a Next Server Action, not native form navigation: real browsers
 sent `Origin: null` for the native POST under required `no-referrer`. The
 action preserves actual Origin/credential evidence and explicit CSRF through
@@ -727,6 +727,44 @@ later isolated/serial pass does not establish its cause. Readiness now
 projects only a bounded HTTP status/transport category on timeout without
 changing the existing budget. PostgreSQL host CI remains failed with no
 established cause. This is not a complete or operator-ready identity profile.
+
+### Operator-nominated enrollment increment
+
+The stopped operator commands now include:
+
+```text
+--identity bootstrap authorize --nominee-file ABSOLUTE_PRIVATE_FILE --authorization-file NEW_PRIVATE_FILE
+--identity bootstrap disable-pending
+```
+
+Use the prepared installation's explicit production configuration and exclusive
+stopped authority. The nominee file is owner-only strict JSON with exactly
+`version:"1"`, `issuer` and `subject`; the keys must match the configured,
+operator-verified production identity, not an email/profile/role. The new
+authorization file must not already exist. It receives a random 256-bit,
+43-character authorization, while the database stores only its installation/
+generation/nominee-bound digest for fifteen minutes. Commands never print the
+secret, nominee or private path. File write/flush and DB commit are separate
+effects: retain evidence after uncertainty and explicitly replace only a
+pending ceremony. Consumed or recovery-locked authority cannot reopen.
+
+After restarting, the exact nominee signs in and explicitly enters the secret
+in the masked `/identity` enrollment form. The protected POST
+`/api/identity/v1/first-administrator` requires the current OIDC session, exact
+Origin and fresh CSRF pair, accepting only `{authorization:string}`. The UI
+clears the input, never stores/retries it and queries `/me` after confirmation
+or a lost reply. Initial designation grants no unrelated permission.
+IdP subject loss is not a reset/reassignment mechanism. Follow the
+[operator contract](../../specs/005-authentication-bootstrap/contracts/operator-v1.md#nominate-and-enroll)
+for private delivery/custody and explicit correction.
+
+The [implementation record](../../specs/005-authentication-bootstrap/implementation.md#us2-nominated-enrollment-and-real-interruption-evidence)
+distinguishes passing both-store core/interruption evidence from incomplete
+acceptance. The complete new PostgreSQL HTTP/browser matrix is not verified
+locally: Docker default networks are exhausted and HTTPS browser login stalls.
+Only independently proven task-owned Docker resources may be cleaned up.
+Use fresh owned CI for remaining evidence; do not lower contention, extend
+deadlines or treat partial checks as acceptance.
 
 The existing status browser uses only `/backend/health/ready`. This server-only fixed adapter
 forwards no caller credentials/headers and validates status, content type and

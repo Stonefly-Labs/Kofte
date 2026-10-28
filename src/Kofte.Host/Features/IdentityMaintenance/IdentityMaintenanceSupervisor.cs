@@ -11,7 +11,7 @@ namespace Kofte.Host.Features.IdentityMaintenance;
 internal static class IdentityMaintenanceSupervisor
 {
     internal static async Task RunAsync(StorageMaintenanceConfiguration configuration, string operation,
-        CancellationToken token)
+        IReadOnlyList<string> arguments, CancellationToken token)
     {
         var start = new ProcessStartInfo(Environment.ProcessPath ??
             throw new BootstrapException(BootstrapError.ConfigurationInvalid))
@@ -31,7 +31,7 @@ internal static class IdentityMaintenanceSupervisor
             start.ArgumentList.Add(typeof(BootstrapProgram).Assembly.Location);
         }
         start.ArgumentList.Add("--identity-worker");
-        start.ArgumentList.Add(operation);
+        foreach (var argument in arguments) start.ArgumentList.Add(argument);
         configuration.ConfigureChild(start);
         start.Environment["KOFTE_HOST_URL"] = configuration.Runtime.HostUrl.AbsoluteUri;
         start.Environment["KOFTE_WEB_URL"] = configuration.Runtime.WebUrl.AbsoluteUri;

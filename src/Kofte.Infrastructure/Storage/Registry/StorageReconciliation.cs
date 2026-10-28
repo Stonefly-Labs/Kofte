@@ -23,7 +23,8 @@ public static class StorageReconciliation
         if (count != 0)
         {
             var owner = await new RegistryMigrationRunner(installation).ReadInstallationAsync(connection, budget);
-            await RecoverySetVerifier.ValidateInventoryAsync(installation, budget);
+            // Startup may encounter SQLite's inactive crash journal; clean backup readers still reject sidecars.
+            await RecoverySetVerifier.ValidateInventoryAsync(installation, connection, budget);
             return owner;
         }
         await new RegistryMigrationRunner(installation).ValidateV0Async(connection, budget);

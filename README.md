@@ -37,7 +37,8 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 > [!IMPORTANT]
 > **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md) and [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) is now human-merged. Its accepted ledger and evidence were verified on updated main before 005 began. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) retains prior failures and unknown causes; the historical failed local gate remains failed, not waived by acceptance or merge. Spec 005 now has [authentication/bootstrap requirements](specs/005-authentication-bootstrap/spec.md) and US1 sign-in implemented, not the complete identity feature. Nothing here claims production readiness or MVP completion.
 
-**Current stage: 005 / implement running; T001–T040 complete (40/100).** The
+**Current stage: 005 / implement running; 44/100 tasks complete.** T001–T040,
+T042, T049–T050 and T052 are evidenced. The
 [implementation checkpoint](specs/005-authentication-bootstrap/implementation.md)
 records actual OIDC dependency adoption and locked inventory (403 npm / 87
 NuGet identities), an independent HTTPS issuer, owned interruption fixtures,
@@ -116,15 +117,28 @@ whole feature: broader CI still failed composition-contract timeout,
 composition recovery and failure-propagation checks. The latter exposed a
 reproduced command-matching regression from the new private diagnostic flags;
 the focused correction passes 126 Python tests and actual safe CI-report
-replay, pending new CI. No verification deadline was increased. Sixty
-tasks remain, including enrollment, sign-out,
+replay, pending new CI. No verification deadline was increased. Fifty-six
+tasks remain, including enrollment acceptance evidence, sign-out,
 development sessions and identity recovery. The feature is not complete.
 The preceding session checkpoint's CI still failed composition and PostgreSQL
 failure-propagation baseline timeouts; causes are not established or waived.
 The unchanged both-provider composition selector passed locally in 9m49s,
 without diagnosing the Linux CI failures. Published `f89c1ec` subsequently
-passed all eleven CI contexts. Continue T037–T100 on the same stage/draft PR #8;
+passed all eleven CI contexts. Continue the remaining tasks on the same stage/draft PR #8;
 no merge or acceptance yet.
+
+The [US2 increment](specs/005-authentication-bootstrap/implementation.md#us2-nominated-enrollment-and-real-interruption-evidence)
+adds stopped private nomination/replacement/disable, protected atomic enrollment,
+the exact Next adapter and masked enrollment UI. Both stores pass the
+36-case operator/authority/file-interruption matrix, twenty-way HTTP race and
+four real enrollment-owner crash cases. SQLite additionally passes all sixteen
+HTTP enrollment cases, fifteen retained recovery checks and three actual native
+OpenAPI checks. The generated enrollment contract preserves accepted health;
+82 identity UI tests, lint/types and production build pass. New browser
+enrollment/lost-acknowledgement evidence is wired into the existing Ubuntu job,
+not claimed passed: local HTTPS stalls before enrollment. Docker's default
+network pool is exhausted, blocking fresh local PostgreSQL fixtures; no
+unrelated resources were removed. US2 and the complete feature remain unfinished.
 
 The following preserves the completed design-stage context. The
 [specification](specs/005-authentication-bootstrap/spec.md) and

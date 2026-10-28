@@ -112,7 +112,7 @@ internal static class IdentityUserStore
         return new(Id(row[0]), mode, (string?)row[2], created, updated);
     }
 
-    private static bool ValidKey(string mode, string issuer, string subject)
+    internal static bool ValidKey(string mode, string issuer, string subject)
     {
         if (mode is not ("oidc" or "development") || subject.Length is < 1 or > 255 ||
             subject.Any(character => character is < ' ' or > '~') ||

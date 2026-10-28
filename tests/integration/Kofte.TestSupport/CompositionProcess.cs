@@ -70,6 +70,15 @@ public sealed class CompositionProcess : IAsyncDisposable
         descendants.Add(descendant);
     }
 
+    internal void TrackAdmittedChild(Process child)
+    {
+        var group = GetProcessGroup(root.Id);
+        if (HasExited || child.HasExited || child.Id == root.Id || group <= 0 ||
+            GetProcessGroup(child.Id) != group || reportedDescendants.Any(item => item.Process.Id == child.Id))
+            throw new InvalidOperationException("composition_descendant_ownership_unverified");
+        reportedDescendants.Add((child, group));
+    }
+
     public void TrackAuthorDescendant(CompositionFixture.CompositionAuthorTrace trace)
     {
         ObjectDisposedException.ThrowIf(disposed, this);

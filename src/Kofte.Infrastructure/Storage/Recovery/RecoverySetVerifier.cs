@@ -150,8 +150,8 @@ public static class RecoverySetVerifier
         left.RegistryVersion == right.RegistryVersion && left.RegistryRevision == right.RegistryRevision &&
         JsonSerializer.Serialize(left.Allocations, Options) == JsonSerializer.Serialize(right.Allocations, Options);
 
-    internal static async Task ValidateInventoryAsync(StorageInstallation installation, OperationBudget budget) =>
-        _ = await ReadInventoryAsync(installation, budget);
+    internal static async Task ValidateInventoryAsync(StorageInstallation installation, DbConnection platform,
+        OperationBudget budget) => _ = await ReadInventoryAsync(installation, platform, budget);
 
     private static void ValidateManifest(RecoveryManifest manifest)
     {
@@ -279,6 +279,12 @@ public static class RecoverySetVerifier
     {
         await using var platform = installation.Provider == "sqlite"
             ? OpenReadOnly(installation.PlatformPath) : await installation.OpenPlatformAsync(budget);
+        return await ReadInventoryAsync(installation, platform, budget);
+    }
+
+    private static async Task<RecoveryInventory> ReadInventoryAsync(StorageInstallation installation,
+        DbConnection platform, OperationBudget budget)
+    {
         var runner = new RegistryMigrationRunner(installation);
         var metadata = await runner.ReadInstallationAsync(platform, budget);
         var rows = new List<RegistrationRecord>();

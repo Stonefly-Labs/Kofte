@@ -50,6 +50,9 @@ public sealed record LoginCommitCrash(Guid AttemptId, bool AcknowledgementLost, 
 public sealed record LoginCapacitySnapshot(long Revision, long Users, long Sessions, long LiveSessions,
     string OriginalDigest, string OriginalState, string AttemptState, IReadOnlyList<LoginEventObservation> Events);
 public sealed record LoginEventObservation(Guid Id, long Revision, string Code, string Correlation, Guid? UserId);
+public sealed record LoginBootstrapObservation(Guid InstallationId, string State, long Generation,
+    string? Issuer, string? Subject, string? Digest, DateTime? Expires, Guid? InitialUser,
+    DateTime? ConsumedAt, long? ConsumedGeneration);
 public sealed record LoginCommitSnapshot(long Revision, Guid Epoch, long RegistryRevision, string BootstrapState,
     IReadOnlyList<LoginUserObservation> Users, IReadOnlyList<LoginMappingObservation> Mappings,
     IReadOnlyList<LoginAttemptObservation> Attempts, IReadOnlyList<LoginSessionObservation> Sessions,
@@ -85,10 +88,12 @@ public sealed class LoginCommitFixture : IAsyncDisposable
     private bool reusedRefused;
     private string? capacityOriginal;
     private bool productRoutes;
+    private bool failEnrollmentCommit;
     private string? productCallback;
     private static readonly string Browser = new('b', 64);
 
     public string Issuer => issuer.Issuer.AbsoluteUri;
+    public Uri PublicOrigin => configuration.PublicOrigin;
     public OidcIssuer Protocol => issuer;
     public Func<string, CancellationToken, Task<IPAddress[]>>? ProtocolDns { get; set; }
 
@@ -128,7 +133,7 @@ public sealed class LoginCommitFixture : IAsyncDisposable
     public static Task<LoginCommitFixture> CreateProductAsync(string provider, CancellationToken token) =>
             CreateAsync(provider, token, productRoutes: true);
 
-    public async Task RunBrowserAsync(Guid expectedUser, CancellationToken token)
+    public async Task RunBrowserAsync(Guid expectedUser, CancellationToken token, string? authorization = null)
     {
         if (browserIngress is null || webWorker is null || webWorker.HasExited || expectedUser == Guid.Empty)
             throw new InvalidOperationException("identity_fixture_browser_required");
@@ -140,6 +145,14 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         start.Environment["KOFTE_IDENTITY_PRIVATE_ROOT"] = root;
         start.Environment["KOFTE_IDENTITY_AUTHORITY_FILE"] = authorityFile;
         start.Environment["KOFTE_IDENTITY_EXPECTED_USER"] = expectedUser.ToString("D");
+        if (authorization is not null)
+        {
+            if (!IdentityBootstrapStore.ValidAuthorization(authorization))
+                throw new InvalidOperationException("identity_fixture_private_delivery_invalid");
+            var authorizationFile = Path.Combine(root, "browser-enrollment");
+            PrivateTestFiles.WriteNew(authorizationFile, Encoding.ASCII.GetBytes(authorization));
+            start.Environment["KOFTE_IDENTITY_ENROLLMENT_FILE"] = authorizationFile;
+        }
         browserCompleted = false;
         await using var child = OwnedProcesses.Start(start);
         using var deadline = CancellationTokenSource.CreateLinkedTokenSource(token);
@@ -544,6 +557,36 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         await database.CommitAsync();
     }
 
+    public async Task SeedPendingBootstrapAsync(string subject, bool expired, CancellationToken token)
+    {
+        using var budget = new OperationBudget(TimeSpan.FromSeconds(1), token);
+        await using var database = await DeadlineStore.OpenAsync(installation, budget);
+        await database.BeginWriteAsync();
+        var metadata = await IdentityStore.ReadMetadataAsync(database);
+        var secret = new string('A', 43);
+        var digest = Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(
+            $"kofte.identity.bootstrap.authorization.v1\0{metadata.InstallationId:D}\0" +
+            $"1\0{Issuer}\0{subject}\0{secret}")));
+        await database.QueryAsync($"""
+            UPDATE {database.Prefix}__kofte_bootstrap SET state='pending',generation=1,nominee_issuer=@issuer,
+              nominee_subject=@subject,authorization_digest=@digest,expires_at_utc=@expires WHERE singleton_key=1
+            """, ("issuer", Issuer), ("subject", subject), ("digest", digest),
+            ("expires", clock.GetUtcNow().UtcDateTime.AddMinutes(expired ? -1 : 15)));
+        await database.CommitAsync();
+    }
+
+    public void FailEnrollmentBeforeCommit() => failEnrollmentCommit = true;
+
+    public async Task SeedRecoveryLockedBootstrapAsync(CancellationToken token)
+    {
+        using var budget = new OperationBudget(TimeSpan.FromSeconds(1), token);
+        await using var database = await DeadlineStore.OpenAsync(installation, budget);
+        await database.BeginWriteAsync();
+        await database.QueryAsync(
+            $"UPDATE {database.Prefix}__kofte_bootstrap SET state='recovery_locked' WHERE singleton_key=1");
+        await database.CommitAsync();
+    }
+
     public async Task SeedGlobalCapacityAsync(CancellationToken token)
     {
         capacityOriginal = (await SnapshotAsync(token)).Sessions.Single().Digest;
@@ -689,6 +732,62 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         return worker!.Id;
     }
 
+    public async Task<LoginCommitCrash> CrashEnrollmentAsync(string phase, string authorization, CancellationToken token)
+    {
+        if (phase is not ("enrollment_before_commit" or "enrollment_committed"))
+            throw new InvalidOperationException("identity_fixture_crash_invalid");
+        await StopProductAsync(token);
+        var barrier = new IdentityCommitBarrier(Path.GetDirectoryName(serving!.ConfigurationPath)!, phase);
+        await StartWorkerAsync("--fixture-product-login", client.BaseAddress!.Port, token, barrier);
+        var csrf = await ProductContextAsync(token);
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/api/identity/v1/first-administrator")
+        {
+            Content = System.Net.Http.Json.JsonContent.Create(new { authorization })
+        };
+        request.Headers.Add("Origin", configuration.PublicOrigin.OriginalString);
+        request.Headers.Add("X-Kofte-CSRF", csrf);
+        var completion = SendProductAsync(request, token);
+        using var deadline = CancellationTokenSource.CreateLinkedTokenSource(token);
+        deadline.CancelAfter(TimeSpan.FromSeconds(15));
+        await barrier.WaitAsync(deadline.Token);
+        if (barrier.ObservedProcessId != worker!.Id)
+            throw new InvalidOperationException("identity_fixture_child_ownership_invalid");
+        await worker.StopAsync(graceful: false);
+        try { using var response = await completion; }
+        catch (HttpRequestException) { return new(lastAttempt, true, worker.HasExited); }
+        throw new InvalidOperationException("identity_fixture_enrollment_acknowledged");
+    }
+
+    public async Task PrepareProductAgainAsync(CancellationToken token)
+    {
+        await StopProductAsync(token);
+        await RunStoppedHostAsync(["--registry", "upgrade"], token);
+        await RunIdentityOperatorAsync(["prepare"], token);
+        await StartWorkerAsync("--fixture-product-login", client.BaseAddress!.Port, token);
+    }
+
+    public async Task<string> NominateProductAsync(CancellationToken token)
+    {
+        await StopProductAsync(token);
+        var directory = Path.GetDirectoryName(serving!.ConfigurationPath)!;
+        var nominee = Path.Combine(directory, "nominee-" + Guid.NewGuid().ToString("N") + ".json");
+        var authorization = Path.Combine(directory, "authorization-" + Guid.NewGuid().ToString("N"));
+        PrivateTestFiles.WriteNew(nominee, JsonSerializer.SerializeToUtf8Bytes(new
+        {
+            version = "1",
+            issuer = Issuer,
+            subject = issuer.Subject
+        }));
+        var result = await RunIdentityOperatorAsync(
+            ["bootstrap", "authorize", "--nominee-file", nominee, "--authorization-file", authorization], token);
+        var secret = await File.ReadAllTextAsync(authorization, token);
+        if (secret.Length != 43 || new[] { secret, issuer.Subject, Issuer, directory }
+            .Any(value => (result.Stdout + result.Stderr).Contains(value, StringComparison.Ordinal)))
+            throw new InvalidOperationException("identity_fixture_private_delivery_invalid");
+        await StartWorkerAsync("--fixture-product-login", client.BaseAddress!.Port, token);
+        return secret;
+    }
+
     public async Task ReconcileProductProviderAsync(CancellationToken token)
     {
         await StopProductAsync(token);
@@ -720,6 +819,15 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         var authorityTemporary = authorityFile + "." + Guid.NewGuid().ToString("N");
         PrivateTestFiles.WriteNew(authorityTemporary, Encoding.ASCII.GetBytes(issuer.AuthorityCertificatePem));
         File.Move(authorityTemporary, authorityFile, overwrite: true);
+        await RunIdentityOperatorAsync(["reconcile-configuration"], token);
+        await StartWorkerAsync("--fixture-product-login", client.BaseAddress!.Port, token);
+    }
+
+    private Task<ProcessOutput> RunIdentityOperatorAsync(IReadOnlyList<string> arguments, CancellationToken token) =>
+        RunStoppedHostAsync(["--identity", .. arguments], token);
+
+    private async Task<ProcessOutput> RunStoppedHostAsync(IReadOnlyList<string> arguments, CancellationToken token)
+    {
         var start = new ProcessStartInfo("dotnet")
         {
             WorkingDirectory = OwnedProcesses.FindRepository(),
@@ -731,13 +839,12 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         var build = AppContext.BaseDirectory.Contains("/Release/", StringComparison.Ordinal) ? "Release" : "Debug";
         start.ArgumentList.Add(Path.Combine(OwnedProcesses.FindRepository(), "src", "Kofte.Host", "bin", build,
             "net10.0", "Kofte.Host.dll"));
-        start.ArgumentList.Add("--identity");
-        start.ArgumentList.Add("reconcile-configuration");
+        foreach (var argument in arguments) start.ArgumentList.Add(argument);
         scope!.ConfigureChild(start, offlineMaintenance: true);
-        serving.ConfigureChild(start);
+        serving!.ConfigureChild(start);
         var result = await OwnedProcesses.RunAsync(start, TimeSpan.FromSeconds(120), token);
-        if (result.ExitCode != 0) throw new InvalidOperationException("identity_fixture_reconciliation_failed");
-        await StartWorkerAsync("--fixture-product-login", client.BaseAddress!.Port, token);
+        if (result.ExitCode != 0) throw new InvalidOperationException("identity_fixture_operator_failed");
+        return result;
     }
 
     private async Task StopProductAsync(CancellationToken token)
@@ -899,6 +1006,22 @@ public sealed class LoginCommitFixture : IAsyncDisposable
                 (string)row[3]!, row[4] is null ? null : Id(row[4]))).ToArray());
     }
 
+    public async Task<LoginBootstrapObservation> BootstrapAsync(CancellationToken token)
+    {
+        using var budget = new OperationBudget(TimeSpan.FromSeconds(1), token);
+        await using var database = await DeadlineStore.OpenAsync(installation, budget);
+        var rows = await database.QueryAsync($"""
+            SELECT installation_id,state,generation,nominee_issuer,nominee_subject,authorization_digest,
+              expires_at_utc,initial_user_id,consumed_at_utc,consumed_generation
+            FROM {database.Prefix}__kofte_bootstrap WHERE singleton_key=1
+            """);
+        if (rows.Count != 1) throw new InvalidOperationException("identity_fixture_bootstrap_invalid");
+        var row = rows[0];
+        return new(Id(row[0]), (string)row[1]!, (long)row[2]!, (string?)row[3], (string?)row[4],
+            (string?)row[5], row[6] is null ? null : Utc(row[6]), row[7] is null ? null : Id(row[7]),
+            row[8] is null ? null : Utc(row[8]), (long?)row[9]);
+    }
+
     public async ValueTask DisposeAsync()
     {
         if (webWorker is not null) await webWorker.DisposeAsync();
@@ -956,10 +1079,15 @@ public sealed class LoginCommitFixture : IAsyncDisposable
 
         public void OnNext(KeyValuePair<string, object?> item)
         {
-            if (owner.fault is not (LoginCommitFault.BeforeCommit or LoginCommitFault.AfterCommit) ||
-                item.Key != "identity.phase" || item.Value is null ||
+            if (item.Key != "identity.phase" || item.Value is null ||
                 !ReferenceEquals(owner.accessor.HttpContext?.RequestServices.GetService<LoginCommitFixture>(), owner)) return;
             var phase = JsonSerializer.SerializeToElement(item.Value).GetProperty("phase").GetString();
+            if (phase == "enrollment_before_commit" && owner.failEnrollmentCommit)
+            {
+                owner.failEnrollmentCommit = false;
+                throw new StorageException(Kofte.Platform.Modules.Storage.StorageCode.Unavailable);
+            }
+            if (owner.fault is not (LoginCommitFault.BeforeCommit or LoginCommitFault.AfterCommit)) return;
             if (phase == (owner.fault == LoginCommitFault.BeforeCommit ? "login_before_commit" : "login_committed"))
                 throw new CommitInterruption();
         }

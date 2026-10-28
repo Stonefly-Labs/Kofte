@@ -89,6 +89,42 @@ it("renders only the verified identity as escaped text, not markup or privileges
   expect(screen.queryByRole("button", { name: "Sign in" })).toBeNull();
 });
 
+it("shows nominated entry only for an ordinary production actor and re-fetches designation after confirmation", async () => {
+  status = 200;
+  fetcher.mockImplementation(async (url: string) => {
+    if (url.endsWith("first-administrator")) {
+      current = { ...user, isInitialAdministrator: true };
+      return Response.json({
+        version: "1",
+        status: "enrolled",
+        correlationId: "a".repeat(32),
+      });
+    }
+    return url.endsWith("browser-context")
+      ? Response.json({ version: "1", identityMode: mode, csrfToken: token })
+      : Response.json(current, { status });
+  });
+  const mounted = render(<IdentityPanel />);
+  await settle();
+  const input = screen.getByLabelText("One-time authorization");
+  expect(screen.getAllByRole("status")).toHaveLength(1);
+  input.focus();
+  fireEvent.change(input, { target: { value: "A".repeat(43) } });
+  fireEvent.submit(mounted.container.querySelector("form")!);
+  await settle();
+  expect(screen.getByText(/Initial administrator designated/)).toBeTruthy();
+  expect(screen.queryByLabelText("One-time authorization")).toBeNull();
+  expect(document.activeElement).toBe(
+    screen.getByRole("heading", { name: "Your identity" }),
+  );
+  expect(
+    fetcher.mock.calls.filter(([url]) => url.endsWith("/me")),
+  ).toHaveLength(2);
+  expect(
+    fetcher.mock.calls.filter(([url]) => url.endsWith("first-administrator")),
+  ).toHaveLength(1);
+});
+
 it("announces a bounded sign-in refusal without retrying the mutation", async () => {
   vi.mocked(startLogin).mockResolvedValue({
     kind: "uncertain",

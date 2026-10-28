@@ -1,7 +1,7 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement in progress; T001-T040 complete (40/100); US1 reconciled with both-provider integration and actual Ubuntu HTTPS recipes; broader CI failures remain.
-**Stage / date:** implement, 2026-10-26; continued 2026-10-27.
+**Result:** implement in progress; 44/100 complete (T001-T040, T042, T049-T050, T052); US2 core delivered, complete enrollment/browser and later-story evidence remain.
+**Stage / date:** implement, 2026-10-26; continued 2026-10-28.
 **Assessed baseline:** `6df9eebdcfa6b273126b0c51c272d1b2c2f953e6`.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
 `specs/005-authentication-bootstrap`.
@@ -2175,3 +2175,122 @@ including PostgreSQL in **895.064s**; the earlier timeout is not erased.
 No product or verification deadline changed, and a fresh complete CI run is
 still required. The local macOS cleanup and intervening readiness failures
 also remain explicit limitations, not a full-feature acceptance.
+
+## US2: nominated enrollment and real interruption evidence
+
+The same **005 / implement / running** stage, branch and draft PR #8 continue.
+Only T042, T049, T050 and T052 are newly checked: their required both-provider
+authority/file, twenty-contender and real child-interruption observations pass.
+The other US2 markers remain conservative while the complete delivered-boundary
+matrix, unavailable-administrator/module-data and browser evidence are unfinished.
+All approved task text/dependencies, reviewer checklists and driver state remain
+unchanged. This is **44/100**, not a completed story or feature.
+
+### Delivered behavior
+
+`IdentityBootstrapStore` validates the complete singleton/null-state contract,
+performs stopped pending nomination/replacement/disable, and binds the SHA-256
+authorization digest to installation, checked generation and exact issuer/subject.
+The private operator command generates 32 random bytes, exclusively creates an
+owner-only file, durably flushes it before DB commit and retains partial/delivered
+evidence after uncertainty. Live, foreign, unadmitted, consumed and
+recovery-locked operations cannot reach delivery or reopen authority.
+
+Protected enrollment revalidates the current durable session/epoch inside the
+owner transaction, compares the persisted exact nominee and digest in constant
+time, then commits designation/consumption/revision/immutable event together.
+It erases pending token/nominee fields, never takes an actor/role from input and
+reports success only after known commit. All twenty HTTP contenders pass real
+CSRF/admission: exactly one 200, nineteen 409, with exact designated user,
+generation, event correlation and revision correspondence. Three fresh process
+restarts and idempotent actual registry upgrade/identity prepare preserve this
+consumption; the broader T051 unavailable-administrator/module-data case remains.
+
+The exact Next route preserves the protected exchange and safe receipt, with no
+redirect following or mutation retry. The masked form never prefills/persists
+authorization, clears it before dispatch, aborts on unmount and suppresses late
+results for another identity. Refusal restores entry focus; confirmation/lost
+reply triggers fresh `/me` and restores heading focus, without declaring unknown
+commit as confirmed. Actual native OpenAPI now includes the strict write-only
+43-character request, security/headers, receipt and safe conflict; generated
+types preserve original health operations/components.
+
+### Real interruption defect and correction
+
+The four private barriers stop the actual maintenance child after file creation,
+after durable flush, before DB commit and after durable commit. Ownership is
+proved by the admitted barrier PID, actual PPID and matching process group;
+the exact tracked child is killed and both child/supervisor exits are verified.
+Independent reopening checks each file/DB side, retained evidence and explicit
+replacement. Enrollment barriers similarly kill the exact serving child before
+or after durable commit and before acknowledgement: neither-or-one atomic state/
+event, no acknowledged success, and safe corrected retry.
+
+The pre-commit SQLite operator interruption genuinely reproduced
+`identity_reconciliation_required`: startup's inventory check reused the clean
+backup opener, which refuses an inactive SQLite crash journal. Startup now uses
+its already-open verified platform connection for the same inventory checks.
+Clean backup/recovery readers still open through their original sidecar-refusing
+path. No journal deletion, backup format relaxation or time-budget change occurs.
+The following full 36-case operator matrix and four-case enrollment crash matrix
+pass on both stores; all fifteen retained recovery tests additionally pass.
+
+Private-file effects also exposed an invalid premature ready/uncertain trace.
+Two genuine red cases now pass: intermediate phases describe uncertainty without
+relaxing terminal ready/uncertain rejection. The final known commit may still
+report committed; loss/refusal retains truthful uncertain evidence.
+
+### Exact executed evidence and retained failures
+
+Every native command uses SDK 10.0.402/runtime 10.0.13; both-provider commands
+explicitly opt into the disposable fixture. Test commands below use the existing
+safe runner's private native capture, not public failure XML/provider payload.
+
+| Exact command / selection | Actual result |
+| --- | --- |
+| `dotnet build Kofte.slnx --no-restore -c Release -warnaserror --nologo` | Passed, zero warnings/errors, including public/browser recipe wiring. |
+| `dotnet format Kofte.slnx --verify-no-changes --no-restore` | Passed. |
+| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore --no-build -c Release --filter-class '*IdentityNominationTests' --minimum-expected-tests 36` | Final full **36 passed**, both providers. Initial foreign extra-fixture startup, SQLite journal and test-only 200ms PostgreSQL acquisition failures are retained; the final live-lease test uses the original normal two-second acquisition, not an increased deadline. |
+| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore --no-build -c Release --filter-class '*EnrollmentCrashTests' --minimum-expected-tests 4` | Full **4 passed**, both providers. |
+| `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-class '*EnrollmentConcurrencyTests' --minimum-expected-tests 2` | **2 passed**, twenty protected eligible contenders and three fresh restarts per provider. |
+| `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteEnrollmentTests' --minimum-expected-tests 16` | Full **16 passed**, including actual stopped replacement and ticket/commit verification 503. Earlier full both-store 32-case selection timed out at its unchanged 240s command bound; it did not pass. |
+| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore --no-build -c Release --filter-class '*RecoverySetTests' --minimum-expected-tests 15` | **15 passed**, retaining clean-backup sidecar refusal after the startup correction. |
+| `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-class '*OpenApiTests' --minimum-expected-tests 3 --filter-trait Provider=sqlite` | **3 passed**, actual generation/full baseline and absence outside Development. |
+| `dotnet test --project tests/unit/Kofte.Host.Tests --no-restore --no-build -c Release --filter-class '*IdentityDiagnosticsTests' --filter-class '*NominationDeliveryTests' --minimum-expected-tests 7` | **7 passed**. |
+| `npm run generate --workspace packages/bootstrap-contract` and `npm run contract:check` | Passed after extracting the actual native document, preserving every original health operation. Initial extraction failed because xUnit escapes the public JSON; prior npm success against the old JSON is not generation proof. |
+| `npm run test:unit --workspace apps/web -- features/identity` | **82 passed**. |
+| `npm run typecheck --workspace apps/web`, `npm run lint --workspace apps/web`, `npm run build --workspace apps/web` | All passed. |
+| `npm run typecheck --workspace tests/e2e`, `npm run lint --workspace tests/e2e` | Both passed. Initial Prettier failure for the new browser source was corrected with the existing formatter. |
+| `python3 scripts/check_repository.py`, `python3 -m unittest discover -s scripts/tests -v`, `git diff --check` | All passed; Python discovery **126 tests**. |
+| `npm run format:check`, `npm run contract:check` | Final full formatting and generated-contract checks passed. |
+| `dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario nominated-enrollment --provider sqlite` | Native-only version passed **15 named observations** after an earlier generic failure with unestablished cause. The subsequently expanded actual-browser version **fails**, ending at fixed `identity_browser_stage_submitted`, before enrollment. |
+| `dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario enrollment-race --provider sqlite` | Passed its protected twenty-way native race, exact event/state and three-restart observations. |
+
+The new HTTPS enrollment browser checks deliberately enter a wrong authorization,
+then drop acknowledgement only after the actual protected commit. They require
+fresh designation/no retry, cleared secret/storage, keyboard/focus, 320px/200%,
+axe and original five-second UI bounds. They are wired into the existing Ubuntu
+browser job alongside individual both-provider public recipes, but are **not
+yet passing evidence**: local browser execution stalls before enrollment.
+The other required public scenarios and `all` remain fail-closed/unimplemented.
+
+The unavailable-commit selection passed SQLite's two cases, but both PostgreSQL
+cases failed during owned Docker startup, not the enrollment test body.
+Read-only inspection and an explicitly unique task-owned network-create probe
+established **`docker_network_pool_exhausted`** with a responsive engine,
+32 networks and 21 running fixture-labeled containers. Labels alone do not prove
+this session owns all resources. The probe created nothing and no unrelated/
+global cleanup was attempted. Fresh owned CI is required for the missing matrix;
+do not reduce contention, extend deadlines or declare PostgreSQL passed.
+
+For preceding committed `06a9faf`, repository checks pass; product run
+[40631199021](https://github.com/Stonefly-Labs/Kofte/actions/runs/40631199021)
+passed eight jobs but failed contract at the existing 900s composition-public
+bound and SQLite composition privacy with safe cancellation/consumer-failure
+codes. Neither cause is diagnosed/fixed by enrollment. Those failures do not
+validate current source, and earlier failed/readiness/macOS evidence is retained.
+
+**Remaining:** complete US2 matrix and browser evidence, US3 sign-out/session/
+actor parity, US4 actual development selection/isolation, US5 recovery-v2/
+quarantine/reconciliation, then full local/CI gates and evidence-based review.
+No stage transition, human acceptance, PR readiness or merge is requested.

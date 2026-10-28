@@ -80,7 +80,7 @@ function loginNotice(): LoginNotice | undefined {
   };
 }
 
-async function readJson(response: Response): Promise<unknown> {
+export async function readIdentityJson(response: Response): Promise<unknown> {
   if (
     !/^application\/(?:json|problem\+json)(?:;|$)/i.test(
       response.headers.get("content-type") ?? "",
@@ -155,7 +155,7 @@ export function useIdentity() {
               }),
           ),
         );
-        const context = await readJson(contextResponse);
+        const context = await readIdentityJson(contextResponse);
         if (contextResponse.status !== 200 || !isContext(context)) {
           correlationId = problemReference(context, contextResponse.status);
           throw new TypeError("identity_context_invalid");
@@ -169,7 +169,7 @@ export function useIdentity() {
             notice: loginNotice(),
           };
         } else {
-          const identity = await readJson(identityResponse);
+          const identity = await readIdentityJson(identityResponse);
           if (
             identityResponse.status !== 200 ||
             !isCurrentIdentity(identity) ||
@@ -224,5 +224,10 @@ export function useIdentity() {
     };
   }, [cancel, retry]);
 
-  return { state, retry };
+  const refreshIdentity = useCallback(() => {
+    cancel();
+    retry();
+  }, [cancel, retry]);
+
+  return { state, retry, refreshIdentity };
 }

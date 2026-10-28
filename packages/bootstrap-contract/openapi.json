@@ -464,6 +464,264 @@
         ]
       }
     },
+    "/api/identity/v1/first-administrator": {
+      "post": {
+        "operationId": "identityEnrollFirstAdministrator",
+        "parameters": [
+          {
+            "name": "Origin",
+            "in": "header",
+            "description": "Exact configured public origin",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Kofte-CSRF",
+            "in": "header",
+            "description": "Fresh identity-bound antiforgery request token with its paired cookie",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "authorization"
+                ],
+                "type": "object",
+                "properties": {
+                  "authorization": {
+                    "maxLength": 43,
+                    "minLength": 43,
+                    "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$",
+                    "type": "string",
+                    "writeOnly": true
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Fixed sanitized identity failure",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              },
+              "Pragma": {
+                "required": true,
+                "schema": {
+                  "const": "no-cache",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "required": true,
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityProblemV1"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Fixed sanitized identity failure",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              },
+              "Pragma": {
+                "required": true,
+                "schema": {
+                  "const": "no-cache",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "required": true,
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityProblemV1"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Fixed sanitized identity failure",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              },
+              "Pragma": {
+                "required": true,
+                "schema": {
+                  "const": "no-cache",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "required": true,
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityProblemV1"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Fixed sanitized identity failure",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              },
+              "Pragma": {
+                "required": true,
+                "schema": {
+                  "const": "no-cache",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "required": true,
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityProblemV1"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Fixed sanitized identity failure",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              },
+              "Pragma": {
+                "required": true,
+                "schema": {
+                  "const": "no-cache",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "required": true,
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityProblemV1"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Known committed enrollment; retrieve current identity to verify designation",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              },
+              "Pragma": {
+                "required": true,
+                "schema": {
+                  "const": "no-cache",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "required": true,
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnrollmentResultV1"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Enrollment unavailable without disclosing nominee or ceremony history",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              },
+              "Pragma": {
+                "required": true,
+                "schema": {
+                  "const": "no-cache",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "required": true,
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityProblemV1"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "kofteSession": []
+          }
+        ]
+      }
+    },
     "/openapi/v1.json": {
       "get": {
         "summary": "Fetch this versioned contract in Development only",
@@ -601,6 +859,28 @@
           },
           "isInitialAdministrator": {
             "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "EnrollmentResultV1": {
+        "required": [
+          "version",
+          "status",
+          "correlationId"
+        ],
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": "1",
+            "type": "string"
+          },
+          "status": {
+            "const": "enrolled",
+            "type": "string"
+          },
+          "correlationId": {
+            "$ref": "#/components/schemas/CorrelationId"
           }
         },
         "additionalProperties": false

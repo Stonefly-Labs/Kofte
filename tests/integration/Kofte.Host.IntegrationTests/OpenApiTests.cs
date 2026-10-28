@@ -40,6 +40,16 @@ public sealed class OpenApiTests
         Assert.Equal("kofte-dev-session", actual["components"]!["securitySchemes"]!["kofteSession"]!["name"]!.GetValue<string>());
         Assert.Equal("cookie", actual["components"]!["securitySchemes"]!["kofteSession"]!["in"]!.GetValue<string>());
         Assert.NotEmpty(actual["paths"]!["/api/identity/v1/me"]!["get"]!["security"]!.AsArray());
+        var enrollment = actual["paths"]!["/api/identity/v1/first-administrator"]!["post"]!;
+        Assert.NotEmpty(enrollment["security"]!.AsArray());
+        var submission = enrollment["requestBody"]!["content"]!["application/json"]!["schema"]!;
+        Assert.False(submission["additionalProperties"]!.GetValue<bool>());
+        Assert.Equal("authorization", Assert.Single(submission["required"]!.AsArray())!.GetValue<string>());
+        var authorization = submission["properties"]!["authorization"]!;
+        Assert.Equal(43, authorization["minLength"]!.GetValue<int>());
+        Assert.Equal(43, authorization["maxLength"]!.GetValue<int>());
+        Assert.True(authorization["writeOnly"]!.GetValue<bool>());
+        Assert.NotNull(enrollment["responses"]!["409"]);
         Assert.Equal(1, actual["servers"]?.AsArray().Count);
         Assert.Equal(host.Client.BaseAddress?.GetLeftPart(UriPartial.Authority),
             actual["servers"]?[0]?["url"]?.GetValue<string>());

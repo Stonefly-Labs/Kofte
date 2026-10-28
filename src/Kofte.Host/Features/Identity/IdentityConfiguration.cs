@@ -328,7 +328,7 @@ public sealed class IdentityConfiguration : IDisposable
         Paths.ValidateFile(path, allowMissing);
     }
 
-    private static byte[] ReadBounded(string path, int maximum)
+    internal static byte[] ReadBounded(string path, int maximum)
     {
         FileReference(path, allowMissing: false);
         using var file = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);

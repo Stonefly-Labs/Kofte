@@ -29,6 +29,8 @@ internal static class IdentityMaintenanceWorker
             observation = IdentityDiagnostics.Begin(operation switch
             {
                 IdentityOperation.Prepare => IdentityAction.Prepare,
+                IdentityOperation.BootstrapAuthorize => IdentityAction.BootstrapAuthorize,
+                IdentityOperation.BootstrapDisablePending => IdentityAction.BootstrapDisablePending,
                 IdentityOperation.ReconcileConfiguration => IdentityAction.ReconcileConfiguration,
                 _ => IdentityAction.RevokeSessions
             }, mode, installation.Provider, TimeSpan.FromSeconds(116), token,
@@ -54,6 +56,24 @@ internal static class IdentityMaintenanceWorker
                     await IdentityPreparation.InitializeAsync(installation, scope, connection, owner.Id, mode,
                         identity.TrustDigest, budget);
                 }
+            }
+            else if (operation is IdentityOperation.BootstrapAuthorize or IdentityOperation.BootstrapDisablePending)
+            {
+                if (owner.Version != 2) throw new StorageException(StorageCode.VersionUnsupported);
+                if (identity.Mode != IdentityMode.Oidc)
+                    throw new IdentityStateException(IdentityDiagnosticOutcome.Forbidden);
+                await IdentityPreparation.VerifyAsync(installation, owner.Id, mode, identity.TrustDigest, budget);
+                if (operation == IdentityOperation.BootstrapAuthorize)
+                {
+                    using var keys = IdentityKeys.Open(identity, owner.Id, budget);
+                    var nominee = IdentityNomination.Read(args[4], identity);
+                    var authorization = IdentityNomination.NewAuthorization();
+                    await IdentityBootstrapStore.AuthorizeAsync(installation, scope, owner.Id, mode,
+                        identity.TrustDigest, nominee.Issuer, nominee.Subject, authorization,
+                        () => IdentityNomination.DeliverAsync(args[6], authorization, budget), budget);
+                }
+                else await IdentityBootstrapStore.DisablePendingAsync(installation, scope, owner.Id, mode,
+                    identity.TrustDigest, budget);
             }
             else
             {

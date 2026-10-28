@@ -1,18 +1,28 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { Button } from "../../components/ui/button";
 import { startLogin, type LoginStartFailure } from "./startLoginAction";
 import { useIdentity } from "./useIdentity";
+import { EnrollmentForm, type EnrollmentNotice } from "./EnrollmentForm";
 
 export function IdentityPanel({
   returnPath = "/identity",
 }: {
   returnPath?: string;
 }) {
-  const { state, retry } = useIdentity();
+  const { state, retry, refreshIdentity } = useIdentity();
+  const [enrollmentNotice, setEnrollmentNotice] = useState<EnrollmentNotice>();
   const [starting, startTransition] = useTransition();
   const [loginFailure, setLoginFailure] = useState<LoginStartFailure>();
+  const heading = useRef<HTMLHeadingElement>(null);
+  const enrollmentFocus = useRef(false);
+  useEffect(() => {
+    if (enrollmentFocus.current && state.kind !== "loading") {
+      enrollmentFocus.current = false;
+      heading.current?.focus();
+    }
+  }, [state]);
   const validReturn = returnPath === "/" || returnPath === "/identity";
   const label = !validReturn
     ? "Identity navigation is unavailable"
@@ -26,7 +36,9 @@ export function IdentityPanel({
   const context = "context" in state ? state.context : undefined;
   return (
     <section className="panel" aria-labelledby="identity-heading">
-      <h2 id="identity-heading">Your identity</h2>
+      <h2 id="identity-heading" ref={heading} tabIndex={-1}>
+        Your identity
+      </h2>
       <p role="status" aria-live="polite" aria-atomic="true">
         {label}
       </p>
@@ -34,6 +46,18 @@ export function IdentityPanel({
         <p>
           <strong>Development identity</strong> — local use only. This is not
           production authentication.
+        </p>
+      )}
+      {enrollmentNotice && (
+        <p role={enrollmentNotice.kind === "enrolled" ? "status" : "alert"}>
+          {enrollmentNotice.kind === "enrolled"
+            ? "Enrollment was confirmed. The designation is being checked through your current identity."
+            : enrollmentNotice.kind === "expired"
+              ? "Your session must be verified again before enrollment."
+              : "Enrollment could not be confirmed. No additional enrollment was attempted. Check your current identity before retrying."}
+          {enrollmentNotice.correlationId && (
+            <> Reference: {enrollmentNotice.correlationId}</>
+          )}
         </p>
       )}
       {state.kind === "signed-in" && (
@@ -49,6 +73,17 @@ export function IdentityPanel({
               ? "Initial administrator designated. This does not grant unrelated permissions."
               : "Signing in does not grant administrator, team or resource permissions."}
           </p>
+          {state.identity.identityMode === "oidc" &&
+            !state.identity.isInitialAdministrator && (
+              <EnrollmentForm
+                csrfToken={state.context.csrfToken}
+                onRefresh={(notice) => {
+                  enrollmentFocus.current = true;
+                  setEnrollmentNotice(notice);
+                  refreshIdentity();
+                }}
+              />
+            )}
         </>
       )}
       {(state.kind === "signed-out" || state.kind === "expired") && (

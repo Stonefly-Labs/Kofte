@@ -11,6 +11,38 @@ namespace Kofte.Host.Tests.Features.Identity;
 
 public sealed class IdentityDiagnosticsTests
 {
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void DeliveredFileEffectCanBeTracedBeforeDatabaseCommitWithoutPrematureSuccess(bool committed)
+    {
+        var spans = new System.Collections.Concurrent.ConcurrentBag<Activity>();
+        using var listener = new ActivityListener
+        {
+            ShouldListenTo = source => source.Name == "Kofte.Identity",
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllData,
+            ActivityStopped = spans.Add
+        };
+        ActivitySource.AddActivityListener(listener);
+        var records = new List<IdentityDiagnosticRecord>();
+        using (var observation = Diagnostics.Begin(IdentityAction.BootstrapAuthorize, "oidc", "sqlite",
+            TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken, records.Add))
+        {
+            observation.PossibleCommit();
+            Diagnostics.Checkpoint("operator_before_commit");
+            if (committed) observation.Committed();
+            else observation.Fail(new IOException("test_commit_not_acknowledged"));
+        }
+        var terminal = Assert.Single(records);
+        Assert.Equal(committed ? "identity_completed" : "identity_unavailable", terminal.EventCode);
+        Assert.Equal(committed ? "committed" : "uncertain", terminal.Durability);
+        var phase = Assert.Single(spans, span => span.TraceId.ToHexString() == terminal.CorrelationId &&
+            span.OperationName == "identity.operator_before_commit");
+        Assert.Equal("uncertain", phase.GetTagItem("identity.outcome"));
+        Assert.Equal("uncertain", phase.GetTagItem("identity.durability"));
+        Assert.Null(Diagnostics.Current);
+    }
+
     [Fact]
     public void TerminalRecordsAreGeneratedBoundedPrivateAndDoNotReuseCallerTraceIdentity()
     {
