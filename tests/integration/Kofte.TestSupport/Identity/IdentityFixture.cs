@@ -115,6 +115,41 @@ public sealed class IdentityFixture : IAsyncDisposable
             throw new InvalidOperationException("identity_fixture_requires_stopped_processes");
     }
 
+    public IdentityProcess StartDevelopmentWeb()
+    {
+        ObjectDisposedException.ThrowIf(disposed, this);
+        Storage.Token.ThrowIfCancellationRequested();
+        var repository = OwnedProcesses.FindRepository();
+        if (!File.Exists(Path.Combine(repository, "apps", "web", ".next", "BUILD_ID")))
+            throw new InvalidOperationException("identity_fixture_web_build_missing");
+        var start = new ProcessStartInfo("node")
+        {
+            WorkingDirectory = repository,
+            UseShellExecute = false,
+            RedirectStandardInput = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true
+        };
+        foreach (var argument in new[]
+        {
+            Path.Combine(repository, "node_modules", "next", "dist", "bin", "next"),
+            "start", Path.Combine(repository, "apps", "web"), "--hostname", "127.0.0.1",
+            "--port", WebUrl.Port.ToString(System.Globalization.CultureInfo.InvariantCulture)
+        })
+            start.ArgumentList.Add(argument);
+        OwnedProcesses.ClearSensitiveEnvironment(start);
+        start.Environment["KOFTE_HOST_URL"] = HostUrl.GetLeftPart(UriPartial.Authority);
+        start.Environment["KOFTE_BACKEND_ORIGIN"] = HostUrl.GetLeftPart(UriPartial.Authority);
+        start.Environment["KOFTE_WEB_URL"] = WebUrl.GetLeftPart(UriPartial.Authority);
+        start.Environment["KOFTE_AUTH_CONFIG_FILE"] = ConfigurationPath;
+        start.Environment["ASPNETCORE_ENVIRONMENT"] = "Development";
+        start.Environment["DOTNET_ENVIRONMENT"] = "Development";
+        start.Environment["NEXT_TELEMETRY_DISABLED"] = "1";
+        var process = new IdentityProcess(OwnedProcesses.Start(start, captureOutput: false), Canary);
+        processes.Add(process);
+        return process;
+    }
+
     public async Task<string> PersistentSnapshotAsync(CancellationToken token, string? keys = null)
     {
         var storage = await CompositionStoreSnapshot.CaptureAsync(Storage, token);

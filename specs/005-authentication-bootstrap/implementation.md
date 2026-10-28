@@ -1,6 +1,6 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement in progress; 67/100 complete (T001-T062, T071-T075); native/web Development selection, explicit loopback supervisor, request/error parity and durable sign-out delivered, remaining US3/both-provider/operations/final evidence unfinished.
+**Result:** implement in progress; 68/100 complete (T001-T063, T071-T075); native/web Development selection, explicit loopback supervisor, request/error/session-scope parity and durable sign-out delivered, remaining US3/both-provider/operations/final evidence unfinished.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-28.
 **Assessed baseline:** `6df9eebdcfa6b273126b0c51c272d1b2c2f953e6`.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
@@ -3162,3 +3162,57 @@ T057/T062 and T075 are now complete: **67/100**, with no checked task depending 
 an unchecked prerequisite. T063-T070, T076-T100 remain. Driver stays
 005/implement/running on the original draft PR; final review, explicit human
 acceptance and merge remain separate.
+
+## T063: actual empty/composed native/Next session scope and epoch
+
+`SessionScopeContractTests` consolidates the proposed session-contract path.
+Its SQLite/PostgreSQL subclasses use actual `BootstrapProgram` empty or composed
+entry paths, not a manually constructed test application. A test-owned
+`StartDevelopmentWeb` fixture starts the already-built production Next process
+against the exact owned backend/configuration; it forwards no database credential,
+adds no TLS/principal bypass and shares verified process/descendant cleanup.
+The existing contract suite already builds production Next before these tests.
+
+Two independent browser cookie containers explicitly select different configured
+synthetic identities. Concurrent API requests preserve each exact user ID across
+both direct and Next paths, with required mode/version/designation and no-store.
+The second anonymous browser cannot inherit the first user's actor; spoofed
+identity/administrator headers cannot authenticate an unrelated browser.
+Both serving processes stop before the actual admitted `revoke-sessions` command.
+Fresh processes then reject both **saved original Cookie headers** on their first
+protected requests through both paths. Readiness uses a separate anonymous client,
+and replay disables cookie mutation, so clearing a browser cookie cannot masquerade
+as server-side revocation. Explicit fresh selection returns each original user ID.
+
+Actual commands/results:
+
+- Release warnings-as-errors solution build passes.
+- `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore --no-build -c Release --filter-class '*SqliteSessionScopeContractTests' --minimum-expected-tests 2`
+  passes both actual entry-path cases in
+  `contract-sqlite-20f77294e531433085961b1a4745f54b.json`, including exact original
+  credential replay and verified host/web/command exits. The initial native-only
+  prototype passes six startup cases in
+  `integration-sqlite-0aae461118924a7aaf9adda68bd529fd.json`; it is replaced, not
+  duplicated, by the stronger actual native/Next contract test. The first
+  native/Next variant also passes in
+  `contract-sqlite-2d7822d71f314094a576b4f02dc288db.json`.
+- `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore --no-build -c Release --filter-class '*SqliteCurrentIdentityContractTests' --minimum-expected-tests 2`
+  passes fresh durable profile/designation in API/actor, ungranted-action refusal,
+  next-request revocation and corrupt-ticket 503.
+- `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityPreparationTests' --filter-method '*DirectWorkerCannotAcquireOfflineAuthority' --minimum-expected-tests 1`
+  passes the separate admitted stopped-worker boundary.
+  Those latter three cases are recorded together in
+  `contract-sqlite-0f61e5b6460b4c39aecff061b6bc8f86.json`; the earlier sixteen-case
+  parity selection independently verifies ordinary/designated actors and denied
+  unrelated action through the production HTTPS boundary.
+
+T063 is complete: **68/100**. T064/T065 retain mandatory full-corpus and
+both-provider acceptance; the new PostgreSQL scope counterpart is not claimed
+executed locally while Docker address pools are exhausted. No request-scoped
+product wiring defect is observed or hidden by a synthetic success fallback.
+Current published `1da3483` repository/quality/unit/startup/browser checks pass
+at observation. Its privacy job fails the existing SQLite composition consumer
+`IndependentPrivateDiagnosticsRequiresRealChannelsAndSafeUsefulBoundaryEvidence`
+with generic `composition_consumer_failed`; the safe artifact does not establish
+its underlying cause. Remaining incomplete jobs and full feature acceptance
+remain open; the driver stays implement/running.

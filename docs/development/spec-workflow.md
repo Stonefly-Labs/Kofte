@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement running; 67/100 complete** (T001–T062
+**Current checkpoint: 005 / implement running; 68/100 complete** (T001–T063
 and T071–T075), on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
@@ -48,6 +48,11 @@ T074 are now reconciled. T057/T062 now additionally close the request-test/share
 policy assertions: all sixteen SQLite native/HTTPS cases pass together, including
 exact header bytes, ambiguous headers, complete frozen unsafe returns and
 every unsupported method. Broader both-provider/full-corpus gates remain open.
+T063 now verifies actual empty/composed hosting with owned production Next,
+concurrent independent users, exact direct/adapted IDs and replay of the saved
+original credentials on the first protected request after stopped epoch revocation.
+Fresh explicit selection retains both user IDs; production fresh designation/
+corruption and separate stopped-worker authority checks also pass.
 T075 additionally preserves explicit stopped preparation,
 loopback-only serving and matching Development environments in the supervisor
 and owned runtime. The actual SQLite negative startup matrix passes all 88
