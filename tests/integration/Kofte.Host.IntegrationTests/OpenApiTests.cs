@@ -57,6 +57,14 @@ public sealed class OpenApiTests
         Assert.Null(signOut["responses"]!["204"]!["content"]);
         Assert.Equal(new[] { "Origin", "X-Kofte-CSRF" },
             signOut["parameters"]!.AsArray().Select(value => value!["name"]!.GetValue<string>()));
+        var development = actual["paths"]!["/api/identity/v1/development-session"]!["post"]!;
+        Assert.Empty(development["security"]!.AsArray());
+        var selection = development["requestBody"]!["content"]!["application/json"]!["schema"]!;
+        Assert.False(selection["additionalProperties"]!.GetValue<bool>());
+        Assert.Equal("identityKey", Assert.Single(selection["required"]!.AsArray())!.GetValue<string>());
+        Assert.Equal(255, selection["properties"]!["identityKey"]!["maxLength"]!.GetValue<int>());
+        Assert.Equal(new[] { "Origin", "X-Kofte-CSRF" },
+            development["parameters"]!.AsArray().Select(value => value!["name"]!.GetValue<string>()));
         Assert.Equal(1, actual["servers"]?.AsArray().Count);
         Assert.Equal(host.Client.BaseAddress?.GetLeftPart(UriPartial.Authority),
             actual["servers"]?[0]?["url"]?.GetValue<string>());

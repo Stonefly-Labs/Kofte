@@ -88,6 +88,26 @@ public sealed class IdentityConfigurationTests : IDisposable
         Reject(Development(), bootstrap: Bootstrap with { BackendOrigin = new("http://example.invalid:5080") });
     }
 
+    [Theory]
+    [InlineData("host", false)]
+    [InlineData("host", true)]
+    [InlineData("web", false)]
+    [InlineData("web", true)]
+    [InlineData("backend", false)]
+    [InlineData("backend", true)]
+    public void DevelopmentExposureRestrictionsApplyWithOrWithoutUnsafeOptIn(string boundary, bool unsafeExposure)
+    {
+        var bootstrap = Bootstrap with { UnsafeExposure = unsafeExposure };
+        bootstrap = boundary switch
+        {
+            "host" => bootstrap with { HostUrl = new("http://0.0.0.0:5080") },
+            "web" => bootstrap with { WebUrl = new("http://192.0.2.1:3000") },
+            "backend" => bootstrap with { BackendOrigin = new("http://192.0.2.1:5080") },
+            _ => throw new InvalidOperationException("test_boundary_required")
+        };
+        Reject(Development(), bootstrap: bootstrap);
+    }
+
     [Fact]
     public void KeyRingCannotOverlapEitherDirectionWithTheManagedRecoveryRoot()
     {

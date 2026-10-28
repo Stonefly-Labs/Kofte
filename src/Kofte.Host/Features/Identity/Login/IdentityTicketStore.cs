@@ -58,6 +58,19 @@ internal sealed class IdentityTicketStore(IdentityStore store, IDataProtectionPr
     internal static IdentitySessionView? Current(HttpContext context) =>
         context.Items.TryGetValue(CurrentKey, out var value) ? value as IdentitySessionView : null;
 
+    internal static bool HasCommitted(HttpContext context) => context.Items.ContainsKey(CommittedKey);
+
+    internal static async Task SignInCommittedAsync(HttpContext context, AuthenticationTicket ticket)
+    {
+        if (!HasCommitted(context)) throw InvalidBridge();
+        var scheme = await context.RequestServices.GetRequiredService<IAuthenticationSchemeProvider>()
+            .GetSchemeAsync(OidcConfiguration.SessionScheme) ?? throw InvalidBridge();
+        // A previously authenticated cookie handler renews its old reference instead of storing the new commit.
+        var handler = context.RequestServices.GetRequiredService<CookieAuthenticationHandler>();
+        await handler.InitializeAsync(scheme, context);
+        await handler.SignInAsync(ticket.Principal, ticket.Properties);
+    }
+
     public Task<string> StoreAsync(AuthenticationTicket ticket) =>
         StoreAsync(ticket, Context(), Context().RequestAborted);
 
@@ -138,7 +151,7 @@ internal sealed class IdentitySessionCookieManager : ICookieManager
     private readonly ChunkingCookieManager cookies = new();
 
     public string? GetRequestCookie(HttpContext context, string key) =>
-        context.Request.Path.Value is "/auth/oidc/callback" or "/api/identity/v1/development-session" or
+        IdentityTicketStore.HasCommitted(context) || context.Request.Path.Value is "/auth/oidc/callback" or
             "/health/live" or "/health/ready" or "/openapi/v1.json"
             ? null : cookies.GetRequestCookie(context, key);
 

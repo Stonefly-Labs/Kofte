@@ -8,7 +8,7 @@ internal static class IdentityOpenApi
 {
     internal static bool IsOperation(string? id) =>
         id is "identityBrowserContext" or "identityLogin" or "identityCallback" or "identityCurrent" or
-            "identityEnrollFirstAdministrator" or "identitySignOut";
+            "identityEnrollFirstAdministrator" or "identitySignOut" or "identityDevelopmentSession";
 
     internal static void Configure(OpenApiDocument document, IdentityConfiguration configuration)
     {
@@ -80,6 +80,31 @@ internal static class IdentityOpenApi
                     operation.Responses["200"] = Response(document,
                         operation.OperationId == "identityCurrent" ? "CurrentIdentityV1" : "BrowserContextV1",
                         "Verified self identity or public browser continuity");
+                else if (operation.OperationId == "identityDevelopmentSession")
+                {
+                    operation.Responses["200"] = Response(document, "CurrentIdentityV1",
+                        "Known committed configured Development identity; no production authority");
+                    operation.RequestBody = new OpenApiRequestBody
+                    {
+                        Required = true,
+                        Content = new Dictionary<string, OpenApiMediaType>
+                        {
+                            ["application/json"] = new()
+                            {
+                                Schema = Object(new()
+                                {
+                                    ["identityKey"] = new OpenApiSchema
+                                    {
+                                        Type = JsonSchemaType.String,
+                                        MinLength = 1,
+                                        MaxLength = 255,
+                                        Pattern = "^[ -~]+$"
+                                    }
+                                })
+                            }
+                        }
+                    };
+                }
                 else if (operation.OperationId == "identitySignOut")
                 {
                     operation.Responses["204"] = new OpenApiResponse
@@ -153,7 +178,8 @@ internal static class IdentityOpenApi
                             }
                         };
                 }
-                if (operation.OperationId is "identityEnrollFirstAdministrator" or "identitySignOut")
+                if (operation.OperationId is "identityEnrollFirstAdministrator" or "identitySignOut" or
+                    "identityDevelopmentSession")
                     operation.Parameters =
                     [
                         new OpenApiParameter

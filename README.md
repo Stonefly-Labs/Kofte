@@ -37,8 +37,14 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 > [!IMPORTANT]
 > **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md) and [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) is now human-merged. Its accepted ledger and evidence were verified on updated main before 005 began. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) retains prior failures and unknown causes; the historical failed local gate remains failed, not waived by acceptance or merge. Spec 005 now has [authentication/bootstrap requirements](specs/005-authentication-bootstrap/spec.md) and US1 sign-in implemented, not the complete identity feature. Nothing here claims production readiness or MVP completion.
 
-**Current stage: 005 / implement running; 57/100 tasks complete.** T001–T056
-and T061 are evidenced. US3 now adds protected durable self-session sign-out, its exact
+**Current stage: 005 / implement running; 60/100 tasks complete.** T001–T056,
+T061 and T071–T073 are evidenced. Native explicit Development selection now
+uses configured synthetic keys, the separate cookie and the existing atomic
+user/session/evidence boundary. Four actual SQLite cases verify stable mapping,
+strict input, fresh identity-bound CSRF and stopped OIDC↔Development transitions;
+old tickets fail and consumed production designation survives without merging
+users or granting Development authority. Its web selector and both-provider
+acceptance gate remain unfinished. US3 now adds protected durable self-session sign-out, its exact
 Next adapter and immediate local identity clearing on confirmed or uncertain
 results, without automatic mutation retries or provider-wide logout claims.
 Twenty SQLite session/sign-out cases pass in a nineteen-case selection plus

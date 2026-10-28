@@ -1,6 +1,6 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement in progress; 44/100 complete (T001-T040, T042, T049-T050, T052); US2 core delivered, complete enrollment/browser and later-story evidence remain.
+**Result:** implement in progress; 60/100 complete (T001-T056, T061, T071-T073); native Development selection delivered, remaining US3/web/operations/final evidence unfinished.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-28.
 **Assessed baseline:** `6df9eebdcfa6b273126b0c51c272d1b2c2f953e6`.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
@@ -2883,3 +2883,87 @@ endpoint/adapter must exist before the entire corpus can pass. This is a
 delivery-sequencing correction, not a waived case or changed product contract.
 Continue Development prerequisites alongside US3, on the same implement stage
 and draft PR. No acceptance or merge is requested.
+
+## T071–T073: explicit native Development selection and persisted mode isolation
+
+The existing configuration test class now includes all host/web/backend exposure
+cases with unsafe opt-in both disabled and enabled. Existing environment, explicit
+opt-in, strict configuration and non-loopback refusals remain. Test targets are
+consolidated in the existing unit project and the native public-contract project,
+as allowed by the task organization rule; all source remains inside `tests/`.
+The original positive native selection test fails before endpoint wiring
+(`contract-sqlite-539bc65a9ced4d669fbfe3d88e23cc6c.json`); the expanded configuration
+class passes in the same report.
+
+`POST /api/identity/v1/development-session` exists only in admitted Development.
+It accepts exactly one configured `identityKey`, rejects unknown/duplicate/profile
+and authority fields, and reuses exact Origin/framework antiforgery, bounded
+browser/installation/peer admission and the one-second owner budget. The fixed
+`kofte:development:v1` namespace, user/mapping/session and required events commit
+together before the native framework publishes the separate HttpOnly/Lax/path-only
+Development cookie. It never uses the provider or grants initial designation.
+Current-identity encoding is shared with `/me`, not duplicated.
+
+Initial live tests exposed two fixture/bridge issues, retained in
+`contract-sqlite-fd47b2f49921436ea355e3ba29f47019.json` and
+`contract-sqlite-9499d0648dc141d8af147fc822372589.json`. A signed-in explicit
+selection must authenticate the old request to validate its identity-bound CSRF,
+but the standard already-authenticated cookie handler invokes `RenewAsync`,
+not `StoreAsync`. The latter alone may consume the known committed new reference.
+Development now initializes a fresh DI-provided native cookie handler after the
+commit; its cookie reader suppresses the old reference only when a request-local
+committed binding exists. This retains the authenticated antiforgery check and
+fresh random cookie without permitting arbitrary ticket renewal or a second
+storage transaction. The exact framework 10.0.13 handler source was consulted;
+no private reflection, custom token format or copied framework implementation.
+
+The mode fixture initially hardcoded the child environment as Production and
+then regenerated production key custody on returning from Development. Its
+failures remain in the reports above and
+`contract-sqlite-4647ef4dd77747d2a2e3d23d093a7bc8.json`. It now reads the configured
+child environment and retains separate owned configurations/key custody per mode.
+Each transition stops the actual host, explicitly reconciles configuration under
+the normal operator and starts a fresh worker on the same installation. Private
+roots remain owned until verified worker cleanup. No serving repair is added.
+
+**Actual verification:**
+
+- `contract-sqlite-797134b800f64f19906fb54bfb4e3048.json`: all four native cases pass:
+  stable configured selection/fresh cookie and CSRF; twelve malformed or
+  caller-authority bodies without protected effects; and actual OIDC→Development→OIDC
+  transitions with initially pending and consumed ceremonies. Equal subjects and
+  null displays produce distinct exact users/mappings. Both original and renamed
+  old cookies fail. Development enrollment is forbidden; consumed user/time/generation
+  survive, unconsumed authority is disabled by explicit reconciliation, old enrollment
+  cannot replay, original production login returns its original ID/designation,
+  creation evidence survives, registry revision is unchanged and ungranted actions
+  remain denied.
+- `contract-sqlite-a938bac8327041388f6ec683cb472c6f.json`: the final four cases
+  also pass with exact replacement-reference sign-out: only the newly committed
+  reference becomes revoked and the prior session remains active. All four
+  GET/POST/HEAD/OPTIONS Development-path variants return cookie-free 404 in
+  production before protocol/CSRF handling.
+- `contract-sqlite-8936dd9866d84b3f9454ba688cdef80b.json`: actual owned native
+  Development OpenAPI capture and all thirteen runtime/start/cleanup/scan steps pass.
+  Only the new operation is inserted into the existing checked-in document;
+  unrelated operation bytes remain. `npm run generate --workspace packages/bootstrap-contract`,
+  `npm run contract:check` and generated contract type-check pass.
+- `contract-sqlite-e5a6a7db0eee4e248acd10733483ebae.json`: retained native login
+  atomic-publication/bridge cases and all three existing SQLite OpenAPI cases pass,
+  including the complete actual generated baseline and Production/Staging refusal.
+- Full Release solution build with warnings as errors, full native format
+  verification, repository checker, all 128 Python tests and whitespace pass.
+- `contract-postgres-ada0fb37fd704ba18845022d948e5ad0.json`: fresh PostgreSQL
+  Development selection fails while creating its owned provider fixture at
+  `PostgresService.DockerAsync`, before product requests. The captured generic
+  error does not establish the underlying Docker cause. This is not PostgreSQL
+  acceptance or permission to waive T077.
+- Published `2f3d1e7` repository checks pass. At this observation its quality,
+  unit, SQLite integration, startup, browser and privacy jobs pass; PostgreSQL
+  integration, recovery, contract and failure-propagation remain running.
+
+**60/100 complete:** T001–T056, T061 and T071–T073. T071/T072 are the added test
+tasks, not T076/T077's full actual environment/both-provider acceptance. T074's
+exact adapter/accessible configured selector, remaining US3, recovery/operations
+and complete local/hosted gates remain. Driver stays 005/implement/running;
+reviewer checklists, stage acceptance and the original draft PR are unchanged.

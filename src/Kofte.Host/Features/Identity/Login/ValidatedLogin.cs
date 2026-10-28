@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Kofte.Infrastructure.Identity;
 using Kofte.Infrastructure.Storage;
 using Kofte.Platform.Modules.Storage;
+using Kofte.Platform.Identity;
 using Microsoft.AspNetCore.Authentication;
 
 namespace Kofte.Host.Features.Identity.Login;
@@ -11,6 +12,27 @@ internal sealed record ValidatedLoginResult(AuthenticationTicket Ticket, string 
 internal sealed class ValidatedLogin(IdentityStore store, IdentityTicketStore tickets,
     IdentityConfiguration configuration, TimeProvider clock)
 {
+    internal async Task<IdentityUser> CompleteDevelopmentAsync(HttpContext context, string identityKey,
+        OperationBudget budget)
+    {
+        if (configuration.Mode != IdentityMode.Development ||
+            !configuration.DevelopmentIdentities.TryGetValue(identityKey, out var display))
+            throw new InvalidOperationException("identity_development_configuration_invalid");
+        var now = clock.GetUtcNow().UtcDateTime;
+        var reference = IdentityTicketStore.NewReference();
+        var result = await store.MutateAsync(budget, async change =>
+        {
+            if (change.Before.Mode != "development") throw new StorageException(StorageCode.ReconciliationRequired);
+            var user = await IdentityUserStore.ResolveAsync(change, "kofte:development:v1", identityKey, display, now);
+            var ticket = IdentityTicketStore.CreateTicket(user, now);
+            await IdentitySessionStore.CreateAsync(change, user, reference.Digest, tickets.Protect(ticket), now);
+            return (User: user, Ticket: ticket);
+        }, IdentityCommitKind.Login);
+        IdentityTicketStore.BindCommitted(context, reference.Reference, result.Ticket);
+        await IdentityTicketStore.SignInCommittedAsync(context, result.Ticket);
+        return result.User;
+    }
+
     internal async Task<ValidatedLoginResult> CompleteOidcAsync(HttpContext context, ClaimsPrincipal principal,
         AuthenticationProperties? properties, string browserDigest, OperationBudget budget)
     {

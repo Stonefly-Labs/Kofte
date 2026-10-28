@@ -1,4 +1,5 @@
 using Kofte.Host.Features.Identity.Login;
+using Kofte.Infrastructure.Identity;
 using Kofte.Platform.Identity;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -27,9 +28,11 @@ internal static class CurrentUserEndpoints
         if (current.Actor?.UserId != view.User.UserId)
             throw new InvalidOperationException("identity_verified_actor_missing");
         await IdentityProtocolAdmission.AdmitAsync(context, view.Session.Digest);
-        return Results.Json(new CurrentIdentityV1("1", view.User.UserId, view.User.DisplayName,
-            view.User.Mode, view.IsInitialAdministrator), Json);
+        return CreateResponse(view.User, view.IsInitialAdministrator);
     }
+
+    internal static IResult CreateResponse(IdentityUser user, bool designated) =>
+        Results.Json(new CurrentIdentityV1("1", user.UserId, user.DisplayName, user.Mode, designated), Json);
 
     internal static void ProjectActor(HttpContext context)
     {

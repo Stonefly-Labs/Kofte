@@ -54,6 +54,22 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/identity/v1/development-session": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations["identityDevelopmentSession"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/identity/v1/me": {
     parameters: {
       query?: never;
@@ -300,6 +316,100 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["BrowserContextV1"];
+        };
+      };
+      /** @description Fixed sanitized identity failure */
+      400: {
+        headers: {
+          "Cache-Control": components["headers"]["NoStore"];
+          Pragma: "no-cache";
+          "Referrer-Policy": "no-referrer";
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["IdentityProblemV1"];
+        };
+      };
+      /** @description Fixed sanitized identity failure */
+      401: {
+        headers: {
+          "Cache-Control": components["headers"]["NoStore"];
+          Pragma: "no-cache";
+          "Referrer-Policy": "no-referrer";
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["IdentityProblemV1"];
+        };
+      };
+      /** @description Fixed sanitized identity failure */
+      403: {
+        headers: {
+          "Cache-Control": components["headers"]["NoStore"];
+          Pragma: "no-cache";
+          "Referrer-Policy": "no-referrer";
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["IdentityProblemV1"];
+        };
+      };
+      /** @description Fixed sanitized identity failure */
+      429: {
+        headers: {
+          "Cache-Control": components["headers"]["NoStore"];
+          Pragma: "no-cache";
+          "Referrer-Policy": "no-referrer";
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["IdentityProblemV1"];
+        };
+      };
+      /** @description Fixed sanitized identity failure */
+      503: {
+        headers: {
+          "Cache-Control": components["headers"]["NoStore"];
+          Pragma: "no-cache";
+          "Referrer-Policy": "no-referrer";
+          [name: string]: unknown;
+        };
+        content: {
+          "application/problem+json": components["schemas"]["IdentityProblemV1"];
+        };
+      };
+    };
+  };
+  identityDevelopmentSession: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Exact configured public origin */
+        Origin: string;
+        /** @description Fresh identity-bound antiforgery request token with its paired cookie */
+        "X-Kofte-CSRF": string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          identityKey: string;
+        };
+      };
+    };
+    responses: {
+      /** @description Known committed configured Development identity; no production authority */
+      200: {
+        headers: {
+          "Cache-Control": components["headers"]["NoStore"];
+          Pragma: "no-cache";
+          "Referrer-Policy": "no-referrer";
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["CurrentIdentityV1"];
         };
       };
       /** @description Fixed sanitized identity failure */

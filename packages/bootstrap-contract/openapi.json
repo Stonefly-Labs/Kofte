@@ -278,6 +278,230 @@
         "security": []
       }
     },
+    "/api/identity/v1/development-session": {
+      "post": {
+        "operationId": "identityDevelopmentSession",
+        "parameters": [
+          {
+            "name": "Origin",
+            "in": "header",
+            "description": "Exact configured public origin",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Kofte-CSRF",
+            "in": "header",
+            "description": "Fresh identity-bound antiforgery request token with its paired cookie",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "identityKey"
+                ],
+                "type": "object",
+                "properties": {
+                  "identityKey": {
+                    "maxLength": 255,
+                    "minLength": 1,
+                    "pattern": "^[ -~]+$",
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Known committed configured Development identity; no production authority",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              },
+              "Pragma": {
+                "required": true,
+                "schema": {
+                  "const": "no-cache",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "required": true,
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentIdentityV1"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Fixed sanitized identity failure",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              },
+              "Pragma": {
+                "required": true,
+                "schema": {
+                  "const": "no-cache",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "required": true,
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityProblemV1"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Fixed sanitized identity failure",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              },
+              "Pragma": {
+                "required": true,
+                "schema": {
+                  "const": "no-cache",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "required": true,
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityProblemV1"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Fixed sanitized identity failure",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              },
+              "Pragma": {
+                "required": true,
+                "schema": {
+                  "const": "no-cache",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "required": true,
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityProblemV1"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Fixed sanitized identity failure",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              },
+              "Pragma": {
+                "required": true,
+                "schema": {
+                  "const": "no-cache",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "required": true,
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityProblemV1"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Fixed sanitized identity failure",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/NoStore"
+              },
+              "Pragma": {
+                "required": true,
+                "schema": {
+                  "const": "no-cache",
+                  "type": "string"
+                }
+              },
+              "Referrer-Policy": {
+                "required": true,
+                "schema": {
+                  "const": "no-referrer",
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityProblemV1"
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
     "/api/identity/v1/me": {
       "get": {
         "operationId": "identityCurrent",

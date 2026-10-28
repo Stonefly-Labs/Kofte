@@ -66,6 +66,7 @@ public sealed class LoginCommitFixture : IAsyncDisposable
     private StorageProviderScope? scope;
     private OidcIssuer issuer = null!;
     private ServingIdentity? serving;
+    private readonly Dictionary<IdentityMode, ServingIdentity> modeConfigurations = [];
     private IdentityConfiguration configuration = null!;
     private IdentityKeys? keys;
     private StorageInstallation installation = null!;
@@ -507,7 +508,9 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(120));
         await using var fixture = new LoginCommitFixture { productRoutes = productRoutes, consumerActor = actorProbe };
         var bootstrap = BootstrapConfiguration.FromEnvironment();
-        fixture.configuration = IdentityConfiguration.Load(bootstrap, "Production");
+        fixture.configuration = IdentityConfiguration.Load(bootstrap,
+            Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ??
+            Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production");
         fixture.installation = bootstrap.PostgresConnection is { } connection
             ? StorageInstallation.PostgreSql(connection) : StorageInstallation.Sqlite(bootstrap.DataRoot);
         var directory = Path.GetDirectoryName(bootstrap.AuthenticationConfigurationFile!)!;
@@ -1025,6 +1028,33 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         await StartWorkerAsync("--fixture-product-login", client.BaseAddress!.Port, token);
     }
 
+    public async Task ReconcileProductModeAsync(bool development, CancellationToken token)
+    {
+        if (browserIngress is not null || serving is null)
+            throw new InvalidOperationException("identity_fixture_mode_transition_scope_invalid");
+        await StopProductAsync(token);
+        modeConfigurations.TryAdd(configuration.Mode, serving);
+        var environment = development ? "Development" : "Production";
+        var mode = development ? IdentityMode.Development : IdentityMode.Oidc;
+        if (!modeConfigurations.TryGetValue(mode, out var selected))
+        {
+            selected = new(environment, development ? null : issuer);
+            modeConfigurations.Add(mode, selected);
+        }
+        serving = selected;
+        var bootstrap = new BootstrapConfiguration(scope!.Postgres is null ? "local-sqlite" : "test-postgres",
+            client.BaseAddress!, serving.WebUrl, client.BaseAddress!, scope.DataRoot,
+            scope.Postgres?.ConnectionString, false, null)
+        {
+            AuthenticationConfigurationFile = serving.ConfigurationPath
+        };
+        configuration.Dispose();
+        configuration = IdentityConfiguration.Load(bootstrap, environment);
+        issuer.RegisteredRedirectUri = new(configuration.PublicOrigin, "/auth/oidc/callback");
+        await RunIdentityOperatorAsync(["reconcile-configuration"], token);
+        await StartWorkerAsync("--fixture-product-login", client.BaseAddress!.Port, token);
+    }
+
     private Task<ProcessOutput> RunIdentityOperatorAsync(IReadOnlyList<string> arguments, CancellationToken token) =>
         RunStoppedHostAsync(["--identity", .. arguments], token);
 
@@ -1245,6 +1275,8 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         if (hostLease is not null) await hostLease.DisposeAsync();
         // A failed browser may still own this private profile; retain it.
         if (browserCompleted) serving?.Dispose();
+        foreach (var previous in modeConfigurations.Values.Where(previous => !ReferenceEquals(previous, serving)))
+            previous.Dispose();
         if (issuer is not null) await issuer.DisposeAsync();
         if (scope is not null) await scope.DisposeAsync();
     }
