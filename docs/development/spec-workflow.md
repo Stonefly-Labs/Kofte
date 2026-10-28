@@ -6,7 +6,8 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement running; 55/100 complete** (T001–T055), on
+**Current checkpoint: 005 / implement running; 57/100 complete** (T001–T056
+and T061), on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 `a0c1fb0` Ubuntu browser job passes all eight HTTPS recipes, including both
@@ -27,7 +28,13 @@ cases pass after fixing unknown identity/version responses to private empty
 and actual development-cookie production refusal also pass. A fresh local
 PostgreSQL attempt fails before that new parity evidence can be established;
 it is not a passing counterpart or a diagnosis of the earlier network-pool limit.
-US3 tasks, development sessions, recovery and final gates remain unfinished. The
+The TypeScript corpus now runs actual ordinary/designated actor and request
+comparisons, closing the test/probe additions T056/T061, not T064's entire
+both-provider corpus. Native case/method rejection and Next case/trailing-slash
+denial are corrected. The verifier now builds production Next before native
+HTTPS parity tests. Development's positive endpoint/adapter is an explicit
+full-corpus prerequisite; its test roots follow T055 without waiting on T070.
+Remaining US3 tasks, development sessions, recovery and final gates remain unfinished. The
 [implementation record](../../specs/005-authentication-bootstrap/implementation.md)
 preserves the initial 404/SAML failures and their resolved provenance proof.
 The actual OIDC package and closure are now adopted, centrally pinned,

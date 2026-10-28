@@ -745,6 +745,9 @@ class VerifyTests(unittest.TestCase):
                 contracts = next(i for i, call in enumerate(command.call_args_list)
                                  if call.args[0] == "platform-public-contracts")
                 self.assertLess(author, contracts)
+                web = next(i for i, call in enumerate(command.call_args_list)
+                           if call.args[1] == ["npm", "run", "build", "--workspace", "apps/web"])
+                self.assertLess(web, contracts)
                 schema = next(call for call in command.call_args_list
                               if call.args[0] == "module-manifest-schema")
                 self.assertIn("module-manifest.test.ts", schema.args[1])

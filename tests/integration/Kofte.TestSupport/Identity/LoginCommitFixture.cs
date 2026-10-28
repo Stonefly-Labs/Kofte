@@ -279,6 +279,8 @@ public sealed class LoginCommitFixture : IAsyncDisposable
 
     private async Task StartBrowserAsync(CancellationToken token)
     {
+        if (!File.Exists(Path.Combine(OwnedProcesses.FindRepository(), "apps", "web", ".next", "BUILD_ID")))
+            throw new InvalidOperationException("identity_fixture_web_build_required");
         var start = NodeStart(Path.Combine("node_modules", "next", "dist", "bin", "next"));
         start.WorkingDirectory = Path.Combine(OwnedProcesses.FindRepository(), "apps", "web");
         start.ArgumentList.Add("start");
@@ -334,6 +336,71 @@ public sealed class LoginCommitFixture : IAsyncDisposable
     public string ProductCookieHeader => cookies.GetCookieHeader(configuration.PublicOrigin);
     public int UngrantedActions => Volatile.Read(ref ungrantedActions);
     public int RetainedKeyCount => Directory.GetFiles(configuration.KeyRingDirectory, "key-*.xml").Length;
+
+    public async Task RunTypeScriptContractsAsync(Guid user, bool designated, CancellationToken token)
+    {
+        if (browserIngress is null || webWorker is null || webWorker.HasExited || user == Guid.Empty)
+            throw new InvalidOperationException("identity_fixture_adapter_required");
+        var root = Path.GetDirectoryName(serving!.ConfigurationPath)!;
+        var phase = designated ? "designated" : "ordinary";
+        var inputFile = Path.Combine(root, "contract-" + phase + ".json");
+        var reportFile = Path.Combine(root, "contract-" + phase + "-report.json");
+        var authorityFile = Path.Combine(root, "contract-" + phase + "-ca.pem");
+        PrivateTestFiles.WriteNew(reportFile, []);
+        PrivateTestFiles.WriteNew(authorityFile, Encoding.ASCII.GetBytes(issuer.AuthorityCertificatePem));
+        var csrf = await ProductContextAsync(token);
+        PrivateTestFiles.WriteNew(inputFile, JsonSerializer.SerializeToUtf8Bytes(new
+        {
+            nativeOrigin = client.BaseAddress!.AbsoluteUri,
+            webOrigin = browserIngress.Origin.AbsoluteUri,
+            publicOrigin = configuration.PublicOrigin.OriginalString,
+            cookie = ProductCookieHeader,
+            csrf,
+            idToken = issuer.IssuedIdToken ?? throw new InvalidOperationException("identity_fixture_signed_token_required"),
+            expected = new
+            {
+                version = "1",
+                userId = user,
+                displayName = issuer.DisplayName,
+                identityMode = "oidc",
+                isInitialAdministrator = designated
+            }
+        }));
+        var start = NodeStart(Path.Combine("node_modules", "vitest", "vitest.mjs"));
+        start.WorkingDirectory = Path.Combine(OwnedProcesses.FindRepository(), "tests", "contract");
+        foreach (var argument in new[] { "run", "identity.test.ts", "--no-file-parallelism", "--reporter=json",
+            "--outputFile=" + reportFile })
+            start.ArgumentList.Add(argument);
+        start.Environment["NODE_EXTRA_CA_CERTS"] = authorityFile;
+        start.Environment["KOFTE_IDENTITY_CONTRACT_FILE"] = inputFile;
+        var result = await OwnedProcesses.RunAsync(start, TimeSpan.FromSeconds(45), token);
+        UnixStorePaths.ValidateFile(reportFile);
+        if (new FileInfo(reportFile).Length is 0 or > 1_000_000)
+            throw new InvalidOperationException("identity_typescript_contract_report_invalid");
+        using var report = JsonDocument.Parse(await File.ReadAllBytesAsync(reportFile, token));
+        var value = report.RootElement;
+        if (result.ExitCode != 0)
+        {
+            var cases = value.GetProperty("testResults").EnumerateArray()
+                .SelectMany(file => file.GetProperty("assertionResults").EnumerateArray())
+                .Select((test, index) => (Test: test, Index: index))
+                .Where(test => test.Test.GetProperty("status").GetString() == "failed")
+                .Select(test =>
+                {
+                    var message = test.Test.GetProperty("failureMessages").ToString();
+                    var lines = Regex.Matches(message, @"identity\.test\.ts:([1-9][0-9]{0,3}):")
+                        .Select(match => match.Groups[1].Value).Distinct();
+                    var route = Regex.Match(message, @"identity_independent_route_([0-9]_[0-9]{1,2}_[0-9]{3})");
+                    return test.Index.ToString(CultureInfo.InvariantCulture) + "_lines_" + string.Join("_", lines) +
+                        (route.Success ? "_route_" + route.Groups[1].Value : "");
+                }).ToArray();
+            throw new InvalidOperationException("identity_typescript_contract_failed_" + string.Join("_case_", cases));
+        }
+        if (!value.GetProperty("success").GetBoolean() ||
+            value.GetProperty("numPassedTests").GetInt32() != (designated ? 1 : 10) ||
+            value.GetProperty("numFailedTests").GetInt32() != 0)
+            throw new InvalidOperationException("identity_typescript_contract_incomplete");
+    }
 
     public void FailSignOutCommit(bool afterCommit) =>
         signOutFailurePhase = afterCommit ? "sign_out_committed" : "sign_out_before_commit";

@@ -1168,6 +1168,7 @@ def execute_suite(runner, suite, provider, arguments):
                 runner.command("composition-build-" + project, [
                     "dotnet", "build", "tests/contract/" + project, "--no-restore", "-c", "Release", "-warnaserror",
                 ])
+            runner.command("identity-contract-web-build", ["npm", "run", "build", "--workspace", "apps/web"])
             runner.command("platform-public-contracts", [
                 "dotnet", "test", "--project", "tests/contract/Kofte.Platform.ContractTests",
                 "--no-restore", "-c", "Release", *public_selector, "--filter-not-class", "*Composition*",

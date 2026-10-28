@@ -108,6 +108,15 @@ No complexity exception waives a MUST. Neither this plan nor an implementation
 test may weaken an issuer check, bootstrap non-repeatability, provider requirement
 or existing deadline to get a passing result.
 
+## Implementation delivery sequencing
+
+The frozen full US3 request corpus includes positive Development login.
+Consequently, T064 explicitly requires T074's Development endpoint/adapter
+delivery. T071/T072 test roots may start after completed US2 (T055), alongside
+remaining US3 work, rather than waiting on T070's full-corpus-dependent gate.
+All P1, Development, both-provider and final evidence remains mandatory; this
+corrects delivery ordering, not scope, security rules or acceptance requirements.
+
 ## Project Structure
 
 ### Documentation (this feature)

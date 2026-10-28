@@ -41,7 +41,8 @@ public sealed class IdentityRequestBoundary(RequestDelegate next, IdentityConfig
             });
         }
         Rules.TryGetValue(path, out var rule);
-        if (endpoint is null || endpoint is RouteEndpoint route &&
+        if (rule is null && Rules.Keys.Contains(path.TrimEnd('/'), StringComparer.OrdinalIgnoreCase) ||
+            endpoint is null || endpoint is RouteEndpoint route &&
             Rules.ContainsKey(route.RoutePattern.RawText ?? "") && rule is null ||
             endpoint.Metadata.GetMetadata<IAllowAnonymous>() is not null &&
                 (rule?.Public != true || endpoint is not RouteEndpoint anonymous ||

@@ -19,6 +19,7 @@ public abstract class IdentityParityTests
         await LoginAsync(fixture);
         var user = Assert.Single((await fixture.SnapshotAsync(Token)).Users);
         await AssertIdentityAsync(fixture, user.Id, designated: false);
+        await fixture.RunTypeScriptContractsAsync(user.Id, designated: false, Token);
         var authorization = await fixture.NominateProductAsync(Token);
         var csrf = await fixture.ProductContextAsync(Token);
         using (var request = new HttpRequestMessage(HttpMethod.Post, "/api/identity/v1/first-administrator")
@@ -32,6 +33,7 @@ public abstract class IdentityParityTests
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
         await AssertIdentityAsync(fixture, user.Id, designated: true);
+        await fixture.RunTypeScriptContractsAsync(user.Id, designated: true, Token);
         using (var request = new HttpRequestMessage(HttpMethod.Post, "/api/identity/v1/sign-out"))
         {
             request.Headers.Add("Origin", fixture.PublicOrigin.OriginalString);

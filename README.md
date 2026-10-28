@@ -37,8 +37,8 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 > [!IMPORTANT]
 > **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md) and [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) is now human-merged. Its accepted ledger and evidence were verified on updated main before 005 began. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) retains prior failures and unknown causes; the historical failed local gate remains failed, not waived by acceptance or merge. Spec 005 now has [authentication/bootstrap requirements](specs/005-authentication-bootstrap/spec.md) and US1 sign-in implemented, not the complete identity feature. Nothing here claims production readiness or MVP completion.
 
-**Current stage: 005 / implement running; 55/100 tasks complete.** T001–T055
-are evidenced. US3 now adds protected durable self-session sign-out, its exact
+**Current stage: 005 / implement running; 57/100 tasks complete.** T001–T056
+and T061 are evidenced. US3 now adds protected durable self-session sign-out, its exact
 Next adapter and immediate local identity clearing on confirmed or uncertain
 results, without automatic mutation retries or provider-wide logout claims.
 Twenty SQLite session/sign-out cases pass in a nineteen-case selection plus
@@ -53,8 +53,13 @@ unavailable keys and private empty unknown-route responses. Retained-key
 rotation across two fresh workers and actual development-cookie refusal also
 pass locally. The unknown-route regression exposed and corrected Next's
 response mismatch with a deny-only 404 handler, never catch-all forwarding.
-US3 prerequisites and full PostgreSQL evidence remain open, so
-no additional task is marked complete. The
+The independent TypeScript corpus now executes ten ordinary-identity cases and
+a fresh designated-actor case through actual native/HTTPS Next paths. It also
+exposed native wrong-case/wrong-method 403 responses; exact private 404 handling
+is corrected without relaxing authentication. T056's test additions and T061's
+public actor probes close, not the full both-provider corpus or US3 gate.
+Positive Development coverage is now an explicit corpus prerequisite, so its
+test/endpoint work can proceed without a circular delivery dependency. The
 [implementation checkpoint](specs/005-authentication-bootstrap/implementation.md)
 records actual OIDC dependency adoption and locked inventory (403 npm / 87
 NuGet identities), an independent HTTPS issuer, owned interruption fixtures,

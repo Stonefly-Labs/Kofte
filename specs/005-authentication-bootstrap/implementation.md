@@ -2767,3 +2767,119 @@ and actual local/hosted failures remain retained.
 remaining request/session/composed-host coverage and both-provider evidence
 still gate T056–T070. Continue implementation on the original branch/draft PR;
 there is no stage transition, feature acceptance or merge request.
+
+## T056/T061: actual cross-language request and actor comparisons
+
+The independent `tests/contract/identity.test.ts` now runs inside the existing
+real native/HTTPS Next parity journey: ten ordinary-identity cases, then a
+fresh one-case designated-identity/actor comparison after actual stopped
+nomination and protected enrollment. Expectations come from the frozen
+TypeScript corpus, the independent issuer and exact persisted user ID, not
+production validators or copied response bodies. Both provider classes execute
+this same fixture; the new TypeScript execution is locally verified on SQLite,
+not yet PostgreSQL.
+
+Actual coverage includes anonymous/forged/wrong-namespace cookies, the actual
+signed provider ID token with/without a valid cookie, spoofed identity/proxy/
+profile input, exact required identity fields, native separately compiled actor
+equality and ungranted-handler nonexecution for ordinary and designated users.
+The tests also execute both paths' HEAD/OPTIONS and exact Allow, unknown/case/
+trailing-slash paths under GET/POST/HEAD/OPTIONS, missing/null/foreign Origin,
+cross-site Fetch Metadata, missing/forged/stale anonymous CSRF pair, body/query
+confusion, duplicate/unknown JSON, every frozen rejected return and both allowed
+returns' deliberate code+S256 challenge. The sixteen/seventeen/duplicate cookie
+boundaries inspect individual cookie attributes; exact eight-KiB/one-byte-over
+JSON distinguishes accepted shape/closed ceremony from rejected input.
+
+No mutation is retried and no identity is manufactured from missing fields.
+The C# owner comparison still verifies exact user/mapping/ceremony/events and
+terminal self-session revocation after the TypeScript probes. The actor probe
+consumes only public Platform types; its scenario compares HTTP/public actor
+values without identity-table access. No test probe is registered in the
+production host.
+
+### Real defects and fixture corrections
+
+The expanded test first exposed Next's generic HTML/cache response for a
+wrong-case identity prefix. A fixed narrow `proxy.ts` rejects spelling variants
+and trailing slashes in identity/auth namespaces, without forwarding,
+authenticating, reading private configuration or changing valid destinations.
+Automatic Next trailing-slash redirection is disabled so these noncanonical
+requests cannot become redirects before rejection. Canonical health/page
+interfaces remain unchanged.
+
+Adding auth-path variants then exposed a separate **native** defect:
+GET `/auth/Login` returned authenticated fallback-policy 403, not empty private
+404. Wrong-method endpoint rejection metadata does not carry the normal
+`RouteEndpoint` used by the prior spelling check. The boundary now rejects
+case/trailing variants of its fixed known paths independently of that
+metadata, before authentication/policy/mutation. Correct exact paths retain
+their original method, credential and Origin checks. The safe failing
+observation is native transport 0, corpus row 6, status 403 in
+`contract-sqlite-bc8a363005c648d1b3054194e8d2d60b.json`.
+All eleven unknown/auth cases now run under four methods through both paths
+and pass, rather than weakening the expected status.
+
+The first fixture attempted to parse Vitest JSON from stdout, but this
+installed reporter writes its default report elsewhere. Two runs retained
+that fixture JSON-parse failure; no successful corpus was claimed from them.
+It now explicitly precreates owner-only input, CA and bounded structured
+report files inside its owned private root, validates the report and requires
+all ten/one tests to pass. The accidentally generated local default report was
+deleted. Raw reports, cookies, tokens, private paths and failure payloads are
+never published; only source-case/line/route indices can enter the fixture's
+failure code. An intermediate Origin projection wrongly added a slash through
+`AbsoluteUri`; preserving the exact configured `OriginalString` corrected the
+fixture, not the product's exact-Origin rule. Initial TypeScript inference
+errors were corrected with ordinary typed header/count collections, not casts.
+
+Published `19ee621`, product run `40657265290`, then failed its native platform
+contract step in 545.413s with exactly the eight new SQLite/PostgreSQL HTTPS
+parity facts named failed. The contract verifier had not built Next before
+those tests; its previous web build occurred only in the later HTTP runtime
+phase. The added build-order regression initially errors with `StopIteration`,
+then passes after an explicit production web build before native public
+contracts. Fixtures now report missing build prerequisites explicitly.
+This fixes a demonstrated orchestration omission; successful corrected hosted
+execution remains required before assigning every original CI failure to it.
+
+### Verification and remaining obligations
+
+- `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityParityTests' --filter-method '*ActualHttpsAdapterAndSeparateActor*' --minimum-expected-tests 1`
+  passes after the full ten-case corpus/native correction:
+  `contract-sqlite-33df33d7c8154baf9a2e461f75f0b06c.json`.
+  The final complete four-case selection also passes, including those ten
+  cases and the fresh designated comparison:
+  `contract-sqlite-3b39a298d09945c2aaa4f2bf608e8e62.json`.
+  Earlier eight-case/native parity selections also pass in
+  `contract-sqlite-b0d0ecab2810475d848912b74efa5bee.json` and
+  `contract-sqlite-a06e63d9bcc74211ae26d543db9b6482.json`; these are not
+  relabeled as executing the later ten-case source.
+- The ordinary owned runtime runs
+  `npm run test --workspace tests/contract -- --no-file-parallelism bootstrap.test.ts adapter.test.ts`
+  successfully, including original native/Next health/OpenAPI, real body,
+  unavailable-store/recovery and cleanup/output scanning. Report
+  `contract-sqlite-e972aa30495c41f2aab527736885ee89.json` passes all thirteen
+  steps. Its unchanged predecessor
+  `contract-sqlite-7f74e070b6c94a179a2c73fc33c32fad.json` fails after the
+  web build exits 0 during cleanup (`verification_input_invalid`); the
+  unchanged retry does not establish that local cleanup failure's cause.
+- Full native solution build, web production build/lint/types, contract
+  lint/types, repository checker, 128 Python tests, whitespace and root
+  formatting pass. The new build-order assertion extends an existing test,
+  not the test count.
+- Earlier `2852371` now passes recovery as well as both complete integrations,
+  all ten HTTPS recipes, quality/unit/privacy/startup and repository checks.
+  Its failure-propagation baseline still times out at the original 900-second
+  limit; the safe artifact does not establish the underlying cause. Contract
+  was still running at that observation. No deadline is increased.
+
+**T001–T056 and T061 are complete: 57/100.** This closes the required test/probe
+additions, not T064's entire independent corpus or the both-provider US3 gate.
+T057–T060 and T062–T070 retain their remaining coverage/execution obligations.
+T071/T072 test roots now depend on completed T055, while T064 explicitly
+depends on T074: the frozen corpus includes positive Development login, so its
+endpoint/adapter must exist before the entire corpus can pass. This is a
+delivery-sequencing correction, not a waived case or changed product contract.
+Continue Development prerequisites alongside US3, on the same implement stage
+and draft PR. No acceptance or merge is requested.
