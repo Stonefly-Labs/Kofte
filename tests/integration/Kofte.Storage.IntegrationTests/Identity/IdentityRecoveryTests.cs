@@ -193,6 +193,126 @@ public abstract class IdentityRecoveryTests
     }
 
     [Fact]
+    public async Task CompleteIdentityRestoreRemainsQuarantinedOutsideTheSnapshotWithItsExactRecoveryPointBinding()
+    {
+        await using var fixture = await StorageProviderScope.CreateAsync(Provider, Token);
+        await PrepareAsync(fixture);
+        using var backup = new OwnedTestRoot();
+        var original = await BackupAsync(fixture, backup.Path);
+        var manifestBytes = await File.ReadAllBytesAsync(Path.Combine(backup.Path, RecoveryManifest.FileName), fixture.Token);
+        using var keys = new OwnedTestRoot();
+        if (OperatingSystem.IsWindows()) throw new InvalidOperationException("test_platform_unsupported");
+        Directory.CreateDirectory(keys.Path, UnixStorePaths.DirectoryMode);
+        var keyDirectory = Path.Combine(keys.Path, "keys");
+        using var sqliteTarget = new OwnedTestRoot();
+        await using var postgresTarget = Provider == "postgres"
+            ? await StorageProviderScope.CreateAsync(Provider, Token) : null;
+        var restored = fixture.Postgres is { } postgres
+            ? await postgres.RestoreStorageSetToFreshQuarantinedAsync(backup.Path,
+                Assert.IsType<PostgresResources>(postgresTarget?.Postgres), keyDirectory, fixture.Token)
+            : await SqliteRecoveryExercise.RestoreFreshQuarantinedAsync(
+                backup.Path, sqliteTarget.Path, keyDirectory, fixture.Token);
+        var quarantine = await IdentityRestoreQuarantine.ReadAsync(keyDirectory, fixture.Token);
+        Assert.True(quarantine.Restored);
+        Assert.Equal(original.RecoverySetId, quarantine.Manifest.RecoverySetId);
+        Assert.Equal(original.InstallationId, quarantine.Manifest.InstallationId);
+        Assert.Equal(Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(manifestBytes)),
+            quarantine.ManifestSha256);
+        Assert.Equal([Path.Combine(keyDirectory, IdentityRestoreQuarantine.FileName)],
+            Directory.GetFiles(keyDirectory));
+        Assert.Equal(original.Identity, restored.Identity);
+        var installation = postgresTarget?.Postgres is { } target
+            ? StorageInstallation.PostgreSql(target.ConnectionString) : StorageInstallation.Sqlite(sqliteTarget.Path);
+        await using var scope = await new StorageMaintenance(installation).AcquireAsync(fixture.Token);
+        Assert.Equal(original.Identity,
+            await IdentityRecoverySnapshot.CaptureStoppedAsync(installation, scope, fixture.Token));
+        var overlapping = Path.Combine(backup.Path, "unowned-keys");
+        var rejected = await Assert.ThrowsAsync<StorageException>(() =>
+            IdentityRestoreQuarantine.CreateAsync(backup.Path, overlapping, original, token: fixture.Token));
+        Assert.Equal(StorageCode.PathRejected, rejected.Code);
+        Assert.False(Directory.Exists(overlapping));
+        var marker = Path.Combine(keyDirectory, IdentityRestoreQuarantine.FileName);
+        var intact = await File.ReadAllBytesAsync(marker, fixture.Token);
+        try
+        {
+            foreach (var fault in new[] { "unknown", "duplicate", "recovery-set", "installation", "format" })
+            {
+                var json = JsonNode.Parse(intact)!;
+                if (fault == "unknown") json["unapproved"] = true;
+                else if (fault != "duplicate")
+                {
+                    var manifest = JsonNode.Parse(manifestBytes)!;
+                    if (fault == "recovery-set") manifest["recoverySetId"] = Guid.NewGuid();
+                    else if (fault == "installation") manifest["installationId"] = Guid.NewGuid();
+                    else manifest["format"] = RecoveryManifest.CurrentFormat;
+                    json["manifest"] = Convert.ToBase64String(JsonSerializer.SerializeToUtf8Bytes(manifest));
+                }
+                var changed = json.ToJsonString();
+                if (fault == "duplicate") changed = changed[..^1] + ",\"version\":\"1\"}";
+                await File.WriteAllTextAsync(marker, changed, fixture.Token);
+                await Assert.ThrowsAsync<StorageException>(() =>
+                    IdentityRestoreQuarantine.ReadAsync(keyDirectory, fixture.Token));
+                Assert.True(IdentityRestoreQuarantine.IsRequired(keyDirectory));
+            }
+        }
+        finally { await File.WriteAllBytesAsync(marker, intact, fixture.Token); }
+        Assert.Equal(quarantine.ManifestSha256,
+            (await IdentityRestoreQuarantine.ReadAsync(keyDirectory, fixture.Token)).ManifestSha256);
+        var decisionPath = Path.Combine(keys.Path, "decision.json");
+        var decision = JsonSerializer.SerializeToUtf8Bytes(new
+        {
+            version = "1",
+            recoverySetId = original.RecoverySetId.ToString("D"),
+            installationId = original.InstallationId.ToString("D"),
+            expectedManifestSha256 = quarantine.ManifestSha256,
+            priorEnrollment = "not-established"
+        });
+        PrivateTestFiles.WriteNew(decisionPath, decision);
+        foreach (var history in new[] { "known-consumed", "known-never-enrolled", "not-established" })
+        {
+            var json = JsonNode.Parse(decision)!;
+            json["priorEnrollment"] = history;
+            await File.WriteAllTextAsync(decisionPath, json.ToJsonString(), fixture.Token);
+            Assert.Equal(history,
+                (await IdentityRestoreDecision.ReadAsync(decisionPath, quarantine, fixture.Token)).PriorEnrollment);
+        }
+        foreach (var fault in new[] { "version", "recoverySetId", "installationId", "expectedManifestSha256",
+            "priorEnrollment", "unknown", "duplicate", "missing" })
+        {
+            var json = JsonNode.Parse(decision)!;
+            if (fault == "version") json["version"] = "2";
+            else if (fault is "recoverySetId" or "installationId") json[fault] = Guid.NewGuid().ToString("D");
+            else if (fault == "expectedManifestSha256") json[fault] = new string('0', 64);
+            else if (fault == "priorEnrollment") json[fault] = "automatic";
+            else if (fault == "unknown") json["nominee"] = "not-an-authority-source";
+            else if (fault == "missing") json.AsObject().Remove("version");
+            var changed = json.ToJsonString();
+            if (fault == "duplicate") changed = changed[..^1] + ",\"version\":\"1\"}";
+            await File.WriteAllTextAsync(decisionPath, changed, fixture.Token);
+            await Assert.ThrowsAsync<StorageException>(() =>
+                IdentityRestoreDecision.ReadAsync(decisionPath, quarantine, fixture.Token));
+        }
+        await File.WriteAllBytesAsync(decisionPath, decision, fixture.Token);
+        File.SetUnixFileMode(decisionPath, UnixStorePaths.FileMode | UnixFileMode.GroupRead);
+        try
+        {
+            await Assert.ThrowsAsync<StorePathException>(() =>
+                IdentityRestoreDecision.ReadAsync(decisionPath, quarantine, fixture.Token));
+        }
+        finally { File.SetUnixFileMode(decisionPath, UnixStorePaths.FileMode); }
+        var link = Path.Combine(keys.Path, "decision-link.json");
+        File.CreateSymbolicLink(link, decisionPath);
+        await Assert.ThrowsAsync<StorePathException>(() =>
+            IdentityRestoreDecision.ReadAsync(link, quarantine, fixture.Token));
+        foreach (var invalid in new[] { new byte[32_769], new byte[] { 0xff, 0xff } })
+        {
+            await File.WriteAllBytesAsync(decisionPath, invalid, fixture.Token);
+            await Assert.ThrowsAsync<StorageException>(() =>
+                IdentityRestoreDecision.ReadAsync(decisionPath, quarantine, fixture.Token));
+        }
+    }
+
+    [Fact]
     public async Task PreparedIdentityCannotUseTheLegacyUngatedRestorePath()
     {
         await using var fixture = await StorageProviderScope.CreateAsync(Provider, Token);

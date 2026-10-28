@@ -159,17 +159,22 @@ on each provider with all nineteen ordered observations independently checked.
 Two-user SSR/DOM isolation, invalid-Origin/ungranted denial, expiry and
 sign-out/uncertainty close T066/T067/T069/T070. Consolidated real format,
 preparation and read-only-startup preservation closes T079.
-Recovery-v2 backup/actual-state verification has passing SQLite coverage, but
-quarantine/decision/reconciliation and its complete both-provider proof remain
-unfinished. Identity-bearing sets refuse the legacy ungated restore path.
+Recovery-v2 backup/actual-state verification has passing SQLite and hosted
+`f52150f` PostgreSQL coverage. Separately named test-owned quarantine restore
+and strict private decision parsing now pass actual SQLite preservation/binding/
+tamper/refusal tests; their new PostgreSQL proof remains pending. The marker
+blocks all six existing stopped commands. End-to-end reconciliation, fresh
+keys and crash-resumable decision commit are still unfinished.
+Identity-bearing sets continue to refuse the legacy ungated restore path.
 This progress does not make the remaining operations recipes executable or
 turn the non-green full matrix into accepted feature evidence.
 
 The built host also now accepts stopped `--identity maintain` on a prepared
 installation: at most 128 expired session-evidence rows, terminal attempts and
 expired admission windows per category/invocation. Repeat explicitly for
-another batch; live-host refusal and preservation have passing SQLite evidence,
-while PostgreSQL maintenance execution remains pending. This does not deliver
+another batch; live-host refusal and preservation have passing SQLite evidence.
+Hosted `20d751c` PostgreSQL host/storage and both-provider recovery also pass
+the new cases, closing T087. This does not deliver
 the recovery/operations consumer recipes above.
 
 Proposed invocation, after implementation/build, with provider-owned fixture

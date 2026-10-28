@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement running; 79/100 complete** (T001–T079), on
+**Current checkpoint: 005 / implement running; 80/100 complete** (T001–T079 and T087), on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 `a0c1fb0` Ubuntu browser job passes all eight HTTPS recipes, including both
@@ -118,11 +118,24 @@ Identity-bearing sets explicitly refuse the legacy ungated restore path while
 T082 is unfinished. Current hosted SQLite enrollment replacement fails at its
 callback assertion; an unchanged focused reproduction passes without diagnosing
 that failure. The full matrix remains non-green.
+Hosted `f52150f` PostgreSQL integration now passes the actual new recovery-v2
+cases at verified merge `30bcebaa8f29636109774d1c28addefc5ab59414`.
+The separately gated complete-set restore paths and exact private decision
+reader now have actual SQLite snapshot/binding/tamper/private-file proof.
+The outside-snapshot marker blocks all six existing stopped commands.
+The reconciliation command/fresh ring/durable decision/crash-resume and new
+PostgreSQL quarantine proof remain unfinished; T080-T082 remain unchecked.
 Stopped bounded `maintain` is now implemented using the existing retention
 helpers, with passing actual SQLite batch, prepared-authority and live-host
 refusal regressions. It preserves consumed designation, active sessions and
-installation evidence. New PostgreSQL maintenance evidence is still pending;
-T087 remains unchecked rather than inferred complete from shared source.
+installation evidence. Hosted `20d751c` PostgreSQL host/storage and both-provider
+recovery now pass the actual new cases at verified merge
+`c5041de1f62a640d1e12c4300d4d090e95422833`, closing T087 with **80/100** complete.
+The newer `f52150f` SQLite host failure is the OIDC DNS-readmission test's
+initial/corrected-login assertions, not the earlier enrollment failure.
+Hosted `20d751c` native browser verification passes, but the subsequent public
+SQLite `enrollment-race` recipe fails; later recipes do not run. No cause or
+full-matrix pass is inferred from those safe reports.
 No budget or required case is relaxed, and intermittent native readiness
 failures remain recorded without an established cause.
 A new owned creation probe confirms local Docker

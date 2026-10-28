@@ -86,23 +86,7 @@ public static class RecoverySetVerifier
         OperationBudget budget, Action<string> setProvider)
     {
         UnixStorePaths.ValidateRoot(directory, allowMissing: false);
-        var metadata = Path.Combine(directory, RecoveryManifest.FileName);
-        UnixStorePaths.ValidateFile(metadata);
-        if (new FileInfo(metadata).Length > 1024 * 1024)
-            throw new StorageException(StorageCode.Corrupt);
-        RecoveryManifest manifest;
-        try
-        {
-            await using var json = File.OpenRead(metadata);
-            using var document = await JsonDocument.ParseAsync(json, cancellationToken: budget.Token);
-            manifest = document.RootElement.Deserialize<RecoveryManifest>(Options)
-                ?? throw new StorageException(StorageCode.Corrupt);
-            if (manifest.Format == RecoveryManifest.CurrentFormat &&
-                document.RootElement.TryGetProperty("identity", out _))
-                throw new StorageException(StorageCode.Corrupt);
-        }
-        catch (JsonException) { throw new StorageException(StorageCode.Corrupt); }
-        ValidateManifest(manifest);
+        var (manifest, _) = await ReadManifestAsync(directory, budget);
         if (restoredPostgres is null) setProvider(manifest.Provider);
         foreach (var artifact in manifest.Artifacts)
         {
@@ -156,6 +140,41 @@ public static class RecoverySetVerifier
         if (scope is MaintenanceScope held) await held.VerifyAsync(installation, budget);
         return manifest;
     }
+
+    internal static async Task<(RecoveryManifest Manifest, byte[] Bytes)> ReadManifestAsync(
+        string directory, OperationBudget budget)
+    {
+        UnixStorePaths.ValidateRoot(directory, allowMissing: false);
+        var path = Path.Combine(directory, RecoveryManifest.FileName);
+        UnixStorePaths.ValidateFile(path);
+        await using var file = File.OpenRead(path);
+        if (file.Length is < 2 or > 1024 * 1024) throw new StorageException(StorageCode.Corrupt);
+        var bytes = new byte[checked((int)file.Length)];
+        await file.ReadExactlyAsync(bytes, budget.Token);
+        var extra = new byte[1];
+        if (await file.ReadAsync(extra, budget.Token) != 0) throw new StorageException(StorageCode.Corrupt);
+        return (ParseManifest(bytes), bytes);
+    }
+
+    internal static RecoveryManifest ParseManifest(ReadOnlyMemory<byte> bytes)
+    {
+        if (bytes.Length is < 2 or > 1024 * 1024) throw new StorageException(StorageCode.Corrupt);
+        try
+        {
+            using var document = JsonDocument.Parse(bytes, new() { AllowDuplicateProperties = false });
+            var manifest = document.RootElement.Deserialize<RecoveryManifest>(Options)
+                ?? throw new StorageException(StorageCode.Corrupt);
+            if (manifest.Format == RecoveryManifest.CurrentFormat &&
+                document.RootElement.TryGetProperty("identity", out _))
+                throw new StorageException(StorageCode.Corrupt);
+            ValidateManifest(manifest);
+            return manifest;
+        }
+        catch (JsonException) { throw new StorageException(StorageCode.Corrupt); }
+    }
+
+    internal static bool SameManifest(RecoveryManifest left, RecoveryManifest right) =>
+        JsonSerializer.Serialize(left, Options) == JsonSerializer.Serialize(right, Options);
 
     public static bool SameInventory(RecoveryManifest left, RecoveryInventory right) =>
         left.InstallationId == right.InstallationId && left.Provider == right.Provider &&

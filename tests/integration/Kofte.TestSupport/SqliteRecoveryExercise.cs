@@ -42,13 +42,22 @@ public static class SqliteRecoveryExercise
         return manifest;
     }
 
-    public static async Task<RecoveryManifest> RestoreFreshAsync(string recoveryRoot, string targetRoot,
-        CancellationToken token = default)
+    public static Task<RecoveryManifest> RestoreFreshAsync(string recoveryRoot, string targetRoot,
+        CancellationToken token = default) => RestoreCoreAsync(recoveryRoot, targetRoot, null, token);
+
+    public static Task<RecoveryManifest> RestoreFreshQuarantinedAsync(string recoveryRoot, string targetRoot,
+        string keyDirectory, CancellationToken token = default) =>
+        RestoreCoreAsync(recoveryRoot, targetRoot, keyDirectory, token);
+
+    private static async Task<RecoveryManifest> RestoreCoreAsync(string recoveryRoot, string targetRoot,
+        string? keyDirectory, CancellationToken token)
     {
         var manifest = await RecoverySetVerifier.VerifyAsync(recoveryRoot, cancellationToken: token);
         if (manifest.Provider != "sqlite") throw new InvalidOperationException("recovery_provider_invalid");
-        if (manifest.Identity is not null)
+        if (manifest.Identity is not null && keyDirectory is null)
             throw new InvalidOperationException("identity_restore_reconciliation_required");
+        var quarantine = keyDirectory is null ? null : await IdentityRestoreQuarantine.CreateAsync(
+            recoveryRoot, keyDirectory, manifest, targetRoot, token);
         CreateFreshDirectory(targetRoot);
         using var lease = StoreLease.Acquire(targetRoot);
         foreach (var artifact in manifest.Artifacts)
@@ -63,6 +72,7 @@ public static class SqliteRecoveryExercise
         var restored = manifest with { Artifacts = restoredArtifacts };
         await RecoverySetVerifier.WriteManifestAsync(targetRoot, restored, token);
         await RecoverySetVerifier.VerifyAsync(targetRoot, cancellationToken: token);
+        if (quarantine is not null) await quarantine.MarkRestoredAsync(restored, token);
         return restored;
     }
 

@@ -750,11 +750,22 @@ pre-login browser timeouts remain historical failures, not successful runs.
 Identity-bearing complete-set backups now use recovery-v2 and verify actual
 identity rows, consumed history, counts and a streamed SHA-256 security snapshot.
 Keys/client/certificate secrets remain outside the artifacts. The new SQLite
-and retained v1 regression selection passes; fresh local PostgreSQL creation
-still fails before executing the new recovery case. Supported identity restore
-is **not delivered yet**: these sets explicitly refuse the legacy ungated
-restore helper until outside-snapshot quarantine and stopped reconciliation
-are implemented. Do not copy such a set into a serving installation.
+and retained v1 regression selection passes; hosted `f52150f` PostgreSQL
+integration now also passes the new recovery-v2 cases. The new separately named
+test-owned quarantine restore helpers write `identity-restore-required` in a
+fresh separate private key directory before copying/restoring. Actual SQLite
+proof preserves the full security snapshot and binds exact original manifest
+bytes independently of rewritten target artifact hashes. The marker remains;
+all six existing stopped commands refuse it without changing state.
+Strict private decision parsing now checks the exact five approved fields,
+recovery-set/installation IDs, original manifest SHA-256 and one of three
+historical attestations. It rejects duplicate/unknown fields, a wrong recovery
+point, public/symlinked/oversized/non-UTF-8 files; parsing does not clear a gate.
+Supported end-to-end identity restore is **not delivered yet**: the
+reconciliation command, fresh protected keys and crash-resumable decision commit
+remain unfinished, as does new PostgreSQL quarantine proof. The legacy ungated
+helper still refuses identity-bearing sets. Do not remove the marker or copy
+such a set into a serving installation.
 
 Stopped prepared installations now accept `--identity maintain` through the
 same admitted host supervisor and exclusive lease. Each explicit invocation
@@ -764,8 +775,8 @@ the unchanged 120-second envelope. Repeat explicitly for another bounded batch;
 this is not an unbounded drain or background job. Installation-retained
 evidence, user mappings, consumed designation, session epoch and active sessions
 are preserved. The identity security revision advances with the committed
-batch; registry/module revisions do not. SQLite regression evidence passes;
-new PostgreSQL maintenance execution remains pending.
+batch; registry/module revisions do not. SQLite regression evidence and hosted
+`20d751c` PostgreSQL host/storage plus both-provider recovery pass, closing T087.
 
 **Sign out** revokes only the current durable local session, not the upstream
 provider or other sessions. Confirmed, expired and uncertain results all clear

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Kofte.Host.Bootstrap;
+using Kofte.Infrastructure.Identity;
 using Kofte.Infrastructure.Storage;
 using Kofte.TestSupport;
 using Kofte.TestSupport.Identity;
@@ -279,6 +280,33 @@ public abstract class IdentityPreparationTests
         Assert.Equal("disabled", await ScalarAsync(fixture, "SELECT state FROM {0}__kofte_bootstrap"));
         Assert.Equal(1L, await ScalarAsync(fixture, "SELECT COUNT(*) FROM {0}__kofte_identity_events"));
         Assert.Equal(0L, await ScalarAsync(fixture, "SELECT registry_revision FROM {0}__kofte_installation"));
+    }
+
+    [Fact]
+    public async Task PendingRestoreCannotBeChangedByOrdinaryStoppedCommands()
+    {
+        await using var fixture = await IdentityFixture.CreateAsync(Provider, Token);
+        Configure(fixture);
+        Assert.Equal(0, await RunAsync(fixture, "--registry", "upgrade"));
+        Assert.Equal(0, await RunAsync(fixture, "--identity", "prepare"));
+        PrivateTestFiles.WriteNew(Path.Combine(fixture.KeyRingDirectory, IdentityRestoreQuarantine.FileName),
+            "pending-restore"u8);
+        var before = await fixture.PersistentSnapshotAsync(Token);
+        string[][] operations =
+        [
+            ["prepare"], ["reconcile-configuration"], ["revoke-sessions"], ["maintain"],
+            ["bootstrap", "disable-pending"],
+            ["bootstrap", "authorize", "--nominee-file", Path.Combine(fixture.PrivateDirectory, "nominee.json"),
+                "--authorization-file", Path.Combine(fixture.PrivateDirectory, "authorization")]
+        ];
+        foreach (var operation in operations)
+        {
+            var output = await RunOutputAsync(fixture, ["--identity", .. operation]);
+            Assert.NotEqual(0, output.ExitCode);
+            Assert.Contains("\"eventCode\":\"identity_reconciliation_required\"",
+                output.Stdout + output.Stderr, StringComparison.Ordinal);
+        }
+        Assert.Equal(before, await fixture.PersistentSnapshotAsync(Token));
     }
 
     [Fact]

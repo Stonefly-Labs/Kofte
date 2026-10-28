@@ -95,8 +95,16 @@ public sealed partial class PostgresResources
         return manifest;
     }
 
-    public async Task<RecoveryManifest> RestoreStorageSetToFreshAsync(string directory,
-        PostgresResources freshTarget, CancellationToken token)
+    public Task<RecoveryManifest> RestoreStorageSetToFreshAsync(string directory,
+        PostgresResources freshTarget, CancellationToken token) =>
+        RestoreStorageSetToFreshCoreAsync(directory, freshTarget, null, token);
+
+    public Task<RecoveryManifest> RestoreStorageSetToFreshQuarantinedAsync(string directory,
+        PostgresResources freshTarget, string keyDirectory, CancellationToken token) =>
+        RestoreStorageSetToFreshCoreAsync(directory, freshTarget, keyDirectory, token);
+
+    private async Task<RecoveryManifest> RestoreStorageSetToFreshCoreAsync(string directory,
+        PostgresResources freshTarget, string? keyDirectory, CancellationToken token)
     {
         if (ReferenceEquals(this, freshTarget) || ConnectionString == freshTarget.ConnectionString)
             throw new InvalidOperationException("postgres_fresh_target_required");
@@ -106,8 +114,12 @@ public sealed partial class PostgresResources
         var maintenance = new StorageMaintenance(installation);
         await using var scope = await maintenance.AcquireAsync(token);
         var manifest = await RecoverySetVerifier.VerifyAsync(directory, installation, scope, token);
-        if (manifest.Identity is not null)
+        if (manifest.Identity is not null && keyDirectory is null)
             throw new InvalidOperationException("identity_restore_reconciliation_required");
-        return await freshTarget.RestoreStorageSetAsync(directory, token);
+        var quarantine = keyDirectory is null ? null : await IdentityRestoreQuarantine.CreateAsync(
+            directory, keyDirectory, manifest, token: token);
+        var restored = await freshTarget.RestoreStorageSetAsync(directory, token);
+        if (quarantine is not null) await quarantine.MarkRestoredAsync(restored, token);
+        return restored;
     }
 }

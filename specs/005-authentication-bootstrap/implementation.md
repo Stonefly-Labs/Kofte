@@ -1,6 +1,6 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement in progress; 79/100 complete (T001-T079); both-provider strengthened session/browser stories, complete HTTP/Development corpus, generated contracts and upgrade preservation evidenced; recovery/maintenance and final evidence unfinished.
+**Result:** implement in progress; 80/100 complete (T001-T079 and T087); both-provider strengthened session/browser stories, complete HTTP/Development corpus, generated contracts, upgrade preservation and stopped bounded maintenance evidenced; recovery/reconciliation and final evidence unfinished.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-28.
 **Assessed baseline:** `6df9eebdcfa6b273126b0c51c272d1b2c2f953e6`.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
@@ -3901,3 +3901,146 @@ a pass or a fresh diagnosis. T087 therefore remains unchecked, progress stays
 **79/100, 21 remaining**, and the same feature branch/draft PR and running
 implement ledger continue unchanged. No dependencies, original migrations,
 reviewer-owned checklist or acceptance state changed.
+
+## T080-T082: outside-snapshot quarantine and strict decision binding in progress
+
+The new real-provider restore regression first fails compilation with four
+missing quarantine/restore API errors. Actual SQLite execution then refuses
+the test's public parent directory. The test is corrected to provide an owned
+private parent, matching the real key-directory contract; no product filesystem
+permission check is weakened. A test namespace import is also corrected.
+Two further genuine missing-decision API errors precede its implementation.
+
+The separately named test-owned complete-set restore paths now support fresh
+quarantine targets while retaining legacy identity-bearing restore refusal.
+Before target copy/import, a new separately owned private key directory gets a
+flushed `identity-restore-required` marker. It retains bounded exact original
+manifest bytes, including their SHA-256 binding. Only after actual restored-set
+verification does an atomic replacement retain the verified target manifest.
+This keeps original recovery-point binding separate from SQLite backup API
+outputs' rewritten physical hashes. No keys/secrets enter the snapshot.
+Overlapping backup/managed roots and pre-existing key directories are refused.
+
+Strict gate parsing rejects unknown/duplicate fields, changed recovery-set/
+installation binding and format. The existing recovery parser is reused, with
+bounded exact reads rather than an unbounded async document read. Supported
+startup already refuses the marker; all six existing supervised identity
+commands now explicitly refuse it before any ordinary mutation/key preparation.
+Their actual private state snapshots remain unchanged.
+
+The new private decision reader accepts only string `version:"1"`,
+`recoverySetId`, `installationId`, `expectedManifestSha256` and
+`priorEnrollment`. It binds canonical IDs and exact original manifest bytes,
+not the rewritten target manifest. Only `known-consumed`,
+`known-never-enrolled` and `not-established` are admitted. Unknown/duplicate/
+missing fields, stale point/binding, unsupported history/version, non-private/
+symlinked files, more than 32 KiB and invalid UTF-8 are refused. Parsing alone
+does not mutate authority or remove a gate.
+
+The inherited regression executes actual complete-set restore, then compares
+the independently read full identity snapshot to the original consumed
+user/mapping/event/active-session state. It verifies the only key-directory
+entry is the external marker, not copied key material. Five gate faults,
+all three valid attestations, eight invalid decisions and actual permission/
+symlink/size/encoding refusals are exercised without another database restore.
+The actual host regression requires `identity_reconciliation_required` from
+prepare, configuration reconciliation, session revocation, maintenance and
+both bootstrap commands, with exact unchanged persistent state.
+
+Final focused SQLite execution passes in
+`recovery-sqlite-6a7e1d23f37c43568e4d611e07cf4139.json`:
+
+```bash
+dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityRecoveryTests' --filter-method '*CompleteIdentityRestoreRemainsQuarantinedOutsideTheSnapshotWithItsExactRecoveryPointBinding' --minimum-expected-tests 1
+dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityPreparationTests' --filter-method '*PendingRestoreCannotBeChangedByOrdinaryStoppedCommands' --minimum-expected-tests 1
+```
+
+The preceding retained v1/format/recovery-privacy/read-only startup selection
+passes in `recovery-sqlite-9dc180b771b44d2087b027970b14a681.json`:
+
+```bash
+dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityRecoveryTests' '*RecoverySetTests' '*SqliteRecoveryDiagnosticsTests' '*SqliteIdentityFormatTests' --minimum-expected-tests 45
+dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityPreparationTests' '*SqliteIdentityStartupTests' --minimum-expected-tests 6
+```
+
+Earlier passes remain in `recovery-sqlite-b413599468d54aafbcb6915cda4bdc9a.json`
+and `recovery-sqlite-6a6eed4356244dbe94c6be068b650ac3.json`; the initial
+private-parent failure remains failed in
+`recovery-sqlite-081bce24fda24c82a5548fa121254ba1.json`.
+The final focused corpus includes the later private-file and six-command
+controls; earlier broad passes are not relabeled as executing those controls.
+These runs assess this increment on the `20d751c` baseline.
+
+Fresh protected key provisioning, stopped `reconcile-restore`, durable decision/
+event commit, unknown-history locking and interruption/resume are **not yet
+delivered**. Neither parser success nor a gated copy clears quarantine or
+reopens nomination. New PostgreSQL quarantine execution remains pending.
+T080/T081/T082/T085 stay unchecked; progress remains **79/100, 21 remaining**.
+No stage, human acceptance or full-matrix pass is inferred.
+
+### Actual hosted f52150f provider evidence and newer failures
+
+Finished PostgreSQL job **122821224128** in run **40689749980** executes actual
+merge **`30bcebaa8f29636109774d1c28addefc5ab59414`** with published parent
+**`f52150f1624be32e61129917e96cb7653b3ba3ae`**. The tested recovery source blob
+`94fc175a4d0970545c5eeda6c7ace2048df8d989` exactly matches that published parent;
+it contains the eight new inherited recovery-v2 cases, not this later quarantine
+increment. Safe report `integration-postgres-629eb166aad344578201c3f48314545b.json`
+passes host/storage/composition phases in **288.375/640.486/235.622 seconds**.
+Exact storage selection, covering new and retained real-provider cases:
+
+```bash
+dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-trait Provider=postgres --filter-not-class '*Composition*' --minimum-expected-tests 1
+```
+
+Thus the new f52150f backup/snapshot/tamper/legacy-refusal implementation has
+actual PostgreSQL proof; the earlier local fixture-creation failure remains
+failed and does not become a pass or a fresh network-pool diagnosis.
+The same tested merge's SQLite storage/composition phases pass in
+**317.055/97.904 seconds**. Its host phase fails
+`SqliteOidcBudgetTests.DeliveredDnsChangesAreReadmittedBeforeTheRealTokenConnection`
+at **OidcBudgetTests.cs:153/177**, the initial/corrected-login 303 assertions;
+the safe report does not establish unexpected statuses or cause.
+This is distinct from the earlier 49ef96e enrollment callback assertion.
+
+New run **40691297842** for `20d751c` passes native browser verification
+(`browser-none-a4696593b9bb4507b5b46d1757f1943e.json`) but subsequently fails
+public SQLite `enrollment-race` after `oidc-login`, `trust-refusal` and
+`nominated-enrollment` pass. Later recipes do not run. No actual inner failure
+cause is established by its bounded recipe failure receipt.
+Its new maintenance PostgreSQL evidence remains pending. Existing and newer
+failed/incomplete full gates are preserved, not waived or weakened.
+
+### T087 closure: actual both-provider maintenance evidence
+
+Run **40691297842** now completes PostgreSQL integration job **122826489540**
+and both-provider recovery job **122826489775** successfully. Both assess actual
+merge **`c5041de1f62a640d1e12c4300d4d090e95422833`**, whose published parent is
+**`20d751cce50db6ce0efc5b607cdf2e66b0dc15b3`**. Actual tested recovery/preparation
+source blobs `5d0cbc3455ef66dda62b205661e896d11e923feb` and
+`42c05fb71dcf0d9cbaa5755ebb05fef2ffa5b686` exactly match that parent; they include
+the new maintenance tests, not this later quarantine increment.
+
+`integration-postgres-3f468ab039614788a92f3a63146ed829.json` passes
+host/storage/composition phases in **321.366/699.605/243.035 seconds**.
+`recovery-both-785c2cff0fbc4920b4910f5adfed41ff.json` passes actual
+SQLite/PostgreSQL storage-recovery phases in **225.341/187.353 seconds**.
+Exact executed selectors:
+
+```bash
+dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore -c Release --filter-trait Provider=postgres --minimum-expected-tests 1
+dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-trait Provider=postgres --filter-not-class '*Composition*' --minimum-expected-tests 1
+dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-query '/[(Suite=recovery)&(Provider=sqlite)]' --minimum-expected-tests 1
+dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-query '/[(Suite=recovery)&(Provider=postgres)]' --minimum-expected-tests 1
+```
+
+Together with focused local actual SQLite command/lease/batch evidence, these
+close T087 on real provider behavior, not source presence or a prior generic
+matrix. **80/100 complete, 20 remaining**: T080-T086 and T088-T100.
+T080/T081/T082/T085 remain open for complete quarantine/reconciliation/
+interruption obligations. The newer browser recipe failure and other historical
+failures remain failed; this is not a full-matrix pass or stage completion.
+The branch/draft PR, running implement ledger and reviewer-owned markers remain
+unchanged. Full Release warnings-as-errors build, native format verification,
+repository checker, 132 Python tests and whitespace checks pass for this
+increment; no dependency, original migration or acceptance state changed.

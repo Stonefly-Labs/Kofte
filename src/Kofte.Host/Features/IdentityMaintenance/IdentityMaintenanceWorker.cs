@@ -40,6 +40,8 @@ internal static class IdentityMaintenanceWorker
             var budget = observation.Budget;
             await using var scope = await MaintenanceScope.AcquireAsync(installation, budget.Token,
                 TimeSpan.FromTicks(Math.Min(OperationBudget.Acquire.Ticks, budget.Remaining.Ticks)));
+            if (IdentityRestoreQuarantine.IsRequired(identity.KeyRingDirectory))
+                throw new StorageException(StorageCode.ReconciliationRequired);
             await StorageReconciliation.ValidateStartupAsync(installation, budget.Token);
             var registry = new RegistryMigrationRunner(installation);
             await using var connection = await installation.OpenPlatformAsync(budget);

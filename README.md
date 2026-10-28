@@ -37,7 +37,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 > [!IMPORTANT]
 > **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md) and [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) is now human-merged. Its accepted ledger and evidence were verified on updated main before 005 began. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) retains prior failures and unknown causes; the historical failed local gate remains failed, not waived by acceptance or merge. Spec 005 now has [authentication/bootstrap requirements](specs/005-authentication-bootstrap/spec.md) and US1 sign-in implemented, not the complete identity feature. Nothing here claims production readiness or MVP completion.
 
-**Current stage: 005 / implement running; 79/100 tasks complete.** T001–T079
+**Current stage: 005 / implement running; 80/100 tasks complete.** T001–T079 and T087
 are evidenced. The expanded actual HTTPS TypeScript corpus now
 passes thirteen ordinary cases plus the designated-actor case. It exposed and
 corrected Node's bare 431 at the admitted header boundary: all Next serving
@@ -85,16 +85,21 @@ on both providers in hosted `49ef96e`, closing T066/T067/T069/T070. Existing
 both-provider upgrade, preparation and read-only-startup evidence closes T079.
 Recovery-v2 now verifies complete artifacts plus actual identity rows, consumed
 history and a streamed security digest; the new SQLite and retained v1 checks
-pass. Both-provider recovery and restore quarantine/reconciliation remain
-unfinished, so identity-bearing sets explicitly refuse the legacy ungated
-restore path. A fresh hosted enrollment-replacement login fails at its callback
+pass. Hosted `f52150f` PostgreSQL integration also passes the new recovery-v2
+cases. Actual SQLite separately gated restore now preserves the exact security
+snapshot behind a private marker outside the recovered data; strict private decisions
+bind the original manifest SHA-256. All six existing stopped commands refuse
+pending reconciliation. The reconciliation command/fresh keys/crash-resume and
+new PostgreSQL quarantine proof remain unfinished, and identity-bearing sets
+still refuse the legacy ungated restore path. Hosted `49ef96e`
+enrollment-replacement login fails at its callback
 assertion; the focused SQLite reproduction passes, without establishing a cause
 or turning the full matrix green.
 The stopped `--identity maintain` command now reuses the bounded retention
 helpers: one at-most-128-row batch each of expired session evidence, terminal
 login attempts and expired admission windows. Actual SQLite pruning, prepared
-authority preservation and live-host refusal pass; its PostgreSQL evidence
-and T087 task closure remain pending.
+authority preservation and live-host refusal pass; hosted `20d751c` also passes
+the new PostgreSQL host/storage and both-provider recovery cases, closing T087.
 A fresh owned PostgreSQL creation probe
 confirms Docker network-pool exhaustion; no existing resources were removed.
 Native explicit Development selection now
