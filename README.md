@@ -139,6 +139,12 @@ enrollment/lost-acknowledgement evidence is wired into the existing Ubuntu job,
 not claimed passed: local HTTPS stalls before enrollment. Docker's default
 network pool is exhausted, blocking fresh local PostgreSQL fixtures; no
 unrelated resources were removed. US2 and the complete feature remain unfinished.
+The next SQLite preservation regression also passes: twenty eligible submissions
+produce one designation, and nonempty module data, assignment and EF history
+survive three fresh hosts, actual repeated preparation
+and loss/replacement of the administrator's issuer. Enrollment stays consumed
+for the newly authenticated ordinary user and stopped renomination is refused;
+the PostgreSQL counterpart still needs fresh CI.
 
 The following preserves the completed design-stage context. The
 [specification](specs/005-authentication-bootstrap/spec.md) and

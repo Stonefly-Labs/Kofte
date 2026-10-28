@@ -98,7 +98,8 @@ public sealed class LoginCommitFixture : IAsyncDisposable
     public Func<string, CancellationToken, Task<IPAddress[]>>? ProtocolDns { get; set; }
 
     public static async Task<LoginCommitFixture> CreateAsync(string provider, CancellationToken token,
-        TimeProvider? localClock = null, bool productRoutes = false, bool withBrowser = false)
+        TimeProvider? localClock = null, bool productRoutes = false, bool withBrowser = false,
+        Func<StorageProviderScope, CancellationToken, Task>? prepareStorage = null)
     {
         var fixture = new LoginCommitFixture { clock = localClock ?? TimeProvider.System, productRoutes = productRoutes };
         try
@@ -122,6 +123,7 @@ public sealed class LoginCommitFixture : IAsyncDisposable
             fixture.installation = fixture.scope.Postgres is { } postgres
                 ? StorageInstallation.PostgreSql(postgres.ConnectionString)
                 : StorageInstallation.Sqlite(fixture.scope.DataRoot);
+            if (prepareStorage is not null) await prepareStorage(fixture.scope, fixture.scope.Token);
             await fixture.OpenOwnerAsync(token);
             await fixture.StartAsync(token);
             if (withBrowser) await fixture.StartBrowserAsync(token);

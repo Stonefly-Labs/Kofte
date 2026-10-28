@@ -2294,3 +2294,43 @@ validate current source, and earlier failed/readiness/macOS evidence is retained
 actor parity, US4 actual development selection/isolation, US5 recovery-v2/
 quarantine/reconciliation, then full local/CI gates and evidence-based review.
 No stage transition, human acceptance, PR readiness or merge is requested.
+
+### T051 continuation: populated module and unavailable administrator
+
+`EnrollmentRestartTests` now uses an owned pre-serving fixture callback to
+register/migrate a real module through the accepted stopped registry/binding
+APIs and persist a nonempty sentinel. No test module code moves to production.
+Twenty protected eligible submissions admit exactly one success and nineteen
+conflicts with the populated module present, then three distinct serving processes
+and actual idempotent registry upgrade/identity prepare preserve exact module
+assignment, row/note, EF history, registry revision, user/mapping and immutable
+enrollment record.
+
+The original issuer is actually disposed and explicitly reconciled to a fresh
+issuer. The prior session is denied; the replacement issuer's ordinary
+authenticated user cannot inherit designation, replay the original authorization
+or reopen bootstrap with the actual stopped nomination command. The original
+consumed user/generation/event and unrelated module remain intact.
+
+The initial test could not compile: the new owned preparation callback was not
+implemented, and two test namespace imports were missing. After those fixes,
+`dotnet build Kofte.slnx --no-restore -c Release -warnaserror --nologo` passes
+without warnings and the exact command
+`dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteEnrollmentRestartTests' --minimum-expected-tests 1`
+passes its actual SQLite case. No PostgreSQL execution is claimed while local
+Docker fixture capacity is exhausted. T051 remains unchecked until that
+counterpart passes; the total remains **44/100**.
+
+Extending the passing single-enrollment case to the required twenty simultaneous
+submissions initially failed with the runner's sanitized `command_failed`; its
+failure report identifies this test but does not establish a cause. The unchanged
+case then passed one private diagnostic execution and three further sequential
+isolated executions. These later passes are not a diagnosis or claim that a
+timing defect was fixed. No contender count or deadline was reduced.
+
+The pushed `68b483f` repository check passes. Its product run `40640319468`
+reports failed host cases for SQLite interrupted preparation, PostgreSQL
+twenty-way enrollment and PostgreSQL invalid OIDC evidence. The browser suite
+itself passes, but the subsequent configured-HTTPS public-recipe step fails;
+the complete run's logs are not yet available. These are retained failures, not
+passing evidence for this follow-up, and their cause remains under investigation.
