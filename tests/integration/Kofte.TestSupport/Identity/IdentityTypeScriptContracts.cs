@@ -29,7 +29,7 @@ internal static class IdentityTypeScriptContracts
                     var lines = Regex.Matches(message, @"(?:identity|adapter)\.test\.ts:([1-9][0-9]{0,3}):")
                         .Select(match => match.Groups[1].Value).Distinct();
                     var boundary = Regex.Match(message,
-                        @"identity_independent_(route|header)_([0-9]_[0-9]{1,5}_[0-9]{3})");
+                        @"identity_independent_(route|header|target)_([0-9]_[0-9]{1,5}_[0-9]{3})");
                     return test.Index.ToString(CultureInfo.InvariantCulture) + "_lines_" + string.Join("_", lines) +
                         (boundary.Success ? "_" + boundary.Groups[1].Value + "_" + boundary.Groups[2].Value : "");
                 }).ToArray();

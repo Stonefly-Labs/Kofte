@@ -51,6 +51,10 @@ new PostgreSQL execution still needs hosted evidence.
 T065's complete thirty-case SQLite rerun passes; unchanged both-provider hosted
 session and storage/trust-reconciliation suites also pass. Other hosted failures
 remain open and do not become a passing full matrix.
+The corpus now also proves simultaneous 16-KiB callback-target and header
+admission through native/Next paths, with private refusal if either exceeds its
+limit. Its initial 414 exposed the owned test HTTPS ingress's smaller parser
+limit; only that fixture's framing headroom changed, not product limits.
 Actual empty/composed hosts and production Next now
 verify concurrent two-user request isolation, direct/adapted identity equality and
 first-protected-request rejection of both original cookies after stopped epoch

@@ -3380,3 +3380,43 @@ separately evidenced above and is not inferred executed on PostgreSQL.
 T065 is now checked; **69/100 tasks are complete, 31 remain**. The unchanged
 lifetimes/deadlines, retained full-matrix failures, original branch/draft PR,
 reviewer-owned checklists and implement/running driver are preserved.
+
+## T064 continuation: simultaneous callback-target/header boundaries
+
+The existing thirteen-case ordinary TypeScript corpus now also measures exact
+16,384-byte callback targets with independently framed 16,384-byte headers
+through both actual paths. An unsolicited invalid protocol state at both
+admitted boundaries must reach protocol handling and return private 401, not a
+transport/parser refusal. A 16,385-byte target or 16,385-byte header must return
+private 400 with `identity_request_invalid`. Every combination forbids cookies
+and redirects and requires no-store/no-cache/no-referrer.
+
+Initial reports `contract-sqlite-d7461273aa9b4274bfac83672f0e7889.json` and
+`contract-sqlite-b10f6a7b98074876b3fb3709de0dc7ab.json` fail the adapted
+16,384-byte target with 414. Private numeric/source-only projection identifies
+`identity_independent_target_1_16384_414`. The owned test HTTPS ingress used
+Kestrel's smaller default request-line cap, before Next or the application
+could enforce the approved limit. That fixture now uses the native host's
+16,384-plus-32 request-line framing allowance. Product limits, Node parser
+settings, timeouts, TLS trust and cleanup are unchanged. Safe TypeScript failure
+projection additionally recognizes only fixed target transport/size/status
+indices; it never includes query values or raw assertion text.
+
+`dotnet build Kofte.slnx --no-restore -c Release -warnaserror`,
+`dotnet format Kofte.slnx --no-restore --verify-no-changes --verbosity quiet`
+and
+`dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityParityTests' --filter-method '*ActualHttpsAdapterAndSeparateActorRetainTheSameIdentityThroughNominationAndSignOut' --minimum-expected-tests 1`
+all pass in `contract-sqlite-55c900f25e614448b006df3c0a146bfa.json`.
+That actual parent fact requires all thirteen ordinary cases and the designated
+actor case, including successful actual OIDC/enrollment/sign-out, not merely
+the new refused callback requests. Contract strict types and lint also pass.
+The new simultaneous PostgreSQL counterpart still needs hosted execution;
+T064 remains unchecked and progress stays **69/100**.
+
+The unchanged focused reproduction
+`dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteOidcBudgetTests' '*SqliteEnrollmentTests' --filter-method '*DeliveredInvalidEvidenceCannotCreateAUserSessionOrCommittedLoginEvent' '*DeliveredBrowserLoginRateRefusesTheEleventhAttemptBeforeProviderOrIdentityEffects' '*EnrollmentChecksCurrentCeremonyAndExactNomineeWithoutReopeningHistory' '*ActualStoppedReplacementRefusesTheOriginalSecretAndConsumesOnlyTheNewGeneration' --minimum-expected-tests 21`
+passes all twenty-one cases in
+`integration-sqlite-337e6f1acafb481981a6f690b4968273.json`. These are cases
+named by recent hosted failures; this unchanged local pass does not diagnose
+those failures or justify removing their deadlines/assertions. No speculative
+host scheduling change is made.

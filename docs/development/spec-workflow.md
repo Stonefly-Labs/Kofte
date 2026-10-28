@@ -70,6 +70,12 @@ T065 now closes with a fresh complete thirty-case SQLite session/sign-out
 selection and verified unchanged both-provider hosted session and storage/trust
 suites. This does not close the separate HTTP/Development gates or turn retained
 host integration, recovery-recipe and timeout failures into a green full matrix.
+The production corpus additionally exercises exact callback-target bytes
+together with exact header bytes on both paths. A real initial adapted 414
+identified the owned HTTPS test ingress's default request-line cap; giving that
+fixture the same framing allowance as the native host preserves both 16-KiB
+application limits. The combined admitted request reaches protocol refusal,
+while one byte over either boundary returns private 400 without cookies.
 The prior composition-privacy failure remains recorded: both a local unchanged recipe
 and the subsequently published `135fe80` privacy job pass, without establishing
 the failed job's cause. Its wrapper now retains the consumer result in private

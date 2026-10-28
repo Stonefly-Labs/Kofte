@@ -293,11 +293,15 @@ if (!expected.isInitialAdministrator) {
     }
   });
 
-  it("admits exactly sixteen KiB of combined headers and refuses the next byte before issuing cookies", async () => {
+  it("enforces independent callback-target and header limits even when both are at capacity", async () => {
     const boundary = identityNumericBoundaries.find(
       ([name]) => name === "headers_and_cookies_bytes",
     );
-    if (!boundary) throw new Error("independent_header_boundary_required");
+    const targetBoundary = identityNumericBoundaries.find(
+      ([name]) => name === "callback_target_bytes",
+    );
+    if (!boundary || !targetBoundary)
+      throw new Error("independent_http_boundary_required");
     for (const [transport, origin] of origins.entries()) {
       const lengths: readonly number[] = [boundary[1], boundary[2]];
       for (const length of lengths) {
@@ -330,6 +334,35 @@ if (!expected.isInitialAdministrator) {
             csrfToken: expect.any(String),
           });
         }
+      }
+      const callbackPrefix = "/auth/oidc/callback?state=";
+      for (const [targetBytes, headerBytes, status] of [
+        [targetBoundary[1], boundary[1], 401],
+        [targetBoundary[2], boundary[1], 400],
+        [targetBoundary[1], boundary[2], 400],
+      ]) {
+        const response = await requestWithHeaderBytes(
+          new URL(callbackPrefix.padEnd(targetBytes, "a"), origin),
+          headerBytes,
+        );
+        if (response.status !== status)
+          throw new Error(
+            `identity_independent_target_${transport}_${targetBytes}_${response.status}`,
+          );
+        expect(response.cacheControl).toBe(identityTransport.cacheControl);
+        expect(response.headers.pragma).toBe(identityTransport.pragma);
+        expect(response.headers["referrer-policy"]).toBe(
+          identityTransport.referrerPolicy,
+        );
+        expect(response.headers.location).toBeUndefined();
+        expect(response.headers["set-cookie"]).toBeUndefined();
+        expect(JSON.parse(response.body)).toMatchObject({
+          status,
+          code:
+            status === 401
+              ? "identity_unauthenticated"
+              : "identity_request_invalid",
+        });
       }
     }
   });

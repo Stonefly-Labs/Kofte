@@ -55,7 +55,10 @@ internal sealed class IdentityBrowserIngress : IAsyncDisposable
             builder.Configuration.Sources.Clear();
             builder.Logging.ClearProviders();
             builder.WebHost.ConfigureKestrel(server =>
-                server.Listen(IPAddress.Loopback, 0, listener => listener.UseHttps(certificate)));
+            {
+                server.Limits.MaxRequestLineSize = 16_384 + 32;
+                server.Listen(IPAddress.Loopback, 0, listener => listener.UseHttps(certificate));
+            });
             fixture.application = builder.Build();
             fixture.application.Run(fixture.ForwardAsync);
             await fixture.application.StartAsync(token);
