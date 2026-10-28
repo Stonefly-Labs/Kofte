@@ -468,6 +468,7 @@ async function warmRestarts(
           configured,
         );
         start("node", [
+          "--max-http-header-size=32768",
           join(repository, "node_modules/next/dist/bin/next"),
           "start",
           join(repository, "apps/web"),

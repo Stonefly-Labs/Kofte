@@ -3216,3 +3216,71 @@ at observation. Its privacy job fails the existing SQLite composition consumer
 with generic `composition_consumer_failed`; the safe artifact does not establish
 its underlying cause. Remaining incomplete jobs and full feature acceptance
 remain open; the driver stays implement/running.
+
+## T064 increment: actual HTTP corpus and Node parser boundary
+
+The independent production TypeScript corpus now executes thirteen ordinary
+cases plus its designated actor case, using the existing owned native HTTPS
+host, production Next and separately compiled actor. Unsupported-method checks
+cover all seven GET/POST/PUT/PATCH/DELETE/HEAD/OPTIONS verbs on the six production
+protocol/API routes, excluding each admitted method, with exact Allow, private
+empty 405 and no redirect. Unknown/case/version/trailing-slash paths retain
+private empty 404 for the same verbs.
+
+New cases refuse ambiguous Origin/Fetch Metadata/CSRF headers without revoking
+the current session, reject duplicate/unknown login fields and incorrect
+media/query input without a challenge, and independently frame exact
+16,384/16,385 combined HTTP header bytes on both transports. The low-level
+request helper disables implicit Node headers and explicitly supplies Host
+and any nonempty body length. Fixed forwarded fields prevent Next from adding
+unmeasured framing; they remain caller data, not trusted identity/routing.
+No expected byte limit is calculated from a product validator.
+
+Initial runs are retained in
+`contract-sqlite-608d045d48af40e9931f4a76a461c87f.json`,
+`contract-sqlite-a16ee1dd14d544a8bbb40a1efa051a20.json` and
+`contract-sqlite-46e25da71b3f4672bcea480545571327.json`. Correcting independent
+wire framing then exposed the actual Node parser's bare 431 at the admitted
+16 KiB boundary in `contract-sqlite-8eecd76425f44ca8b68148e67883d226.json`.
+Web dev/start scripts, the verifier and both identity/startup browser fixtures
+now explicitly give Node 32 KiB parser headroom. The application limit is
+unchanged: exactly 16 KiB succeeds and one byte over returns private 400 with
+no cookies. No input limit, deadline, TLS rule or effect assertion is weakened.
+
+Actual final command:
+`dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityParityTests' --filter-method '*ActualHttpsAdapterAndSeparateActorRetainTheSameIdentityThroughNominationAndSignOut' --minimum-expected-tests 1`
+passes, together with the Release warnings-as-errors build, in
+`contract-sqlite-206592cd396245379a9b7131fbacde9b.json`. Its child report requires
+all thirteen ordinary and one designated TypeScript cases, not just a successful
+test-process exit. Failure projection retains only source-line numbers and
+fixed route/header transport/size/status indices, never private assertion text.
+
+The inherited `1da3483` SQLite composition-privacy failure is not reproduced by
+the unchanged local public `private-diagnostics` recipe
+(`privacy-sqlite-799e8ca1cf184d19bc29e42ce44364b5.json`) or its actual one-case
+contract wrapper (`privacy-sqlite-fd51229b770740869189d33c047d7edf.json`);
+that wrapper's build passes. The later published `135fe80` hosted privacy job
+also passes. None establishes the original failure's cause. The privacy
+wrapper now follows its existing sibling contracts by retaining consumer output
+in private xUnit capture; the existing verifier projects only validated
+source-allowlisted failure codes/scenarios, discarding the private capture.
+The former generic `composition_consumer_failed` is not adequate diagnosis.
+
+T064 remains unchecked for its complete Development/both-provider corpus.
+Progress remains **68/100**; the local PostgreSQL network-capacity blocker,
+unfinished operations and unresolved full-matrix failures are not waived.
+
+Final regression selection adds
+`--filter-class '*SqliteLoginEndpointContractTests' '*SqliteIdentityParityTests' '*SqliteSessionScopeContractTests' '*SqliteCompositionPrivacyContractTests' --minimum-expected-tests 19`
+to the same contract command: all nineteen cases pass together in
+`contract-sqlite-b54ddf46b0484056bd24850f95ac78fb.json`, as does
+`dotnet format Kofte.slnx --no-restore --verify-no-changes --verbosity quiet`.
+The retained owned runtime's
+`npm run test --workspace tests/contract -- --no-file-parallelism bootstrap.test.ts adapter.test.ts`
+passes all thirteen build/preparation/native/Next/cleanup/output-scan steps in
+`contract-sqlite-2233b1c3998043d1ae9c98c0e3679594.json`.
+Its preceding attempt, `contract-sqlite-17fd7fb0e962427abd80ce5b205d862f.json`,
+fails web-build cleanup/input handling despite child exit 0. The unchanged retry
+does not diagnose that inherited intermittent local failure.
+Repository checking, all 131 Python tests, whitespace, contract/e2e lint and
+strict types, full web formatting and the public web start-script help pass.

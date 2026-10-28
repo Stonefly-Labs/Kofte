@@ -140,12 +140,21 @@ if (!expected.isInitialAdministrator) {
   it("retains exact empty private method refusals and Allow through actual routes", async () => {
     const routes = identityRoutes.filter(
       ([, path]) =>
-        path.startsWith("/api/identity/") &&
+        (path.startsWith("/api/identity/") || path.startsWith("/auth/")) &&
         path !== "/api/identity/v1/development-session",
     );
     for (const origin of origins)
       for (const [allowed, path] of routes)
-        for (const method of ["HEAD", "OPTIONS"]) {
+        for (const method of [
+          "GET",
+          "POST",
+          "PUT",
+          "PATCH",
+          "DELETE",
+          "HEAD",
+          "OPTIONS",
+        ]) {
+          if (method === allowed) continue;
           const response = await send(origin, path, {
             method,
             headers: session,
@@ -173,7 +182,15 @@ if (!expected.isInitialAdministrator) {
         "/auth/login/",
         "/auth/oidc/callback/",
       ].entries())
-        for (const method of ["GET", "POST", "HEAD", "OPTIONS"]) {
+        for (const method of [
+          "GET",
+          "POST",
+          "PUT",
+          "PATCH",
+          "DELETE",
+          "HEAD",
+          "OPTIONS",
+        ]) {
           const response = await send(origin, path, {
             method,
             headers: session,
@@ -258,6 +275,130 @@ if (!expected.isInitialAdministrator) {
           denied.code,
         );
     }
+  });
+
+  it("refuses ambiguous Origin, Fetch Metadata and antiforgery headers without revoking the current session", async () => {
+    const ambiguous: Record<string, string | string[]>[] = [
+      { Origin: [publicOrigin, publicOrigin] },
+      { "Sec-Fetch-Site": ["same-origin", "cross-site"] },
+      { "X-Kofte-CSRF": [csrf, csrf] },
+    ];
+    for (const origin of origins) {
+      for (const headers of ambiguous) {
+        const response = await requestWithBody(
+          new URL("/api/identity/v1/sign-out", origin),
+          "",
+          { ...mutation, ...headers },
+          "POST",
+        );
+        expect(response.status).toBe(403);
+        expect(response.cacheControl).toBe(identityTransport.cacheControl);
+        expect(response.headers.location).toBeUndefined();
+        const body: unknown = JSON.parse(response.body);
+        expect(body).toMatchObject({
+          status: 403,
+          code: "identity_forbidden",
+        });
+      }
+      const current = await send(origin, "/api/identity/v1/me", {
+        headers: session,
+      });
+      expect(current.status).toBe(200);
+      expect(await current.json()).toEqual(expected);
+    }
+  });
+
+  it("admits exactly sixteen KiB of combined headers and refuses the next byte before issuing cookies", async () => {
+    const boundary = identityNumericBoundaries.find(
+      ([name]) => name === "headers_and_cookies_bytes",
+    );
+    if (!boundary) throw new Error("independent_header_boundary_required");
+    for (const [transport, origin] of origins.entries()) {
+      const headers = {
+        Host: new URL(origin).host,
+        "X-Forwarded-Host": "boundary.invalid",
+        "X-Forwarded-Port": "443",
+        "X-Forwarded-Proto": "https",
+        "X-Forwarded-For": "127.0.0.1",
+        "X-Identity-Padding": "",
+      };
+      const fixedBytes = Object.entries(headers).reduce(
+        (total, [name, value]) =>
+          total + Buffer.byteLength(`${name}: ${value}\r\n`),
+        0,
+      );
+      const lengths: readonly number[] = [boundary[1], boundary[2]];
+      for (const length of lengths) {
+        const response = await requestWithBody(
+          new URL("/api/identity/v1/browser-context", origin),
+          "",
+          {
+            ...headers,
+            "X-Identity-Padding": "a".repeat(length - fixedBytes),
+          },
+        );
+        if (response.status !== (length === boundary[1] ? 200 : 400))
+          throw new Error(
+            `identity_independent_header_${transport}_${length}_${response.status}`,
+          );
+        expect(response.status).toBe(length === boundary[1] ? 200 : 400);
+        expect(response.cacheControl).toBe(identityTransport.cacheControl);
+        expect(response.headers.pragma).toBe(identityTransport.pragma);
+        expect(response.headers["referrer-policy"]).toBe(
+          identityTransport.referrerPolicy,
+        );
+        expect(response.headers.location).toBeUndefined();
+        if (length === boundary[2]) {
+          expect(response.headers["set-cookie"]).toBeUndefined();
+          expect(JSON.parse(response.body)).toMatchObject({
+            status: 400,
+            code: "identity_request_invalid",
+          });
+        } else {
+          expect(response.headers["set-cookie"]).toHaveLength(2);
+          expect(JSON.parse(response.body)).toMatchObject({
+            version: "1",
+            identityMode: "oidc",
+            csrfToken: expect.any(String),
+          });
+        }
+      }
+    }
+  });
+
+  it("refuses duplicate and unknown login fields, incorrect media and query input before a challenge", async () => {
+    const denied = refusal("unknown_duplicate_json_or_form_field");
+    for (const origin of origins)
+      for (const [path, contentType, body] of [
+        [
+          "/auth/login",
+          "application/x-www-form-urlencoded",
+          "returnPath=%2F&returnPath=%2Fidentity",
+        ],
+        [
+          "/auth/login",
+          "application/x-www-form-urlencoded",
+          "returnPath=%2Fidentity&userId=caller-selected",
+        ],
+        [
+          "/auth/login",
+          "application/json",
+          JSON.stringify({ returnPath: "/identity" }),
+        ],
+        [
+          "/auth/login?returnPath=%2Fidentity",
+          "application/x-www-form-urlencoded",
+          "returnPath=%2Fidentity",
+        ],
+      ]) {
+        const response = await send(origin, path, {
+          method: "POST",
+          headers: { ...mutation, "Content-Type": contentType },
+          body,
+        });
+        await problem(response, denied.status, denied.code);
+        expect(response.headers.getSetCookie()).toEqual([]);
+      }
   });
 
   it("admits sixteen individual authentication cookies but refuses duplicates and the seventeenth", async () => {

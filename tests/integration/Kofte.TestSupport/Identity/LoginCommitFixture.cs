@@ -283,6 +283,7 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         if (!File.Exists(Path.Combine(OwnedProcesses.FindRepository(), "apps", "web", ".next", "BUILD_ID")))
             throw new InvalidOperationException("identity_fixture_web_build_required");
         var start = NodeStart(Path.Combine("node_modules", "next", "dist", "bin", "next"));
+        start.ArgumentList.Insert(0, "--max-http-header-size=32768");
         start.WorkingDirectory = Path.Combine(OwnedProcesses.FindRepository(), "apps", "web");
         start.ArgumentList.Add("start");
         start.ArgumentList.Add("--hostname");
@@ -391,14 +392,15 @@ public sealed class LoginCommitFixture : IAsyncDisposable
                     var message = test.Test.GetProperty("failureMessages").ToString();
                     var lines = Regex.Matches(message, @"identity\.test\.ts:([1-9][0-9]{0,3}):")
                         .Select(match => match.Groups[1].Value).Distinct();
-                    var route = Regex.Match(message, @"identity_independent_route_([0-9]_[0-9]{1,2}_[0-9]{3})");
+                    var boundary = Regex.Match(message,
+                        @"identity_independent_(route|header)_([0-9]_[0-9]{1,5}_[0-9]{3})");
                     return test.Index.ToString(CultureInfo.InvariantCulture) + "_lines_" + string.Join("_", lines) +
-                        (route.Success ? "_route_" + route.Groups[1].Value : "");
+                        (boundary.Success ? "_" + boundary.Groups[1].Value + "_" + boundary.Groups[2].Value : "");
                 }).ToArray();
             throw new InvalidOperationException("identity_typescript_contract_failed_" + string.Join("_case_", cases));
         }
         if (!value.GetProperty("success").GetBoolean() ||
-            value.GetProperty("numPassedTests").GetInt32() != (designated ? 1 : 10) ||
+            value.GetProperty("numPassedTests").GetInt32() != (designated ? 1 : 13) ||
             value.GetProperty("numFailedTests").GetInt32() != 0)
             throw new InvalidOperationException("identity_typescript_contract_incomplete");
     }

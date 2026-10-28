@@ -132,6 +132,7 @@ public sealed class IdentityFixture : IAsyncDisposable
         };
         foreach (var argument in new[]
         {
+            "--max-http-header-size=32768",
             Path.Combine(repository, "node_modules", "next", "dist", "bin", "next"),
             "start", Path.Combine(repository, "apps", "web"), "--hostname", "127.0.0.1",
             "--port", WebUrl.Port.ToString(System.Globalization.CultureInfo.InvariantCulture)

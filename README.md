@@ -38,7 +38,12 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 > **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md) and [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) is now human-merged. Its accepted ledger and evidence were verified on updated main before 005 began. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) retains prior failures and unknown causes; the historical failed local gate remains failed, not waived by acceptance or merge. Spec 005 now has [authentication/bootstrap requirements](specs/005-authentication-bootstrap/spec.md) and US1 sign-in implemented, not the complete identity feature. Nothing here claims production readiness or MVP completion.
 
 **Current stage: 005 / implement running; 68/100 tasks complete.** T001–T063
-and T071–T075 are evidenced. Actual empty/composed hosts and production Next now
+and T071–T075 are evidenced. The expanded actual HTTPS TypeScript corpus now
+passes thirteen ordinary cases plus the designated-actor case. It exposed and
+corrected Node's bare 431 at the admitted header boundary: all Next serving
+launchers now give the parser 32 KiB of headroom while Köfte still admits exactly
+16 KiB and rejects the next byte with its private 400. Full T064 remains open.
+Actual empty/composed hosts and production Next now
 verify concurrent two-user request isolation, direct/adapted identity equality and
 first-protected-request rejection of both original cookies after stopped epoch
 revocation. Fresh explicit selection preserves each original user ID.

@@ -573,6 +573,13 @@ actual host and fixed web adapter report usable storage. Startup is bounded to
 300 seconds. Ctrl-C stops only owned child process groups; existing port
 occupants are never killed. Repeat `python3 scripts/dev.py` to restart.
 
+The web `dev`/`start` scripts and owned Next launchers explicitly use
+`--max-http-header-size=32768`. This is parser headroom, not a larger identity
+input limit: Köfte still permits 16 KiB of combined headers/cookies and rejects
+the next byte with its private 400 response. Node's default parser otherwise
+returns a bare 431 before that policy can run at the admitted boundary.
+Keep this flag when launching Next directly instead of using the web scripts.
+
 Persistent SQLite data is `data/platform/platform.db`; directories are private
 to the current owner and the database is owner read/write only. Normal startup
 opens an existing store, never creates missing data, switches providers or resets

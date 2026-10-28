@@ -53,6 +53,16 @@ concurrent independent users, exact direct/adapted IDs and replay of the saved
 original credentials on the first protected request after stopped epoch revocation.
 Fresh explicit selection retains both user IDs; production fresh designation/
 corruption and separate stopped-worker authority checks also pass.
+The expanded TypeScript production corpus now passes thirteen ordinary cases
+plus the designated actor case through actual native/Next HTTPS routes. Exact
+header-byte testing exposed Node's bare 431 before application policy; all Next
+serving launchers now provide 32 KiB parser headroom while the unchanged 16 KiB
+identity boundary admits its limit and returns a private 400 one byte over.
+T064 remains open for its complete Development/both-provider corpus. The prior
+composition-privacy failure remains recorded: both a local unchanged recipe
+and the subsequently published `135fe80` privacy job pass, without establishing
+the failed job's cause. Its wrapper now retains the consumer result in private
+test output for existing source-allowlisted diagnostic projection.
 T075 additionally preserves explicit stopped preparation,
 loopback-only serving and matching Development environments in the supervisor
 and owned runtime. The actual SQLite negative startup matrix passes all 88

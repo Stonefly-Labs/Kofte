@@ -912,7 +912,7 @@ def runtime(runner, provider, disposable, external_connection=None, privacy_cana
 
             runner.operation("owned-host-start", lambda _: start_host(285), ["dotnet", HOST])
             web_command = [
-                "node", "node_modules/next/dist/bin/next", "start", "apps/web",
+                "node", "--max-http-header-size=32768", "node_modules/next/dist/bin/next", "start", "apps/web",
                 "--hostname", "127.0.0.1", "--port", str(web_port),
             ]
 
