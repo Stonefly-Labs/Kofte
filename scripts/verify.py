@@ -375,10 +375,12 @@ def command_diagnostics(command):
         project = command[3]
         kind, prefix = native_projects[project]
         tests = set()
+        source_lines = {}
         for path in (ROOT / project).rglob("*.cs"):
             if {"bin", "obj"}.intersection(path.relative_to(ROOT).parts):
                 continue
             source = path.read_text()
+            source_lines[path.relative_to(ROOT).as_posix()] = len(source.splitlines())
             namespace = re.search(r"^namespace (" + re.escape(prefix) + r"(?:\.[A-Za-z0-9_]+)*);",
                                   source, re.MULTILINE)
             if namespace:
@@ -399,7 +401,7 @@ def command_diagnostics(command):
             *codes, *("storage_" + re.sub(r"(?<!^)(?=[A-Z])", "_", code).lower() for code in codes),
             "composition_consumer_failed", "composition_consumer_output_limit", "composition_consumer_result_invalid",
             *composition_codes,
-        ), tests, scenarios=(*COMPOSITION_OBSERVATIONS, "all"))
+        ), tests, scenarios=(*COMPOSITION_OBSERVATIONS, "all"), source_lines=source_lines)
     return None
 
 

@@ -209,9 +209,11 @@ class FailurePropagationTests(unittest.TestCase):
         evidence = self.evidence()
         command = ["dotnet", "test", "--project", verify.INTEGRATION]
         name = sorted(verify.command_diagnostics(command).tests)[0]
+        location = "tests/integration/Kofte.Host.IntegrationTests/Identity/OidcBudgetTests.cs:133"
         evidence["steps"][0].update(
             command=command, failedHostTests=[name],
             hostFailureCodes=["Busy"], hostDiagnosticCode="unavailable",
+            hostFailureLocations=[location],
         )
 
         def checked():
@@ -220,7 +222,7 @@ class FailurePropagationTests(unittest.TestCase):
             )
 
         result = checked()
-        for key in ("failedHostTests", "hostFailureCodes", "hostDiagnosticCode"):
+        for key in ("failedHostTests", "hostFailureCodes", "hostDiagnosticCode", "hostFailureLocations"):
             self.assertEqual(evidence["steps"][0][key], result["steps"][0][key])
         self.assertNotIn("credential-canary", json.dumps(result))
         for key, value in (
@@ -228,6 +230,10 @@ class FailurePropagationTests(unittest.TestCase):
             ("failedHostTests", [name, name]),
             ("hostFailureCodes", ["credential-canary"]),
             ("hostDiagnosticCode", "credential-canary"),
+            ("hostFailureLocations", ["/private/credential-canary/" + location]),
+            ("hostFailureLocations", [location, location]),
+            ("hostFailureLocations", [location.rsplit(":", 1)[0] + ":999999"]),
+            ("hostFailureLocations", ["tests/integration/Unknown.cs:1"]),
         ):
             with self.subTest(key=key):
                 evidence["steps"][0][key] = value

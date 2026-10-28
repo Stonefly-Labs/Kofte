@@ -221,6 +221,37 @@ class RuntimeSupportTests(unittest.TestCase):
                 diagnostic.clear()
                 self.assertEqual({}, diagnostic.safe_fields())
 
+    def test_native_failure_locations_require_known_failed_tests_and_bounded_source_lines(self):
+        name = "Kofte.Host.IntegrationTests.Identity.SqliteKnownTests.KnownCase"
+        owner, method = name.rsplit(".", 1)
+        source = "tests/integration/Kofte.Host.IntegrationTests/Identity/KnownTests.cs"
+        diagnostic = support.CommandDiagnostics("host", tests=[name], source_lines={source: 100})
+        path = self.root / "storage.xml"
+        locations = "\n".join(f"/private/credential-canary/{source}:line {line}" for line in range(1, 41))
+        invalid = "\n".join((
+            f"/private/credential-canary/{source}:line 0",
+            f"/private/credential-canary/{source}:line 101",
+            f"/private/credential-canary/{source}:line 000042",
+            "/private/credential-canary/Unknown.cs:line 42",
+        ))
+        path.write_text(
+            f'<assemblies><test type="{owner}" method="{method}" result="Pass">'
+            f'<failure><stack-trace>{source}:line 99</stack-trace></failure></test>'
+            f'<test type="unknown" method="unknown" result="Fail">'
+            f'<failure><stack-trace>{source}:line 98</stack-trace></failure></test>'
+            f'<test type="{owner}" method="{method}" result="Fail">'
+            '<failure><message>credential-canary</message><stack-trace>'
+            + invalid + "\n" + locations + '</stack-trace></failure></test></assemblies>'
+        )
+        diagnostic.read_storage_report(path)
+        self.assertEqual({
+            "failedHostTests": [name],
+            "hostFailureLocations": sorted(f"{source}:{line}" for line in range(1, 33)),
+        }, diagnostic.safe_fields())
+        self.assertNotIn("credential", json.dumps(vars(diagnostic), default=str))
+        diagnostic.clear()
+        self.assertEqual({}, diagnostic.safe_fields())
+
     def test_failed_composition_output_retains_only_known_scenario_and_assertion_symbols(self):
         name = "Kofte.Storage.IntegrationTests.Composition.SqliteCompositionProviderTests.KnownCase"
         owner, method = name.rsplit(".", 1)

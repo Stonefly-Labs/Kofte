@@ -76,6 +76,10 @@ identified the owned HTTPS test ingress's default request-line cap; giving that
 fixture the same framing allowance as the native host preserves both 16-KiB
 application limits. The combined admitted request reaches protocol refusal,
 while one byte over either boundary returns private 400 without cookies.
+Native failure projection now also retains at most 32 source-allowlisted
+repository paths with valid in-file line numbers. Private traces/values remain
+discarded; isolated failure-propagation reports revalidate the same whitelist.
+This improves the next failed run's evidence, not the outcome of prior failures.
 The prior composition-privacy failure remains recorded: both a local unchanged recipe
 and the subsequently published `135fe80` privacy job pass, without establishing
 the failed job's cause. Its wrapper now retains the consumer result in private

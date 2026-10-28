@@ -199,8 +199,11 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
                 code_key = f"{kind}FailureCodes"
                 operation_key = f"{kind}FailureOperations"
                 scenario_key = f"{kind}FailureScenarios"
+                location_key = f"{kind}FailureLocations"
                 report_key = f"{kind}DiagnosticCode"
-                if not any(key in step for key in (test_key, code_key, operation_key, scenario_key, report_key)):
+                if not any(key in step for key in (
+                    test_key, code_key, operation_key, scenario_key, location_key, report_key,
+                )):
                     continue
                 diagnostic = api.command_diagnostics(step["command"])
                 if diagnostic is None or diagnostic.kind != kind:
@@ -218,6 +221,13 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
                             or len(set(values)) != len(values)):
                         raise error("failure_child_report_unsafe")
                     selected[key] = values
+                if location_key in step:
+                    values = step[location_key]
+                    if (not isinstance(values, list) or not 1 <= len(values) <= 32
+                            or any(not diagnostic.valid_native_location(value) for value in values)
+                            or len(set(values)) != len(values)):
+                        raise error("failure_child_report_unsafe")
+                    selected[location_key] = values
                 if report_key in step:
                     code = step[report_key]
                     if not isinstance(code, str) or code not in diagnostic.storage_report_codes:

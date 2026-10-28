@@ -351,9 +351,11 @@ class VerifyTests(unittest.TestCase):
         name = ("Kofte.Host.IntegrationTests.Identity.PostgresOidcBudgetTests."
                 "DeliveredDnsChangesAreReadmittedBeforeTheRealTokenConnection")
         owner, method = name.rsplit(".", 1)
+        location = "tests/integration/Kofte.Host.IntegrationTests/Identity/OidcBudgetTests.cs"
         xml = (f'<assemblies><test type="{owner}" method="{method}" result="Fail" '
                'name="credential-canary"><failure><message>StorageException : DeadlineExceeded '
-               '/private/credential-canary</message><stack-trace>credential-canary</stack-trace>'
+               f'/private/credential-canary</message><stack-trace>/private/credential-canary/{location}:line 133'
+               '</stack-trace>'
                '</failure></test><test type="credential-canary" method="unknown" result="Fail"/>'
                '</assemblies>')
         script = (
@@ -368,9 +370,11 @@ class VerifyTests(unittest.TestCase):
         step = runner.report.data["steps"][-1]
         self.assertEqual([name], step["failedHostTests"])
         self.assertEqual(["DeadlineExceeded"], step["hostFailureCodes"])
+        self.assertEqual([location + ":133"], step["hostFailureLocations"])
         self.assertFalse(list((self.root / "artifacts/verification/.private").rglob("storage.xml")))
         self.assertNotIn("credential", runner.report.path.read_text())
         self.assertEqual(set(), diagnostic.failed_tests)
+        self.assertEqual(set(), diagnostic.sources)
 
     def test_successful_browser_command_never_publishes_failure_diagnostics(self):
         report = self.report("browser")

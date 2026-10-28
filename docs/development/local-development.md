@@ -940,10 +940,16 @@ before any child; single-provider runs exclude the other provider's trait
 without excluding provider-neutral manifest/harness tests. Startup verification
 also builds `Kofte.Storage.Consumer` before its timed browser exercise.
 Host integration now uses the same private bounded xUnit XML diagnostic path
-as storage/contract tests. Only source-known failed test symbols and admitted
-fixed codes enter safe reports; raw arguments, exceptions, output and private
-XML are not retained or uploaded. This makes failing host CI diagnosable
-without exposing identity exchanges.
+as storage/contract tests. Only source-known failed test symbols, admitted fixed
+codes and at most 32 allowlisted repository source locations enter safe reports.
+`hostFailureLocations`, `storageFailureLocations` and `contractFailureLocations`
+contain project-relative `.cs` paths with positive line numbers bounded by the
+actual source file, never private checkout prefixes. Locations come only from
+known failed tests; successful/unknown tests and invalid/out-of-file lines cannot
+publish them. Isolated failure-propagation evidence revalidates this whitelist.
+Raw arguments, assertion values, exceptions, traces, output and private XML are
+not retained or uploaded. This makes failing host CI diagnosable without exposing
+identity exchanges.
 
 | Suite                      | Underlying runner                                                                                                                                                                                                                     |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

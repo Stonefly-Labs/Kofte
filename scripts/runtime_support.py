@@ -48,11 +48,16 @@ class CommandDiagnostics:
         rb"[A-Za-z0-9_.+]{1,240})(?=[( ])",
     )
     storage_code = re.compile(rb"\b(?:StorageException|XunitException)\s*:\s*([A-Za-z_]{1,64})\b")
+    native_location = re.compile(
+        r"(?<![A-Za-z0-9_.-])(tests/(?:[A-Za-z0-9_.-]+/)*[A-Za-z0-9_.-]+\.cs)"
+        r":line ([1-9][0-9]{0,5})(?![0-9])",
+    )
 
-    def __init__(self, kind, codes=(), tests=(), *, scenarios=()):
+    def __init__(self, kind, codes=(), tests=(), *, scenarios=(), source_lines=None):
         self.kind, self.codes = kind, frozenset(codes)
         self.tests = frozenset(tests)
         self.scenarios = frozenset(scenarios)
+        self.source_lines = dict(source_lines or {})
         self.failures = Failures()
         self.sources, self.dependency_codes = set(), set()
         self.failed_tests, self.storage_codes = set(), set()
@@ -146,8 +151,20 @@ class CommandDiagnostics:
                 self.inspect(text.encode())
             for output in test.findall("output"):
                 self.read_composition_output(output.text or "")
+            for stack in test.findall("failure/stack-trace"):
+                for match in self.native_location.finditer((stack.text or "").replace("\\", "/")):
+                    location = ":".join(match.groups())
+                    if self.valid_native_location(location) and len(self.sources) < 32:
+                        self.sources.add(location)
         if not self.failed_tests:
             self.storage_report_code = "no_known_failure"
+
+    def valid_native_location(self, value):
+        if not isinstance(value, str):
+            return False
+        path, _, line = value.rpartition(":")
+        return (path in self.source_lines and re.fullmatch(r"[1-9][0-9]{0,5}", line) is not None
+                and int(line) <= self.source_lines[path])
 
     def read_composition_output(self, output):
         for line in output.splitlines():
@@ -192,6 +209,7 @@ class CommandDiagnostics:
                     **({f"{prefix}FailureCodes": sorted(self.storage_codes)} if self.storage_codes else {}),
                     **({f"{prefix}FailureOperations": sorted(self.failed_operations)} if self.failed_operations else {}),
                     **({f"{prefix}FailureScenarios": sorted(self.failed_scenarios)} if self.failed_scenarios else {}),
+                    **({f"{prefix}FailureLocations": sorted(self.sources)} if self.sources else {}),
                     **({f"{prefix}DiagnosticCode": self.storage_report_code} if self.storage_report_code else {}),
                 }
             return {}

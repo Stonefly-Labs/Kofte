@@ -3420,3 +3420,39 @@ passes all twenty-one cases in
 named by recent hosted failures; this unchanged local pass does not diagnose
 those failures or justify removing their deadlines/assertions. No speculative
 host scheduling change is made.
+
+## Implementation diagnostics: private native failures retain source locations
+
+The completed `dfb26a7` native platform contracts pass on both providers in
+716.073 seconds (`contract-both-66744f6197dd4ba4be26b4413687a0a9.json`).
+Its complete PostgreSQL host/storage/composition integration also passes
+(256.284/550.030/209.316 seconds). Composition-public contracts still time out
+at 900.047 seconds; the isolated whole PostgreSQL baseline times out at
+900.315 seconds. The completed `89b8b3a` SQLite integration instead names
+three failing enrollment facts, including twenty-way concurrency. Neither
+source-known test names alone nor the unchanged local twenty-one-case pass
+diagnoses those assertions. No scheduling/deadline/contender change is made.
+
+The existing private bounded xUnit projection now extracts at most 32
+repository-relative source locations from known failed native tests. Its
+allowlist comes from actual non-generated `.cs` files in the selected test
+project; each positive line must be within that file's current line count.
+Passed/unknown tests, unknown paths, absolute private prefixes, zero/leading-zero/
+out-of-file lines and raw messages/values cannot enter the location fields.
+Private XML and capture deletion remain unchanged. The isolated harness
+independently revalidates location lists against the exact selected project's
+source allowlist, including cardinality and uniqueness, instead of trusting
+the child's self-description. Existing diagnostic fields remain compatible.
+
+Three focused tests first fail for the absent projection and then pass after
+wiring. An actual temporary native xUnit failure additionally verifies that
+the owned child fails, the safe artifact contains only its approved source
+location, and its private assertion marker is absent
+(`integration-sqlite-ae904fd05afd41069b5d50b4eadce35b.json`). That child failure
+is intentional negative evidence, not a passing product test or feature gate.
+The temporary test source is removed and
+`dotnet build Kofte.slnx --no-restore -c Release -warnaserror --nologo` passes
+again with zero warnings/errors. Repository checking, complete Python discovery
+(132 tests) and whitespace pass. This adds actionable evidence for the next
+hosted failure, not a retroactive diagnosis or green full matrix. Progress
+remains **69/100**, with implement/running and the same draft PR.

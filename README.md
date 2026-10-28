@@ -55,6 +55,9 @@ The corpus now also proves simultaneous 16-KiB callback-target and header
 admission through native/Next paths, with private refusal if either exceeds its
 limit. Its initial 414 exposed the owned test HTTPS ingress's smaller parser
 limit; only that fixture's framing headroom changed, not product limits.
+Native failure reports now retain only allowlisted repository source locations
+and in-file line numbers, so recurring hosted assertions can be diagnosed
+without publishing private arguments, values, exception text or stack traces.
 Actual empty/composed hosts and production Next now
 verify concurrent two-user request isolation, direct/adapted identity equality and
 first-protected-request rejection of both original cookies after stopped epoch
