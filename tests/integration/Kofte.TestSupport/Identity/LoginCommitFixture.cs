@@ -116,12 +116,12 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         {
             fixture.scope = await StorageProviderScope.CreateAsync(provider, token);
             fixture.issuer = await OidcIssuer.CreateAsync(token);
-            if (withBrowser)
+            if (withBrowser && !development)
             {
                 if (!productRoutes) throw new InvalidOperationException("identity_fixture_product_required");
                 fixture.browserIngress = await IdentityBrowserIngress.CreateAsync(fixture.issuer.ServerCertificate, token);
             }
-            if (development && (withBrowser || !productRoutes))
+            if (development && !productRoutes)
                 throw new InvalidOperationException("identity_fixture_development_scope_invalid");
             var environment = development ? "Development" : "Production";
             fixture.serving = new(environment, development ? null : fixture.issuer, fixture.browserIngress?.Origin);
@@ -278,6 +278,42 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         browserCompleted = true;
     }
 
+    public async Task RunDevelopmentBrowserAsync(Guid expectedUser, CancellationToken token)
+    {
+        if (configuration.Mode != IdentityMode.Development || browserIngress is not null ||
+            webWorker is null || webWorker.HasExited || expectedUser == Guid.Empty)
+            throw new InvalidOperationException("identity_fixture_development_browser_required");
+        var root = Path.GetDirectoryName(serving!.ConfigurationPath)!;
+        var start = NodeStart(Path.Combine("node_modules", "@playwright", "test", "cli.js"));
+        start.WorkingDirectory = Path.Combine(OwnedProcesses.FindRepository(), "tests", "e2e");
+        foreach (var argument in new[]
+        {
+            "test", "identity.spec.ts", "--grep=configured Development selection uses",
+            "--reporter=json", "--output=" + Path.Combine(root, "browser-results")
+        })
+            start.ArgumentList.Add(argument);
+        start.Environment["KOFTE_HOST_URL"] = client.BaseAddress!.AbsoluteUri;
+        start.Environment["KOFTE_WEB_URL"] = serving.WebUrl.AbsoluteUri;
+        start.Environment["KOFTE_IDENTITY_EXPECTED_USER"] = expectedUser.ToString("D");
+        var result = await OwnedProcesses.RunAsync(start, TimeSpan.FromSeconds(45), token);
+        if (result.ExitCode != 0)
+        {
+            var line = Regex.Match(result.Stdout + "\n" + result.Stderr,
+                @"identity\.spec\.ts:([1-9][0-9]{0,3}):");
+            throw new InvalidOperationException("identity_fixture_development_browser_failed" +
+                (line.Success ? "_line_" + line.Groups[1].Value : ""));
+        }
+        if (Encoding.UTF8.GetByteCount(result.Stdout) is 0 or > 1_000_000)
+            throw new InvalidOperationException("identity_fixture_development_browser_report_invalid");
+        using var report = JsonDocument.Parse(result.Stdout);
+        var stats = report.RootElement.GetProperty("stats");
+        if (stats.GetProperty("expected").GetInt32() != 1 ||
+            stats.GetProperty("unexpected").GetInt32() != 0 ||
+            stats.GetProperty("flaky").GetInt32() != 0 ||
+            stats.GetProperty("skipped").GetInt32() != 0)
+            throw new InvalidOperationException("identity_fixture_development_browser_incomplete");
+    }
+
     private async Task StartBrowserAsync(CancellationToken token)
     {
         if (!File.Exists(Path.Combine(OwnedProcesses.FindRepository(), "apps", "web", ".next", "BUILD_ID")))
@@ -289,13 +325,19 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         start.ArgumentList.Add("--hostname");
         start.ArgumentList.Add("127.0.0.1");
         start.ArgumentList.Add("--port");
-        start.ArgumentList.Add(browserIngress!.Web.Port.ToString(CultureInfo.InvariantCulture));
+        var web = browserIngress?.Web ?? serving!.WebUrl;
+        start.ArgumentList.Add(web.Port.ToString(CultureInfo.InvariantCulture));
         start.Environment["NODE_ENV"] = "production";
         start.Environment["NEXT_TELEMETRY_DISABLED"] = "1";
         start.Environment["KOFTE_AUTH_CONFIG_FILE"] = serving!.ConfigurationPath;
         start.Environment["KOFTE_BACKEND_ORIGIN"] = client.BaseAddress!.AbsoluteUri;
         start.Environment["KOFTE_HOST_URL"] = client.BaseAddress.AbsoluteUri;
-        start.Environment["KOFTE_WEB_URL"] = browserIngress.Web.AbsoluteUri;
+        start.Environment["KOFTE_WEB_URL"] = web.GetLeftPart(UriPartial.Authority);
+        if (configuration.Mode == IdentityMode.Development)
+        {
+            start.Environment["ASPNETCORE_ENVIRONMENT"] = "Development";
+            start.Environment["DOTNET_ENVIRONMENT"] = "Development";
+        }
         webWorker = OwnedProcesses.Start(start);
         using var deadline = CancellationTokenSource.CreateLinkedTokenSource(token);
         deadline.CancelAfter(TimeSpan.FromSeconds(15));
@@ -307,7 +349,7 @@ public sealed class LoginCommitFixture : IAsyncDisposable
             if (webWorker.HasExited) throw new InvalidOperationException("identity_fixture_web_exited");
             try
             {
-                using var response = await probe.GetAsync(new Uri(browserIngress.Web, "/identity"), deadline.Token);
+                using var response = await probe.GetAsync(new Uri(web, "/identity"), deadline.Token);
                 if (response.StatusCode == HttpStatusCode.OK) return;
             }
             catch (Exception error) when (error is HttpRequestException or
@@ -528,8 +570,11 @@ public sealed class LoginCommitFixture : IAsyncDisposable
             throw new InvalidOperationException("identity_fixture_trust_invalid");
         fixture.workerTrust = X509Certificate2.CreateFromPem(await File.ReadAllTextAsync(authority, timeout.Token));
         fixture.backendPort = bootstrap.HostUrl.Port;
+        Console.Error.WriteLine("identity_fixture_worker_configured");
         await fixture.OpenOwnerAsync(timeout.Token);
+        Console.Error.WriteLine("identity_fixture_worker_owner_opened");
         await fixture.StartAsync(timeout.Token);
+        Console.Error.WriteLine("identity_fixture_worker_serving");
         await fixture.application!.WaitForShutdownAsync(timeout.Token);
         return 0;
     }
@@ -609,6 +654,7 @@ public sealed class LoginCommitFixture : IAsyncDisposable
                 });
         }
         application = builder.Build();
+        if (serving is null) Console.Error.WriteLine("identity_fixture_worker_built");
         application.Use(async (context, next) =>
         {
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(context.RequestAborted);
@@ -655,6 +701,7 @@ public sealed class LoginCommitFixture : IAsyncDisposable
             application.MapGet("/fixture-live", () => Results.NoContent());
         }
         observer = new(this);
+        if (serving is null) Console.Error.WriteLine("identity_fixture_worker_mapped");
         await application.StartAsync(token);
         client = new(new HttpClientHandler { AllowAutoRedirect = false, UseCookies = false })
         {
@@ -1170,7 +1217,11 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         }
         catch (OperationCanceledException error) when (deadline.IsCancellationRequested && !token.IsCancellationRequested)
         {
-            throw new InvalidOperationException("identity_fixture_child_readiness_" + observed, error);
+            await worker.StopAsync();
+            var result = await worker.ResultAsync();
+            var phase = Regex.Matches(result.Stderr, @"\bidentity_fixture_worker_(configured|owner_opened|built|mapped|serving)\b")
+                .LastOrDefault()?.Groups[1].Value ?? "unknown";
+            throw new InvalidOperationException("identity_fixture_child_readiness_" + observed + "_" + phase, error);
         }
     }
 

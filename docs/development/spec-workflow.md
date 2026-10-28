@@ -6,8 +6,8 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement running; 69/100 complete** (T001–T063,
-T065 and T071–T075), on
+**Current checkpoint: 005 / implement running; 72/100 complete** (T001–T065
+and T071–T077), on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 `a0c1fb0` Ubuntu browser job passes all eight HTTPS recipes, including both
@@ -58,14 +58,16 @@ plus the designated actor case through actual native/Next HTTPS routes. Exact
 header-byte testing exposed Node's bare 431 before application policy; all Next
 serving launchers now provide 32 KiB parser headroom while the unchanged 16 KiB
 identity boundary admits its limit and returns a private 400 one byte over.
-T064 remains open for its complete Development/both-provider corpus. The
+That production-only increment did not yet close T064's Development/provider
+requirements. The
 Development increment now exercises the same independent seven-method and exact
 header framing helpers, strict configured selection and body limits, ambiguous
 Origin/CSRF/Fetch Metadata, credential namespaces, cookie attributes, enrollment
 refusal and durable sign-out through both actual paths. The actual
 empty/composed scope facts now invoke that complete case on both providers;
-both SQLite facts and the retained owned runtime pass locally. Fresh hosted
-execution of the PostgreSQL counterpart remains required.
+both SQLite facts and the retained owned runtime pass locally. The `89b8b3a`
+hosted native platform-contract phase now passes the complete Development case
+in both serving scopes on both actual providers.
 T065 now closes with a fresh complete thirty-case SQLite session/sign-out
 selection and verified unchanged both-provider hosted session and storage/trust
 suites. This does not close the separate HTTP/Development gates or turn retained
@@ -88,8 +90,21 @@ T075 additionally preserves explicit stopped preparation,
 loopback-only serving and matching Development environments in the supervisor
 and owned runtime. The actual SQLite negative startup matrix passes all 88
 configurations across both entry paths and unsafe-switch settings, with unchanged
-prepared storage/keys and verified exits. T076 remains open for its complete
-direct/adapted evidence. A new owned creation probe confirms local Docker
+prepared storage/keys and verified exits. T076 now also reconciles the unchanged
+passing PostgreSQL startup matrix and actual direct/adapted endpoint evidence.
+T077's exact persisted profiles, cookie namespaces and pending/consumed authority
+transitions pass on both providers in the native platform-contract phase.
+T064 now also closes from the `9244e6b` native platform-contract phase: all
+production cases, including simultaneous target/header limits, and full
+Development cases pass on both stores. Later composition timeout remains failed.
+The new public `development-isolation` recipe runs the shared 88-case exposure
+matrix, actual browser/API/separately compiled actor equality, and independent
+pending/consumed mode transitions. SQLite passes all 135 independently validated
+named observations. PostgreSQL execution and T078 acceptance remain pending;
+the browser workflow now executes the recipe for both providers.
+No budget or required case is relaxed, and intermittent native readiness
+failures remain recorded without an established cause.
+A new owned creation probe confirms local Docker
 network-pool exhaustion without removing existing resources; this diagnoses that
 probe, not every historical generic failure. Both-provider/full-corpus US3, Development acceptance,
 recovery and final gates remain unfinished. The

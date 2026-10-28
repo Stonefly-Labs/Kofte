@@ -146,6 +146,14 @@ absent, cleanup unverified or a scanner fails. Required scenarios:
 | `interrupted-recovery` | Actual commit/prepare barriers, uncertain reply and stopped complete-set restore/reconciliation. |
 | `private-evidence` | Useful correlated safe outcomes plus canary scans of all channels and recording failures. |
 
+`development-isolation` is now delivered for execution after the existing
+Release/Next builds and pinned Chromium setup:
+`dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario development-isolation --provider sqlite`.
+Its actual SQLite run validates all 88 exposure refusals, visible browser/API/
+actor equality and pending/consumed persisted transitions, with 135 independently
+checked named observations. The new PostgreSQL execution and T078 acceptance
+remain pending; see [implementation evidence](implementation.md).
+
 Proposed invocation, after implementation/build, with provider-owned fixture
 admission (PostgreSQL remains the wrapper's responsibility):
 

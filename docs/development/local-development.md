@@ -726,6 +726,20 @@ identity; no automatic mutation retry is made. Successful selection fetches fres
 current identity and CSRF before further actions. Personal identity is never
 server-rendered or stored in browser storage.
 
+After the existing Release/Next builds and pinned Chromium setup, the public
+Development proof is:
+
+```bash
+dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario development-isolation --provider sqlite
+```
+
+It owns its fixtures and checks all 88 environment/exposure refusals, exact
+visible browser/API/actor equality, explicit selection/sign-out and persisted
+pending/consumed OIDC-to-Development-to-OIDC isolation. SQLite has actual evidence
+for all 135 independently validated named observations; the new PostgreSQL
+invocation is wired into the browser workflow but has not yet been verified.
+The recipe remains bounded at 120 seconds and reports no private values.
+
 **Sign out** revokes only the current durable local session, not the upstream
 provider or other sessions. Confirmed, expired and uncertain results all clear
 local personal/enrollment content. Uncertainty is not known server revocation;
@@ -747,8 +761,9 @@ TLS-ignore switches are used.
 The corrected local protocol matrix passes 123/123 and mapping/restart passes
 20/20. An intervening SQLite restart-readiness failure remains recorded; a
 later isolated/serial pass does not establish its cause. Readiness now
-projects only a bounded HTTP status/transport category on timeout without
-changing the existing budget. PostgreSQL host CI remains failed with no
+projects only a bounded HTTP status/transport category and last fixed
+configured/owner-opened/built/mapped/serving phase on timeout without changing the existing
+budget. PostgreSQL host CI remains failed with no
 established cause. This is not a complete or operator-ready identity profile.
 
 ### Operator-nominated enrollment increment

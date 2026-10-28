@@ -127,6 +127,8 @@ test("configured Development selection uses the real browser boundary and never 
     identityMode: "development",
     isInitialAdministrator: false,
   });
+  const expectedUser = process.env.KOFTE_IDENTITY_EXPECTED_USER;
+  if (expectedUser) expect(identity.userId).toBe(expectedUser);
   await expect(page.getByText(identity.userId, { exact: true })).toBeVisible();
   const direct = await page.request.get(
     new URL("/api/identity/v1/me", host).href,

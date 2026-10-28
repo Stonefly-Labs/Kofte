@@ -10,6 +10,7 @@ if (args is ["--modules-worker", "serve"]) return await BootstrapProgram.RunAsyn
 
 string? scenario = null;
 string? provider = null;
+int? developmentFailureLine = null;
 var code = "identity_scenario_required";
 if (args.Length == 4)
 {
@@ -39,7 +40,8 @@ if (args.Length == 4)
     }
 }
 if (code == "identity_scenario_unimplemented" &&
-    scenario is "oidc-login" or "trust-refusal" or "nominated-enrollment" or "enrollment-race" or "session-boundary")
+    scenario is "oidc-login" or "trust-refusal" or "nominated-enrollment" or "enrollment-race" or
+        "session-boundary" or "development-isolation")
 {
     using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(120));
     try
@@ -48,6 +50,7 @@ if (code == "identity_scenario_unimplemented" &&
         {
             "oidc-login" or "trust-refusal" => await LoginScenarios.RunAsync(scenario, provider!, timeout.Token),
             "session-boundary" => await SessionScenarios.RunAsync(provider!, timeout.Token),
+            "development-isolation" => await DevelopmentScenarios.RunAsync(provider!, timeout.Token),
             _ => await EnrollmentScenarios.RunAsync(scenario, provider!, timeout.Token)
         };
         Console.Out.WriteLine(JsonSerializer.Serialize(new
@@ -66,6 +69,16 @@ if (code == "identity_scenario_unimplemented" &&
     catch (Exception error) when (error is InvalidOperationException or OperationCanceledException or
         System.Net.Http.HttpRequestException or JsonException)
     {
+        if (scenario == "development-isolation")
+        {
+            const string source = "tests/contract/Kofte.Identity.Consumer/Scenarios/DevelopmentScenarios.cs";
+            var sourceLines = File.ReadLines(Path.Combine(Kofte.TestSupport.OwnedProcesses.FindRepository(), source)).Count();
+            developmentFailureLine = new StackTrace(error, true).GetFrames()
+                .Where(frame => frame.GetFileName()?.Replace('\\', '/').EndsWith("/" + source, StringComparison.Ordinal) == true)
+                .Select(frame => frame.GetFileLineNumber())
+                .Where(line => line > 0 && line <= sourceLines)
+                .Select(line => (int?)line).FirstOrDefault();
+        }
         code = error.Message is "test_identity_preparation_failed" or "identity_fixture_web_exited" or
             "identity_fixture_browser_failed" or "identity_fixture_browser_required" or
             "identity_browser_initial_state" or "identity_browser_signed_in" or
@@ -108,8 +121,16 @@ if (code == "identity_scenario_unimplemented" &&
                 "identity_scenario_session_control_invalid" or
                 "identity_scenario_session_browser_expiry_revocation_uncertainty_two_user" ||
             Regex.IsMatch(error.Message, @"\Aidentity_browser_(page|trust)_line_[1-9][0-9]{0,3}\z") ||
-            Regex.IsMatch(error.Message, @"\Aidentity_browser_stage_[a-z_]{1,40}\z")
+            Regex.IsMatch(error.Message, @"\Aidentity_browser_stage_[a-z_]{1,40}\z") ||
+            Regex.IsMatch(error.Message, @"\Aidentity_scenario_development_[a-z_]{1,80}\z") ||
+            Regex.IsMatch(error.Message, @"\Aidentity_development_startup_case_[a-z0-9_-]{1,80}\z") ||
+            Regex.IsMatch(error.Message, @"\Aidentity_fixture_development_browser_failed(?:_line_[1-9][0-9]{0,3})?\z") ||
+            Regex.IsMatch(error.Message, @"\Aidentity_fixture_child_readiness_(?:no_response|http_[1-5][0-9]{2}|transport_[A-Za-z]{1,40})(?:_(?:configured|owner_opened|built|mapped|serving|unknown))?\z") ||
+            error.Message is "identity_fixture_development_browser_required" or
+                "identity_fixture_development_browser_report_invalid" or "identity_fixture_development_browser_incomplete"
                 ? error.Message : "identity_scenario_failed";
+        if (code == "identity_scenario_failed" && developmentFailureLine is { } line)
+            code = "identity_scenario_development_line_" + line;
     }
 }
 Console.Error.WriteLine(JsonSerializer.Serialize(new

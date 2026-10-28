@@ -1,6 +1,6 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement in progress; 68/100 complete (T001-T063, T071-T075); native/web Development selection, explicit loopback supervisor, request/error/session-scope parity and durable sign-out delivered, remaining US3/both-provider/operations/final evidence unfinished.
+**Result:** implement in progress; 72/100 complete (T001-T065, T071-T077); complete both-provider HTTP corpus, native/web Development selection, provider exposure/persisted isolation and durable sign-out delivered; remaining US3/public Development/operations/final evidence unfinished.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-28.
 **Assessed baseline:** `6df9eebdcfa6b273126b0c51c272d1b2c2f953e6`.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
@@ -3456,3 +3456,146 @@ again with zero warnings/errors. Repository checking, complete Python discovery
 (132 tests) and whitespace pass. This adds actionable evidence for the next
 hosted failure, not a retroactive diagnosis or green full matrix. Progress
 remains **69/100**, with implement/running and the same draft PR.
+## T076-T077: both-provider Development boundary and persisted isolation
+
+The actual hosted evidence now closes these two gates independently of the
+unfinished public Development recipe and full-matrix failures.
+
+For T076, `DevelopmentBoundaryTests` executes all 22 invalid configurations
+under empty/composed hosting and both unsafe-switch settings: 88 actual startup
+refusals per provider. Each refusal verifies its fixed diagnostic, listener
+release, verified child/descendant exit, and unchanged prepared storage/keys.
+The production identity configuration still requires HTTPS metadata; TLS trust,
+synthetic issuer controls and actor probes stay in test projects, not a deployed
+test-principal or skip-TLS route. Production Development endpoints are absent.
+Actual empty/composed host/Next scope facts run the independent Development
+HTTP corpus, including strict caller authority, Origin/CSRF, credential/cookie
+namespaces and direct/adapted refusal without effects.
+
+For T077, the consolidated `DevelopmentIdentityTests` uses both real stores,
+actual stopped reconciliation and fresh serving workers for OIDC → Development
+→ OIDC. Equal subject/display values remain separate exact users/mappings.
+Original and renamed old cookies fail at the first protected request in the
+new mode. Development cannot enroll with production authority; pending authority
+is disabled rather than consumed, while consumed user/generation/timestamp and
+all original installation events survive. Production returns its exact original
+user/designation and registry revision; no unrelated action is granted.
+
+Inspected actual commands/results:
+
+- Hosted `dfb26a7`, run `40671517373`:
+  `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore -c Release --filter-trait Provider=postgres --minimum-expected-tests 1`
+  passes in 256.284s, including the complete PostgreSQL startup matrix.
+- Hosted `9244e6b`, run `40675801951`:
+  `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore -c Release --filter-trait Provider=sqlite --minimum-expected-tests 1`
+  passes in 243.065s, including the complete SQLite startup matrix.
+  Its storage and composition integrations also pass (317.927s/99.787s).
+- Hosted `89b8b3a`, run `40674487017`:
+  `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore -c Release --filter-not-class '*Composition*' --minimum-expected-tests 1`
+  passes in 722.241s on both providers, including the complete independent
+  Development corpus in both actual scopes and the four persisted Development
+  cases per provider. The later composition-public phase still times out at
+  900.030s; its whole contract job remains failed.
+
+The reports identify actual CI merge revisions
+`6441ddf0537079514291247e72595c622bb44257`,
+`c66cbbbe516153c20aa060ed23c364187c95e893` and
+`07bfa34c8b53edb5968f55dd9ec307dc39e6d9b4`, not just branch heads.
+These objects were fetched and compared: production sources, startup matrix and
+persisted Development assertions are unchanged. The later fixture-only ingress
+framing and safe diagnostic extraction do not change those Development cases.
+No new local PostgreSQL success or whole passing matrix is inferred.
+
+T076/T077 are complete: **71/100**, with **29 remaining**. T078's public
+`development-isolation` recipe still returns nonzero before implementation;
+its intentional initial red is retained as
+`contract-sqlite-3362b4847f5246f8ba5b2dbb8e1fa9c7.json`, not a passing product
+case. T064 still needs the newest simultaneous production boundary's
+PostgreSQL execution. The driver remains **005 / implement / running**.
+
+## T064 complete; T078 public Development recipe increment
+
+The `9244e6b` hosted native platform-contract phase passes in **706.235s**:
+`dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore -c Release --filter-not-class '*Composition*' --minimum-expected-tests 1`.
+It executes both providers' actual production native/Next/actor journey,
+requiring thirteen ordinary TypeScript cases plus the designated case, including
+the simultaneous target/header vector. Both actual empty/composed Development
+scope facts also require the complete independent Development case. The safe
+artifact is `contract-both-bb3e0925079649dcb785632ba03a43ea.json`, at verified
+merge tree `c66cbbbe516153c20aa060ed23c364187c95e893`. The later composition-public
+phase still times out at 900.046s. T064 is complete, not the whole contract job.
+
+The new public `development-isolation` recipe adds actual guide-level proof:
+
+- The existing exposure matrix is extracted mechanically into test-owned
+  `DevelopmentExposure`, preserving all 22 faults, four scope/unsafe-switch
+  combinations, exact diagnostics, five-second exit limits, listener checks,
+  unchanged snapshots and verified exits. Its existing xUnit wrapper still
+  runs each combination; the public recipe independently runs all 88 refusals.
+- A real Development native host, production Next and owned Playwright CLI
+  execute the existing selection/sign-out/browser-storage/SSR case. The exact
+  user previously observed through `/me` and the separately compiled actor
+  must appear in both APIs and the visible browser. The report requires one
+  passed case, zero unexpected/flaky/skipped cases and the original 45-second
+  owned child bound. No configured external IdP is needed for selection;
+  zero provider requests, exact Development namespace and disabled bootstrap
+  are checked.
+- Independently owned pending and consumed production cases perform stopped
+  OIDC → Development → OIDC reconciliation/restarts. They refuse original and
+  renamed old cookies, compare equal profiles without merging users, preserve
+  exact production mapping/creation and installation events, deny Development
+  enrollment and unrelated actions, preserve consumed designation/generation/
+  timestamp, and reject original authorization replay.
+
+The dispatcher keeps its existing 120-second recipe bound. The browser workflow
+now invokes this recipe on SQLite and PostgreSQL. Safe failure projection admits
+only fixed codes, bounded source-line numbers and fixed worker readiness phases;
+raw errors, values, prefixes, browser output and native traces stay private.
+The native worker emits only configured/owner-opened/built/mapped/serving phase markers to
+its already-private capture; a failed readiness check stops the owned child,
+then projects its last fixed marker without extending its 15-second deadline.
+
+Actual evidence, with original failures retained:
+
+- Initial missing recipe refuses in
+  `contract-sqlite-3362b4847f5246f8ba5b2dbb8e1fa9c7.json`.
+  Initial browser wiring also refuses: Playwright's anchored grep selects zero
+  cases, then exact Development origin validation rejects a trailing-slash
+  fixture value. Only fixture selection/origin construction is corrected;
+  no product validator, deadline or TLS rule changes.
+- `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteDevelopmentBoundaryTests' --minimum-expected-tests 4`
+  passes all four cases / 88 actual refusals in
+  `contract-sqlite-03b9692378ef419b8dd4bdb957e96c5f.json`.
+  Its following five-case native selection fails one mode-transition fact;
+  that whole report remains failed.
+- `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore --no-build -c Release --filter-class '*SqliteDevelopmentIdentityTests' '*SqliteIdentityParityTests' --filter-method '*ActualStoppedModeTransitionsPreserveEqualProfileNamespacesAndConsumedProductionAuthority' '*ActualHttpsAdapterAndSeparateActorRetainTheSameIdentityThroughNominationAndSignOut' --minimum-expected-tests 3`
+  passes both mode-transition cases and the complete production HTTPS corpus in
+  `contract-sqlite-32e3d9e197d24cadb65f40a5f0846c6e.json`.
+- `dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario development-isolation --provider sqlite`
+  passes in `contract-sqlite-f2a5e51a44a049d3a7ff636bc44ec63e.json`.
+  An independent private parent validates the exact output schema, correlation,
+  provider/scenario and complete frozen set of **135 unique named observations**,
+  not just an assertion count. A prior transient fresh-client diagnostic probe
+  is removed before this result; it is not shipped or cited as a fix.
+- Earlier `identity_fixture_child_readiness_transport_ConnectionError` failures
+  remain failed, including
+  `contract-sqlite-f0c9c4a741a04ce68dcfc34b20bb5b62.json` and
+  `contract-sqlite-521f2f84f23c404da0c822e47deef3d5.json`. The subsequent passing
+  selections do not establish their cause or justify raising a budget.
+- The final exact-namespace recipe first reproduces
+  `identity_fixture_child_readiness_transport_ConnectionError_owner_opened` in
+  `contract-sqlite-dcafb4b8df814157a0b5fe325e833b0c.json`: its child opens the
+  owned storage but does not reach serving. Additional fixed built/mapped
+  markers refine future evidence without changing the startup or readiness
+  deadline. The focused two-case stopped mode-transition command then passes
+  in `contract-sqlite-d7a1d02bded142708299d41014f64f71.json`.
+- The final public SQLite command with exact Development mapping namespace,
+  issuer and subject assertions passes all **135 unique independently frozen
+  observations** in `contract-sqlite-bc81a9982fe34424b4810b1951068465.json`.
+  Full Release warnings-as-errors build passes with zero warnings/errors.
+  These results do not diagnose or erase the retained readiness failure.
+
+T064/T076/T077 bring progress to **72/100**. T078 remains unchecked until the new
+public PostgreSQL recipe and its focused gates execute. The earlier full-matrix
+integration/readiness/timeouts are not waived; operations and final evidence
+remain unfinished on the same draft PR and implement/running stage.
