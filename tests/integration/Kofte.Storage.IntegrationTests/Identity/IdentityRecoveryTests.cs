@@ -26,18 +26,7 @@ public abstract class IdentityRecoveryTests
         await using var fixture = await StorageProviderScope.CreateAsync(Provider, Token);
         var installation = await PrepareAsync(fixture);
         var maintenance = new StorageMaintenance(installation);
-        await using (var scope = await maintenance.AcquireAsync(fixture.Token))
-        {
-            var registry = new StorageRegistry(installation);
-            var module = RegistryFixture.Module("org.example.alpha");
-            Assert.IsType<StorageResult.Ready>(await registry.RegisterAsync(module, scope, fixture.Token));
-            await using var binding = await registry.BindAsync(module.Id, fixture.Token);
-            Assert.IsType<StorageResult.Ready>(await binding.MigrateAsync(
-                ModuleFixture.AlphaFactory, scope, cancellationToken: fixture.Token));
-            await using var context = await binding.CreateContextAsync(ModuleFixture.AlphaFactory, fixture.Token);
-            context.Records.Add(new AlphaRecord { Id = 1, Payload = "retained-identity-module", Note = "retained-note" });
-            await context.SaveChangesAsync(fixture.Token);
-        }
+        await PopulateModuleAsync(installation, fixture.Token);
         using var backup = new OwnedTestRoot();
         var manifest = await BackupAsync(fixture, backup.Path);
         Assert.Equal(RecoveryManifest.IdentityFormat, manifest.Format);
@@ -343,7 +332,133 @@ public abstract class IdentityRecoveryTests
         Assert.Equal("identity_restore_reconciliation_required", error.Message);
     }
 
-    private async Task<StorageInstallation> PrepareAsync(StorageProviderScope fixture)
+    [Theory]
+    [InlineData("consumed", "known-never-enrolled", "consumed")]
+    [InlineData("disabled", "known-never-enrolled", "disabled")]
+    [InlineData("disabled", "known-consumed", "recovery_locked")]
+    [InlineData("disabled", "not-established", "recovery_locked")]
+    [InlineData("pending", "not-established", "recovery_locked")]
+    [InlineData("recovery_locked", "known-never-enrolled", "recovery_locked")]
+    public async Task ReconciliationInvalidatesRestoredAuthorityWithoutReopeningHistoricalEnrollment(
+        string sourceState, string history, string expectedState)
+    {
+        await using var fixture = await StorageProviderScope.CreateAsync(Provider, Token);
+        var source = await PrepareAsync(fixture, sourceState == "consumed");
+        if (sourceState == "consumed") await PopulateModuleAsync(source, fixture.Token);
+        using var authorization = new OwnedTestRoot();
+        await using (var stopped = await new StorageMaintenance(source).AcquireAsync(fixture.Token))
+        {
+            using var seedBudget = new OperationBudget(OperationBudget.Migration, fixture.Token);
+            await using var connection = await source.OpenPlatformAsync(seedBudget);
+            var prefix = Provider == "sqlite" ? "" : "kofte_system.";
+            var now = DateTime.UtcNow;
+            object Time(DateTime value) => Provider == "sqlite"
+                ? value.ToString("O", CultureInfo.InvariantCulture) : value;
+            await RegistryMigrationRunner.ExecuteAsync(connection, $"""
+                INSERT INTO {prefix}__kofte_login_attempts
+                  (attempt_id,browser_digest,mode,trust_digest,session_epoch,return_path,
+                   created_at_utc,expires_at_utc,state)
+                  SELECT @id,@key,mode,trust_digest,session_epoch,'/',@now,@expiry,'pending'
+                  FROM {prefix}__kofte_identity_metadata;
+                INSERT INTO {prefix}__kofte_identity_admission
+                  (category,window_start_utc,key_digest,expires_at_utc,count)
+                  VALUES ('login_browser',@now,@key,@expiry,1);
+                """, seedBudget, null, ("id", Guid.NewGuid()), ("key", new string('c', 64)),
+                ("now", Time(now)), ("expiry", Time(now.AddMinutes(5))));
+            if (sourceState == "pending")
+            {
+                if (OperatingSystem.IsWindows()) throw new InvalidOperationException("test_platform_unsupported");
+                Directory.CreateDirectory(authorization.Path, UnixStorePaths.DirectoryMode);
+                var secret = new string('A', 43);
+                var owner = (await RecoverySetVerifier.InspectStoppedAsync(source, stopped, fixture.Token)).InstallationId;
+                await IdentityBootstrapStore.AuthorizeAsync(source, Assert.IsType<MaintenanceScope>(stopped),
+                    owner, "oidc", new string('a', 64), "https://fixture.invalid", "retained-subject", secret,
+                    () =>
+                    {
+                        PrivateTestFiles.WriteNew(Path.Combine(authorization.Path, "authorization"),
+                            System.Text.Encoding.ASCII.GetBytes(secret));
+                        return Task.CompletedTask;
+                    }, seedBudget);
+            }
+            else if (sourceState == "recovery_locked")
+                await RegistryMigrationRunner.ExecuteAsync(connection,
+                    $"UPDATE {prefix}__kofte_bootstrap SET state='recovery_locked' WHERE singleton_key=1", seedBudget);
+        }
+        using var backup = new OwnedTestRoot();
+        var manifest = await BackupAsync(fixture, backup.Path);
+        using var keys = new OwnedTestRoot();
+        if (OperatingSystem.IsWindows()) throw new InvalidOperationException("test_platform_unsupported");
+        Directory.CreateDirectory(keys.Path, UnixStorePaths.DirectoryMode);
+        var keyDirectory = Path.Combine(keys.Path, "keys");
+        using var sqliteTarget = new OwnedTestRoot();
+        await using var postgresTarget = Provider == "postgres"
+            ? await StorageProviderScope.CreateAsync(Provider, Token) : null;
+        if (fixture.Postgres is { } postgres)
+            await postgres.RestoreStorageSetToFreshQuarantinedAsync(backup.Path,
+                Assert.IsType<PostgresResources>(postgresTarget?.Postgres), keyDirectory, fixture.Token);
+        else await SqliteRecoveryExercise.RestoreFreshQuarantinedAsync(
+            backup.Path, sqliteTarget.Path, keyDirectory, fixture.Token);
+        var installation = postgresTarget?.Postgres is { } target
+            ? StorageInstallation.PostgreSql(target.ConnectionString) : StorageInstallation.Sqlite(sqliteTarget.Path);
+        var quarantine = await IdentityRestoreQuarantine.ReadAsync(keyDirectory, fixture.Token);
+        var decision = new IdentityRestoreDecision(manifest.RecoverySetId, manifest.InstallationId,
+            quarantine.ManifestSha256, history);
+        var before = Assert.IsType<IdentityRecoverySummary>(manifest.Identity);
+        await using var scope = await new StorageMaintenance(installation).AcquireAsync(fixture.Token);
+        using var budget = new OperationBudget(OperationBudget.Migration, fixture.Token);
+        var epoch = Guid.NewGuid();
+        var after = await IdentityRestoreStore.ReconcileAsync(installation, Assert.IsType<MaintenanceScope>(scope),
+            quarantine, decision, "oidc", new string('a', 64), epoch, budget);
+        Assert.Equal(before.SecurityRevision + 1, after.SecurityRevision);
+        Assert.Equal(epoch, after.SessionEpoch);
+        Assert.NotEqual(before.SessionEpoch, after.SessionEpoch);
+        Assert.Equal(expectedState, after.BootstrapState);
+        Assert.Equal(before.ConsumedGeneration, after.ConsumedGeneration);
+        Assert.Equal(before.Counts with { AdmissionWindows = 0, Events = before.Counts.Events + 1 }, after.Counts);
+        Assert.True(IdentityRestoreQuarantine.IsRequired(keyDirectory));
+        Assert.Equal(after, await IdentityRestoreStore.ReconcileAsync(installation, Assert.IsType<MaintenanceScope>(scope),
+            quarantine, decision, "oidc", new string('a', 64), epoch, budget));
+        await using var database = await DeadlineStore.OpenAsync(installation, budget);
+        Assert.Equal(0L, DeadlineStore.AssertScalar(await database.QueryAsync(
+            $"SELECT COUNT(*) FROM {database.Prefix}__kofte_sessions WHERE state='active'")));
+        Assert.Equal(0L, DeadlineStore.AssertScalar(await database.QueryAsync(
+            $"SELECT COUNT(*) FROM {database.Prefix}__kofte_login_attempts WHERE state='pending'")));
+        Assert.Equal("retained-profile", DeadlineStore.AssertScalar(await database.QueryAsync(
+            $"SELECT display_name FROM {database.Prefix}__kofte_users WHERE user_id=@user", ("user", UserId))));
+        Assert.Equal(UserId, IdentityValues.Id(DeadlineStore.AssertScalar(await database.QueryAsync(
+            $"SELECT user_id FROM {database.Prefix}__kofte_external_identities WHERE subject='retained-subject'"))));
+        if (sourceState == "consumed")
+        {
+            await using var binding = await new StorageRegistry(installation).BindAsync(
+                RegistryFixture.Module("org.example.alpha").Id, fixture.Token);
+            await using var context = await binding.CreateContextAsync(ModuleFixture.AlphaFactory, fixture.Token);
+            var record = Assert.Single(context.Records);
+            Assert.Equal(1, record.Id);
+            Assert.Equal("retained-identity-module", record.Payload);
+            Assert.Equal("retained-note", record.Note);
+            Assert.Equal(manifest.RegistryRevision,
+                (await RecoverySetVerifier.InspectStoppedAsync(installation, scope, fixture.Token)).RegistryRevision);
+        }
+        await Assert.ThrowsAsync<StorageException>(() => IdentityRestoreStore.ReconcileAsync(installation,
+            Assert.IsType<MaintenanceScope>(scope), quarantine, decision, "oidc", new string('a', 64),
+            Guid.NewGuid(), budget));
+    }
+
+    private static async Task PopulateModuleAsync(StorageInstallation installation, CancellationToken token)
+    {
+        await using var scope = await new StorageMaintenance(installation).AcquireAsync(token);
+        var registry = new StorageRegistry(installation);
+        var module = RegistryFixture.Module("org.example.alpha");
+        Assert.IsType<StorageResult.Ready>(await registry.RegisterAsync(module, scope, token));
+        await using var binding = await registry.BindAsync(module.Id, token);
+        Assert.IsType<StorageResult.Ready>(await binding.MigrateAsync(
+            ModuleFixture.AlphaFactory, scope, cancellationToken: token));
+        await using var context = await binding.CreateContextAsync(ModuleFixture.AlphaFactory, token);
+        context.Records.Add(new AlphaRecord { Id = 1, Payload = "retained-identity-module", Note = "retained-note" });
+        await context.SaveChangesAsync(token);
+    }
+
+    private async Task<StorageInstallation> PrepareAsync(StorageProviderScope fixture, bool consumed = true)
     {
         var installation = fixture.Postgres is { } postgres
             ? StorageInstallation.PostgreSql(postgres.ConnectionString, postgres.ProvisioningConnectionString)
@@ -367,13 +482,20 @@ public abstract class IdentityRecoveryTests
               VALUES ('oidc','https://fixture.invalid','retained-subject',@user,@now);
             INSERT INTO {prefix}__kofte_identity_events
               (event_id,security_revision,event_code,occurred_at_utc,correlation_id,user_id,outcome,retention_class)
-              VALUES (@created,2,'user_created',@now,@correlation,@user,'committed','installation'),
-                     (@enrolled,3,'initial_administrator_enrolled',@now,@correlation,@user,'committed','installation');
-            UPDATE {prefix}__kofte_identity_metadata SET security_revision=3;
-            UPDATE {prefix}__kofte_bootstrap SET state='consumed',generation=1,initial_user_id=@user,
-              consumed_at_utc=@now,consumed_generation=1;
+              VALUES (@created,2,'user_created',@now,@correlation,@user,'committed','installation');
+            UPDATE {prefix}__kofte_identity_metadata SET security_revision=2;
             """, budget, null, ("user", UserId), ("now", now),
-            ("created", Guid.NewGuid()), ("enrolled", Guid.NewGuid()), ("correlation", Guid.NewGuid().ToString("N")));
+            ("created", Guid.NewGuid()), ("correlation", Guid.NewGuid().ToString("N")));
+        if (consumed)
+            await RegistryMigrationRunner.ExecuteAsync(connection, $"""
+                INSERT INTO {prefix}__kofte_identity_events
+                  (event_id,security_revision,event_code,occurred_at_utc,correlation_id,user_id,outcome,retention_class)
+                  VALUES (@enrolled,3,'initial_administrator_enrolled',@now,@correlation,@user,'committed','installation');
+                UPDATE {prefix}__kofte_identity_metadata SET security_revision=3;
+                UPDATE {prefix}__kofte_bootstrap SET state='consumed',generation=1,initial_user_id=@user,
+                  consumed_at_utc=@now,consumed_generation=1;
+                """, budget, null, ("user", UserId), ("now", now),
+                ("enrolled", Guid.NewGuid()), ("correlation", Guid.NewGuid().ToString("N")));
         var ticket = new EphemeralDataProtectionProvider().CreateProtector("kofte-test-recovery")
             .Protect(new byte[24_000]);
         await IdentityStore.MutateStoppedAsync(installation, Assert.IsType<MaintenanceScope>(scope),

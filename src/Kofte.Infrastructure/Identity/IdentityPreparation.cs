@@ -68,14 +68,7 @@ internal static class IdentityPreparation
             {
                 var now = DateTime.UtcNow;
                 var database = change.Database;
-                await database.QueryAsync($"""
-                    UPDATE {database.Prefix}__kofte_sessions SET state='revoked',terminal_at_utc=@now
-                    WHERE state='active'
-                    """, ("now", now));
-                await database.QueryAsync($"""
-                    UPDATE {database.Prefix}__kofte_login_attempts SET state='consumed',consumed_at_utc=@now
-                    WHERE state='pending'
-                    """, ("now", now));
+                await RevokeSessionsAndAttemptsAsync(database, now);
                 await database.QueryAsync($"""
                     UPDATE {database.Prefix}__kofte_bootstrap
                     SET state='disabled',nominee_issuer=NULL,nominee_subject=NULL,authorization_digest=NULL,expires_at_utc=NULL
@@ -89,5 +82,17 @@ internal static class IdentityPreparation
                 return await IdentityEventStore.AppendAsync(change, reconcile
                     ? IdentityEventCode.ConfigurationReconciled : IdentityEventCode.SessionsRevoked, now);
             });
+    }
+
+    internal static async Task RevokeSessionsAndAttemptsAsync(DeadlineStore database, DateTime now)
+    {
+        await database.QueryAsync($"""
+            UPDATE {database.Prefix}__kofte_sessions SET state='revoked',terminal_at_utc=@now
+            WHERE state='active'
+            """, ("now", now));
+        await database.QueryAsync($"""
+            UPDATE {database.Prefix}__kofte_login_attempts SET state='consumed',consumed_at_utc=@now
+            WHERE state='pending'
+            """, ("now", now));
     }
 }

@@ -8,6 +8,9 @@ internal static class IdentityCommand
 {
     internal static IdentityOperation Parse(string[] args, string prefix)
     {
+        if (args.Length == 4 && args[0] == prefix && args[1] == "reconcile-restore" &&
+            args[2] == "--decision-file" && PrivatePath(args[3]))
+            return IdentityOperation.ReconcileRestore;
         if (args.Length == 7 && args[0] == prefix && args[1] == "bootstrap" && args[2] == "authorize" &&
             args[3] == "--nominee-file" && PrivatePath(args[4]) &&
             args[5] == "--authorization-file" && PrivatePath(args[6]))

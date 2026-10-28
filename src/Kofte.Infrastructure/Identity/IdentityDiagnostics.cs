@@ -81,7 +81,8 @@ internal static class IdentityDiagnostics
         "enrollment_before_commit" or "enrollment_committed" or "sign_out_before_commit" or
         "sign_out_committed" or "operator_before_commit" or
         "operator_committed" or "bootstrap_file_created" or "bootstrap_file_flushed" or
-        "restore_quarantined" or "restore_before_commit" or "restore_committed";
+        "restore_quarantined" or "restore_before_commit" or "restore_committed" or
+        "restore_state_written" or "restore_key_copied";
 
     internal static string ActionName(IdentityAction action) => action switch
     {

@@ -89,9 +89,13 @@ pass. Hosted `f52150f` PostgreSQL integration also passes the new recovery-v2
 cases. Actual SQLite separately gated restore now preserves the exact security
 snapshot behind a private marker outside the recovered data; strict private decisions
 bind the original manifest SHA-256. All six existing stopped commands refuse
-pending reconciliation. The reconciliation command/fresh keys/crash-resume and
-new PostgreSQL quarantine proof remain unfinished, and identity-bearing sets
-still refuse the legacy ungated restore path. Hosted `49ef96e`
+pending reconciliation. The explicit `reconcile-restore` command now passes
+actual SQLite v1 upgrade/v2 restore, fresh-key activation and killed-worker
+retry tests. Its private durable intent preserves the chosen epoch/ring and
+decision; unknown history stays locked and consumed enrollment is preserved.
+New PostgreSQL reconciliation proof and remaining operations evidence are
+pending; identity-bearing sets still refuse the legacy ungated restore path.
+Hosted `49ef96e`
 enrollment-replacement login fails at its callback
 assertion; the focused SQLite reproduction passes, without establishing a cause
 or turning the full matrix green.

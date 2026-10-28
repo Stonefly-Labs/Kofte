@@ -163,8 +163,13 @@ Recovery-v2 backup/actual-state verification has passing SQLite and hosted
 `f52150f` PostgreSQL coverage. Separately named test-owned quarantine restore
 and strict private decision parsing now pass actual SQLite preservation/binding/
 tamper/refusal tests; their new PostgreSQL proof remains pending. The marker
-blocks all six existing stopped commands. End-to-end reconciliation, fresh
-keys and crash-resumable decision commit are still unfinished.
+blocks all six ordinary stopped commands. The separate `reconcile-restore`
+command now has actual SQLite v1/v2 activation, fresh protected keys, immutable
+private decision/epoch/ring intent and killed-worker retry evidence. Historical
+uncertainty stays locked; recovered consumed enrollment wins over a contrary
+attestation. New PostgreSQL reconciliation and remaining partial-write/key/
+public operations recipe evidence are still pending. See the
+[delivered command and custody limits](../../docs/development/local-development.md).
 Identity-bearing sets continue to refuse the legacy ungated restore path.
 This progress does not make the remaining operations recipes executable or
 turn the non-green full matrix into accepted feature evidence.

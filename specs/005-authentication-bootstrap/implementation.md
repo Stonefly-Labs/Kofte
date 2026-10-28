@@ -4044,3 +4044,137 @@ The branch/draft PR, running implement ledger and reviewer-owned markers remain
 unchanged. Full Release warnings-as-errors build, native format verification,
 repository checker, 132 Python tests and whitespace checks pass for this
 increment; no dependency, original migration or acceptance state changed.
+
+## T080-T085: explicit restore reconciliation and durable retry in progress
+
+The next real provider regression first fails compilation with three missing
+`IdentityRestoreStore` references. Its initial build failure is retained in
+`recovery-sqlite-38abb2b5099244d0bcb0c223c7c45197.json`; direct compilation
+confirms those exact errors. The new supervised command then fails before
+delivery (`recovery-sqlite-b95691121e1b412a8dd39af35a26f7c8.json`), and the
+independent v1 command fails before upgrade/resume support
+(`recovery-sqlite-ed3644f6dd5a4d1f92cd59a560ca48ad.json`).
+
+The frozen `--identity reconcile-restore --decision-file ABSOLUTE_PRIVATE_FILE`
+grammar is now wired through the original admitted supervisor/116-second
+worker/exclusive stopped scope. The outside-snapshot control marker retains
+the original exact manifest and a private durable plan: exact decision, trusted
+configuration, fresh epoch/ring IDs, validated protected key-file hashes and
+independently verified committed snapshot. Atomic flushed state transitions
+and explicit immutable-plan checks prevent a different decision/configuration
+from replacing an interrupted one. No nominee/replacement-admin field exists.
+
+Fresh protected keys are prepared in an explicitly claimed private sibling
+staging ring, with a preselected ring ID. Normal ring opening and ordinary
+preparation retain strict inventory/ownership; only this stopped gated path
+can resume its owned empty staging directory. Bounded verified copies publish
+keys before their owner, with exact partial-file retry checks. The gate remains
+through key preparation and database mutation. A private external receipt
+replaces it only after independent committed-state and fresh-key verification.
+The protected staging ring/receipt remain outside ordinary snapshots for
+operator inspection/custody. Completed receipt verification is read-only,
+refusing subsequent changed state rather than replaying recovery.
+
+One host-store transaction checks the original full security snapshot/revision/
+epoch, revokes active sessions and pending attempts, clears all restored
+admission windows/pending nomination, advances epoch/configuration/revision and
+appends `restore_reconciled`. It preserves every recovered event instead of
+performing implicit retention, plus users/mappings/designation/module state.
+The existing revocation helper is shared with ordinary stopped revocation.
+Consumed state survives every attestation. Verified unconsumed state permits
+disabled only with `known-never-enrolled`; unknown/lost history or existing
+`recovery_locked` never reopens nomination. Retry independently proves the
+same epoch/revision/record and invalidated authority, not a second mutation.
+
+Recovery-v1 reconciliation explicitly verifies/upgrades the accepted old schema
+and complete module inventory. A crash after that upgrade commits but before
+the prepared snapshot is journaled is reconciled only against exact initial
+format-2 metadata/disabled state/empty identity rows/one `keys_prepared` record
+and the frozen configuration. It then persists that independently read
+snapshot before the restore decision transaction. Original module allocation,
+history and registry revision remain unchanged; no Down migration/reset is used.
+
+Initial crash execution exposes two test-owned phases missing from the barrier
+allowlist, then an actual `operator_before_commit` retry refusal
+(`recovery-sqlite-498aad89c6f34685a0402a620e3182de.json` and
+`recovery-sqlite-9b8a46261acf48769d3f38ef1bc276a7.json`). Only fixed phases/
+diagnostic codes are extracted from transient private output. The strict clean
+backup reader rejects SQLite's inactive crash journal. Explicit stopped retry
+now separately verifies the owned read/write connection, like existing startup;
+the clean backup reader's sidecar refusal is not relaxed. The same killed-worker
+case then passes. No timeout, contender count or cleanup guarantee changes.
+
+Final expanded SQLite storage selection passes in
+`recovery-sqlite-caa0b55285f746738993523fc6395e1b.json`:
+
+```bash
+dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityRecoveryTests' '*RecoverySetTests' '*SqliteRecoveryDiagnosticsTests' '*SqliteIdentityFormatTests' '*SqliteIdentityAdmissionTests' '*SqliteIdentityAttemptTests' '*SqliteIdentityEventTests' --minimum-expected-tests 45
+```
+
+Its six historical-state cases independently execute consumed/disabled/pending/
+locked restore, all three attestations, durable attempt/session/admission
+invalidation and unchanged retry. The consumed case includes actual complete
+module backup/restore and exact original Alpha record/note/ID/registry revision
+after identity reconciliation. Original profile/mapping/designation and every
+recovered event remain. A different planned epoch is refused. Retained strict
+manifest/format/schema/history/private-file/privacy/admission/event cases pass.
+
+Full SQLite preparation/startup and retained host units pass in
+`recovery-sqlite-3465ce874d064ac4b5d35334b210133f.json`:
+
+```bash
+dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityPreparationTests' '*SqliteIdentityStartupTests' --minimum-expected-tests 15
+dotnet test --project tests/unit/Kofte.Host.Tests --no-restore --no-build -c Release --minimum-expected-tests 1
+```
+
+Actual v2 workers are killed after intent flush, partial key publication,
+before database mutation, immediately before/after commit and after verified
+result persistence. Exact journaled epoch/ring and every already-published key
+byte survive explicit retry; changed decisions are refused both while gated
+and after activation. Separate v1 success and committed-upgrade-before-journal
+retry pass. Supervisor/root/descendant exits are independently verified.
+Earlier narrower passes remain in
+`recovery-sqlite-eafafc843dc94303b13b9c50b1688a4f.json`,
+`recovery-sqlite-0df7ec5c40504032821cb876da467c65.json`,
+`recovery-sqlite-b52bad836a8847f2baf5596e6a203620.json` and
+`recovery-sqlite-efe1cfbe000147a18dac096be760b167.json`.
+These runs assess this increment on the `f7454ea` baseline, not its unchanged
+published source. No native test total is inferred from selector minima.
+
+New PostgreSQL reconciliation, further partial-write/key/certificate/authority
+cases and complete public operations/final gates remain pending. T080-T086
+stay unchecked; progress remains **80/100, 20 remaining**. No stage completion,
+acceptance or full-matrix pass is inferred.
+
+### Actual published f7454ea CI observation
+
+The finished SQLite integration report
+`integration-sqlite-fc9b2356d5a042ba800c2bc5757e7af7.json` passes at actual merge
+`36bfcd482e6862284b57d9ff02223b3a4d59f15b`. Browser, quality, unit, privacy and
+startup jobs also finish successfully in run **40695013815**. PostgreSQL,
+recovery and contract jobs are still in progress at this observation; they
+cannot establish this later uncommitted reconciliation increment's proof.
+
+The same run's failure-propagation job **122839348700** fails:
+`failure-propagation-none-0d6c4c33c8da4777abe23ee1190967fe.json` reports
+`failure_exercise_timeout` for nested `baseline-postgres` at **900.315 seconds**
+and its enclosing `failure-exercise-harness` at **1024.19 seconds**. No inner
+assertion/cause is established. Earlier hosted failures remain historical
+failures; a passing browser rerun does not waive them or this non-green matrix.
+
+The actual tested merge's parents include published
+`f7454ea9dff155961879d70af3f06702fef2d171`; recovery regression blob
+`d2f3f4a5874f6c08aa07cbc80314f49fcba75861` exactly matches that parent.
+The PostgreSQL host phase now finishes failed:
+`integration-postgres-0c36c93be0684acc9bb95c5af4868d27.json` records
+`PostgresEnrollmentTests.ActualStoppedReplacementRefusesTheOriginalSecretAndConsumesOnlyTheNewGeneration`
+at **EnrollmentTests.cs:158/181/213**, in **355.43 seconds**. No unexpected
+status/cause is retained. The subsequent storage phase did not execute, so it
+does not prove or disprove the new quarantine regression.
+
+Full Release warnings-as-errors build, native format verification,
+`python3 scripts/check_repository.py`, exact Python discovery (132 tests) and
+`git diff --check` pass for this reconciliation increment. Final task validation
+finds 100 unique tasks, 80 checked and all checked prerequisites satisfied.
+No dependency, original migration, reviewer-owned checklist, ledger or human
+acceptance state changed.

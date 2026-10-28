@@ -13,7 +13,8 @@ public sealed class IdentityCommitBarrier
         "fixture_ready", "login_before_commit", "login_committed",
         "enrollment_before_commit", "enrollment_committed", "operator_before_commit",
         "operator_committed", "bootstrap_file_created", "bootstrap_file_flushed",
-        "restore_quarantined", "restore_before_commit", "restore_committed"
+        "restore_quarantined", "restore_before_commit", "restore_committed",
+        "restore_state_written", "restore_key_copied"
     ];
     private static IDisposable? startupObserver;
     private readonly string nonce = Convert.ToHexStringLower(RandomNumberGenerator.GetBytes(16));

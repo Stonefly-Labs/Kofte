@@ -40,13 +40,15 @@ internal sealed class IdentityKeys : IDisposable
     internal void Verify() => _ = Use(static () => true);
 
     internal static async Task<IdentityKeys> PrepareAsync(IdentityConfiguration configuration, Guid installationId,
-        StorageInstallation installation, MaintenanceScope scope, OperationBudget budget, bool existingOnly = false)
+        StorageInstallation installation, MaintenanceScope scope, OperationBudget budget, bool existingOnly = false,
+        string? directoryOverride = null, Guid? restoreRingId = null)
     {
         await scope.VerifyAsync(installation, budget);
         try
         {
             void Authority() => scope.VerifyAsync(installation, budget).GetAwaiter().GetResult();
-            var repository = RingRepository.Prepare(configuration, installationId, Authority, budget, existingOnly);
+            var repository = RingRepository.Prepare(configuration, installationId, Authority, budget, existingOnly,
+                directoryOverride, restoreRingId);
             var snapshot = repository.Read(budget);
             var changed = snapshot.Owner.State == "preparing";
             if (changed)
@@ -71,10 +73,27 @@ internal sealed class IdentityKeys : IDisposable
     }
 
     internal static IdentityKeys Open(IdentityConfiguration configuration, Guid installationId, OperationBudget budget)
+        => OpenCore(configuration, installationId, budget, restoreGate: false);
+
+    internal static IdentityKeys OpenRestored(IdentityConfiguration configuration, Guid installationId,
+        OperationBudget budget) => OpenCore(configuration, installationId, budget, restoreGate: true);
+
+    internal SortedDictionary<string, string> RecoveryInventory(OperationBudget budget)
+    {
+        var snapshot = repository.Read(budget);
+        var files = new SortedDictionary<string, string>(snapshot.Owner.Keys, StringComparer.Ordinal)
+        {
+            ["identity-owner.json"] = snapshot.Fingerprint
+        };
+        return files;
+    }
+
+    private static IdentityKeys OpenCore(IdentityConfiguration configuration, Guid installationId,
+        OperationBudget budget, bool restoreGate)
     {
         try
         {
-            var repository = new RingRepository(configuration, installationId);
+            var repository = new RingRepository(configuration, installationId, restoreGate: restoreGate);
             var snapshot = repository.Read(budget);
             if (snapshot.Owner.State != "ready") throw Invalid();
             return new(repository, Validate(repository, budget));
@@ -247,6 +266,7 @@ internal sealed class IdentityKeys : IDisposable
         private const int MaximumKeys = 256, MaximumFileBytes = 65_536;
         private static readonly UTF8Encoding Utf8 = new(false, true);
         private readonly string directory;
+        private readonly bool restoreGate;
         private Guid ringId;
         private Action? authority;
         private OperationBudget? preparationBudget;
@@ -257,23 +277,27 @@ internal sealed class IdentityKeys : IDisposable
         private string Protection => Configuration.KeyEncryptionCertificate is null ? "private" : "certificate";
         private string OwnerPath => Path.Combine(directory, OwnerName);
 
-        internal RingRepository(IdentityConfiguration configuration, Guid installationId)
+        internal RingRepository(IdentityConfiguration configuration, Guid installationId,
+            string? directoryOverride = null, bool restoreGate = false)
         {
             if (installationId == Guid.Empty || configuration.Mode == Kofte.Platform.Identity.IdentityMode.Oidc &&
                 configuration.KeyEncryptionCertificate is null) throw Invalid();
             Configuration = configuration;
             InstallationId = installationId;
             Mode = configuration.Mode == Kofte.Platform.Identity.IdentityMode.Oidc ? "oidc" : "development";
-            directory = configuration.KeyRingDirectory;
+            directory = directoryOverride ?? configuration.KeyRingDirectory;
+            this.restoreGate = restoreGate;
         }
 
         internal static RingRepository Prepare(IdentityConfiguration configuration, Guid installationId,
-            Action authority, OperationBudget budget, bool existingOnly)
+            Action authority, OperationBudget budget, bool existingOnly, string? directoryOverride, Guid? restoreRingId)
         {
-            var repository = new RingRepository(configuration, installationId)
+            if (restoreRingId == Guid.Empty || restoreRingId is not null && directoryOverride is null) throw Invalid();
+            var repository = new RingRepository(configuration, installationId, directoryOverride)
             { authority = authority, preparationBudget = budget };
             Paths.ValidateRoot(repository.directory, allowMissing: !existingOnly);
-            if (!Directory.Exists(repository.directory))
+            if (!Directory.Exists(repository.directory) || restoreRingId is not null &&
+                !Directory.EnumerateFileSystemEntries(repository.directory).Any())
             {
                 if (existingOnly) throw Invalid();
                 Paths.ValidateRoot(Path.GetDirectoryName(repository.directory)!, allowMissing: false);
@@ -282,11 +306,12 @@ internal sealed class IdentityKeys : IDisposable
                     if (OperatingSystem.IsWindows()) throw Invalid();
                     Directory.CreateDirectory(repository.directory, Paths.DirectoryMode);
                 });
-                repository.ringId = Guid.NewGuid();
+                repository.ringId = restoreRingId ?? Guid.NewGuid();
                 repository.WriteOwner(new(installationId, repository.ringId, repository.Mode, repository.Protection,
                     "preparing", new(StringComparer.Ordinal)), initial: true);
             }
             var owner = repository.ReadOwner();
+            if (restoreRingId is { } expected && owner.RingId != expected) throw Invalid();
             repository.ringId = owner.RingId;
             if (owner.State == "preparing") repository.Resume(owner, budget);
             else _ = repository.Read(budget);
@@ -474,7 +499,10 @@ internal sealed class IdentityKeys : IDisposable
             var paths = Directory.EnumerateFileSystemEntries(directory).Take(MaximumKeys + 3).ToArray();
             if (paths.Length > MaximumKeys + 2) throw Invalid();
             foreach (var path in paths) Paths.ValidateFile(path);
-            return paths.Select(path => Path.GetFileName(path)).ToArray();
+            if (restoreGate && !paths.Any(path => Path.GetFileName(path) == IdentityRestoreQuarantine.FileName))
+                throw Invalid();
+            return paths.Select(path => Path.GetFileName(path))
+                .Where(name => !restoreGate || name != IdentityRestoreQuarantine.FileName).ToArray();
         }
 
         private static bool KeyName(string name) => name.Length == 44 &&

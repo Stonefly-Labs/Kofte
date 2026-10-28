@@ -761,11 +761,44 @@ Strict private decision parsing now checks the exact five approved fields,
 recovery-set/installation IDs, original manifest SHA-256 and one of three
 historical attestations. It rejects duplicate/unknown fields, a wrong recovery
 point, public/symlinked/oversized/non-UTF-8 files; parsing does not clear a gate.
-Supported end-to-end identity restore is **not delivered yet**: the
-reconciliation command, fresh protected keys and crash-resumable decision commit
-remain unfinished, as does new PostgreSQL quarantine proof. The legacy ungated
-helper still refuses identity-bearing sets. Do not remove the marker or copy
-such a set into a serving installation.
+The built host now accepts the explicit stopped reconciliation command:
+
+```bash
+dotnet src/Kofte.Host/bin/Release/net10.0/Kofte.Host.dll --identity reconcile-restore --decision-file "$PRIVATE_DECISION_FILE"
+```
+
+Set `PRIVATE_DECISION_FILE` to the absolute owner-only decision file and use
+the restored target's existing storage/authentication environment. This is
+not a backup/import command: first use a fresh stopped complete-set quarantine
+target. The current import helpers remain test-owned; the public operations
+consumer recipe is unfinished.
+
+The command verifies actual ownership/inventory/security state, freezes the
+exact decision/configuration plus new epoch/ring IDs, prepares fresh protected
+keys without removing the marker, and commits revocation plus its security
+record. Restored users/mappings/module data/designation and evidence stay
+intact. Sessions/attempts/admission/pending authority cannot survive activation.
+A recovered consumed designation overrides `known-never-enrolled`; unknown
+or lost history stays `recovery_locked`. V1 gets an explicit verified upgrade,
+never automatic evidence of historically unused enrollment.
+
+Only independently verified committed effects and matching fresh keys permit
+moving the marker to the private sibling `KEY_DIRECTORY.identity-restore-receipt`.
+The protected staging ring at `KEY_DIRECTORY.identity-restore-keys` remains
+outside ordinary snapshots under operator custody. Keep these private control
+artifacts for inspection; never delete a gate to force activation. A changed
+decision/configuration or foreign/changed key is refused, not adopted.
+Explicit retries preserve the planned epoch/ring and do not duplicate the
+revision/event. After activation, receipt verification is read-only and refuses
+changed state instead of replaying recovery.
+
+Actual SQLite tests pass v1/v2 activation and killed-worker retries after intent
+flush, partial key publication, before commit, after commit and before gate
+removal, including a committed v1 upgrade with an unrecorded acknowledgement.
+Further partial-write/key/certificate/capacity cases and new PostgreSQL proof
+remain pending; this is not complete recovery acceptance. The legacy ungated
+helper still refuses identity-bearing sets. Fence the old instance; direct
+OS/database copies bypass this marker and remain outside its guarantee.
 
 Stopped prepared installations now accept `--identity maintain` through the
 same admitted host supervisor and exclusive lease. Each explicit invocation

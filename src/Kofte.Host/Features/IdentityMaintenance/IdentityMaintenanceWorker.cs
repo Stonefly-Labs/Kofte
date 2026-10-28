@@ -34,15 +34,24 @@ internal static class IdentityMaintenanceWorker
                 IdentityOperation.ReconcileConfiguration => IdentityAction.ReconcileConfiguration,
                 IdentityOperation.Maintain => IdentityAction.Maintain,
                 IdentityOperation.RevokeSessions => IdentityAction.RevokeSessions,
+                IdentityOperation.ReconcileRestore => IdentityAction.ReconcileRestore,
                 _ => throw new StorageException(StorageCode.RequestInvalid)
             }, mode, installation.Provider, TimeSpan.FromSeconds(116), token,
                 record => Console.WriteLine(System.Text.Encoding.UTF8.GetString(IdentityDiagnostics.Serialize(record))));
             var budget = observation.Budget;
             await using var scope = await MaintenanceScope.AcquireAsync(installation, budget.Token,
                 TimeSpan.FromTicks(Math.Min(OperationBudget.Acquire.Ticks, budget.Remaining.Ticks)));
-            if (IdentityRestoreQuarantine.IsRequired(identity.KeyRingDirectory))
+            if (operation != IdentityOperation.ReconcileRestore &&
+                IdentityRestoreQuarantine.IsRequired(identity.KeyRingDirectory))
                 throw new StorageException(StorageCode.ReconciliationRequired);
             await StorageReconciliation.ValidateStartupAsync(installation, budget.Token);
+            if (operation == IdentityOperation.ReconcileRestore)
+            {
+                await IdentityRestore.RunAsync(identity, installation, scope, args[3], budget,
+                    configuration.Runtime.DataRoot);
+                await scope.VerifyAsync(installation, budget);
+                return 0;
+            }
             var registry = new RegistryMigrationRunner(installation);
             await using var connection = await installation.OpenPlatformAsync(budget);
             var owner = await registry.ReadInstallationAsync(connection, budget);

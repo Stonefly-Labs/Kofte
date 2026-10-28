@@ -316,7 +316,7 @@ public static class RecoverySetVerifier
         return await ReadInventoryAsync(installation, platform, budget);
     }
 
-    private static async Task<RecoveryInventory> ReadInventoryAsync(StorageInstallation installation,
+    internal static async Task<RecoveryInventory> ReadInventoryAsync(StorageInstallation installation,
         DbConnection platform, OperationBudget budget)
     {
         var runner = new RegistryMigrationRunner(installation);

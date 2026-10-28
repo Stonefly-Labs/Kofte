@@ -8,6 +8,15 @@ namespace Kofte.Infrastructure.Identity;
 public sealed record IdentityRestoreDecision(Guid RecoverySetId, Guid InstallationId,
     string ExpectedManifestSha256, string PriorEnrollment)
 {
+    internal void Validate(IdentityRestoreQuarantine quarantine)
+    {
+        if (!quarantine.Restored || RecoverySetId != quarantine.Manifest.RecoverySetId ||
+            InstallationId != quarantine.Manifest.InstallationId || ExpectedManifestSha256 != quarantine.ManifestSha256)
+            throw new StorageException(StorageCode.ReconciliationRequired);
+        if (PriorEnrollment is not ("known-consumed" or "known-never-enrolled" or "not-established"))
+            throw new StorageException(StorageCode.RequestInvalid);
+    }
+
     public static Task<IdentityRestoreDecision> ReadAsync(string path, IdentityRestoreQuarantine quarantine,
         CancellationToken token = default) =>
         StorageDiagnostics.ObserveRecoveryAsync(quarantine.Manifest.Provider, token, async (budget, _, _) =>

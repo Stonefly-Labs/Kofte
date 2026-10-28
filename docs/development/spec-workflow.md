@@ -123,8 +123,15 @@ cases at verified merge `30bcebaa8f29636109774d1c28addefc5ab59414`.
 The separately gated complete-set restore paths and exact private decision
 reader now have actual SQLite snapshot/binding/tamper/private-file proof.
 The outside-snapshot marker blocks all six existing stopped commands.
-The reconciliation command/fresh ring/durable decision/crash-resume and new
-PostgreSQL quarantine proof remain unfinished; T080-T082 remain unchecked.
+The explicit reconciliation command now passes actual SQLite v1 upgrade/v2
+activation, fresh protected keys and killed-worker retries at six boundaries.
+The durable exact decision/configuration/epoch/ring intent prevents replacement
+or duplicate security effects; recovered consumption wins and unknown history
+stays locked. Final activation keeps a private external receipt. Normal backup
+readers stay strict; explicit stopped retry separately verifies the owned live
+connection when SQLite retains an inactive crash journal. New PostgreSQL
+reconciliation and remaining partial-write/key/complete operations evidence
+remain pending; T080-T082 stay unchecked.
 Stopped bounded `maintain` is now implemented using the existing retention
 helpers, with passing actual SQLite batch, prepared-authority and live-host
 refusal regressions. It preserves consumed designation, active sessions and
