@@ -194,7 +194,7 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
                 if not isinstance(code, str) or code not in api.check_dependencies.FAILURE_CODES:
                     raise error("failure_child_report_unsafe")
                 selected["dependencyFailureCode"] = code
-            for kind in ("storage", "contract"):
+            for kind in ("host", "storage", "contract"):
                 test_key = f"failed{kind.title()}Tests"
                 code_key = f"{kind}FailureCodes"
                 operation_key = f"{kind}FailureOperations"
@@ -225,13 +225,21 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
                     selected[report_key] = code
         result["steps"].append(selected)
     failed = [step for step in steps if step["outcome"] == "failed"]
+    expected_commands = [expected_command]
+    diagnostic = api.command_diagnostics(expected_command) if expected_command else None
+    if diagnostic and diagnostic.kind in ("host", "storage", "contract"):
+        expected_commands.append(api.safe_command([
+            *expected_command, "--report-xunit-xml",
+            "--report-xunit-xml-filename", "storage.xml",
+            "--results-directory", "<private-results>",
+        ]))
     code = None
     if expected_step is None:
         if exit_code or report.get("outcome") != "passed" or failed:
             code = "failure_baseline_not_green"
     elif (exit_code == 0 or report.get("outcome") != "failed" or len(failed) != 1
           or failed[0].get("name") != expected_step
-          or failed[0].get("command") != expected_command
+          or failed[0].get("command") not in expected_commands
           or failed[0].get("failureCode") != "command_failed"
           or not isinstance(failed[0].get("exitCode"), int) or failed[0]["exitCode"] == 0
           or not re.fullmatch(r"[a-f0-9]{32}", failed[0].get("failureCorrelation", ""))):

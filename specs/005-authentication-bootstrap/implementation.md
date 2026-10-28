@@ -1,6 +1,6 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement in progress; T001-T036 and T038 complete (37/100); actual Ubuntu login/trust browser recipes pass on both stores, but PostgreSQL host CI remains failed.
+**Result:** implement in progress; T001-T040 complete (40/100); US1 reconciled with both-provider integration and actual Ubuntu HTTPS recipes; broader CI failures remain.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-27.
 **Assessed baseline:** `6df9eebdcfa6b273126b0c51c272d1b2c2f953e6`.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
@@ -2099,3 +2099,79 @@ runner was also exercised through `Runner.command` with
 it passed with private XML enabled. Full .NET formatting verification,
 repository and whitespace checks passed. These diagnostics are to establish
 the CI cause, not a claimed repair of the PostgreSQL failure.
+
+### Isolated diagnostic propagation and completed predecessor results
+
+The host diagnostic wiring was committed and immediately pushed as `2f56f35`.
+Its repository checks passed, and its browser, startup, quality and unit jobs
+passed when observed; the PostgreSQL suite and other longer jobs were still
+running. Results from `6be0ee8` are not attributed to this head.
+
+The completed `6be0ee8` product run additionally failed
+`composition-public-contracts` at its unchanged **900.044-second** command
+limit and the isolated `baseline-postgres` at **900.371 seconds**. The latter
+raised `failure_exercise_timeout`; no completed nested report identified the
+unfinished operation. The preceding `f89c1ec` product run passed every job.
+These failures remain undiagnosed; no product, command or harness deadline
+is relaxed, and no failing baseline is accepted as propagation evidence.
+
+Inspection found a directly dependent reporting gap: the isolated harness
+still revalidated only storage/contract diagnostics and silently omitted the
+new safe host fields. A new focused regression first failed with
+`KeyError: failedHostTests`; admitting the same source-known host kind fixes
+that omission. It also rejects argument-bearing/duplicate test names,
+unknown codes and diagnostics attached to an unrelated command, retaining no
+raw canary. `python3 -m unittest discover -s scripts/tests -v` then passed
+**125 tests** at that intermediate edit. This repairs reporting only, not the
+underlying CI failures; the implement stage remains unfinished.
+
+## T037–T040: US1 reconciled at `2f56f35`
+
+The fresh [product run 40628696184](https://github.com/Stonefly-Labs/Kofte/actions/runs/40628696184)
+passed both complete provider integration jobs and browser, privacy, startup,
+quality and unit. Repository checks also passed. PostgreSQL's native host,
+storage and composition commands passed in **241.783s**, **618.981s** and
+**290.846s**, respectively, with their original per-command limits. This is
+fresh passing evidence, **not a diagnosis** of `6be0ee8`'s failed host case.
+
+The completed [browser job 122619718900](https://github.com/Stonefly-Labs/Kofte/actions/runs/40628696184/job/122619718900)
+again ran all four exact public commands listed above. Its actual JSON records
+were retrieved and independently checked for schema/status, exact provider/
+scenario inventory and unique named observation counts: **eight login** and
+**eleven trust-refusal** observations on **each** store. No raw job output,
+credential or browser profile is published.
+
+| Requirement | Actual scoped evidence |
+| --- | --- |
+| US1.1 | Both actual HTTPS login recipes compare browser UI, native `/me` and separately compiled actor consumer against the same internal user. Ordinary login grants no designation. |
+| US1.2 | The current twenty-case mapping matrix verifies exact IDs/designation/profile through three distinct product process restarts per store. |
+| US1.3 | That matrix covers equal profiles/distinct exact subjects and sequential explicitly reconciled issuers without identity merging or extra grants. |
+| US1.4 | The corrected 123-case local protocol/backchannel/budget gate and both actual trust-refusal recipes verify invalid/replayed/unsolicited evidence, no unauthorized effects and fresh corrected login. |
+| US1.5 | Native/configuration/startup and delivered budget cases verify outage/cancellation/configuration refusal, safe retry and no development/anonymous fallback. |
+| SC-001, partial | Production sign-in, exact identity and mapping/restart are evidenced; sign-out is still US3 work. |
+| SC-003, scoped | Tested missing/mixed credentials, invalid trust, origin/CSRF and default-denied access refuse before effects; later enrollment/expiry/parity cases remain. |
+| SC-005, preliminary | The Ubuntu browser suite executes 320px/200% shell, keyboard/focus/axe and actual host-loss actionable failure under five seconds. Production recipes assert signed-in state within five seconds of submission, including the synthetic provider exchange; this is not a separate provider-return measurement or evidence for future UI states. |
+
+Safe health/missing-auth remain verified by the recorded fresh four-case policy
+selection and repeated actual recipe observations. T037, T039 and T040 are now
+checked, giving **40/100**; enrollment is next within the same implement stage.
+The read-only review checklists and approved design remain unchanged.
+
+The complete current run is **not green**. Composition public contracts again
+hit the unchanged 900-second limit (**900.077s**). PostgreSQL composition
+recovery failed `PublicFaultMatrixVerifiesActualExitBudgetsPartialCleanupAndOwnedDescendants`,
+with safe `composition_consumer_failed` / `bounded-stop` evidence. Neither
+cause is established or waived.
+
+The current failure-propagation failure **is diagnosed**: the unavailable-store
+native command correctly failed, but the strict evidence comparison rejected
+the newly appended private XML-report arguments. A focused regression first
+reproduced `failure_did_not_reach_expected_command`; the correction admits only
+the exact bounded reporting suffix, retaining rejection of wrong provider,
+filename or option and all original step/exit/correlation checks. The actual
+published nested report now replays successfully as the intended failure.
+Full Python discovery passes **126 tests**. Its three real baselines passed,
+including PostgreSQL in **895.064s**; the earlier timeout is not erased.
+No product or verification deadline changed, and a fresh complete CI run is
+still required. The local macOS cleanup and intervening readiness failures
+also remain explicit limitations, not a full-feature acceptance.

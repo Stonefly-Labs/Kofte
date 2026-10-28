@@ -473,7 +473,7 @@ not one passing provider job. PR #7 is now human-merged; its accepted ledger
 and all five acceptance artifact hashes were verified on updated main before
 005 began. Historical failed checks and undiagnosed causes remain unchanged.
 
-**005 / implement is running after T001–T036 and T038, not a completed feature**, on
+**005 / implement is running after T001–T040, not a completed feature**, on
 `feature/005-authentication-bootstrap`. The
 [implementation checkpoint](../specs/005-authentication-bootstrap/implementation.md)
 retains the source/signature investigation and records the adopted maintained
@@ -585,12 +585,14 @@ refused. Actual Ubuntu login/trust browser recipes pass on both stores at
 `6be0ee8`, with ordinary TLS and exact-group cleanup verification. Local
 macOS browser lifecycle/cleanup still fails. The corrected local protocol
 matrix passes 123/123; mapping/restart passes 20/20, retaining the intervening
-SQLite readiness failure and unknown cause. PostgreSQL host CI still fails;
-private source-known diagnostics are being extended to expose the failing
-case without raw test arguments/output. Final US1 reconciliation, enrollment,
-sign-out, development sessions and identity recovery remain (63 unchecked
-tasks). Published `f89c1ec` passed all eleven CI contexts; no feature
-acceptance or current complete gate is claimed.
+SQLite readiness failure and unknown cause. Both complete provider integration
+jobs and the four actual browser recipes pass at `2f56f35`, completing US1.
+Broader composition-contract/recovery CI failures remain. Private source-known
+host diagnostics now survive isolated propagation; a reproduced comparison
+bug admits only the exact additional private XML-report flags, not arbitrary
+command changes. Enrollment, sign-out, development sessions and identity
+recovery remain (60 unchecked tasks). Published `f89c1ec` passed all eleven CI
+contexts; no feature acceptance or current complete gate is claimed.
 
 The completed specify-through-analyze history below is retained on
 `feature/005-authentication-bootstrap`. Its

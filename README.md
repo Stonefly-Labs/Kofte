@@ -35,9 +35,9 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 | 🔐 Explicit boundaries     | Team-scoped authorization, audited actions and module-owned storage                                   |
 
 > [!IMPORTANT]
-> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md) and [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) is now human-merged. Its accepted ledger and evidence were verified on updated main before 005 began. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) retains prior failures and unknown causes; the historical failed local gate remains failed, not waived by acceptance or merge. Spec 005 now has [authentication/bootstrap requirements](specs/005-authentication-bootstrap/spec.md) and backend login implementation in progress, not the complete browser journey. Nothing here claims production readiness or MVP completion.
+> **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md) and [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) is now human-merged. Its accepted ledger and evidence were verified on updated main before 005 began. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) retains prior failures and unknown causes; the historical failed local gate remains failed, not waived by acceptance or merge. Spec 005 now has [authentication/bootstrap requirements](specs/005-authentication-bootstrap/spec.md) and US1 sign-in implemented, not the complete identity feature. Nothing here claims production readiness or MVP completion.
 
-**Current stage: 005 / implement running; T001–T036 and T038 complete (37/100).** The
+**Current stage: 005 / implement running; T001–T040 complete (40/100).** The
 [implementation checkpoint](specs/005-authentication-bootstrap/implementation.md)
 records actual OIDC dependency adoption and locked inventory (403 npm / 87
 NuGet identities), an independent HTTPS issuer, owned interruption fixtures,
@@ -107,12 +107,17 @@ lint/types and the production build pass. Browser sign-in now uses a bounded
 Next Server Action: the actual Origin and explicit CSRF pair remain required,
 without relaxing `no-referrer` or accepting native forms' opaque Origin.
 Actual Ubuntu HTTPS login and trust-refusal browser recipes now pass on both
-stores at `6be0ee8`; local macOS browser lifecycle/cleanup still fails.
+stores at `6be0ee8` and `2f56f35`; local macOS browser lifecycle/cleanup still fails.
 The corrected local protocol matrix passes 123/123 and mapping/restart
 passes 20/20. An intervening SQLite readiness failure remains recorded with
-unknown cause. PostgreSQL host CI still fails; safe source-known failure
-diagnostics are being added rather than guessing or waiving it. Sixty-three
-tasks remain, including final US1 reconciliation, enrollment, sign-out,
+unknown cause. Both complete provider integration jobs pass at `2f56f35`,
+including all three PostgreSQL native commands. US1 is reconciled, not the
+whole feature: broader CI still failed composition-contract timeout,
+composition recovery and failure-propagation checks. The latter exposed a
+reproduced command-matching regression from the new private diagnostic flags;
+the focused correction passes 126 Python tests and actual safe CI-report
+replay, pending new CI. No verification deadline was increased. Sixty
+tasks remain, including enrollment, sign-out,
 development sessions and identity recovery. The feature is not complete.
 The preceding session checkpoint's CI still failed composition and PostgreSQL
 failure-propagation baseline timeouts; causes are not established or waived.

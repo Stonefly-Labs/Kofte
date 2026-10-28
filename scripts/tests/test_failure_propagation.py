@@ -175,6 +175,69 @@ class FailurePropagationTests(unittest.TestCase):
         with self.assertRaisesRegex(verify.VerificationError, "failure_child_report_unsafe"):
             checked()
 
+    def test_private_native_reporting_preserves_exact_failure_command_verification(self):
+        evidence = self.evidence()
+        command = [
+            "dotnet", "test", "--project", verify.INTEGRATION, "--no-restore", "-c", "Release",
+            "--filter-trait", "Provider=postgres", "--minimum-expected-tests", "1",
+        ]
+        reported = verify.safe_command([
+            *command, "--report-xunit-xml", "--report-xunit-xml-filename", "storage.xml",
+            "--results-directory", "<private-results>",
+        ])
+        evidence["steps"][0]["command"] = reported
+
+        def checked():
+            return exercises.checked_evidence(
+                evidence, "quality", None, "python-tests", command, 1, verify,
+            )
+
+        self.assertEqual(reported, checked()["steps"][0]["command"])
+        for original, replacement in (
+            ("Provider=postgres", "Provider=sqlite"),
+            ("storage.xml", "foreign.xml"),
+            ("--report-xunit-xml", "--unrelated-option"),
+        ):
+            with self.subTest(original=original):
+                evidence["steps"][0]["command"] = [
+                    replacement if value == original else value for value in reported
+                ]
+                with self.assertRaisesRegex(verify.VerificationError, "failure_did_not_reach_expected_command"):
+                    checked()
+
+    def test_host_failure_evidence_is_revalidated_inside_isolated_reports(self):
+        evidence = self.evidence()
+        command = ["dotnet", "test", "--project", verify.INTEGRATION]
+        name = sorted(verify.command_diagnostics(command).tests)[0]
+        evidence["steps"][0].update(
+            command=command, failedHostTests=[name],
+            hostFailureCodes=["Busy"], hostDiagnosticCode="unavailable",
+        )
+
+        def checked():
+            return exercises.checked_evidence(
+                evidence, "quality", None, "python-tests", command, 1, verify,
+            )
+
+        result = checked()
+        for key in ("failedHostTests", "hostFailureCodes", "hostDiagnosticCode"):
+            self.assertEqual(evidence["steps"][0][key], result["steps"][0][key])
+        self.assertNotIn("credential-canary", json.dumps(result))
+        for key, value in (
+            ("failedHostTests", [name + "(credential-canary)"]),
+            ("failedHostTests", [name, name]),
+            ("hostFailureCodes", ["credential-canary"]),
+            ("hostDiagnosticCode", "credential-canary"),
+        ):
+            with self.subTest(key=key):
+                evidence["steps"][0][key] = value
+                with self.assertRaisesRegex(verify.VerificationError, "failure_child_report_unsafe"):
+                    checked()
+                evidence["steps"][0][key] = result["steps"][0][key]
+        evidence["steps"][0]["command"] = ["echo", "untrusted"]
+        with self.assertRaisesRegex(verify.VerificationError, "failure_child_report_unsafe"):
+            checked()
+
     def test_public_failure_evidence_is_revalidated_inside_isolated_reports(self):
         evidence = self.evidence()
         command = ["dotnet", "test", "--project", "tests/contract/Kofte.Platform.ContractTests"]

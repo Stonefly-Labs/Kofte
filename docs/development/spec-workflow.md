@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement running; T001–T036 and T038 complete (37/100)**, on
+**Current checkpoint: 005 / implement running; T001–T040 complete (40/100)**, on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 [implementation record](../../specs/005-authentication-bootstrap/implementation.md)
@@ -32,8 +32,8 @@ The PostgreSQL recovery failure is reproduced and corrected by server-deparsed
 constraint definitions that preserve semantics across actual dump/restore;
 49 recovery/physical-format cases pass, retaining tamper refusal.
 These are foundations, not functioning login, enrollment, UI or recovery.
-Sixty-four tasks remain unchecked. Shared T018–T020 endpoint/CSRF/default-deny
-and private diagnostic components now have executable component/operator
+At that foundation checkpoint, the later stories remained unimplemented.
+Shared T018–T020 endpoint/CSRF/default-deny and private diagnostic components now have executable component/operator
 evidence, including real child termination. T021
 installs the same configuration/prepared-state/key checks, normal-lease-backed
 services, middleware and private diagnostics in both actual serving paths.
@@ -86,9 +86,13 @@ The original Ubuntu browser job passed `oidc-login` and `trust-refusal`
 on SQLite and PostgreSQL at `6be0ee8`; this does not waive the local macOS
 cleanup failure. Corrected local protocol evidence passes 123/123, and T038's
 mapping/restart matrix passes 20/20 after an intervening 19/20 readiness
-failure with unknown cause. PostgreSQL host CI still fails; private
-source-known diagnostics are being added before claiming complete US1
-reconciliation. Sixty-three tasks remain. No feature acceptance is claimed.
+failure with unknown cause. Both complete provider integration jobs and all
+four real HTTPS browser recipes pass at `2f56f35`; T037–T040 are now reconciled.
+Broader composition-contract/recovery failures remain. The isolated propagation
+wrapper now preserves/revalidates safe host diagnostics and admits only the
+exact additional private XML-report flags; the actual published false failure
+replays correctly and all 126 Python tests pass. No deadline is increased.
+Sixty tasks remain. No feature acceptance is claimed.
 Session-head `ad21b2b` CI failed composition and PostgreSQL baseline timeouts;
 their causes remain unestablished. They are not erased by local passes.
 The unchanged both-provider composition selector passed locally in 588.596s
