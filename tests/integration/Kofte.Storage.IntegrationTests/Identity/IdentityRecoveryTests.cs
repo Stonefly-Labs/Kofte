@@ -103,14 +103,95 @@ public abstract class IdentityRecoveryTests
                     $"UPDATE {prefix}__kofte_sessions SET protected_ticket=@ticket WHERE user_id=@user", budget,
                     null, ("ticket", new byte[24_000]), ("user", UserId));
         }
-        var artifacts = new List<RecoveryArtifact>();
-        foreach (var artifact in manifest.Artifacts)
-            artifacts.Add(await RecoverySetVerifier.DescribeArtifactAsync(backup.Path, artifact.Name, fixture.Token));
-        File.Delete(Path.Combine(backup.Path, RecoveryManifest.FileName));
-        await RecoverySetVerifier.WriteManifestAsync(backup.Path,
-            manifest with { Artifacts = artifacts }, fixture.Token);
+        await RehashManifestAsync(backup.Path, manifest, fixture.Token);
         var error = await Assert.ThrowsAsync<StorageException>(() => VerifyAsync(inspected, backup.Path, fixture.Token));
         Assert.Equal(StorageCode.ReconciliationRequired, error.Code);
+    }
+
+    [Theory]
+    [InlineData("constraint")]
+    [InlineData("migration-history")]
+    [InlineData("bootstrap-history")]
+    public async Task RehashedFormatTwoArtifactsCannotConcealInvalidConstraintsOrActualHistory(string fault)
+    {
+        await using var fixture = await StorageProviderScope.CreateAsync(Provider, Token);
+        var installation = await PrepareAsync(fixture);
+        using var backup = new OwnedTestRoot();
+        var manifest = await BackupAsync(fixture, backup.Path);
+        var inspected = Provider == "sqlite" ? StorageInstallation.Sqlite(backup.Path) : installation;
+        await using (var scope = await new StorageMaintenance(inspected).AcquireAsync(fixture.Token))
+        {
+            using var budget = new OperationBudget(OperationBudget.Register, fixture.Token);
+            await using var connection = await inspected.OpenPlatformAsync(budget);
+            var prefix = Provider == "sqlite" ? "" : "kofte_system.";
+            var sql = fault switch
+            {
+                "migration-history" => $"UPDATE {prefix}__kofte_registry_migrations SET sha256='{new string('0', 64)}' WHERE version=2",
+                "bootstrap-history" => $"""
+                    UPDATE {prefix}__kofte_bootstrap SET state='disabled',initial_user_id=NULL,
+                      consumed_at_utc=NULL,consumed_generation=NULL
+                    """,
+                "constraint" => "ALTER TABLE kofte_system.__kofte_identity_admission " +
+                    "DROP CONSTRAINT __kofte_identity_admission_count_check",
+                _ => throw new InvalidOperationException("test_alteration_invalid")
+            };
+            if (Provider == "sqlite" && fault == "constraint")
+            {
+                Assert.Equal(0L, await RegistryMigrationRunner.ScalarAsync(connection,
+                    "SELECT COUNT(*) FROM __kofte_identity_admission", budget));
+                await using var definition = RegistryMigrationRunner.Command(connection,
+                    "SELECT sql FROM sqlite_master WHERE type='table' AND name='__kofte_identity_admission'", budget);
+                var ddl = Assert.IsType<string>(await definition.ExecuteScalarAsync(fixture.Token));
+                var changed = ddl.Replace("count >= 0", "count >= -1", StringComparison.Ordinal);
+                Assert.NotEqual(ddl, changed);
+                sql = $"DROP TABLE __kofte_identity_admission;{changed};" +
+                    "CREATE INDEX __kofte_admission_expiry ON __kofte_identity_admission (expires_at_utc)";
+            }
+            await RegistryMigrationRunner.ExecuteAsync(connection, sql, budget);
+        }
+        var rehashed = await RehashManifestAsync(backup.Path, manifest, fixture.Token);
+        var manifestPath = Path.Combine(backup.Path, RecoveryManifest.FileName);
+        var before = await File.ReadAllBytesAsync(manifestPath, fixture.Token);
+        var error = await Assert.ThrowsAsync<StorageException>(() => VerifyAsync(inspected, backup.Path, fixture.Token));
+        Assert.Equal(StorageCode.Corrupt, error.Code);
+        Assert.Equal(before, await File.ReadAllBytesAsync(manifestPath, fixture.Token));
+        foreach (var artifact in rehashed.Artifacts)
+            Assert.Equal(artifact, await RecoverySetVerifier.DescribeArtifactAsync(backup.Path, artifact.Name, fixture.Token));
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task MissingModuleBearingArtifactsRemainRefusedEvenWhenOmittedFromTheManifest(bool omit)
+    {
+        await using var fixture = await StorageProviderScope.CreateAsync(Provider, Token);
+        var installation = await PrepareAsync(fixture);
+        await PopulateModuleAsync(installation, fixture.Token);
+        using var backup = new OwnedTestRoot();
+        var manifest = await BackupAsync(fixture, backup.Path);
+        var artifact = Provider == "sqlite"
+            ? Assert.Single(manifest.Artifacts, item => item.Name.StartsWith("modules/", StringComparison.Ordinal))
+            : Assert.Single(manifest.Artifacts);
+        var missing = Path.Combine(backup.Path, artifact.Name);
+        using var retained = new OwnedTestRoot();
+        if (OperatingSystem.IsWindows()) throw new InvalidOperationException("test_platform_unsupported");
+        Directory.CreateDirectory(retained.Path, UnixStorePaths.DirectoryMode);
+        File.Move(missing, Path.Combine(retained.Path, "retained-artifact"));
+        var path = Path.Combine(backup.Path, RecoveryManifest.FileName);
+        if (omit)
+        {
+            var json = JsonNode.Parse(await File.ReadAllTextAsync(path, fixture.Token))!;
+            var artifacts = json["artifacts"]!.AsArray();
+            artifacts.Remove(Assert.Single(artifacts, item => item!["name"]!.GetValue<string>() == artifact.Name));
+            await File.WriteAllTextAsync(path, json.ToJsonString(), fixture.Token);
+        }
+        var before = await File.ReadAllBytesAsync(path, fixture.Token);
+        var error = await Assert.ThrowsAsync<StorageException>(() => VerifyAsync(installation, backup.Path, fixture.Token));
+        Assert.Equal(omit ? StorageCode.ReconciliationRequired : StorageCode.PathRejected, error.Code);
+        Assert.Equal(before, await File.ReadAllBytesAsync(path, fixture.Token));
+        Assert.False(File.Exists(missing));
+        Assert.Equal(artifact with { Name = "retained-artifact" },
+            await RecoverySetVerifier.DescribeArtifactAsync(retained.Path, "retained-artifact", fixture.Token));
     }
 
     [Fact]
@@ -596,6 +677,18 @@ public abstract class IdentityRecoveryTests
         fixture.Postgres is { } postgres
             ? postgres.BackupStorageSetAsync(path, fixture.Token)
             : SqliteRecoveryExercise.BackupAsync(fixture.DataRoot, path, fixture.Token);
+
+    private static async Task<RecoveryManifest> RehashManifestAsync(string path, RecoveryManifest manifest,
+        CancellationToken token)
+    {
+        var artifacts = new List<RecoveryArtifact>();
+        foreach (var artifact in manifest.Artifacts)
+            artifacts.Add(await RecoverySetVerifier.DescribeArtifactAsync(path, artifact.Name, token));
+        File.Delete(Path.Combine(path, RecoveryManifest.FileName));
+        var rehashed = manifest with { Artifacts = artifacts };
+        await RecoverySetVerifier.WriteManifestAsync(path, rehashed, token);
+        return rehashed;
+    }
 
     private async Task<RecoveryManifest> VerifyAsync(StorageInstallation installation, string path,
         CancellationToken token)

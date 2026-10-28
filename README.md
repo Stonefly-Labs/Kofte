@@ -110,6 +110,16 @@ intent, key-inventory and committed-result journals under verified exclusive
 authority. Complete conflicting/unknown/invalid journals remain refused and
 unchanged. All sixteen SQLite restore cases pass; staging-key interruption and
 new PostgreSQL journal evidence remain pending.
+Stopped preparation now also resumes an owned preparing ring after an empty or
+half-flushed pending owner inventory, preserving its ring and complete key bytes.
+Six real worker-kill boundaries pass on SQLite and an isolated native PostgreSQL
+17.9 cluster. Ready rings and complete invalid/foreign pending owners remain
+unrepairable. Partial initial owner/key writes and full owned-image PostgreSQL
+recovery proof remain open. Five new SQLite negatives verify actual rehashed
+constraint/history tampering and missing module-bearing artifacts are refused.
+Published `ec01770` both-provider recovery passes; its integration, contract and
+failure-propagation jobs still fail. Initial login now has concrete 503-versus-303
+evidence, not a diagnosed cause or a passing full matrix.
 Hosted `49ef96e`
 enrollment-replacement login fails at its callback
 assertion; the focused SQLite reproduction passes, without establishing a cause

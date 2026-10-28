@@ -311,10 +311,10 @@ internal sealed class IdentityKeys : IDisposable
                 repository.WriteOwner(new(installationId, repository.ringId, repository.Mode, repository.Protection,
                     "preparing", new(StringComparer.Ordinal)), initial: true);
             }
-            var owner = repository.ReadOwner();
+            var (owner, ownerBytes) = repository.ReadOwner();
             if (restoreRingId is { } expected && owner.RingId != expected) throw Invalid();
             repository.ringId = owner.RingId;
-            if (owner.State == "preparing") repository.Resume(owner, budget);
+            if (owner.State == "preparing") repository.Resume(owner, ownerBytes, budget);
             else _ = repository.Read(budget);
             authority();
             return repository;
@@ -333,10 +333,11 @@ internal sealed class IdentityKeys : IDisposable
                 var owner = Read(budget).Owner;
                 if (owner.State != "preparing" || owner.Keys.Count == 0) throw Invalid();
                 WriteOwner(owner with { State = "ready" });
+                IdentityDiagnostics.Checkpoint("key_ready");
             }
         }
 
-        private void Resume(Owner owner, OperationBudget budget)
+        private void Resume(Owner owner, byte[] ownerBytes, OperationBudget budget)
         {
             var files = Entries();
             foreach (var entry in owner.Keys)
@@ -359,10 +360,25 @@ internal sealed class IdentityKeys : IDisposable
             }
             if (files.Contains(NextName, StringComparer.Ordinal))
             {
-                var next = ParseOwner(ReadFile(Path.Combine(directory, NextName)));
-                if (next.RingId != owner.RingId || next.Keys.Any(entry =>
-                    !owner.Keys.TryGetValue(entry.Key, out var hash) || hash != entry.Value)) throw Invalid();
-                Effect(() => File.Delete(Path.Combine(directory, NextName)));
+                var path = Path.Combine(directory, NextName);
+                var bytes = ReadFile(path, allowEmpty: true);
+                bool incomplete;
+                try { incomplete = IdentityRestoreQuarantine.IsIncompleteJournal(bytes); }
+                catch (StorageException error) when (error.Code == Kofte.Platform.Modules.Storage.StorageCode.Corrupt)
+                { throw Invalid(); }
+                if (!incomplete)
+                {
+                    var next = ParseOwner(bytes);
+                    if (next.RingId != owner.RingId || next.Keys.Any(entry =>
+                        !owner.Keys.TryGetValue(entry.Key, out var hash) || hash != entry.Value)) throw Invalid();
+                }
+                else IdentityDiagnostics.Checkpoint("key_pending_incomplete");
+                Effect(() =>
+                {
+                    if (!ReadFile(OwnerPath).AsSpan().SequenceEqual(ownerBytes) ||
+                        !ReadFile(path, allowEmpty: true).AsSpan().SequenceEqual(bytes)) throw Invalid();
+                    File.Delete(path);
+                });
                 changed = true;
             }
             if (changed) WriteOwner(owner);
@@ -422,6 +438,7 @@ internal sealed class IdentityKeys : IDisposable
                     var bytes = Utf8.GetBytes(wrapper.ToString(SaveOptions.DisableFormatting));
                     _ = ReadKey(bytes, name, owner);
                     WriteNew(Path.Combine(directory, name), bytes);
+                    IdentityDiagnostics.Checkpoint("key_material_written");
                     owner.Keys.Add(name, Hash(bytes));
                     WriteOwner(owner);
                     _ = Read(preparationBudget);
@@ -430,10 +447,11 @@ internal sealed class IdentityKeys : IDisposable
             }
         }
 
-        private Owner ReadOwner()
+        private (Owner Owner, byte[] Bytes) ReadOwner()
         {
             Paths.ValidateRoot(directory, allowMissing: false);
-            return ParseOwner(ReadFile(OwnerPath));
+            var bytes = ReadFile(OwnerPath);
+            return (ParseOwner(bytes), bytes);
         }
 
         private Owner ParseOwner(byte[] bytes)
@@ -517,11 +535,11 @@ internal sealed class IdentityKeys : IDisposable
             return field.GetString()!;
         }
 
-        private static byte[] ReadFile(string path)
+        private static byte[] ReadFile(string path, bool allowEmpty = false)
         {
             Paths.ValidateFile(path);
             using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-            if (stream.Length is < 1 or > MaximumFileBytes) throw Invalid();
+            if (stream.Length < (allowEmpty ? 0 : 1) || stream.Length > MaximumFileBytes) throw Invalid();
             var bytes = new byte[MaximumFileBytes + 1];
             var total = 0;
             while (total < bytes.Length)
@@ -530,7 +548,7 @@ internal sealed class IdentityKeys : IDisposable
                 if (count == 0) break;
                 total += count;
             }
-            if (total is < 1 or > MaximumFileBytes) throw Invalid();
+            if (total < (allowEmpty ? 0 : 1) || total > MaximumFileBytes) throw Invalid();
             return bytes[..total];
         }
 
@@ -548,16 +566,21 @@ internal sealed class IdentityKeys : IDisposable
                 keys = owner.Keys
             });
             if (bytes.Length > MaximumFileBytes) throw Invalid();
-            if (initial) WriteNew(OwnerPath, bytes);
+            if (initial)
+            {
+                WriteNew(OwnerPath, bytes);
+                IdentityDiagnostics.Checkpoint("key_owner_created");
+            }
             else
             {
                 var next = Path.Combine(directory, NextName);
-                WriteNew(next, bytes);
+                WriteNew(next, bytes, "key_inventory_partial");
+                IdentityDiagnostics.Checkpoint("key_inventory_written");
                 Effect(() => File.Move(next, OwnerPath, overwrite: true));
             }
         }
 
-        private void WriteNew(string path, byte[] bytes)
+        private void WriteNew(string path, byte[] bytes, string? partialCheckpoint = null)
         {
             if (bytes.Length is < 1 or > MaximumFileBytes) throw Invalid();
             Effect(() =>
@@ -572,7 +595,18 @@ internal sealed class IdentityKeys : IDisposable
                     Share = FileShare.None,
                     UnixCreateMode = Paths.FileMode
                 });
-                stream.Write(bytes);
+                if (partialCheckpoint is not null)
+                {
+                    IdentityDiagnostics.Checkpoint("key_inventory_empty");
+                    var split = bytes.Length / 2;
+                    stream.Write(bytes.AsSpan(0, split));
+                    stream.Flush(flushToDisk: true);
+                    IdentityDiagnostics.Checkpoint(partialCheckpoint);
+                    preparationBudget?.Check();
+                    IdentityDiagnostics.Current?.Budget.Check();
+                    stream.Write(bytes.AsSpan(split));
+                }
+                else stream.Write(bytes);
                 stream.Flush(flushToDisk: true);
                 Paths.ValidateFile(path);
             });

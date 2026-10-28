@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Runtime.Versioning;
@@ -209,6 +210,8 @@ public sealed class IdentityKeysTests : IDisposable
     [InlineData("key-symlink")]
     [InlineData("marker-symlink")]
     [InlineData("key-hardlink")]
+    [InlineData("pending-owner")]
+    [InlineData("empty-pending-owner")]
     public async Task InvalidReadyRingsAreNeverRepairedEvenByPrepare(string damage)
     {
         using var configuration = Configuration();
@@ -291,6 +294,65 @@ public sealed class IdentityKeysTests : IDisposable
         var before = Snapshot();
         await RejectPrepare(configuration);
         Assert.Equal(before, Snapshot());
+    }
+
+    [Theory]
+    [InlineData("unknown")]
+    [InlineData("foreign-ring")]
+    [InlineData("foreign-installation")]
+    [InlineData("wrong-key-hash")]
+    [InlineData("invalid-json")]
+    public async Task PreparingStateNeverDiscardsACompleteOrInvalidPendingOwner(string fault)
+    {
+        using var configuration = Configuration();
+        await Prepare(configuration);
+        var next = ReadMarker();
+        var owner = ReadMarker();
+        owner["state"] = "preparing";
+        owner["keys"] = new JsonObject();
+        File.WriteAllText(Marker, owner.ToJsonString());
+        if (fault == "unknown") next["unexpected"] = true;
+        if (fault == "foreign-ring") next["ringId"] = Guid.NewGuid().ToString("D");
+        if (fault == "foreign-installation") next["installationId"] = Guid.NewGuid().ToString("D");
+        if (fault == "wrong-key-hash") next["keys"]![Path.GetFileName(Assert.Single(KeyFiles()))] = new string('0', 64);
+        PrivateTestFiles.WriteNew(Path.Combine(Ring, "identity-owner.next"),
+            System.Text.Encoding.UTF8.GetBytes(fault == "invalid-json" ? "{\"version\":!" : next.ToJsonString()));
+        var before = Snapshot();
+        await RejectPrepare(configuration);
+        Assert.Equal(before, Snapshot());
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task PreparingStateRefusesCleanupWhenTheOwnerOrPendingBytesChange(bool changeOwner)
+    {
+        using var configuration = Configuration();
+        await Prepare(configuration);
+        var owner = ReadMarker();
+        owner["state"] = "preparing";
+        File.WriteAllText(Marker, owner.ToJsonString());
+        var pending = Path.Combine(Ring, "identity-owner.next");
+        PrivateTestFiles.WriteNew(pending, "{"u8);
+        string? changed = null;
+        using var observation = IdentityDiagnostics.Begin(IdentityAction.Prepare, "development", "sqlite",
+            TimeSpan.FromSeconds(10), Token, _ => { });
+        using var listener = new ActivityListener
+        {
+            ShouldListenTo = source => source.Name == "Kofte.Identity",
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllData,
+            ActivityStopped = activity =>
+            {
+                if (activity.OperationName != "identity.key_pending_incomplete" ||
+                    !ReferenceEquals(IdentityDiagnostics.Current, observation)) return;
+                File.AppendAllText(changeOwner ? Marker : pending, "\n");
+                changed = Snapshot();
+            }
+        };
+        ActivitySource.AddActivityListener(listener);
+        observation.Fail(await RejectPrepare(configuration));
+        Assert.NotNull(changed);
+        Assert.Equal(changed, Snapshot());
     }
 
     [Fact]
@@ -376,6 +438,10 @@ public sealed class IdentityKeysTests : IDisposable
             case "corrupt-key": File.WriteAllText(key, "<malformed"); return;
             case "tampered-key": File.AppendAllText(key, " "); return;
             case "extra-file": PrivateTestFiles.WriteNew(Path.Combine(Ring, "extra"), [1]); return;
+            case "pending-owner":
+                PrivateTestFiles.WriteNew(Path.Combine(Ring, "identity-owner.next"), "{"u8); return;
+            case "empty-pending-owner":
+                PrivateTestFiles.WriteNew(Path.Combine(Ring, "identity-owner.next"), []); return;
             case "foreign-installation": marker["installationId"] = Guid.NewGuid().ToString("D"); break;
             case "foreign-purpose": marker["purpose"] = "different"; break;
             case "unknown-marker-field": marker["unknown"] = true; break;
@@ -414,7 +480,7 @@ public sealed class IdentityKeysTests : IDisposable
         using var prepared = await IdentityKeys.PrepareAsync(configuration, installationId, installation, scope, budget);
     }
 
-    private async Task RejectPrepare(IdentityConfiguration configuration)
+    private async Task<InvalidOperationException> RejectPrepare(IdentityConfiguration configuration)
     {
         var installation = StorageInstallation.Sqlite(Data);
         await using var scope = await MaintenanceScope.AcquireAsync(installation, Token);
@@ -423,6 +489,7 @@ public sealed class IdentityKeysTests : IDisposable
             IdentityKeys.PrepareAsync(configuration, installationId, installation, scope, budget));
         Assert.Equal("identity_keys_invalid", error.Message);
         Assert.Null(error.InnerException);
+        return error;
     }
 
     private static void Reject(Action operation)

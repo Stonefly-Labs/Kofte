@@ -153,6 +153,17 @@ scratch is discarded under reverified exclusive authority/current marker;
 complete unknown/conflicting/invalid state stays unchanged and refused.
 Foreign/disposed/cancelled/expired authority cannot remove pending state.
 Staging-key/remaining authority/new PostgreSQL proof is still pending.
+The next key-preparation increment reproduces and fixes interrupted pending owner
+inventory retry. Six actual worker-kill cases pass on SQLite and an isolated
+native PostgreSQL 17.9 cluster, preserving the original ring and complete keys.
+Full host units, five new actual SQLite artifact/state negatives and all sixteen
+restore-journal regressions pass. Cleanup requires a valid preparing owner,
+verified keys and unchanged owner/pending bytes under live authority; ready rings
+and complete invalid/foreign state remain refused. Partial initial owner/key
+writes and owned-image PostgreSQL execution of the new recovery negatives remain
+open. The published `ec01770` both-provider recovery job passes, but integration,
+contract and failure propagation still fail; initial-login HTTP 503 is observed
+without an established cause. Progress remains **80/100**, not feature acceptance.
 Stopped bounded `maintain` is now implemented using the existing retention
 helpers, with passing actual SQLite batch, prepared-authority and live-host
 refusal regressions. It preserves consumed designation, active sessions and

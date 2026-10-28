@@ -89,7 +89,7 @@ public sealed class IdentityRestoreQuarantine
         var next = Path.Combine(directory, FileName + ".next");
         if (!UnixStorePaths.ValidateFile(next, allowMissing: true)) return this;
         var bytes = await ReadBytesAsync(next, budget, allowEmpty: true);
-        if (Incomplete(bytes))
+        if (IsIncompleteJournal(bytes))
         {
             await VerifyCurrentAsync(budget);
             await scope.VerifyAsync(installation, budget);
@@ -259,7 +259,7 @@ public sealed class IdentityRestoreQuarantine
         return bytes;
     }
 
-    private static bool Incomplete(byte[] bytes)
+    internal static bool IsIncompleteJournal(byte[] bytes)
     {
         if (bytes.Length == 0) return true;
         if (bytes[0] != '{') throw new StorageException(StorageCode.Corrupt);

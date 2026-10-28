@@ -98,6 +98,70 @@ public abstract class IdentityPreparationTests
             "SELECT correlation_id FROM {0}__kofte_identity_events"));
     }
 
+    [Theory]
+    [InlineData("key_owner_created")]
+    [InlineData("key_material_written")]
+    [InlineData("key_inventory_written")]
+    [InlineData("key_ready")]
+    public Task ActualKeyPreparationResumesItsOwnedRingAfterWorkerTermination(string phase) =>
+        KeyPreparationCrashAsync(phase);
+
+    [Fact]
+    public Task ActualKeyPreparationResumesItsOwnedHalfFlushedInventory() =>
+        KeyPreparationCrashAsync("key_inventory_partial");
+
+    [Fact]
+    public Task ActualKeyPreparationResumesItsOwnedEmptyInventory() =>
+        KeyPreparationCrashAsync("key_inventory_empty");
+
+    private async Task KeyPreparationCrashAsync(string phase)
+    {
+        await using var fixture = await IdentityFixture.CreateAsync(Provider, Token);
+        Configure(fixture);
+        Assert.Equal(0, await RunAsync(fixture, "--registry", "upgrade"));
+        var barrier = new IdentityCommitBarrier(fixture.PrivateDirectory, phase, maintenanceChild: true);
+        await using (var interrupted = fixture.Start(["--identity", "prepare"], barrier: barrier))
+        {
+            await barrier.WaitAsync(fixture.Storage.Token);
+            using var worker = Process.GetProcessById(barrier.ObservedProcessId!.Value);
+            worker.Kill(entireProcessTree: true);
+            await worker.WaitForExitAsync(fixture.Storage.Token);
+            Assert.NotEqual(0, (await interrupted.WaitAsync(fixture.Storage.Token)).ExitCode);
+            Assert.True(interrupted.ExitVerified && interrupted.DescendantExitsVerified);
+        }
+        Assert.Equal(1L, Convert.ToInt64(await ScalarAsync(fixture,
+            "SELECT registry_version FROM {0}__kofte_installation"), CultureInfo.InvariantCulture));
+        var marker = Path.Combine(fixture.KeyRingDirectory, "identity-owner.json");
+        using var owner = JsonDocument.Parse(await File.ReadAllBytesAsync(marker, Token));
+        var ringId = owner.RootElement.GetProperty("ringId").GetGuid();
+        Assert.NotEqual(Guid.Empty, ringId);
+        Assert.Equal(phase == "key_ready" ? "ready" : "preparing",
+            owner.RootElement.GetProperty("state").GetString());
+        var material = Directory.GetFiles(fixture.KeyRingDirectory, "key-*.xml")
+            .ToDictionary(path => Path.GetFileName(path), File.ReadAllBytes, StringComparer.Ordinal);
+        Assert.Equal(phase == "key_owner_created" ? 0 : 1, material.Count);
+        if (phase is "key_inventory_partial" or "key_inventory_empty")
+            Assert.ThrowsAny<JsonException>(() => JsonDocument.Parse(
+                File.ReadAllBytes(Path.Combine(fixture.KeyRingDirectory, "identity-owner.next"))));
+        var retry = await RunOutputAsync(fixture, "--identity", "prepare");
+        Assert.True(retry.ExitCode == 0, retry.Stdout + retry.Stderr);
+        using var ready = JsonDocument.Parse(await File.ReadAllBytesAsync(marker, Token));
+        Assert.Equal(ringId, ready.RootElement.GetProperty("ringId").GetGuid());
+        Assert.Equal("ready", ready.RootElement.GetProperty("state").GetString());
+        Assert.Single(Directory.GetFiles(fixture.KeyRingDirectory, "key-*.xml"));
+        Assert.False(File.Exists(Path.Combine(fixture.KeyRingDirectory, "identity-owner.next")));
+        foreach (var file in material)
+            Assert.Equal(file.Value, await File.ReadAllBytesAsync(Path.Combine(fixture.KeyRingDirectory, file.Key), Token));
+        Assert.Equal(2L, Convert.ToInt64(await ScalarAsync(fixture,
+            "SELECT registry_version FROM {0}__kofte_installation"), CultureInfo.InvariantCulture));
+        Assert.Equal(1L, await ScalarAsync(fixture, "SELECT security_revision FROM {0}__kofte_identity_metadata"));
+        Assert.Equal(1L, await ScalarAsync(fixture, "SELECT COUNT(*) FROM {0}__kofte_identity_events"));
+        Assert.Equal("disabled", await ScalarAsync(fixture, "SELECT state FROM {0}__kofte_bootstrap"));
+        var before = await fixture.PersistentSnapshotAsync(Token);
+        Assert.Equal(0, await RunAsync(fixture, "--identity", "prepare"));
+        Assert.Equal(before, await fixture.PersistentSnapshotAsync(Token));
+    }
+
     [Fact]
     public async Task ExplicitPreparationRequiresRegistryUpgradeAndPreservesCurrentStateOnRetry()
     {

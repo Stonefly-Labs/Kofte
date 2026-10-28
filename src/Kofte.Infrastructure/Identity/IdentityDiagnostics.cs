@@ -84,7 +84,9 @@ internal static class IdentityDiagnostics
         "restore_quarantined" or "restore_before_commit" or "restore_committed" or
         "restore_state_written" or "restore_key_copied" or
         "restore_intent_partial" or "restore_keys_partial" or "restore_result_partial" or
-        "restore_pending_incomplete" or "restore_intent_empty";
+        "restore_pending_incomplete" or "restore_intent_empty" or
+        "key_owner_created" or "key_material_written" or "key_inventory_written" or
+        "key_inventory_partial" or "key_inventory_empty" or "key_ready" or "key_pending_incomplete";
 
     internal static string ActionName(IdentityAction action) => action switch
     {

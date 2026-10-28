@@ -4527,3 +4527,81 @@ PostgreSQL baseline at **900.319 seconds** in
 harness takes **1015.810 seconds**. This assesses published `efac465`, not the
 later diagnostic/changed-gate/lost-session test increment. Full provider,
 operations and final acceptance obligations remain open.
+
+## T080/T084: actual-state negatives and interrupted key inventory
+
+Continued on the same feature branch/draft PR after published
+`ec0177013330e393984f78d74643dfd4344e53cd`; **80/100** task markers remain
+unchanged. Five inherited real-provider recovery cases now alter an actual
+format-2 CHECK constraint, migration history or consumed-bootstrap history and
+rehash artifacts, or remove a module-bearing artifact with/without removing its
+manifest entry. Verification must refuse, preserving exact manifest/remaining
+artifact bytes and the separately retained removed artifact. SQLite passes all
+five. The initial missing-artifact test instead failed fixture setup because its
+private retained directory did not yet exist; that fixture error was corrected.
+No initial product red is claimed for existing tamper refusal.
+
+Real stopped-worker kills now cover owner creation, complete key material,
+complete/half-flushed/empty pending owner inventory, and ready publication.
+The half-flushed inventory genuinely prevented explicit retry before the fix:
+`recovery-sqlite-da31af1a52954fabaa3e5d3470752369.json`. Recovery now requires
+an already valid owned preparing ring, verifies recorded hashes and complete
+unrecorded key XML, and reuses the quarantine's bounded JSON-prefix classifier.
+Only incomplete unpublished owner inventory can be removed after live authority
+and exact unchanged owner/pending-byte checks. Complete invalid/unknown/foreign/
+hash-conflicting owners remain refused. Ready rings are never repaired.
+
+Two new cleanup-interference tests initially failed because their diagnostic
+observation disposed with a default success outcome after catching an expected
+uncertain refusal (`unit-sqlite-2479a36445b1464eb5bfd6c05ce99d80.json`).
+The diagnostic validator correctly refused that contradictory record. The tests
+now select the actual expected failure before disposal and correlate their hook
+with the ambient observation. Both pass; this was a new test-harness error,
+not a product diagnostic fix. Full host units subsequently pass.
+
+Fresh final SQLite report
+`recovery-sqlite-a20072169b0646da8b5377334563e4dc.json` passes every command:
+
+```bash
+dotnet build Kofte.slnx --no-restore -c Release -warnaserror --nologo
+dotnet test --project tests/unit/Kofte.Host.Tests --no-restore --no-build -c Release --minimum-expected-tests 1
+dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityPreparationTests' --filter-method '*ActualKeyPreparation*' --minimum-expected-tests 6
+dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityRecoveryTests' '*SqliteRecoveryDiagnosticsTests' --minimum-expected-tests 25
+dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityPreparationTests' --filter-method '*ActualRestoreCommand*' '*LegacyRestore*' --minimum-expected-tests 16
+dotnet format Kofte.slnx --verify-no-changes --no-restore
+```
+
+The six actual crash cases also pass with `*PostgresIdentityPreparationTests`
+and the same method filter/minimum in
+`recovery-postgres-0d5c6bfddebb43c2be6bc29447a145eb.json`. This used an isolated
+loopback PostgreSQL **17.9**, built under ignored toolchain storage from the
+official SHA-256-verified source after native tools were found missing. Its
+private cluster/PID/port readiness and clean shutdown were verified; no shared
+service or Homebrew dependency was changed. Earlier native recovery/key attempts
+fail because backup/restore explicitly requires the owned pinned Docker image,
+and one key case additionally encounters intermittent worker readiness. These
+are not backup/restore passes; the guard is unchanged. Current new artifact
+negatives still need owned-image PostgreSQL execution.
+
+Native failure extraction also now admits uppercase characters before the
+existing exact code allowlist, retaining source-known CamelCase transport
+categories instead of silently losing them. The updated verifier regression
+genuinely fails before that fix, then passes; unknown canaries stay discarded.
+Repository checker, complete **133 Python tests** and whitespace checks pass.
+No migration, dependency, deadline, retry, concurrency, reviewer checklist or
+task marker changed. Partial initial owner/key XML writes and the remaining
+operations/full-gate obligations are not claimed solved.
+
+Published `ec01770` run **40713979466** completed: quality/unit/privacy/browser/
+startup/recovery pass; both integrations, contract and failure propagation fail.
+Tested merge `bc109a4f8a59564ba4c83794c4f904b07868ecde` has actual main parent
+`3e416813233c9d291eb20cf72d5882dbddf3e1b6` and the published feature parent;
+inspected OIDC/fixture/key/verifier blobs match. Both-provider recovery report
+`recovery-both-0753709e131f473480390cb264fcd53b.json` passes native/storage/
+public/composition/browser recovery on both providers. This assesses the
+published diagnostic head, not these uncommitted key/artifact additions.
+Its SQLite integration report
+`integration-sqlite-e60d04219f4540749d7e2687e65cfbe2.json` retains
+`expected_303_actual_503` for initial OIDC setup in the invalid-evidence and
+provider-failure tests. The underlying cause remains unknown; composition
+integration also fails. No unchanged passing subset is a fix or full-gate waiver.

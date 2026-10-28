@@ -871,6 +871,17 @@ tests pass; this does not prove arbitrary initial quarantine/staging-key
 corruption recoverable, waive later PostgreSQL proof or permit manual gate
 deletion.
 
+Explicit stopped preparation also resumes an existing valid `preparing` key
+owner when its private `identity-owner.next` inventory is empty or syntactically
+incomplete. Recorded key hashes and every complete unrecorded key must first
+validate against that owner. Immediately before cleanup, live authority and exact
+unchanged owner/pending bytes are required. The ring ID and complete key bytes
+are retained; complete unknown/foreign/hash-conflicting/invalid pending owners
+and any scratch in a ready ring stay refused and unchanged. Six real worker-kill
+cases pass on SQLite and a private native PostgreSQL 17.9 cluster. This is not
+recovery of a partial initial owner or partial key XML, permission to delete
+arbitrary files, or a replacement for the pinned-image backup/restore profile.
+
 Stopped prepared installations now accept `--identity maintain` through the
 same admitted host supervisor and exclusive lease. Each explicit invocation
 removes at most 128 expired session-class evidence records (at least 30 days old),
@@ -1104,6 +1115,8 @@ HTTP status assertions, never arbitrary assertion values. Fixed source-known
 identity fixture codes and closed readiness-status/worker-phase combinations
 are admitted; unknown codes are discarded. Known identity helper paths/lines
 can identify the actual failing worker boundary without exposing private paths.
+Matching preserves the source-defined case of transport exception categories
+before exact allowlist verification; a CamelCase category is not silently lost.
 `hostFailureLocations`, `storageFailureLocations` and `contractFailureLocations`
 contain project-relative `.cs` paths with positive line numbers bounded by the
 actual source file, never private checkout prefixes. Locations come only from
