@@ -7,6 +7,7 @@ using System.Text.Json.Nodes;
 using System.Xml.Linq;
 using Kofte.Host.Bootstrap;
 using Kofte.Host.Features.Identity;
+using Kofte.TestSupport.Identity;
 using Kofte.Infrastructure.Storage;
 using Kofte.Infrastructure.Identity;
 using Kofte.TestSupport;
@@ -318,20 +319,7 @@ public sealed class IdentityKeysTests : IDisposable
         Assert.Equal(before, Snapshot());
     }
 
-    private void AgeKey(DateTimeOffset expiry)
-    {
-        var file = Assert.Single(KeyFiles());
-        var xml = XElement.Load(file);
-        var key = xml.Element("key")!;
-        key.Element("creationDate")!.Value = expiry.AddDays(-90).ToString("O");
-        key.Element("activationDate")!.Value = expiry.AddDays(-90).ToString("O");
-        key.Element("expirationDate")!.Value = expiry.ToString("O");
-        File.WriteAllText(file, xml.ToString(SaveOptions.DisableFormatting));
-        var marker = ReadMarker();
-        marker["keys"]![Path.GetFileName(file)] =
-            Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(file)));
-        File.WriteAllText(Marker, marker.ToJsonString());
-    }
+    private void AgeKey(DateTimeOffset expiry) => IdentityKeyFixture.AgeRetainedKey(Ring, expiry);
 
     private void Damage(string damage)
     {

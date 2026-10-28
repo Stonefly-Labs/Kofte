@@ -333,12 +333,13 @@ public sealed class LoginCommitFixture : IAsyncDisposable
     public string? ProductFailure { get; private set; }
     public string ProductCookieHeader => cookies.GetCookieHeader(configuration.PublicOrigin);
     public int UngrantedActions => Volatile.Read(ref ungrantedActions);
+    public int RetainedKeyCount => Directory.GetFiles(configuration.KeyRingDirectory, "key-*.xml").Length;
 
     public void FailSignOutCommit(bool afterCommit) =>
         signOutFailurePhase = afterCommit ? "sign_out_committed" : "sign_out_before_commit";
 
     public async Task<HttpResponseMessage> SendProductAsync(HttpRequestMessage request, CancellationToken token,
-        bool includeCookies = true)
+        bool includeCookies = true, bool adapted = false)
     {
         var origin = new Uri(configuration.PublicOrigin, request.RequestUri!);
         if (includeCookies)
@@ -346,7 +347,15 @@ public sealed class LoginCommitFixture : IAsyncDisposable
             var cookie = cookies.GetCookieHeader(origin);
             if (cookie.Length != 0) request.Headers.Add("Cookie", cookie);
         }
-        var response = await client.SendAsync(request, token);
+        var transport = client;
+        if (adapted)
+        {
+            if (browserIngress is null || request.RequestUri!.IsAbsoluteUri)
+                throw new InvalidOperationException("identity_fixture_adapter_required");
+            request.RequestUri = new(browserIngress.Origin, request.RequestUri);
+            transport = providerClient;
+        }
+        var response = await transport.SendAsync(request, token);
         if (response.Headers.TryGetValues("Set-Cookie", out var values))
             foreach (var value in values) cookies.SetCookies(origin, value);
         return response;
@@ -642,6 +651,14 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         await StopProductAsync(token);
         await RunIdentityOperatorAsync(["revoke-sessions"], token);
         await StartWorkerAsync("--fixture-product-login", client.BaseAddress!.Port, token);
+    }
+
+    public async Task<int> RotateRetainedKeysAsync(CancellationToken token)
+    {
+        await StopProductAsync(token);
+        IdentityKeyFixture.AgeRetainedKey(configuration.KeyRingDirectory, DateTimeOffset.UtcNow.AddDays(-1));
+        await StartWorkerAsync("--fixture-product-login", client.BaseAddress!.Port, token);
+        return worker!.Id;
     }
 
     public async Task CorruptCurrentTicketAsync(CancellationToken token)

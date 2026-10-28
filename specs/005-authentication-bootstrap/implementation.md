@@ -2673,3 +2673,97 @@ browser job. No deadline, TLS verification or cleanup requirement was relaxed.
 rotation/corruption, both-provider and successful public/browser prerequisites.
 T071–T100 retain development, operational/recovery and final obligations.
 Publishing this increment is not stage completion, acceptance or a merge request.
+
+## US3 follow-up: hosted session proof and actual HTTPS parity
+
+Published `2852371c1fad2d93d0dac3b703a47ae6e3592f6b`, product run
+`40655171161`, browser job `122704340561`, passes **all ten** required HTTPS
+recipes: five scenarios on each real provider. Completed job logs were
+captured privately and independently checked against the exact provider,
+scenario and ordered observation lists, without publishing private redirects
+or tokens. Both `session-boundary` executions pass nineteen named observations,
+including the ordinary and designated separately compiled actor comparisons,
+ungranted-action denial, renewal/sign-out race, next-request denial and full
+browser expiry/lost-acknowledgement/two-user flow. This supersedes pending
+hosted evidence, not the retained local pre-login failure or its unknown cause.
+
+The same head's repository run `40655170711` passes. At the latest observation,
+quality, unit, both complete provider integrations, privacy, browser and startup
+pass; recovery, contract and failure-propagation are still running.
+Neither the full product matrix nor current uncommitted follow-up is called
+green from that observation.
+
+### Further independent boundary regressions
+
+The fixture now sends to either native hosting or its fixed owned HTTPS
+ingress, which runs the actual production-built Next routes and native host.
+It uses the issuer-trusting HTTP client with manual cookies/no redirects;
+it rejects arbitrary absolute adapter targets. No browser launch, mock fetch,
+test principal, production TLS bypass or production probe is introduced.
+
+Four SQLite parity cases now run together and pass:
+
+- The same real cookie yields exact ordinary and freshly designated identity
+  through native `/me`, HTTPS Next `/me` and the separately compiled actor.
+  Actual stopped nomination and protected adapted enrollment/sign-out preserve
+  the exact user, mapping, consumed ceremony and terminal events.
+- The actual independently signed ID token emitted during successful native
+  login is refused as an API bearer credential, with and without the cookie.
+  Basic credentials, spoofed identity/proxy headers, body/query identity,
+  incorrect method and missing/null/foreign Origin cannot authorize effects.
+  The token remains memory-only and is never included in public evidence.
+- Removing warmed retained keys returns fixed private 503, not anonymous 401
+  or cached identity, through both native and actual HTTPS Next requests.
+- Unknown identity and version paths return empty private 404 for GET, POST,
+  HEAD and OPTIONS, with no redirect/cookie or owner-state changes. The first
+  actual test was red (`contract-sqlite-b9bba7297e6444fd88ad9dcfdc340c04.json`).
+  A fixed deny-only Next `[...unsupported]` handler now preserves this boundary;
+  it never forwards, authenticates or reads configuration. Existing exact
+  routes take precedence. The production web build and complete four-case
+  selection pass after that correction.
+
+Two additional native SQLite session cases also pass: the original cookie
+survives ordinary retained-key rotation across two distinct fresh worker
+processes, retaining two keys and exact identity/epoch/events; and a genuine
+stored Development cookie cannot authenticate production, even when renamed
+and accompanied by spoofed mode/administrator headers. The original valid
+production cookie continues to identify its original ordinary user. These are
+not the positive Development-login endpoint or complete persisted-mode
+transition required later.
+
+The key-aging simulation extracts the existing test-only unit helper, preserves
+key material/ID and updates only the stopped fixture's dates/owner digest.
+All twenty-seven original key units still pass. No operator repair API or
+serving-time key regeneration was added.
+
+### Executed verification and retained failures
+
+All native commands use isolated SDK 10.0.402/runtime 10.0.13. Focused native
+test commands run through the existing owned `verify.Runner` with private
+xUnit XML and safe failure-name projection. No install or restore occurred.
+
+| Exact command | Result |
+| --- | --- |
+| `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityParityTests' --minimum-expected-tests 4` | Final four passed together, safe report `contract-sqlite-49a13d272e0144adb4835611c7d3e589.json`. |
+| Same project/class with `--filter-method '*ActualNativeAndHttpsAdapterRefuse*' --minimum-expected-tests 1` | Passed after using the actual issued signed ID token, report `contract-sqlite-a87ce792d8da49d297f3b143001e6b8f.json`, 11.371s. |
+| Same project with `--filter-class '*SqliteSignOutContractTests' --filter-method '*ActualDevelopmentCookie*' --minimum-expected-tests 1` | Passed, report `contract-sqlite-fbcfaab23fcf4684b8cf61780e829aa7.json`, 5.424s. |
+| Original three SQLite parity cases, actual worker-rotation case and twenty-seven key units | Passed in report `contract-sqlite-87abc730a4fc43f2bf780cf67f38aa52.json`, 29.908s; not a claimed combined twenty-two-session-case run. |
+| `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore --no-build -c Release --filter-class '*PostgresIdentityParityTests' --filter-method '*WarmedIdentityCannotBecome*' --minimum-expected-tests 1` | Failed, report `contract-postgres-efc8e7e2004648ea96f9461b9e75be35.json`, 2.612s, with explicit disposable admission. No new PostgreSQL parity success or exact cause is established. Earlier local network-pool exhaustion remains recorded; no shared resources were pruned. |
+| `dotnet build tests/contract/Kofte.Platform.ContractTests --no-restore -c Release -warnaserror --nologo` | Passed, zero warnings/errors. |
+| `dotnet format Kofte.slnx --no-restore --verify-no-changes --verbosity minimal` | Passed. |
+| `npm run build --workspace apps/web` | Passed with the exact identity routes and deny-only unsupported handler. |
+| `npm run typecheck --workspace apps/web`; `npm run lint --workspace apps/web`; `npm run format:check` | Passed. |
+| `python3 scripts/check_repository.py`; `python3 -m unittest discover -s scripts/tests -v`; `git diff --check` | Passed; 128 Python tests. |
+
+The initial parity selection failed only its incorrectly spelled expected
+enrollment event (`initial_admin_enrolled`); the test was corrected to the
+fixed contract's `initial_administrator_enrolled`, then passed. Extracting the
+shared fixture initially missed a unit-test namespace import; normal import
+correction restored the full solution build. Neither initial failure is a
+product outage or passing evidence. The earlier red unknown-route selection
+and actual local/hosted failures remain retained.
+
+**Progress remains T001–T055, 55/100.** Full independent TypeScript corpus,
+remaining request/session/composed-host coverage and both-provider evidence
+still gate T056–T070. Continue implementation on the original branch/draft PR;
+there is no stage transition, feature acceptance or merge request.

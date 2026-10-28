@@ -19,7 +19,14 @@ US3 sign-out/session parity is in progress: native durable revocation, exact
 Next/UI clearing and generated contracts are delivered, with twenty focused
 SQLite cases passing in two selections. Missing live keys now produce 503,
 not anonymous identity. The actual browser session journey still fails locally
-before login after verified TLS trust; both-provider hosted execution is wired.
+before login after verified TLS trust. Published `2852371` now passes all ten
+hosted HTTPS recipes, including both stores' session-boundary journeys with
+nineteen named observations each. Four additional actual HTTPS SQLite parity
+cases pass after fixing unknown identity/version responses to private empty
+404s without forwarding. Actual retained-key rotation across two fresh workers
+and actual development-cookie production refusal also pass. A fresh local
+PostgreSQL attempt fails before that new parity evidence can be established;
+it is not a passing counterpart or a diagnosis of the earlier network-pool limit.
 US3 tasks, development sessions, recovery and final gates remain unfinished. The
 [implementation record](../../specs/005-authentication-bootstrap/implementation.md)
 preserves the initial 404/SAML failures and their resolved provenance proof.

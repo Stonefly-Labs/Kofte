@@ -45,8 +45,15 @@ Twenty SQLite session/sign-out cases pass in a nineteen-case selection plus
 the new concurrent-sign-out case; 77 adapter/UI tests pass. A live key-loss
 regression exposed framework decoding that hid unavailable keys as anonymous;
 the corrected boundary returns 503. The new actual browser session journey
-still fails locally before login, after TLS trust, and now runs in hosted CI
-for both stores. US3 prerequisites and PostgreSQL evidence remain open, so
+still fails locally before login, after TLS trust; the published hosted job
+now passes all ten HTTPS recipes, including the complete session journey on
+both stores. Four additional SQLite live HTTPS parity cases pass, covering
+exact ordinary/designated actor identity, actual signed-ID-token refusal,
+unavailable keys and private empty unknown-route responses. Retained-key
+rotation across two fresh workers and actual development-cookie refusal also
+pass locally. The unknown-route regression exposed and corrected Next's
+response mismatch with a deny-only 404 handler, never catch-all forwarding.
+US3 prerequisites and full PostgreSQL evidence remain open, so
 no additional task is marked complete. The
 [implementation checkpoint](specs/005-authentication-bootstrap/implementation.md)
 records actual OIDC dependency adoption and locked inventory (403 npm / 87

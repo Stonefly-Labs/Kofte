@@ -77,6 +77,7 @@ public sealed class OidcIssuer : IAsyncDisposable
     public Func<string, CancellationToken, Task>? BeforeResponse { get; set; }
     public Func<string, HttpContext, IResult?>? ResponseOverride { get; set; }
     public int TokenRequests => Volatile.Read(ref tokenRequests);
+    public string? IssuedIdToken { get; private set; }
     public IReadOnlyList<string> Observations => observations.ToArray();
     public string AuthorityCertificatePem => authority.ExportCertificatePem();
     internal X509Certificate2 ServerCertificate => serverCertificate;
@@ -249,12 +250,13 @@ public sealed class OidcIssuer : IAsyncDisposable
             !CryptographicOperations.FixedTimeEquals(Encoding.ASCII.GetBytes(authorization.Challenge),
                 Encoding.ASCII.GetBytes(Base64Url(SHA256.HashData(Encoding.ASCII.GetBytes(verifier))))))
             return OAuthFailure("invalid_grant");
+        IssuedIdToken = Sign(authorization.Nonce);
         return Results.Json(new
         {
             token_type = "Bearer",
             access_token = Base64Url(RandomNumberGenerator.GetBytes(32)),
             expires_in = 300,
-            id_token = Sign(authorization.Nonce)
+            id_token = IssuedIdToken
         });
     }
 

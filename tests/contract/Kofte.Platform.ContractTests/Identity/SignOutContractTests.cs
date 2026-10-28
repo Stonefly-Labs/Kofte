@@ -36,6 +36,89 @@ public abstract class SignOutContractTests
     }
 
     [Fact]
+    public async Task ActualDevelopmentCookieCannotAuthenticateProductionEvenAfterRenamingItsCookie()
+    {
+        await using var production = await LoginCommitFixture.CreateProductAsync(Provider, Token);
+        await using var development = await LoginCommitFixture.CreateAsync(Provider, Token,
+            productRoutes: true, development: true);
+        var developmentUser = await development.CreateStoredDevelopmentSessionAsync(Token);
+        using (var request = new HttpRequestMessage(HttpMethod.Get, "/api/identity/v1/me"))
+        using (var response = await development.SendProductAsync(request, Token))
+        {
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            using var body = JsonDocument.Parse(await response.Content.ReadAsByteArrayAsync(Token));
+            Assert.Equal(developmentUser, body.RootElement.GetProperty("userId").GetGuid());
+            Assert.Equal("development", body.RootElement.GetProperty("identityMode").GetString());
+        }
+        await LoginAsync(production);
+        var before = await production.SnapshotAsync(Token);
+        var originalCookie = production.ProductCookieHeader;
+        var developmentCookie = development.ProductCookieHeader;
+        Assert.StartsWith("kofte-dev-session=", developmentCookie);
+        foreach (var cookie in new[] { developmentCookie,
+            developmentCookie.Replace("kofte-dev-session=", "__Host-kofte-session=", StringComparison.Ordinal) })
+            foreach (var path in new[] { "/api/identity/v1/me", "/fixture-actor" })
+            {
+                using var request = new HttpRequestMessage(HttpMethod.Get, path);
+                request.Headers.Add("Cookie", cookie);
+                request.Headers.Add("X-Identity-Mode", "development");
+                request.Headers.Add("X-Initial-Administrator", "true");
+                using var response = await production.SendProductAsync(request, Token, includeCookies: false);
+                Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+                Assert.Null(response.Headers.Location);
+            }
+        using (var request = new HttpRequestMessage(HttpMethod.Get, "/api/identity/v1/me"))
+        {
+            request.Headers.Add("Cookie", originalCookie);
+            using var response = await production.SendProductAsync(request, Token, includeCookies: false);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            using var body = JsonDocument.Parse(await response.Content.ReadAsByteArrayAsync(Token));
+            Assert.Equal(Assert.Single(before.Users).Id, body.RootElement.GetProperty("userId").GetGuid());
+            Assert.False(body.RootElement.GetProperty("isInitialAdministrator").GetBoolean());
+        }
+        var after = await production.SnapshotAsync(Token);
+        Assert.Equal(before.Users, after.Users);
+        Assert.Equal(before.Mappings, after.Mappings);
+        Assert.Equal(before.Events, after.Events);
+        Assert.Equal(before.Epoch, after.Epoch);
+        Assert.Equal("active", Assert.Single(after.Sessions).State);
+    }
+
+    [Fact]
+    public async Task NormalRetainedKeyRotationAndFreshWorkersPreserveTheOriginalCookieAndDurableIdentity()
+    {
+        await using var fixture = await LoginCommitFixture.CreateProductAsync(Provider, Token);
+        await LoginAsync(fixture);
+        var before = await fixture.SnapshotAsync(Token);
+        var user = Assert.Single(before.Users);
+        Assert.Equal(1, fixture.RetainedKeyCount);
+        var firstWorker = await fixture.RotateRetainedKeysAsync(Token);
+        for (var restart = 0; restart < 2; restart++)
+        {
+            foreach (var path in new[] { "/api/identity/v1/me", "/fixture-actor" })
+            {
+                using var request = new HttpRequestMessage(HttpMethod.Get, path);
+                using var response = await fixture.SendProductAsync(request, Token);
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                using var document = JsonDocument.Parse(await response.Content.ReadAsByteArrayAsync(Token));
+                Assert.Equal(user.Id, document.RootElement.GetProperty("userId").GetGuid());
+                Assert.Equal("oidc", document.RootElement.GetProperty("identityMode").GetString());
+                Assert.False(document.RootElement.GetProperty("isInitialAdministrator").GetBoolean());
+            }
+            Assert.Equal(2, fixture.RetainedKeyCount);
+            if (restart == 0) Assert.NotEqual(firstWorker, await fixture.RestartProductAsync(Token));
+        }
+        var after = await fixture.SnapshotAsync(Token);
+        Assert.Equal(before.Epoch, after.Epoch);
+        Assert.Equal(before.Users, after.Users);
+        Assert.Equal(before.Mappings, after.Mappings);
+        Assert.Equal(before.Events, after.Events);
+        Assert.Equal(before.RegistryRevision, after.RegistryRevision);
+        Assert.Equal(Assert.Single(before.Sessions).Digest, Assert.Single(after.Sessions).Digest);
+        Assert.Equal("active", Assert.Single(after.Sessions).State);
+    }
+
+    [Fact]
     public async Task ActualStoppedEpochRevocationDeniesTheNextIdentityAndActorRequestsWithoutLosingUsers()
     {
         await using var fixture = await LoginCommitFixture.CreateProductAsync(Provider, Token);
