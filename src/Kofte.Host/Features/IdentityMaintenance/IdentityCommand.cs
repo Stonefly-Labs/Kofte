@@ -21,6 +21,7 @@ internal static class IdentityCommand
             "prepare" => IdentityOperation.Prepare,
             "reconcile-configuration" => IdentityOperation.ReconcileConfiguration,
             "revoke-sessions" => IdentityOperation.RevokeSessions,
+            "maintain" => IdentityOperation.Maintain,
             _ => throw new BootstrapException(BootstrapError.CommandInvalid)
         };
     }

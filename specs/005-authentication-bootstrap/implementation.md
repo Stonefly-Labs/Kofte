@@ -3843,3 +3843,61 @@ tests**, and `git diff --check` passes. Full Release warnings-as-errors build
 and native format verification pass. Task parsing verifies 100 unique tasks,
 79 checked and every checked prerequisite satisfied. No dependencies, locks,
 original migrations, reviewer-owned checklist or acceptance state changed.
+
+## T087: bounded stopped maintenance, provider proof in progress
+
+The actual stopped-command and provider regression tests precede implementation.
+The first build fails on the two missing `IdentityMaintenance` API references
+and a nullable test parameter; the latter is corrected in the seed SQL rather
+than weakening production parameter typing. An initial namespace-resolution
+build error is corrected with an explicit infrastructure type reference.
+
+`--identity maintain` now uses the existing admitted supervisor, exclusive
+stopped scope and 120-second/116-second envelope. The worker dispatches it and
+its fixed diagnostic action explicitly; unsupported operations cannot fall
+through to session revocation. A single native owner transaction reuses the
+existing session-evidence, login-attempt and admission cleanup helpers. Each
+category deletes at most 128 eligible rows; the command never adds a sweep,
+background job or provider request. Session evidence must be session-class and
+at least 30 days old. Attempts must be consumed or expired; windows must expire.
+The existing login/admission paths now call the extracted same SQL helpers.
+
+The inherited real-provider regression seeds 129 expired session records,
+expired pending/consumed attempts, an unexpired consumed attempt, live pending
+attempt/windows, recent session evidence, old installation evidence and the
+existing consumed designation/user/mapping/active protected session. The first
+explicit call removes exactly 384 rows, the second exactly four; only eligible
+data disappears. The independent actual security snapshot proves unchanged
+epoch, consumed generation/designation and retained live/installation counts.
+The identity revision advances transactionally; registry/module authority
+does not. Actual supervised-command execution also verifies its safe operation
+projection and prepared state. A real held host lease refuses `maintain`
+alongside the previous stopped commands without changing metadata.
+
+Final SQLite shared-regression execution passes in
+`recovery-sqlite-d67654aacc464863a6786be35aa7ed69.json`:
+
+```bash
+dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityRecoveryTests' '*RecoverySetTests' '*SqliteIdentityAdmissionTests' '*SqliteIdentityAttemptTests' '*SqliteIdentityEventTests' '*SqliteIdentityFormatTests' --minimum-expected-tests 45
+dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore --no-build -c Release --filter-class '*SqliteIdentityPreparationTests' --minimum-expected-tests 2
+```
+
+The earlier focused actual SQLite command/batch/held-host proof also passes
+in `recovery-sqlite-2a4d07f4d7294771af16e66e946f5afb.json`. That earlier
+batch corpus precedes the final additional expired-pending/unexpired-consumed
+controls. Full host unit regression execution passes in
+`unit-none-9c31d319386a468491a8698346f00c05.json`:
+
+```bash
+dotnet test --project tests/unit/Kofte.Host.Tests --no-restore --no-build -c Release --minimum-expected-tests 1
+```
+
+Full Release warnings-as-errors build and native format verification pass.
+The repository checker, exact Python discovery (132 tests) and whitespace
+check pass. These local runs exercise this increment on the `f52150f` baseline,
+not the unchanged published tree. New PostgreSQL maintenance execution is
+pending; the earlier owned-fixture creation failure remains failed and is not
+a pass or a fresh diagnosis. T087 therefore remains unchecked, progress stays
+**79/100, 21 remaining**, and the same feature branch/draft PR and running
+implement ledger continue unchanged. No dependencies, original migrations,
+reviewer-owned checklist or acceptance state changed.

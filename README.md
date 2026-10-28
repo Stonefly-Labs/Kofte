@@ -90,6 +90,11 @@ unfinished, so identity-bearing sets explicitly refuse the legacy ungated
 restore path. A fresh hosted enrollment-replacement login fails at its callback
 assertion; the focused SQLite reproduction passes, without establishing a cause
 or turning the full matrix green.
+The stopped `--identity maintain` command now reuses the bounded retention
+helpers: one at-most-128-row batch each of expired session evidence, terminal
+login attempts and expired admission windows. Actual SQLite pruning, prepared
+authority preservation and live-host refusal pass; its PostgreSQL evidence
+and T087 task closure remain pending.
 A fresh owned PostgreSQL creation probe
 confirms Docker network-pool exhaustion; no existing resources were removed.
 Native explicit Development selection now

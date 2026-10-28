@@ -263,6 +263,25 @@ public abstract class IdentityPreparationTests
     }
 
     [Fact]
+    public async Task ActualStoppedMaintenancePreservesPreparedAuthorityAndReportsItsOwnBoundedOperation()
+    {
+        await using var fixture = await IdentityFixture.CreateAsync(Provider, Token);
+        Configure(fixture);
+        Assert.Equal(0, await RunAsync(fixture, "--registry", "upgrade"));
+        Assert.Equal(0, await RunAsync(fixture, "--identity", "prepare"));
+        var epoch = await ScalarAsync(fixture, "SELECT session_epoch FROM {0}__kofte_identity_metadata");
+        var output = await RunOutputAsync(fixture, "--identity", "maintain");
+        Assert.Equal(0, output.ExitCode);
+        using var result = JsonDocument.Parse(output.Stdout);
+        Assert.Equal("maintain", result.RootElement.GetProperty("operation").GetString());
+        Assert.Equal("identity_completed", result.RootElement.GetProperty("eventCode").GetString());
+        Assert.Equal(epoch, await ScalarAsync(fixture, "SELECT session_epoch FROM {0}__kofte_identity_metadata"));
+        Assert.Equal("disabled", await ScalarAsync(fixture, "SELECT state FROM {0}__kofte_bootstrap"));
+        Assert.Equal(1L, await ScalarAsync(fixture, "SELECT COUNT(*) FROM {0}__kofte_identity_events"));
+        Assert.Equal(0L, await ScalarAsync(fixture, "SELECT registry_revision FROM {0}__kofte_installation"));
+    }
+
+    [Fact]
     public async Task ARealHeldHostLeaseRefusesEveryStoppedCommandWithoutChangingIdentity()
     {
         await using var fixture = await IdentityFixture.CreateAsync(Provider, Token);
@@ -275,7 +294,7 @@ public abstract class IdentityPreparationTests
             ? await new PostgresPlatformStore(fixture.Storage.Postgres!.ConnectionString).AcquireHostLeaseAsync(Token) : null;
         try
         {
-            foreach (var operation in new[] { "prepare", "reconcile-configuration", "revoke-sessions" })
+            foreach (var operation in new[] { "prepare", "reconcile-configuration", "revoke-sessions", "maintain" })
                 Assert.NotEqual(0, await RunAsync(fixture, "--identity", operation));
             Assert.Equal(epoch, await ScalarAsync(fixture, "SELECT session_epoch FROM {0}__kofte_identity_metadata"));
             Assert.Equal(1L, await ScalarAsync(fixture, "SELECT security_revision FROM {0}__kofte_identity_metadata"));

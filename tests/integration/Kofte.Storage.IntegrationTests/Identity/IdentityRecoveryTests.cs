@@ -125,6 +125,74 @@ public abstract class IdentityRecoveryTests
     }
 
     [Fact]
+    public async Task StoppedMaintenancePrunesOnlyOneExpiredBatchAndRetainsConsumedAuthorityAndActiveState()
+    {
+        await using var fixture = await StorageProviderScope.CreateAsync(Provider, Token);
+        var installation = await PrepareAsync(fixture);
+        var maintenance = new StorageMaintenance(installation);
+        await using var scope = await maintenance.AcquireAsync(fixture.Token);
+        using var budget = new OperationBudget(OperationBudget.Migration, fixture.Token);
+        var now = DateTime.UtcNow;
+        var old = now.AddDays(-31);
+        await using (var connection = await installation.OpenPlatformAsync(budget))
+        {
+            var prefix = Provider == "sqlite" ? "" : "kofte_system.";
+            object Time(DateTime value) => Provider == "sqlite"
+                ? value.ToString("O", CultureInfo.InvariantCulture) : value;
+            await RegistryMigrationRunner.ExecuteAsync(connection, $"""
+                INSERT INTO {prefix}__kofte_identity_events
+                  (event_id,security_revision,event_code,occurred_at_utc,correlation_id,outcome,retention_class)
+                  VALUES (@id,0,'configuration_reconciled',@old,@correlation,'committed','installation')
+                """, budget, null, ("id", Guid.NewGuid()), ("old", Time(old)),
+                ("correlation", Guid.NewGuid().ToString("N")));
+            for (var index = 0; index < 131; index++)
+            {
+                var recent = index >= 129;
+                await RegistryMigrationRunner.ExecuteAsync(connection, $"""
+                    INSERT INTO {prefix}__kofte_identity_events
+                      (event_id,security_revision,event_code,occurred_at_utc,correlation_id,outcome,retention_class)
+                      VALUES (@id,0,'session_created',@created,@correlation,'committed','session');
+                    INSERT INTO {prefix}__kofte_login_attempts
+                      (attempt_id,browser_digest,mode,trust_digest,session_epoch,return_path,
+                       created_at_utc,expires_at_utc,state,consumed_at_utc)
+                      SELECT @id,@key,mode,trust_digest,session_epoch,'/',@created,@expiry,@state,
+                        CASE WHEN @state='pending' THEN NULL ELSE @created END
+                      FROM {prefix}__kofte_identity_metadata;
+                    INSERT INTO {prefix}__kofte_identity_admission
+                      (category,window_start_utc,key_digest,expires_at_utc,count)
+                      VALUES ('login_browser',@created,@key,@expiry,1);
+                    """, budget, null, ("id", Guid.NewGuid()), ("key", index.ToString("x64", CultureInfo.InvariantCulture)),
+                    ("created", Time(recent ? now : old)), ("expiry", Time(recent ? now.AddMinutes(5) : old.AddMinutes(5))),
+                    ("state", index % 2 == 0 ? "pending" : "consumed"),
+                    ("correlation", Guid.NewGuid().ToString("N")));
+            }
+        }
+        var before = await IdentityRecoverySnapshot.CaptureStoppedAsync(installation, scope, fixture.Token);
+        Assert.Equal(384, await IdentityMaintenance.RunAsync(installation, Assert.IsType<MaintenanceScope>(scope),
+            (await RecoverySetVerifier.InspectStoppedAsync(installation, scope, fixture.Token)).InstallationId,
+            "oidc", new string('a', 64), now, budget));
+        var after = await IdentityRecoverySnapshot.CaptureStoppedAsync(installation, scope, fixture.Token);
+        Assert.Equal(before.SecurityRevision + 1, after.SecurityRevision);
+        Assert.Equal(before.SessionEpoch, after.SessionEpoch);
+        Assert.Equal(before.BootstrapState, after.BootstrapState);
+        Assert.Equal(before.ConsumedGeneration, after.ConsumedGeneration);
+        Assert.Equal(before.Counts with
+        {
+            Events = before.Counts.Events - 128,
+            LoginAttempts = before.Counts.LoginAttempts - 128,
+            AdmissionWindows = before.Counts.AdmissionWindows - 128
+        }, after.Counts);
+        Assert.Equal(4, await IdentityMaintenance.RunAsync(installation, Assert.IsType<MaintenanceScope>(scope),
+            (await RecoverySetVerifier.InspectStoppedAsync(installation, scope, fixture.Token)).InstallationId,
+            "oidc", new string('a', 64), now, budget));
+        var final = await IdentityRecoverySnapshot.CaptureStoppedAsync(installation, scope, fixture.Token);
+        Assert.Equal(new IdentityRecoveryCounts(1, 1, 1, 1, 7, 2), final.Counts);
+        Assert.Equal("consumed", final.BootstrapState);
+        Assert.Equal(before.ConsumedGeneration, final.ConsumedGeneration);
+        Assert.Equal(before.SessionEpoch, final.SessionEpoch);
+    }
+
+    [Fact]
     public async Task PreparedIdentityCannotUseTheLegacyUngatedRestorePath()
     {
         await using var fixture = await StorageProviderScope.CreateAsync(Provider, Token);

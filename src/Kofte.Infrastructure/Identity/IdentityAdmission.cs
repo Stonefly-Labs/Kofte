@@ -29,11 +29,7 @@ internal sealed class IdentityAdmission(IdentityStore store)
         {
             var database = change.Database;
             var table = database.Prefix + "__kofte_identity_admission";
-            await database.QueryAsync($"""
-                DELETE FROM {table} WHERE (category,window_start_utc,key_digest) IN
-                (SELECT category,window_start_utc,key_digest FROM {table} WHERE expires_at_utc<=@now
-                 ORDER BY expires_at_utc,category,window_start_utc,key_digest LIMIT 128)
-                """, ("now", now));
+            await PruneAsync(database, now);
             var start = new DateTime(now.Ticks - now.Ticks % TimeSpan.TicksPerMinute, DateTimeKind.Utc);
             var expiry = start.AddMinutes(1);
             foreach (var request in requests)
@@ -70,6 +66,18 @@ internal sealed class IdentityAdmission(IdentityStore store)
             }
             return true;
         });
+    }
+
+    internal static async Task<int> PruneAsync(DeadlineStore database, DateTime now)
+    {
+        if (now.Kind != DateTimeKind.Utc) throw new StorageException(StorageCode.RequestInvalid);
+        var table = database.Prefix + "__kofte_identity_admission";
+        var rows = await database.QueryAsync($"""
+            DELETE FROM {table} WHERE (category,window_start_utc,key_digest) IN
+            (SELECT category,window_start_utc,key_digest FROM {table} WHERE expires_at_utc<=@now
+             ORDER BY expires_at_utc,category,window_start_utc,key_digest LIMIT 128) RETURNING key_digest
+            """, ("now", now));
+        return rows.Count;
     }
 
     private static (string Category, long Limit) Rule(IdentityAdmissionCategory category) => category switch

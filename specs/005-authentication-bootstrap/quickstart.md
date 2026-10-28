@@ -165,6 +165,13 @@ unfinished. Identity-bearing sets refuse the legacy ungated restore path.
 This progress does not make the remaining operations recipes executable or
 turn the non-green full matrix into accepted feature evidence.
 
+The built host also now accepts stopped `--identity maintain` on a prepared
+installation: at most 128 expired session-evidence rows, terminal attempts and
+expired admission windows per category/invocation. Repeat explicitly for
+another batch; live-host refusal and preservation have passing SQLite evidence,
+while PostgreSQL maintenance execution remains pending. This does not deliver
+the recovery/operations consumer recipes above.
+
 Proposed invocation, after implementation/build, with provider-owned fixture
 admission (PostgreSQL remains the wrapper's responsibility):
 

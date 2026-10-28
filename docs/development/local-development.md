@@ -756,6 +756,17 @@ is **not delivered yet**: these sets explicitly refuse the legacy ungated
 restore helper until outside-snapshot quarantine and stopped reconciliation
 are implemented. Do not copy such a set into a serving installation.
 
+Stopped prepared installations now accept `--identity maintain` through the
+same admitted host supervisor and exclusive lease. Each explicit invocation
+removes at most 128 expired session-class evidence records (at least 30 days old),
+128 consumed/expired login attempts and 128 expired admission windows, within
+the unchanged 120-second envelope. Repeat explicitly for another bounded batch;
+this is not an unbounded drain or background job. Installation-retained
+evidence, user mappings, consumed designation, session epoch and active sessions
+are preserved. The identity security revision advances with the committed
+batch; registry/module revisions do not. SQLite regression evidence passes;
+new PostgreSQL maintenance execution remains pending.
+
 **Sign out** revokes only the current durable local session, not the upstream
 provider or other sessions. Confirmed, expired and uncertain results all clear
 local personal/enrollment content. Uncertainty is not known server revocation;

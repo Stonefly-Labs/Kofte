@@ -32,7 +32,9 @@ internal static class IdentityMaintenanceWorker
                 IdentityOperation.BootstrapAuthorize => IdentityAction.BootstrapAuthorize,
                 IdentityOperation.BootstrapDisablePending => IdentityAction.BootstrapDisablePending,
                 IdentityOperation.ReconcileConfiguration => IdentityAction.ReconcileConfiguration,
-                _ => IdentityAction.RevokeSessions
+                IdentityOperation.Maintain => IdentityAction.Maintain,
+                IdentityOperation.RevokeSessions => IdentityAction.RevokeSessions,
+                _ => throw new StorageException(StorageCode.RequestInvalid)
             }, mode, installation.Provider, TimeSpan.FromSeconds(116), token,
                 record => Console.WriteLine(System.Text.Encoding.UTF8.GetString(IdentityDiagnostics.Serialize(record))));
             var budget = observation.Budget;
@@ -75,7 +77,14 @@ internal static class IdentityMaintenanceWorker
                 else await IdentityBootstrapStore.DisablePendingAsync(installation, scope, owner.Id, mode,
                     identity.TrustDigest, budget);
             }
-            else
+            else if (operation == IdentityOperation.Maintain)
+            {
+                if (owner.Version != 2) throw new StorageException(StorageCode.VersionUnsupported);
+                await IdentityPreparation.VerifyAsync(installation, owner.Id, mode, identity.TrustDigest, budget);
+                await Kofte.Infrastructure.Identity.IdentityMaintenance.RunAsync(installation, scope, owner.Id,
+                    mode, identity.TrustDigest, DateTime.UtcNow, budget);
+            }
+            else if (operation is IdentityOperation.ReconcileConfiguration or IdentityOperation.RevokeSessions)
             {
                 if (owner.Version != 2) throw new StorageException(StorageCode.VersionUnsupported);
                 var reconcile = operation == IdentityOperation.ReconcileConfiguration;
@@ -88,6 +97,7 @@ internal static class IdentityMaintenanceWorker
                 await IdentityPreparation.RevokeAsync(installation, scope, owner.Id, mode, identity.TrustDigest,
                     reconcile, budget);
             }
+            else throw new StorageException(StorageCode.RequestInvalid);
             await scope.VerifyAsync(installation, budget);
             return 0;
         }

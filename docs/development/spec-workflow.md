@@ -118,6 +118,11 @@ Identity-bearing sets explicitly refuse the legacy ungated restore path while
 T082 is unfinished. Current hosted SQLite enrollment replacement fails at its
 callback assertion; an unchanged focused reproduction passes without diagnosing
 that failure. The full matrix remains non-green.
+Stopped bounded `maintain` is now implemented using the existing retention
+helpers, with passing actual SQLite batch, prepared-authority and live-host
+refusal regressions. It preserves consumed designation, active sessions and
+installation evidence. New PostgreSQL maintenance evidence is still pending;
+T087 remains unchecked rather than inferred complete from shared source.
 No budget or required case is relaxed, and intermittent native readiness
 failures remain recorded without an established cause.
 A new owned creation probe confirms local Docker

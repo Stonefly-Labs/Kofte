@@ -23,11 +23,7 @@ internal static class IdentityLoginAttempts
             throw new StorageException(StorageCode.RequestInvalid);
         var database = change.Database;
         var table = database.Prefix + "__kofte_login_attempts";
-        await database.QueryAsync($"""
-            DELETE FROM {table} WHERE attempt_id IN
-            (SELECT attempt_id FROM {table} WHERE state='consumed' OR expires_at_utc<=@now
-             ORDER BY expires_at_utc,attempt_id LIMIT 128)
-            """, ("now", now));
+        await PruneAsync(database, now);
         if (DeadlineStore.AssertScalar(await database.QueryAsync($"""
                 SELECT COUNT(*) FROM {table} WHERE state='pending' AND expires_at_utc>@now
                 """, ("now", now))) is not long total || total < 0 ||
@@ -66,6 +62,18 @@ internal static class IdentityLoginAttempts
             1 => Parse(rows[0]),
             _ => throw new StorageException(StorageCode.Corrupt)
         };
+    }
+
+    internal static async Task<int> PruneAsync(DeadlineStore database, DateTime now)
+    {
+        if (now.Kind != DateTimeKind.Utc) throw new StorageException(StorageCode.RequestInvalid);
+        var table = database.Prefix + "__kofte_login_attempts";
+        var rows = await database.QueryAsync($"""
+            DELETE FROM {table} WHERE attempt_id IN
+            (SELECT attempt_id FROM {table} WHERE state='consumed' OR expires_at_utc<=@now
+             ORDER BY expires_at_utc,attempt_id LIMIT 128) RETURNING attempt_id
+            """, ("now", now));
+        return rows.Count;
     }
 
     private static void Validate(string browserDigest, DateTime now)
