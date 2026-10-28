@@ -8,9 +8,11 @@ import * as loginRoute from "../../app/auth/login/route";
 import * as callbackRoute from "../../app/auth/oidc/callback/route";
 import * as enrollmentRoute from "../../app/api/identity/v1/first-administrator/route";
 import * as signOutRoute from "../../app/api/identity/v1/sign-out/route";
+import * as developmentRoute from "../../app/api/identity/v1/development-session/route";
 
-vi.mock("./identityConfiguration", () => ({
-  identityConfiguration: vi.fn(async () => ({
+vi.mock(import("./identityConfiguration"), async (importOriginal) => ({
+  ...(await importOriginal()),
+  identityConfiguration: vi.fn<typeof identityConfiguration>(async () => ({
     backendOrigin: "http://127.0.0.1:5080",
     publicOrigin: "https://kofte.example",
     mode: "oidc",
@@ -94,6 +96,123 @@ function signOutRequest(body?: string) {
     body,
   });
 }
+
+const developmentConfiguration = {
+  backendOrigin: "http://127.0.0.1:5080",
+  publicOrigin: "http://127.0.0.1:3000",
+  mode: "development" as const,
+  developmentIdentities: [{ key: "synthetic", displayName: null }],
+};
+
+function developmentRequest(
+  body = '{"identityKey":"synthetic"}',
+  method = "POST",
+) {
+  return new Request(
+    "http://127.0.0.1:3000/api/identity/v1/development-session",
+    {
+      method,
+      headers: {
+        "content-type": "application/json",
+        origin: "http://127.0.0.1:3000",
+        "x-kofte-csrf": "fresh-development-token",
+        cookie:
+          "kofte-dev-antiforgery=paired-token; __Host-kofte-session=production-cookie",
+      },
+      ...(method === "POST" ? { body } : {}),
+    },
+  );
+}
+
+it("forwards only a configured Development key and projects its independent native identity/cookie", async () => {
+  vi.mocked(identityConfiguration).mockResolvedValueOnce(
+    developmentConfiguration,
+  );
+  const identity = { ...current, identityMode: "development" };
+  const headers = new Headers(privateHeaders);
+  headers.append(
+    "Set-Cookie",
+    "kofte-dev-session=opaque-reference; path=/; httponly; samesite=lax",
+  );
+  const fetch = vi
+    .fn()
+    .mockResolvedValue(
+      Response.json(
+        { ...identity, providerSecret: "private-canary" },
+        { headers },
+      ),
+    );
+  vi.stubGlobal("fetch", fetch);
+  const response = await developmentRoute.POST(developmentRequest());
+  expect(response.status).toBe(200);
+  expect(await response.json()).toEqual(identity);
+  expect(response.headers.getSetCookie()).toEqual(headers.getSetCookie());
+  expect(fetch).toHaveBeenCalledTimes(1);
+  const [url, options] = fetch.mock.calls[0];
+  expect(url.href).toBe(
+    "http://127.0.0.1:5080/api/identity/v1/development-session",
+  );
+  expect(options.body).toBe('{"identityKey":"synthetic"}');
+  expect(new Headers(options.headers).get("cookie")).toBe(
+    "kofte-dev-antiforgery=paired-token",
+  );
+  expect(new Headers(options.headers).get("x-kofte-csrf")).toBe(
+    "fresh-development-token",
+  );
+  expect(options.redirect).toBe("manual");
+  expect(options.cache).toBe("no-store");
+});
+
+it.each([
+  '{"identityKey":"unknown"}',
+  '{"identityKey":"Synthetic"}',
+  '{"identityKey":"synthetic","identityKey":"synthetic"}',
+  '{"identityKey":"synthetic","displayName":"Administrator"}',
+  '{"identityKey":"synthetic","isInitialAdministrator":true}',
+])(
+  "rejects unconfigured, duplicate and authority-bearing Development input before dispatch",
+  async (body) => {
+    vi.mocked(identityConfiguration).mockResolvedValueOnce(
+      developmentConfiguration,
+    );
+    const fetch = vi.fn();
+    vi.stubGlobal("fetch", fetch);
+    expect((await developmentRoute.POST(developmentRequest(body))).status).toBe(
+      400,
+    );
+    expect(fetch).not.toHaveBeenCalled();
+  },
+);
+
+it("keeps every Development method absent in OIDC mode without a fallback", async () => {
+  const fetch = vi.fn();
+  vi.stubGlobal("fetch", fetch);
+  for (const method of ["GET", "POST", "HEAD", "OPTIONS"] as const) {
+    expect(
+      (await developmentRoute[method](developmentRequest(undefined, method)))
+        .status,
+    ).toBe(404);
+  }
+  expect(fetch).not.toHaveBeenCalled();
+});
+
+it("rejects upstream Development designation and never repeats an uncertain selection", async () => {
+  vi.mocked(identityConfiguration).mockResolvedValueOnce(
+    developmentConfiguration,
+  );
+  const fetch = vi.fn().mockResolvedValue(
+    upstream({
+      ...current,
+      identityMode: "development",
+      isInitialAdministrator: true,
+    }),
+  );
+  vi.stubGlobal("fetch", fetch);
+  const response = await developmentRoute.POST(developmentRequest());
+  expect(response.status).toBe(503);
+  expect((await response.json()).code).toBe("identity_outcome_uncertain");
+  expect(fetch).toHaveBeenCalledTimes(1);
+});
 
 it("preserves confirmed empty sign-out and its individually expired cookie without a second mutation", async () => {
   const headers = new Headers(privateHeaders);

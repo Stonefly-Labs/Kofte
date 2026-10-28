@@ -63,11 +63,11 @@ test("the delivered identity shell reflows at 320px and 200% with keyboard focus
     document.documentElement.style.fontSize = "200%";
   });
   await page.keyboard.press("Tab");
-  const retry = page.getByRole("button", { name: "Retry identity check" });
-  await expect(retry).toBeFocused();
+  const selection = page.getByLabel("Configured Development identity");
+  await expect(selection).toBeFocused();
   expect(
-    await retry.evaluate((button) => {
-      const style = getComputedStyle(button);
+    await selection.evaluate((element) => {
+      const style = getComputedStyle(element);
       return (
         style.outlineStyle !== "none" &&
         Number.parseFloat(style.outlineWidth) > 0
@@ -87,4 +87,67 @@ test("the delivered identity shell reflows at 320px and 200% with keyboard focus
       ({ impact }) => impact === "serious" || impact === "critical",
     ),
   ).toEqual([]);
+});
+
+test("configured Development selection uses the real browser boundary and never server-renders personal identity", async ({
+  page,
+}) => {
+  const host = process.env.KOFTE_HOST_URL;
+  if (!host) throw new Error("isolated_test_host_required");
+  await page.goto("/identity");
+  await expect(
+    page.getByText("You are signed out", { exact: true }),
+  ).toBeVisible();
+  const selection = page.getByLabel("Configured Development identity");
+  await expect(selection).toHaveValue("");
+  const submit = page.getByRole("button", { name: "Use Development identity" });
+  await expect(submit).toBeDisabled();
+  await selection.selectOption("synthetic");
+  const began = performance.now();
+  await submit.click();
+  await expect(
+    page.getByText("You are signed in", { exact: true }),
+  ).toBeVisible({ timeout: 5000 });
+  expect(performance.now() - began).toBeLessThan(5000);
+  await expect(
+    page.getByText("Development identity", { exact: true }),
+  ).toBeVisible();
+  const adapted = await page.request.get("/api/identity/v1/me");
+  expect(adapted.status()).toBe(200);
+  const identity: unknown = await adapted.json();
+  if (
+    typeof identity !== "object" ||
+    identity === null ||
+    !("userId" in identity) ||
+    typeof identity.userId !== "string"
+  )
+    throw new Error("development_browser_identity_required");
+  expect(identity).toMatchObject({
+    version: "1",
+    identityMode: "development",
+    isInitialAdministrator: false,
+  });
+  await expect(page.getByText(identity.userId, { exact: true })).toBeVisible();
+  const direct = await page.request.get(
+    new URL("/api/identity/v1/me", host).href,
+  );
+  expect(direct.status()).toBe(200);
+  expect(await direct.json()).toEqual(identity);
+  const shell = await page.request.get("/identity");
+  expect(await shell.text()).not.toContain(identity.userId);
+  expect(await page.evaluate(() => document.cookie)).toBe("");
+  expect(
+    await page.evaluate(() => localStorage.length + sessionStorage.length),
+  ).toBe(0);
+  await page.getByRole("button", { name: "Sign out" }).click();
+  await expect(
+    page.getByText("You are signed out", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText(identity.userId, { exact: true })).toHaveCount(0);
+  expect((await page.request.get("/api/identity/v1/me")).status()).toBe(401);
+  expect(
+    (
+      await page.request.get(new URL("/api/identity/v1/me", host).href)
+    ).status(),
+  ).toBe(401);
 });

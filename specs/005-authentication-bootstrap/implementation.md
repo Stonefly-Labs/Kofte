@@ -1,6 +1,6 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement in progress; 60/100 complete (T001-T056, T061, T071-T073); native Development selection delivered, remaining US3/web/operations/final evidence unfinished.
+**Result:** implement in progress; 64/100 complete (T001-T056, T058-T061, T071-T074); native/web Development selection and durable sign-out delivered, remaining US3/both-provider/operations/final evidence unfinished.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-28.
 **Assessed baseline:** `6df9eebdcfa6b273126b0c51c272d1b2c2f953e6`.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
@@ -2967,3 +2967,81 @@ tasks, not T076/T077's full actual environment/both-provider acceptance. T074's
 exact adapter/accessible configured selector, remaining US3, recovery/operations
 and complete local/hosted gates remain. Driver stays 005/implement/running;
 reviewer checklists, stage acceptance and the original draft PR are unchanged.
+
+## T058–T060/T074: verified Development selector and session-record refusal
+
+The exact Development adapter accepts only one configured synthetic key, refuses
+duplicate/unknown/profile/authority fields and remains 404 in OIDC mode for every
+method. Server configuration projects only validated synthetic key/display choices;
+it never passes private provider/key configuration or personal identity to the
+page. The selector requires explicit choice/submit, restores focus, and retains a
+visible Development label during loading, refusal and uncertainty. Display validation
+and loopback validation reuse existing guards. Individual Development cookies must
+remain host-only, HttpOnly, SameSite=Lax and non-Secure on the admitted HTTP profile.
+
+The shared bounded mutation controller clears the previous identity before either
+selection or sign-out. Only known selection success permits fresh `/me` and
+identity-bound CSRF retrieval. Denied/uncertain selection and every sign-out result
+keep personal/enrollment content cleared across focus, polling and explicit check
+retries, without automatically replaying a mutation. Server configuration failures
+render fixed safe guidance and a generated reference; logs contain no private cause.
+
+The existing native session and sign-out classes consolidate the proposed T058
+test path. They cover exact idle/absolute boundaries, capped renewal, terminal
+renew/revoke races, fresh durable designation, actual wrong-mode/epoch rejection,
+retained-key rotation/fresh workers, key loss and both commit-acknowledgement sides.
+A new required-record regression installs a private fixture-only database insert
+refusal for `session_revoked`: delivered sign-out returns 503, session revocation
+rolls back with no success event, unrelated state remains, and explicit correction
+allows the original credential again. No failure injection or schema exception is
+added to product code.
+
+**Actual verification on macOS arm64 with the retained pinned tools:**
+
+- `npm run test:unit --workspace apps/web`: **146 passed** across all eight files,
+  including explicit selection, fresh-CSRF use, denied/uncertain switching and no
+  stale identity/automatic retry. Initial selector red remains in
+  `unit-none-ceecbe9883ad4523ae2350766f9d2f6d.json`.
+- Shared `npm run test:unit --workspace packages/bootstrap-contract`: **4 passed**.
+  Web/shared/contract/e2e lint and type-check, intended-file Prettier verification
+  and `npm run contract:check` pass.
+- `contract-sqlite-6ed425c9c92e45b695032821fec61c38.json`: all fifteen owned runtime
+  steps pass, including native/production Next builds,
+  `npm run test --workspace tests/contract -- --no-file-parallelism bootstrap.test.ts adapter.test.ts`
+  and `npm run test --workspace tests/e2e -- identity.spec.ts`. The actual HTTP case
+  compares native/adapted stable identity, individual cookie attributes, stale
+  anonymous CSRF refusal, fresh authenticated CSRF and confirmed next-request
+  sign-out denial. Actual Chromium verifies explicit selection within five seconds,
+  API/UI equality, non-personal SSR, HttpOnly/no browser storage, sign-out and the
+  retained 320px/200%/keyboard/axe shell. Host restart/store restoration, both owned
+  host exits, web exit and private output scanning pass.
+- The prior attempt `contract-sqlite-daaf8301864a4f098d8416f818ebe189.json` failed
+  `runtime-web-build` with `verification_input_invalid` despite child exit 0.
+  An unchanged retry with transient exception-site-only tracing passed; the earlier
+  cleanup/input failure is retained, not diagnosed or claimed repaired.
+- `contract-sqlite-4a27a41792324dc2b9820460eac9e038.json`: Release solution build
+  with warnings as errors passes, then the combined command
+  `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore --no-build -c Release --filter-class '*SqliteSignOutContractTests' '*SqliteSessionPersistenceContractTests' --minimum-expected-tests 30`
+  passes all thirty cases in 256.073s, including actual required-record refusal.
+  PostgreSQL execution of that new regression remains pending T065.
+- Final live HTTP assertion verification
+  `contract-sqlite-c7ee756c6c5449c5b3e5a5751f159138.json` passes all thirteen
+  build/preparation/native-adapter/cleanup/scan steps. Cookie assertions inspect
+  individual attributes, not accidental substrings inside an opaque reference.
+  Full native format verification, current web lint/type-check, repository checker,
+  all 128 Python tests and whitespace also pass.
+- Completed `2f3d1e7` product run `40659799413` passes unit, SQLite integration,
+  recovery, startup, browser, quality and privacy. PostgreSQL host integration fails
+  `DeliveredInvalidEvidenceCannotCreateAUserSessionOrCommittedLoginEvent`;
+  composition-public contracts time out at 900.044s; failure-propagation's nested
+  PostgreSQL baseline times out at 900.316s. Those safe reports do not establish the
+  assertions/causes. Current `ebffa72` repository checks pass; its product run remains
+  incomplete, with SQLite integration failing
+  `ActualStoppedReplacementRefusesTheOriginalSecretAndConsumesOnlyTheNewGeneration`. No full green matrix is claimed.
+
+T058's test additions, native/web sign-out T059/T060 and Development adapter/UI T074
+are now complete: **64/100**, with no checked task depending on an unchecked task.
+T057/T062–T070 retain full boundary/corpus/both-provider/story evidence; T075–T078
+retain supervisor/environment/both-provider/public-recipe acceptance. Operations,
+recovery and final local/hosted gates remain. Driver stays 005/implement/running;
+no reviewer checklist, acceptance, readiness or merge decision changes.

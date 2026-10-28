@@ -293,6 +293,42 @@ public abstract class SignOutContractTests
         Assert.Equal(committed ? HttpStatusCode.Unauthorized : HttpStatusCode.OK, actual.StatusCode);
     }
 
+    [Fact]
+    public async Task RejectedRequiredRevocationRecordRollsBackItsSessionAndExplicitCorrectionPreservesTheCredential()
+    {
+        await using var fixture = await LoginCommitFixture.CreateProductAsync(Provider, Token);
+        await LoginAsync(fixture);
+        var csrf = await fixture.ProductContextAsync(Token);
+        var cookie = fixture.ProductCookieHeader;
+        var before = await fixture.SnapshotAsync(Token);
+        await fixture.SetRevocationRecordingFailureAsync(true, Token);
+        using (var request = Request(fixture, csrf))
+        using (var response = await fixture.SendProductAsync(request, Token))
+        {
+            Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+            Assert.Null(response.Headers.Location);
+            using var problem = JsonDocument.Parse(await response.Content.ReadAsByteArrayAsync(Token));
+            Assert.Equal("identity_unavailable", problem.RootElement.GetProperty("code").GetString());
+        }
+        var rejected = await fixture.SnapshotAsync(Token);
+        var session = Assert.Single(rejected.Sessions);
+        Assert.Equal(Assert.Single(before.Sessions).Digest, session.Digest);
+        Assert.Equal("active", session.State);
+        Assert.Null(session.TerminalAt);
+        Assert.Equal(before.Events, rejected.Events);
+        Assert.Equal(before.Users, rejected.Users);
+        Assert.Equal(before.Mappings, rejected.Mappings);
+        Assert.Equal(before.RegistryRevision, rejected.RegistryRevision);
+        await fixture.SetRevocationRecordingFailureAsync(false, Token);
+        using var replay = new HttpRequestMessage(HttpMethod.Get, "/api/identity/v1/me");
+        replay.Headers.Add("Cookie", cookie);
+        using var corrected = await fixture.SendProductAsync(replay, Token, includeCookies: false);
+        Assert.Equal(HttpStatusCode.OK, corrected.StatusCode);
+        using var identity = JsonDocument.Parse(await corrected.Content.ReadAsByteArrayAsync(Token));
+        Assert.Equal(session.UserId, identity.RootElement.GetProperty("userId").GetGuid());
+        Assert.DoesNotContain((await fixture.SnapshotAsync(Token)).Events, row => row.Code == "session_revoked");
+    }
+
     [Theory]
     [InlineData("anonymous", 401)]
     [InlineData("missing-origin", 403)]

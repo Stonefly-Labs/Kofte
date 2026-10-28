@@ -6,8 +6,8 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement running; 60/100 complete** (T001–T056,
-T061 and T071–T073), on
+**Current checkpoint: 005 / implement running; 64/100 complete** (T001–T056,
+T058–T061 and T071–T074), on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 `a0c1fb0` Ubuntu browser job passes all eight HTTPS recipes, including both
@@ -38,8 +38,14 @@ Native Development selection now uses configured keys and the atomic owner/sessi
 bridge. Four SQLite cases pass, including actual stopped mode changes with equal
 profiles, old-cookie rejection and preserved consumed designation. The fresh
 PostgreSQL probe fails during fixture creation, before product execution; its
-generic Docker-command error does not establish a cause. Development web selection,
-remaining US3 coverage, recovery and final gates remain unfinished. The
+generic Docker-command error does not establish a cause. Development web selection
+now passes actual native/Next HTTP and Chromium journeys, with explicit configured
+choices, persistent mode label, fresh identity-bound CSRF, sign-out and no personal
+SSR. Denied/uncertain switching clears stale identity without retrying the mutation.
+All thirty SQLite session/sign-out cases pass in one selection, including actual
+required-record insertion failure/rollback and explicit correction. T058–T060 and
+T074 are now reconciled; both-provider/full-corpus US3, Development acceptance,
+recovery and final gates remain unfinished. The
 [implementation record](../../specs/005-authentication-bootstrap/implementation.md)
 preserves the initial 404/SAML failures and their resolved provenance proof.
 The actual OIDC package and closure are now adopted, centrally pinned,

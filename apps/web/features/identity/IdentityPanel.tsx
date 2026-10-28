@@ -5,14 +5,25 @@ import { Button } from "../../components/ui/button";
 import { startLogin, type LoginStartFailure } from "./startLoginAction";
 import { useIdentity } from "./useIdentity";
 import { EnrollmentForm, type EnrollmentNotice } from "./EnrollmentForm";
+import { DevelopmentIdentitySelector } from "./DevelopmentIdentitySelector";
+import type { DevelopmentIdentityChoice } from "./identityConfiguration";
 
 export function IdentityPanel({
   returnPath = "/identity",
+  developmentIdentities,
 }: {
   returnPath?: string;
+  developmentIdentities?: readonly DevelopmentIdentityChoice[];
 }) {
-  const { state, retry, refreshIdentity, signOut, signOutNotice } =
-    useIdentity();
+  const {
+    state,
+    retry,
+    refreshIdentity,
+    signOut,
+    signOutNotice,
+    selectDevelopment,
+    developmentNotice,
+  } = useIdentity();
   const [enrollmentNotice, setEnrollmentNotice] = useState<EnrollmentNotice>();
   const [starting, startTransition] = useTransition();
   const [loginFailure, setLoginFailure] = useState<LoginStartFailure>();
@@ -45,10 +56,33 @@ export function IdentityPanel({
       <p role="status" aria-live="polite" aria-atomic="true">
         {label}
       </p>
-      {context?.identityMode === "development" && (
+      {(context?.identityMode === "development" ||
+        developmentIdentities !== undefined ||
+        developmentNotice) && (
         <p>
           <strong>Development identity</strong> — local use only. This is not
           production authentication.
+        </p>
+      )}
+      {developmentNotice && (
+        <p
+          role={
+            developmentNotice.kind === "denied" ||
+            developmentNotice.kind === "uncertain"
+              ? "alert"
+              : "status"
+          }
+        >
+          {developmentNotice.kind === "pending"
+            ? "Selecting a Development identity once. Waiting for confirmation."
+            : developmentNotice.kind === "selected"
+              ? "Development selection confirmed. Your current identity is being verified."
+              : developmentNotice.kind === "denied"
+                ? "Development selection was denied. Check the configuration and retry explicitly."
+                : "Development selection could not be confirmed. No identity is being assumed and no automatic retry was made."}
+          {developmentNotice.correlationId && (
+            <> Reference: {developmentNotice.correlationId}</>
+          )}
         </p>
       )}
       {signOutNotice && (
@@ -190,6 +224,17 @@ export function IdentityPanel({
             <p className="correlation">Reference: {state.correlationId}</p>
           )}
         </>
+      )}
+      {validReturn && context?.identityMode === "development" && (
+        <DevelopmentIdentitySelector
+          choices={developmentIdentities ?? []}
+          onSelect={(key) => {
+            identityFocus.current = true;
+            setEnrollmentNotice(undefined);
+            setLoginFailure(undefined);
+            void selectDevelopment(key);
+          }}
+        />
       )}
       <Button
         type="button"

@@ -406,6 +406,38 @@ public sealed class LoginCommitFixture : IAsyncDisposable
     public void FailSignOutCommit(bool afterCommit) =>
         signOutFailurePhase = afterCommit ? "sign_out_committed" : "sign_out_before_commit";
 
+    public async Task SetRevocationRecordingFailureAsync(bool enabled, CancellationToken token)
+    {
+        using var budget = new OperationBudget(TimeSpan.FromSeconds(1), token);
+        await using var database = await DeadlineStore.OpenAsync(installation, budget);
+        await database.BeginWriteAsync();
+        if (database.Prefix.Length == 0)
+            await database.QueryAsync(enabled ? """
+                CREATE TRIGGER identity_fixture_reject_revocation BEFORE INSERT ON __kofte_identity_events
+                WHEN NEW.event_code='session_revoked'
+                BEGIN SELECT RAISE(ABORT,'identity_fixture_event_insert_failed'); END
+                """ : "DROP TRIGGER identity_fixture_reject_revocation");
+        else if (enabled)
+        {
+            await database.QueryAsync("""
+                CREATE FUNCTION kofte_system.identity_fixture_reject_revocation() RETURNS trigger
+                LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'identity_fixture_event_insert_failed'; END $$
+                """);
+            await database.QueryAsync("""
+                CREATE TRIGGER identity_fixture_reject_revocation BEFORE INSERT ON kofte_system.__kofte_identity_events
+                FOR EACH ROW WHEN (NEW.event_code='session_revoked')
+                EXECUTE FUNCTION kofte_system.identity_fixture_reject_revocation()
+                """);
+        }
+        else
+        {
+            await database.QueryAsync(
+                "DROP TRIGGER identity_fixture_reject_revocation ON kofte_system.__kofte_identity_events");
+            await database.QueryAsync("DROP FUNCTION kofte_system.identity_fixture_reject_revocation()");
+        }
+        await database.CommitAsync();
+    }
+
     public async Task<HttpResponseMessage> SendProductAsync(HttpRequestMessage request, CancellationToken token,
         bool includeCookies = true, bool adapted = false)
     {

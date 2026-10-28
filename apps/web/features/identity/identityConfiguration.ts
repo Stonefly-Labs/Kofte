@@ -1,14 +1,23 @@
 import { constants } from "node:fs";
 import { open, realpath } from "node:fs/promises";
-import { isIP } from "node:net";
 import { isAbsolute, resolve } from "node:path";
-import { backendReadinessUrl } from "../bootstrap/backendConfiguration";
+import { isIdentityDisplayName } from "@kofte/bootstrap-contract/identity";
+import {
+  backendReadinessUrl,
+  isLoopback,
+} from "../bootstrap/backendConfiguration";
+
+export interface DevelopmentIdentityChoice {
+  key: string;
+  displayName: string | null;
+}
 
 export interface IdentityAdapterConfiguration {
   backendOrigin: string;
   publicOrigin: string;
   mode: "oidc" | "development";
   authorizationEndpoint?: string;
+  developmentIdentities?: readonly DevelopmentIdentityChoice[];
 }
 
 export async function identityConfiguration(
@@ -16,6 +25,14 @@ export async function identityConfiguration(
 ): Promise<IdentityAdapterConfiguration> {
   try {
     const backendOrigin = backendReadinessUrl(environment).origin;
+    if (
+      !isLoopback(
+        new URL(
+          environment.KOFTE_HOST_URL ?? "http://127.0.0.1:5080",
+        ).hostname.replace(/^\[|\]$/g, ""),
+      )
+    )
+      throw new TypeError("identity_adapter_configuration_invalid");
     const path = environment.KOFTE_AUTH_CONFIG_FILE;
     if (
       !path ||
@@ -93,17 +110,51 @@ export async function identityConfiguration(
       (environment.ASPNETCORE_ENVIRONMENT ?? environment.DOTNET_ENVIRONMENT) !==
         "Development" ||
       origin.protocol !== "http:" ||
-      !(
-        hostname === "localhost" ||
-        hostname === "::1" ||
-        (isIP(hostname) === 4 && hostname.startsWith("127."))
-      ) ||
+      !isLoopback(hostname) ||
       root.publicOrigin !==
         (environment.KOFTE_WEB_URL ?? "http://127.0.0.1:3000") ||
       object(root.development).enabled !== true
     )
       throw new TypeError("identity_adapter_configuration_invalid");
-    return { backendOrigin, publicOrigin: origin.origin, mode: "development" };
+    const development = object(root.development);
+    if (
+      Object.keys(development).some(
+        (key) => !["enabled", "identities"].includes(key),
+      ) ||
+      !Array.isArray(development.identities) ||
+      development.identities.length < 1 ||
+      development.identities.length > 8
+    )
+      throw new TypeError("identity_adapter_configuration_invalid");
+    const developmentIdentities = development.identities.map(
+      (entry: unknown) => {
+        const choice = object(entry);
+        const displayName = choice.displayName ?? null;
+        if (
+          Object.keys(choice).some(
+            (key) => !["key", "displayName"].includes(key),
+          ) ||
+          typeof choice.key !== "string" ||
+          choice.key.length < 1 ||
+          choice.key.length > 255 ||
+          /[^ -~]/.test(choice.key) ||
+          !isIdentityDisplayName(displayName)
+        )
+          throw new TypeError("identity_adapter_configuration_invalid");
+        return { key: choice.key, displayName };
+      },
+    );
+    if (
+      new Set(developmentIdentities.map((choice) => choice.key)).size !==
+      developmentIdentities.length
+    )
+      throw new TypeError("identity_adapter_configuration_invalid");
+    return {
+      backendOrigin,
+      publicOrigin: origin.origin,
+      mode: "development",
+      developmentIdentities,
+    };
   } catch (error) {
     if (
       error instanceof SyntaxError ||
@@ -128,7 +179,7 @@ function string(value: unknown): string {
   return value;
 }
 
-function rejectDuplicateProperties(text: string): void {
+export function rejectDuplicateProperties(text: string): void {
   const stack: (Set<string> | null)[] = [];
   let key = false;
   for (const token of text.match(

@@ -693,7 +693,8 @@ than replacing spec 001's immutable baseline. Generation
 parity checks normalize only the actual owned listener and the semantically
 equivalent omitted/empty root security list, not paths, schemas or responses.
 
-The exact Next identity handlers read only public routing fields from
+The exact Next identity handlers read only public routing fields and configured
+synthetic Development choices from
 the same private `KOFTE_AUTH_CONFIG_FILE`; credential references are never opened
 by the web adapter. They use the existing fixed loopback backend configuration,
 not caller Host/forwarding headers, with a 4.5-second total deadline. Independent
@@ -706,8 +707,20 @@ The `/identity` page now presents a non-personal shell, deliberate OIDC sign-in,
 fresh no-store verification/token pairs and accessible failure/retry. Hiding or
 blurring clears the displayed identity; returning revalidates it. Checks expire
 after 4.5 seconds and never retain failed/stale identity or browser storage.
-Only `/` and `/identity` are admitted returns. Development is labeled explicitly,
-but development selection and sign-out remain later tasks.
+Only `/` and `/identity` are admitted returns. Development is labeled persistently
+and offers only the synthetic choices in the explicit configuration. Choose one,
+then select **Use Development identity**; merely opening the page never signs in.
+Selection uses the same fixed adapter, native transaction/session boundary and
+identity-bound CSRF as other mutations. Denial or uncertainty clears the previous
+identity; no automatic mutation retry is made. Successful selection fetches fresh
+current identity and CSRF before further actions. Personal identity is never
+server-rendered or stored in browser storage.
+
+**Sign out** revokes only the current durable local session, not the upstream
+provider or other sessions. Confirmed, expired and uncertain results all clear
+local personal/enrollment content. Uncertainty is not known server revocation;
+explicit sign-in/selection is required for re-entry. Polling, focus and identity
+check retries cannot resurrect locally cleared content.
 Sign-in uses a Next Server Action, not native form navigation: real browsers
 sent `Origin: null` for the native POST under required `no-referrer`. The
 action preserves actual Origin/credential evidence and explicit CSRF through

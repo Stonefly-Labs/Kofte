@@ -415,6 +415,131 @@ it("labels development mode without offering a production login or implicit acco
   expect(screen.queryByText("Synthetic user")).toBeNull();
 });
 
+const developmentIdentities = [
+  { key: "synthetic-one", displayName: "Local developer" },
+  { key: "synthetic-two", displayName: null },
+];
+
+it("requires explicit configured Development selection and verifies fresh identity and CSRF afterward", async () => {
+  mode = "development";
+  fetcher.mockImplementation(async (url: string) => {
+    if (url.endsWith("/development-session")) {
+      current = { ...user, identityMode: "development" };
+      status = 200;
+      token = "fresh-selected-identity-token";
+      return Response.json(current);
+    }
+    return url.endsWith("browser-context")
+      ? Response.json({ version: "1", identityMode: mode, csrfToken: token })
+      : Response.json(current, { status });
+  });
+  render(<IdentityPanel developmentIdentities={developmentIdentities} />);
+  await settle();
+  const select = screen.getByLabelText("Configured Development identity");
+  expect(
+    screen
+      .getByRole("button", { name: "Use Development identity" })
+      .hasAttribute("disabled"),
+  ).toBe(true);
+  fireEvent.change(select, { target: { value: "synthetic-one" } });
+  fireEvent.submit(select.closest("form")!);
+  await settle();
+  expect(screen.getByText("Synthetic user")).toBeTruthy();
+  expect(screen.getByText("Development identity")).toBeTruthy();
+  const submissions = fetcher.mock.calls.filter(([url]) =>
+    url.endsWith("/development-session"),
+  );
+  expect(submissions).toHaveLength(1);
+  expect(JSON.parse(submissions[0][1].body)).toEqual({
+    identityKey: "synthetic-one",
+  });
+  expect(submissions[0][1].headers["X-Kofte-CSRF"]).toBe(
+    "fresh-anonymous-token",
+  );
+  expect(document.activeElement).toBe(
+    screen.getByRole("heading", { name: "Your identity" }),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Sign out" }));
+  await settle();
+  const signOut = fetcher.mock.calls.find(([url]) => url.endsWith("/sign-out"));
+  expect(signOut?.[1].headers["X-Kofte-CSRF"]).toBe(
+    "fresh-selected-identity-token",
+  );
+});
+
+it.each([
+  {
+    status: 403,
+    code: "identity_forbidden",
+    notice: "selection was denied",
+  },
+  {
+    status: 503,
+    code: "identity_outcome_uncertain",
+    notice: "selection could not be confirmed",
+  },
+])(
+  "keeps the previous Development identity cleared after $status without retrying",
+  async (failure) => {
+    mode = "development";
+    current = { ...user, identityMode: "development" };
+    status = 200;
+    let finish: (value: Response) => void = () => {};
+    fetcher.mockImplementation((url: string) =>
+      url.endsWith("/development-session")
+        ? new Promise<Response>((resolve) => {
+            finish = resolve;
+          })
+        : Promise.resolve(
+            url.endsWith("browser-context")
+              ? Response.json({
+                  version: "1",
+                  identityMode: mode,
+                  csrfToken: token,
+                })
+              : Response.json(current, { status }),
+          ),
+    );
+    render(<IdentityPanel developmentIdentities={developmentIdentities} />);
+    await settle();
+    const select = screen.getByLabelText("Configured Development identity");
+    fireEvent.change(select, { target: { value: "synthetic-two" } });
+    fireEvent.submit(select.closest("form")!);
+    expect(screen.queryByText("Synthetic user")).toBeNull();
+    expect(screen.getByText("Development identity")).toBeTruthy();
+    await act(async () =>
+      finish(
+        Response.json(
+          {
+            type: `urn:kofte:problem:${failure.code}`,
+            status: failure.status,
+            code: failure.code,
+            correlationId: "d".repeat(32),
+          },
+          { status: failure.status },
+        ),
+      ),
+    );
+    await settle();
+    expect(screen.getByRole("alert").textContent).toContain(failure.notice);
+    act(() => window.dispatchEvent(new Event("focus")));
+    await settle();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Retry identity check" }),
+    );
+    await settle();
+    expect(screen.queryByText("Synthetic user")).toBeNull();
+    expect(
+      fetcher.mock.calls.filter(([url]) =>
+        url.endsWith("/development-session"),
+      ),
+    ).toHaveLength(1);
+    expect(
+      fetcher.mock.calls.filter(([url]) => url.endsWith("/me")),
+    ).toHaveLength(1);
+  },
+);
+
 it("shows only a validated problem reference when a dependency is unavailable", async () => {
   const correlation = "d".repeat(32);
   fetcher.mockResolvedValue(

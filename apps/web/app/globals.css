@@ -63,11 +63,13 @@ p {
 }
 button:focus-visible,
 a:focus-visible,
-input:focus-visible {
+input:focus-visible,
+select:focus-visible {
   outline: 3px solid #994700;
   outline-offset: 4px;
 }
-.identity-authorization {
+.identity-authorization,
+.identity-selector {
   display: block;
   width: 100%;
   max-width: 32rem;

@@ -95,7 +95,10 @@ it("admits development routing only with explicit opt-in, loopback and the host'
       version: "1",
       mode: "development",
       publicOrigin: "http://127.0.0.1:3000",
-      development: { enabled: true },
+      development: {
+        enabled: true,
+        identities: [{ key: "synthetic", displayName: "Local developer" }],
+      },
     }),
   );
   await expect(
@@ -110,5 +113,43 @@ it("admits development routing only with explicit opt-in, loopback and the host'
     backendOrigin: "http://127.0.0.1:5080",
     publicOrigin: "http://127.0.0.1:3000",
     mode: "development",
+    developmentIdentities: [
+      { key: "synthetic", displayName: "Local developer" },
+    ],
   });
 });
+
+it.each(
+  [
+    [],
+    Array.from({ length: 9 }, (_, index) => ({ key: `synthetic-${index}` })),
+    [{ key: "same" }, { key: "same" }],
+    [{ key: "" }],
+    [{ key: "x".repeat(256) }],
+    [{ key: "non-ascii-\u00e9" }],
+    [{ key: "synthetic\n" }],
+    [{ key: "synthetic", displayName: "\u0001" }],
+    [{ key: "synthetic", displayName: "\ud800" }],
+    [{ key: "synthetic", displayName: "\u{1f642}".repeat(129) }],
+    [{ key: "synthetic", isInitialAdministrator: true }],
+  ].map((identities) => ({ identities })),
+)(
+  "refuses invalid configured Development choices before projecting them",
+  async ({ identities }) => {
+    await writeFile(
+      path,
+      JSON.stringify({
+        version: "1",
+        mode: "development",
+        publicOrigin: "http://127.0.0.1:3000",
+        development: { enabled: true, identities },
+      }),
+    );
+    await expect(
+      identityConfiguration({
+        KOFTE_AUTH_CONFIG_FILE: path,
+        ASPNETCORE_ENVIRONMENT: "Development",
+      }),
+    ).rejects.toBeInstanceOf(TypeError);
+  },
+);

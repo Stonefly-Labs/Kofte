@@ -2,10 +2,18 @@ import { randomBytes } from "node:crypto";
 import { isCurrentIdentity } from "@kofte/bootstrap-contract/identity";
 import {
   identityConfiguration,
+  rejectDuplicateProperties,
   type IdentityAdapterConfiguration,
 } from "./identityConfiguration";
 
-type Route = "context" | "login" | "callback" | "me" | "enrollment" | "signOut";
+type Route =
+  | "context"
+  | "login"
+  | "callback"
+  | "me"
+  | "enrollment"
+  | "signOut"
+  | "development";
 const routes = {
   context: ["GET", "/api/identity/v1/browser-context"],
   login: ["POST", "/auth/login"],
@@ -13,6 +21,7 @@ const routes = {
   me: ["GET", "/api/identity/v1/me"],
   enrollment: ["POST", "/api/identity/v1/first-administrator"],
   signOut: ["POST", "/api/identity/v1/sign-out"],
+  development: ["POST", "/api/identity/v1/development-session"],
 } as const;
 const privacy = {
   "Cache-Control": "no-store",
@@ -51,8 +60,9 @@ export async function forwardIdentity(
       expired,
     ]);
     if (
-      configuration.mode !== "oidc" &&
-      (route === "login" || route === "callback")
+      (configuration.mode !== "oidc" &&
+        (route === "login" || route === "callback")) ||
+      (configuration.mode !== "development" && route === "development")
     )
       return new Response(null, { status: 404, headers: privacy });
     if (request.method !== method)
@@ -123,15 +133,29 @@ export async function forwardIdentity(
         let value: unknown;
         try {
           value = JSON.parse(body);
+          rejectDuplicateProperties(body);
         } catch (error) {
-          if (!(error instanceof SyntaxError)) throw error;
+          if (!(error instanceof SyntaxError || error instanceof TypeError))
+            throw error;
           throw new IdentityInputError();
         }
         if (
           typeof value !== "object" ||
           value === null ||
           Array.isArray(value) ||
-          Object.keys(value).length !== 1 ||
+          Object.keys(value).length !== 1
+        )
+          return problem("identity_request_invalid");
+        if (route === "development") {
+          if (
+            !("identityKey" in value) ||
+            typeof value.identityKey !== "string" ||
+            !configuration.developmentIdentities?.some(
+              (choice) => choice.key === value.identityKey,
+            )
+          )
+            return problem("identity_request_invalid");
+        } else if (
           !("authorization" in value) ||
           typeof value.authorization !== "string" ||
           !/^[A-Za-z0-9_-]{43}$/.test(value.authorization) ||
@@ -209,8 +233,15 @@ export async function forwardIdentity(
     )
       throw new TypeError("identity_upstream_invalid");
     const value: unknown = JSON.parse(text);
-    if (upstream.status === 200 && route === "me" && isCurrentIdentity(value)) {
-      if (value.identityMode !== configuration.mode)
+    if (
+      upstream.status === 200 &&
+      (route === "me" || route === "development") &&
+      isCurrentIdentity(value)
+    ) {
+      if (
+        value.identityMode !== configuration.mode ||
+        (route === "development" && value.isInitialAdministrator)
+      )
         throw new TypeError("identity_upstream_invalid");
       return json(
         {
@@ -436,6 +467,7 @@ function responseCookies(
       !attributes.includes("httponly") ||
       !attributes.includes("samesite=lax") ||
       attributeNames.includes("domain") ||
+      (configuration.mode === "development" && attributes.includes("secure")) ||
       (configuration.mode === "oidc" && !attributes.includes("secure"))
     )
       throw new TypeError("identity_upstream_invalid");
