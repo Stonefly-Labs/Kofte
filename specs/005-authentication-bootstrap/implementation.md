@@ -1,7 +1,7 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement in progress; deadline integration resolved and T001-T014 complete (14/100), no working login yet.
-**Stage / date:** implement, 2026-10-26.
+**Result:** implement in progress; T001-T036 complete (36/100); original stage resumed after verified live-adapter cleanup.
+**Stage / date:** implement, 2026-10-26; continued 2026-10-27.
 **Assessed baseline:** `6df9eebdcfa6b273126b0c51c272d1b2c2f953e6`.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
 `specs/005-authentication-bootstrap`.
@@ -1884,3 +1884,166 @@ checks (`40460031671`) and eight passing product jobs, including PostgreSQL
 integration and failure propagation; contract and recovery were still running
 in product run `40460031691`. This is not a CI result for the adapter checkpoint,
 a diagnosis of the prior timeouts or a completed product matrix.
+
+## T034–T036: verified live adapters and accessible identity entry
+
+The original implement stage was resumed through the driver helper on the same
+branch and draft PR. T001–T036 are now complete (36/100); T037–T100 remain
+unchecked. This is continuing implementation, not a feature/stage handoff.
+Published `f89c1ec` has all eleven CI contexts passing; that observation is not
+CI evidence for these newer working-tree changes.
+
+The owned parity probe reproduced the post-success Next-build `EPERM`.
+Inspection of that exact group found no members, but the OS timing/cause is
+not established. The narrow repair accepts SIGTERM `PermissionError` only
+after the leader has exited **and** a signal-zero kernel probe reports the
+entire group absent. A live or unverifiable group still fails. Output readers,
+budgets, ownership and output scanning are unchanged.
+
+- Initial red: the two new `VerifyTests` selections for absent versus
+  present/unverifiable groups produced one error and two subtest failures.
+  `python3 -m unittest scripts.tests.test_verify -v` then passed **51 tests**.
+- With the normal build and repaired cleanup, the session-owned
+  `identity-adapter-runtime.py` passed all thirteen named steps, including
+  **sixteen actual host/Next HTTP observations**, cleanup and output scan.
+  This owned SQLite/Development probe is adapter parity, not production
+  OIDC browser-login evidence.
+
+T035/T036 deliver `/identity` with the existing design primitives, a
+non-personal dynamic/no-store shell, parallel bounded fresh context/current-user
+checks, an in-memory CSRF token, deliberate native sign-in and only the
+reviewed `/` or `/identity` returns. Identity is cleared on failed verification,
+expiry, blur/hidden or refresh; returning revalidates it. No session material
+is put in JavaScript, storage, SSR or analytics. Fixed callback notices and
+validated correlation references never render provider/detail text.
+Development is labeled but selection remains T074. Enrollment and sign-out
+remain their later tasks.
+
+- Initial UI red was a missing implementation import; no tests ran. Eleven
+  state/render cases first passed. A separate safe-reference regression then
+  genuinely failed before the validated reference projection was added.
+- `npm run test:unit --workspace apps/web` passed **91 tests in six files**,
+  including thirteen new identity state/render tests.
+- `npm run lint --workspace apps/web`, `npm run typecheck --workspace apps/web`,
+  `npm run build --workspace apps/web`, `npm run lint --workspace tests/e2e`,
+  `npm run typecheck --workspace tests/e2e` and `npm run format:check` passed.
+- `python3 scripts/verify.py --suite browser --provider sqlite` was refused
+  by argument validation (exit 2): browser has a fixed provider profile.
+  The corrected **`python3 scripts/verify.py --suite browser` passed** all
+  nineteen named runtime/build/test/cleanup/scanning steps. Its actual
+  discovery includes `identity.spec.ts`: the three new tests observed the
+  private non-personal Development shell, real owned host loss/retry within
+  five seconds, and 320px/200% reflow, visible keyboard focus and no
+  serious/critical axe findings. Existing bootstrap/browser tests also ran.
+- `python3 scripts/check_repository.py`,
+  `python3 -m unittest discover -s scripts/tests -v` (**123 tests**) and
+  `git diff --check` passed before the subsequent .NET test-fixture additions.
+
+The first delivered both-provider `OidcBudgetTests` execution completed with
+**52 total, 50 failed, 2 passed, 0 skipped**, in 9m53.783s. All fifty failures
+were the test's incorrect `Assert.Empty(events)` baseline: legitimate stopped
+preparation already committed `keys_prepared`. The source now compares exact
+pre-login event snapshots instead of deleting/ignoring that event. The
+corrected matrix and affected crash-commit regressions are executing; neither
+T037 nor T038 is claimed complete. The new restart/reconciliation fixture and
+tests compiled with `dotnet build Kofte.slnx -c Release --no-restore
+-warnaserror --nologo` (zero warnings/errors), but build alone is not their
+required real-provider/process evidence. The newer public-recipe source is
+also still awaiting its first execution.
+
+## T037–T039 continuation: real Origin correction and unresolved browser lifecycle
+
+The original implement stage continues on its original branch/draft PR.
+T001–T036 remain checked (36/100). No browser recipe or later story is claimed
+complete, and neither reviewed checklist was changed.
+
+The corrected delivered budget cases exposed a real transport classification
+bug: `SocketsHttpHandler` wraps deliberate DNS/network policy refusal in
+`HttpRequestException`. The backchannel now preserves that inner policy
+classification instead of converting it to provider unavailability. The
+optional internal resolver seam defaults to BCL DNS; address/connected-peer
+allowlists, cancellation and all original budgets remain intact. Browser-rate
+cases now use distinct subjects so the independent eight-session user cap
+does not mask the ten-login browser limit. The earlier combined 123-case run
+failed six cases; the subsequent targeted run passed 29/30, with a PostgreSQL
+browser-context uncertainty. Its unchanged isolated rate case then passed.
+A fresh corrected combined protocol/backchannel/budget execution is running;
+these partial results are not a full green matrix.
+
+T038's real mapping/restart execution passed twenty cases and sixteen
+affected atomic/crash regressions in the preceding continuation. The fixture
+uses three fresh actual product-host processes on the retained port, and
+stopped provider reconciliation replaces the owned issuer/configuration and
+starts a fresh host. This evidence is not substituted for the unfinished
+browser recipe or current combined gate.
+
+The first actual SQLite `oidc-login` recipe returned
+`identity_browser_opaque_origin_refused`. An owned-ingress boolean observed
+the browser's actual `Origin: null` on native POST `/auth/login` under
+required `Referrer-Policy: no-referrer`. Null Origin remains refused. The
+correction is a Next Server Action in `startLoginAction.ts`, invoked by the
+sign-in form's explicit client handler. It admits exactly the two bounded
+inputs, forwards actual Origin/credential/Fetch Metadata evidence through the
+existing fixed-backend adapter, retains explicit framework antiforgery and
+the adapter's 4.5-second limit, publishes validated separate cookies through
+typed Next APIs and redirects only after that publication. The framework
+redirect is outside catches. The owned HTTPS ingress preserves public Host
+for Next's own Origin/Host verification; this never selects the backend.
+Pending, refusal and uncertain outcomes are visible, with no automatic
+mutation retry or duplicate submission. No authentication contract,
+authorization authority, privacy header or TLS/CSRF policy is relaxed.
+
+- `npm run test:unit --workspace apps/web` passed **98 tests in seven files**,
+  including the five new action cases and two added submission-state cases.
+- `npm run typecheck --workspace apps/web`,
+  `npm run lint --workspace apps/web` and
+  `npm run build --workspace apps/web` passed. The two web quality commands
+  and all 98 units were re-run successfully after the transport edits.
+- `npm run typecheck --workspace tests/e2e`,
+  `npm run lint --workspace tests/e2e` and `npm run format:check` passed
+  again after the read-only cleanup-verification refinement.
+- `dotnet build Kofte.slnx -c Release --no-restore -warnaserror --nologo`
+  passed again on the final candidate with **zero warnings/errors**.
+- `python3 scripts/check_repository.py`,
+  `python3 -m unittest discover -s scripts/tests -v` (**123 tests**) and
+  `git diff --check` passed before this documentation append.
+  `dotnet format Kofte.slnx --verify-no-changes --no-restore --verbosity quiet`
+  initially reported two whitespace findings in changed fixture code.
+  A scoped `dotnet format whitespace` correction and full verification passed.
+  Full formatting verification, the repository checker and whitespace check
+  passed again after the final fixture/documentation edits.
+
+After the Origin correction, real local HTTPS runs reached product
+login/callback/current-user, and some reached every safe-return assertion.
+**Every complete public recipe still failed.** A runner-only explanation was
+initially suspected but is not established: later standalone/native runs also
+hung or failed during browser work/closure. A native bounded browser script
+now retains the actual assertions and emits only fixed stages/codes/source
+locations, never raw browser errors, URLs, cookies or provider payloads.
+
+The speculative force-group/Python-probe supervisor was removed. The fixture
+uses normal Playwright close plus read-only, CDP-bound exact-group absence
+verification. Present groups and errors other than kernel `ESRCH` fail; no
+`EPERM`, `?E` state or elapsed timeout is treated as absence. A real local
+owned group retained a PPID-1 `?E` member and both Node/Python signal-zero
+probes returned `EPERM`; its cause/quiescence is not established. No cleanup
+success is claimed for that group. Failed/unconfirmed browser completion
+retains the owned private configuration/profile rather than deleting it.
+The distinct earlier Next-build repair still requires an exited leader and
+actual kernel absence.
+
+Instead of more unbounded local hypotheses, the existing Ubuntu browser job
+now prepares the already-pinned disposable PostgreSQL image and executes:
+
+```bash
+dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario oidc-login --provider sqlite
+dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario trust-refusal --provider sqlite
+dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario oidc-login --provider postgres
+dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario trust-refusal --provider postgres
+```
+
+These are **new pending executions**, not passing CI or T039/T093 completion.
+The job keeps ordinary certificate verification and imports only the owned
+CA into its fresh profile; no OS trust, personal profile, certificate-ignore
+switch or private artifact upload is introduced. All eleven checks on
+published `f89c1ec` passed, but are not evidence for this newer source.

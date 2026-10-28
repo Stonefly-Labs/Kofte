@@ -19,12 +19,15 @@ internal sealed class OidcBackchannel : DelegatingHandler
     private static readonly HttpRequestOptionsKey<StrongBox<int>> Connections = new("kofte.identity.connection");
     private readonly IdentityProviderConfiguration provider;
     private readonly IHttpContextAccessor accessor;
+    private readonly Func<string, CancellationToken, Task<IPAddress[]>> resolve;
     internal HttpClient Client { get; }
 
     internal OidcBackchannel(IdentityProviderConfiguration provider, IHttpContextAccessor accessor,
-        SocketsHttpHandler? transport = null)
+        SocketsHttpHandler? transport = null,
+        Func<string, CancellationToken, Task<IPAddress[]>>? resolve = null)
     {
         (this.provider, this.accessor) = (provider, accessor);
+        this.resolve = resolve ?? ((host, token) => Dns.GetHostAddressesAsync(host, token));
         transport ??= new();
         transport.AllowAutoRedirect = false;
         transport.AutomaticDecompression = DecompressionMethods.None;
@@ -110,6 +113,8 @@ internal sealed class OidcBackchannel : DelegatingHandler
         catch (Exception error) when (error is HttpRequestException or IOException or SocketException)
         {
             response?.Dispose();
+            if (error is HttpRequestException { InnerException: OidcProviderException policy })
+                throw new OidcProviderException(policy.Unavailable);
             throw new OidcProviderException(true);
         }
         catch
@@ -125,7 +130,7 @@ internal sealed class OidcBackchannel : DelegatingHandler
         if (!context.InitialRequestMessage.Options.TryGetValue(Connections, out var attempts) ||
             Interlocked.Increment(ref attempts.Value) != 1)
             throw new OidcProviderException(true);
-        var addresses = await Dns.GetHostAddressesAsync(context.DnsEndPoint.Host, token);
+        var addresses = await resolve(context.DnsEndPoint.Host, token);
         if (addresses.Length == 0 || addresses.Any(address => !Allowed(address)))
             throw new OidcProviderException(false);
         var socket = new Socket(addresses[0].AddressFamily, SocketType.Stream, ProtocolType.Tcp);

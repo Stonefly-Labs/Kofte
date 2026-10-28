@@ -37,7 +37,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 > [!IMPORTANT]
 > **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md) and [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) is now human-merged. Its accepted ledger and evidence were verified on updated main before 005 began. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) retains prior failures and unknown causes; the historical failed local gate remains failed, not waived by acceptance or merge. Spec 005 now has [authentication/bootstrap requirements](specs/005-authentication-bootstrap/spec.md) and backend login implementation in progress, not the complete browser journey. Nothing here claims production readiness or MVP completion.
 
-**Current stage: 005 / implement blocked; T001–T033 complete (33/100).** The
+**Current stage: 005 / implement running; T001–T036 complete (36/100).** The
 [implementation checkpoint](specs/005-authentication-bootstrap/implementation.md)
 records actual OIDC dependency adoption and locked inventory (403 npm / 87
 NuGet identities), an independent HTTPS issuer, owned interruption fixtures,
@@ -97,16 +97,26 @@ initial designation does not grant an unrelated action. The combined native
 commit/session/route/actor gate passes 52 tests on both stores. Generated
 identity types preserve all accepted bootstrap operations/components.
 Independent adapter/configuration tests now pass 51 cases (78 web tests total).
-T034's exact Next routes and bounded transport compile, but live host/Next
-parity is blocked before startup by the verifier's post-build process-group
-cleanup (`PermissionError`/`EPERM` after Next exits 0). T034 stays unchecked;
-67 tasks remain, including UI, enrollment, sign-out, development sessions and
-identity recovery. No complete browser journey is claimed.
+T034's exact Next routes now pass all sixteen owned live host/Next parity
+observations and verified cleanup. The verifier accepts a post-exit `EPERM`
+only when a zero-signal kernel check confirms the entire group is absent;
+present or unverifiable descendants still fail. T035/T036 deliver `/identity`,
+an accessible non-personal shell, deliberate sign-in, fresh no-store checks,
+identity-bound token renewal and stale-state clearing. All 98 web units,
+lint/types and the production build pass. Browser sign-in now uses a bounded
+Next Server Action: the actual Origin and explicit CSRF pair remain required,
+without relaxing `no-referrer` or accepting native forms' opaque Origin.
+Actual local HTTPS runs reach login/callback/current-user but still fail
+browser lifecycle/cleanup; Ubuntu CI now exercises both public login/trust
+recipes on both stores. This is pending evidence, not a passing journey.
+Sixty-four tasks remain, including
+full browser/protocol evidence, enrollment, sign-out, development sessions and
+identity recovery. No complete browser login journey is claimed yet.
 The preceding session checkpoint's CI still failed composition and PostgreSQL
 failure-propagation baseline timeouts; causes are not established or waived.
 The unchanged both-provider composition selector passed locally in 9m49s,
-without diagnosing the Linux CI failures. Resolve the owned-runtime cleanup
-failure and verify T034 before continuing on the same stage/draft PR #8;
+without diagnosing the Linux CI failures. Published `f89c1ec` subsequently
+passed all eleven CI contexts. Continue T037–T100 on the same stage/draft PR #8;
 no merge or acceptance yet.
 
 The following preserves the completed design-stage context. The

@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement blocked; T001–T033 complete (33/100)**, on
+**Current checkpoint: 005 / implement running; T001–T036 complete (36/100)**, on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
 [implementation record](../../specs/005-authentication-bootstrap/implementation.md)
@@ -32,7 +32,7 @@ The PostgreSQL recovery failure is reproduced and corrected by server-deparsed
 constraint definitions that preserve semantics across actual dump/restore;
 49 recovery/physical-format cases pass, retaining tamper refusal.
 These are foundations, not functioning login, enrollment, UI or recovery.
-Sixty-seven tasks remain unchecked. Shared T018–T020 endpoint/CSRF/default-deny
+Sixty-four tasks remain unchecked. Shared T018–T020 endpoint/CSRF/default-deny
 and private diagnostic components now have executable component/operator
 evidence, including real child termination. T021
 installs the same configuration/prepared-state/key checks, normal-lease-backed
@@ -72,18 +72,26 @@ void-returning removal API. T032 now delivers self-only `/me`, fresh scoped
 actor projection and generated identity contracts, preserving accepted health
 operations/components. The combined native/session/route/API gate passes 52
 both-provider cases, with 21 focused startup/policy/OpenAPI/issuer regressions.
-T033's independent adapter/configuration tests pass 51 cases (78 web units total),
-lint/types and direct Next build. T034 has candidate exact server-only routes,
-but remains unchecked: the actual owned host/Next parity probe fails before
-startup when post-success Next-build cleanup raises `PermissionError`/`EPERM`.
-No process-group failure is ignored or claimed as a successful runtime test.
-Resolve ownership-safe cleanup, rerun actual parity, then continue T035–T100.
-Sixty-seven tasks remain, including T034 and the browser journey.
+T033's independent adapter/configuration tests pass 51 cases. T034 now passes
+all sixteen actual owned host/Next parity observations and verified cleanup.
+A post-exit `EPERM` is accepted only after a zero-signal kernel check proves
+the entire group absent; existing or unverifiable descendants still fail.
+T035/T036 deliver the accessible `/identity` page, deliberate sign-in,
+bounded no-store identity checks, refreshed token pairs and stale-state
+clearing. All 98 web units, lint/types and production build pass.
+The real HTTPS fixture confirmed native-form opaque Origin under required
+`no-referrer`; a bounded Next Server Action now preserves real Origin/CSRF
+without weakening either policy. Local browser lifecycle/cleanup still fails.
+The original Ubuntu browser job now executes `oidc-login` and `trust-refusal`
+on SQLite and PostgreSQL; those executions are pending, not accepted evidence.
+Sixty-four tasks remain, starting with T037/T038 delivered protocol/restart
+evidence; the complete browser journey and remaining stories are not claimed.
 Session-head `ad21b2b` CI failed composition and PostgreSQL baseline timeouts;
 their causes remain unestablished. They are not erased by local passes.
 The unchanged both-provider composition selector passed locally in 588.596s
 within its original 900-second limit; this does not diagnose Linux CI timeouts.
-The original stage is blocked, not completed; no second run or later stage began.
+Published `f89c1ec` subsequently passed all eleven CI contexts. The original
+stage is resumed, not completed; no second run or later stage began.
 Use `SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap` on downstream
 commands, keep the same draft PR #8 and do not begin a second run or advance to
 converge. No intermediate merge or feature acceptance is requested.

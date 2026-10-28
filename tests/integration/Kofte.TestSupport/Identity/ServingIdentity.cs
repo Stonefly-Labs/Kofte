@@ -15,7 +15,7 @@ public sealed class ServingIdentity : IDisposable
     private readonly OwnedTestRoot root = new();
     private readonly string environment;
 
-    public ServingIdentity(string environment = "Development", OidcIssuer? issuer = null)
+    public ServingIdentity(string environment = "Development", OidcIssuer? issuer = null, Uri? publicOrigin = null)
     {
         this.environment = environment;
         try
@@ -30,7 +30,8 @@ public sealed class ServingIdentity : IDisposable
             {
                 ["version"] = "1",
                 ["mode"] = oidc ? "oidc" : "development",
-                ["publicOrigin"] = oidc ? "https://kofte-test.invalid" : WebUrl.GetLeftPart(UriPartial.Authority),
+                ["publicOrigin"] = oidc && publicOrigin is null
+                    ? "https://kofte-test.invalid" : (publicOrigin ?? WebUrl).GetLeftPart(UriPartial.Authority),
                 ["keyRingDirectory"] = KeyRingDirectory
             };
             if (oidc)

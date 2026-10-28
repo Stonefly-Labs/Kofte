@@ -450,6 +450,14 @@ class OwnedProcesses:
                 os.killpg(child.pid, signal.SIGTERM)
             except ProcessLookupError:
                 pass
+            except PermissionError:
+                if child.poll() is None:
+                    raise
+                try:
+                    os.killpg(child.pid, 0)
+                except ProcessLookupError:
+                    continue
+                raise
         deadline = time.monotonic() + 5
         for child in self.children:
             try:

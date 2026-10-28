@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "lint": "eslint .",
-    "typecheck": "tsc --strict --noEmit --skipLibCheck --types node --target ES2022 --moduleResolution bundler --module esnext *.ts",
+    "typecheck": "tsc --strict --noEmit --skipLibCheck --allowImportingTsExtensions --types node --target ES2022 --moduleResolution bundler --module esnext *.ts",
     "test": "playwright test"
   },
   "devDependencies": {

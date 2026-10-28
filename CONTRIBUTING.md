@@ -329,7 +329,7 @@ That checkpoint required human merge before 005. PR #7 is now human-merged;
 004's accepted ledger and all five acceptance artifact hashes were verified
 on updated main before beginning the new feature.
 
-**005 / implement is blocked, with T001–T033 complete (33/100)**, on
+**005 / implement is running, with T001–T036 complete (36/100)**, on
 `feature/005-authentication-bootstrap` and the same draft PR #8.
 The [implementation record](specs/005-authentication-bootstrap/implementation.md)
 preserves the provenance investigation and records actual reviewed OIDC
@@ -347,7 +347,7 @@ Transactional evidence, persistent keys and stopped preparation/reconciliation/
 revocation now have focused real-provider/key tests. Actual PostgreSQL restore
 and both-provider format regressions pass 49 cases after a narrowly diagnosed
 constraint-deparsing correction.
-Sixty-seven tasks remain unchecked. Exact user mapping is now tested on both
+Sixty-four tasks remain unchecked. Exact user mapping is now tested on both
 stores, including capacity, rollback, profile/key distinctions, three fresh
 owner processes and preserved consumed designation across explicit trust/mode
 changes. No OIDC session is established by those storage tests.
@@ -375,12 +375,21 @@ identity types. The combined both-provider native/session/endpoint gate passes
 52 cases; 21 startup/policy/OpenAPI/original-issuer regressions also pass.
 The current-user tests additionally verify escaped fresh profiles, designation,
 revocation, unavailable protection and continued denial of ungranted actions.
-T033 adds independent adapter/configuration tests: 51 pass, with 78 web units
-total, plus lint/types and direct Next build. T034's candidate fixed routes
-remain unchecked: actual host/Next parity cannot start because owned Next-build
-cleanup raises `PermissionError`/`EPERM` after exit 0. No cleanup exception is
-ignored. The driver records this blocker; fix ownership-safe cleanup and verify
-T034 before continuing. UI and the remaining stories are not delivered. The preceding
+T033 adds 51 independent adapter/configuration tests. T034 now passes all
+sixteen actual owned host/Next parity observations with verified cleanup.
+Post-exit `EPERM` is accepted only after the kernel confirms the whole group
+is absent; existing or unverifiable descendants still fail. T035/T036 deliver
+the accessible non-personal `/identity` page, bounded no-store checks, token
+renewal and safe stale-state/failure/retry handling. All 98 web units,
+lint/types/build pass. The sign-in Server Action preserves the actual Origin,
+CSRF and fixed bounded backend; it corrects confirmed native-form `Origin:
+null` under `no-referrer`, without admitting that Origin. Actual local HTTPS
+browser runs still fail lifecycle/cleanup. The existing Ubuntu browser job
+now executes both public login/trust recipes on both stores; no pass is
+claimed before those executions finish. The original implement stage is resumed; continue
+T037–T100 without an intermediate handoff. Full browser login and remaining
+stories are not yet delivered. Published `f89c1ec` passed all eleven CI contexts.
+The preceding
 session-head CI's composition and PostgreSQL baseline timeouts remain failed
 with unknown causes, not waived or replaced by local passes.
 Shared T018–T020 endpoint/CSRF/default-deny

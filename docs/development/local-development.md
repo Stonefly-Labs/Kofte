@@ -693,14 +693,35 @@ than replacing spec 001's immutable baseline. Generation
 parity checks normalize only the actual owned listener and the semantically
 equivalent omitted/empty root security list, not paths, schemas or responses.
 
-The candidate exact Next identity handlers read only public routing fields from
+The exact Next identity handlers read only public routing fields from
 the same private `KOFTE_AUTH_CONFIG_FILE`; credential references are never opened
 by the web adapter. They use the existing fixed loopback backend configuration,
 not caller Host/forwarding headers, with a 4.5-second total deadline. Independent
-transport/configuration tests and the production build pass, but **T034 is not
-verified live**: owned runtime startup is blocked by the verifier's post-build
-process-group cleanup error. See the [implementation blocker](../../specs/005-authentication-bootstrap/implementation.md#t033-and-partial-t034-bounded-next-adapters-and-runtime-verification-blocker).
-This is not a complete browser login/UI or an operator-ready identity profile.
+transport/configuration tests and all sixteen actual owned host/Next parity
+observations pass. Cleanup accepts a post-exit permission error only when
+the kernel confirms the whole group absent; it never ignores a live or
+unverifiable group. See the
+[verified adapter/UI increment](../../specs/005-authentication-bootstrap/implementation.md#t034t036-verified-live-adapters-and-accessible-identity-entry).
+The `/identity` page now presents a non-personal shell, deliberate OIDC sign-in,
+fresh no-store verification/token pairs and accessible failure/retry. Hiding or
+blurring clears the displayed identity; returning revalidates it. Checks expire
+after 4.5 seconds and never retain failed/stale identity or browser storage.
+Only `/` and `/identity` are admitted returns. Development is labeled explicitly,
+but development selection, sign-out and enrollment remain later tasks.
+Sign-in uses a Next Server Action, not native form navigation: real browsers
+sent `Origin: null` for the native POST under required `no-referrer`. The
+action preserves actual Origin/credential evidence and explicit CSRF through
+the same bounded fixed-backend adapter; null Origin is still refused.
+It publishes separately validated cookies before the framework redirect and
+does not retry mutations. Local HTTPS login/callback/current-user executes,
+but browser lifecycle/cleanup remains failing. The existing Ubuntu browser
+job now additionally runs public `oidc-login` and `trust-refusal` on each
+real store; results are pending. The private fixture admits only its CA in a
+fresh owned profile, retains ordinary TLS checks, verifies the exact browser
+group is absent after normal close, and retains private configuration/profile
+files if browser completion cannot be confirmed. No OS trust changes or
+TLS-ignore switches are used.
+This is not yet a complete browser login journey or operator-ready identity profile.
 
 The existing status browser uses only `/backend/health/ready`. This server-only fixed adapter
 forwards no caller credentials/headers and validates status, content type and

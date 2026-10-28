@@ -3,6 +3,7 @@ import io
 import json
 from pathlib import Path
 import shutil
+import signal
 import subprocess
 import tempfile
 import unittest
@@ -854,6 +855,36 @@ class VerifyTests(unittest.TestCase):
         self.assertEqual(1, signal_group.call_count)
         with self.assertRaisesRegex(verify.VerificationError, "owned_group_already_stopped"):
             group.start(["python3", "-c", "pass"])
+
+    def test_exited_group_permission_error_requires_kernel_confirmation_of_absence(self):
+        group = verify.OwnedProcesses(self.root, {})
+        child = group.start(["python3", "-c", "pass"])
+        self.assertEqual(0, child.wait(timeout=5))
+        with patch.object(verify.os, "killpg", side_effect=[
+                PermissionError(), ProcessLookupError()]) as signal_group:
+            group.stop()
+        self.assertTrue(group.stopped)
+        self.assertEqual([
+            ((child.pid, signal.SIGTERM), {}),
+            ((child.pid, 0), {}),
+        ], signal_group.call_args_list)
+
+    def test_exited_leader_does_not_hide_a_present_or_unverifiable_descendant_group(self):
+        for observation in (None, PermissionError()):
+            with self.subTest(observation=type(observation).__name__):
+                group = verify.OwnedProcesses(self.root, {})
+                child = group.start(["python3", "-c", "pass"])
+                self.assertEqual(0, child.wait(timeout=5))
+                with patch.object(verify.os, "killpg", side_effect=[
+                        PermissionError(), observation]) as signal_group:
+                    with self.assertRaises(PermissionError):
+                        group.stop()
+                self.assertFalse(group.stopped)
+                self.assertEqual([
+                    ((child.pid, signal.SIGTERM), {}),
+                    ((child.pid, 0), {}),
+                ], signal_group.call_args_list)
+                group.stop()
 
     def test_framework_stream_reader_failure_is_safe_and_cannot_pass_the_suite(self):
         class Broken(io.BytesIO):

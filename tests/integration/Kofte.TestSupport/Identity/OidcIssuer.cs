@@ -78,6 +78,7 @@ public sealed class OidcIssuer : IAsyncDisposable
     public int TokenRequests => Volatile.Read(ref tokenRequests);
     public IReadOnlyList<string> Observations => observations.ToArray();
     public string AuthorityCertificatePem => authority.ExportCertificatePem();
+    internal X509Certificate2 ServerCertificate => serverCertificate;
 
     public static async Task<OidcIssuer> CreateAsync(CancellationToken token)
     {

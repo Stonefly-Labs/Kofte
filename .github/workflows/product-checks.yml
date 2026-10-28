@@ -45,7 +45,7 @@ jobs:
             browser: false
           - name: browser
             arguments: --suite browser
-            postgres: false
+            postgres: true
             browser: true
           - name: privacy
             arguments: --suite privacy --provider both --disposable-postgres
@@ -96,6 +96,15 @@ jobs:
         env:
           VERIFICATION_ARGUMENTS: ${{ matrix.arguments }}
         run: python3 scripts/verify.py $VERIFICATION_ARGUMENTS
+      - name: Verify configured HTTPS identity through public browser recipes
+        if: matrix.name == 'browser'
+        env:
+          KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE: "true"
+        run: |
+          dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario oidc-login --provider sqlite
+          dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario trust-refusal --provider sqlite
+          dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario oidc-login --provider postgres
+          dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario trust-refusal --provider postgres
       - name: Retain safe verification reports only
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

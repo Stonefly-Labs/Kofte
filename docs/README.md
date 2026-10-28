@@ -14,7 +14,7 @@ The [technology-stack exploration](kofte-technology-stack-architecture.md) is hi
 
 ## Working in the repository
 
-**Current Spec Kit checkpoint: 005 / implement blocked, T001–T033 complete (33/100).**
+**Current Spec Kit checkpoint: 005 / implement running, T001–T036 complete (36/100).**
 The [implementation evidence](../specs/005-authentication-bootstrap/implementation.md)
 records reviewed OIDC adoption (403 npm / 87 NuGet), independent HTTPS/process
 fixtures and corpora, strict configuration/public actor-v1, and both-provider
@@ -43,10 +43,17 @@ The combined native/session/route/API gate passes 52 both-provider cases;
 21 startup/policy/OpenAPI/original-issuer regressions pass. Accepted bootstrap
 operations/components are unchanged. T033's independent adapter/configuration
 tests pass 51 cases (78 web units total), lint/types and direct Next build.
-T034's candidate routes remain unchecked: owned live parity is blocked before
-startup by Next-build process-group cleanup (`PermissionError`/`EPERM` after
-exit 0). Resolve that without ignoring descendants, then verify T034.
-UI and remaining stories are not delivered (67 unchecked tasks). The prior session head's
+T034 now passes sixteen actual owned host/Next parity observations, including
+verified cleanup; post-exit `EPERM` requires a kernel-confirmed absent group.
+T035/T036 deliver the non-personal `/identity` page and bounded fresh identity
+checks, accessible sign-in/failure/retry and token renewal. All 98 web units,
+lint/types/build pass. Sign-in uses a Next Server Action to preserve real
+Origin/CSRF under required `no-referrer`; opaque Origin remains refused.
+Actual local HTTPS browser lifecycle/cleanup still fails. Both public
+login/trust recipes now have both-store Ubuntu CI execution, pending results.
+Full browser login and remaining stories are not yet
+delivered (64 unchecked tasks). Published `f89c1ec` passed all eleven CI contexts;
+the prior session head's
 composition and PostgreSQL baseline CI timeouts remain failed, not waived.
 T018–T020 test shared route/default-deny/CSRF components, private diagnostics
 and actual operator interruption. T021 installs those boundaries in both serving paths with explicit,
@@ -68,7 +75,7 @@ passes with concrete coverage of all 29 requirements/outcomes and 22 scenarios,
 100 mapped unchecked tasks, 242 acyclic dependency edges and no actionable or
 constitutional finding at the historical analysis checkpoint.
 Specification, planning artifacts, approved ADR and both reviewed checklists
-remain unchanged; the current implementation markers are T001–T033.
+remain unchanged; the current implementation markers are T001–T036.
 The historical design checkpoint did not introduce runtime proof or acceptance;
 no intermediate merge is requested.
 See the [current workflow record](development/spec-workflow.md#invocation-and-current-progress).

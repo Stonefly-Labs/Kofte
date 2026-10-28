@@ -473,7 +473,7 @@ not one passing provider job. PR #7 is now human-merged; its accepted ledger
 and all five acceptance artifact hashes were verified on updated main before
 005 began. Historical failed checks and undiagnosed causes remain unchanged.
 
-**005 / implement is blocked after T001–T033, not a completed feature**, on
+**005 / implement is running after T001–T036, not a completed feature**, on
 `feature/005-authentication-bootstrap`. The
 [implementation checkpoint](../specs/005-authentication-bootstrap/implementation.md)
 retains the source/signature investigation and records the adopted maintained
@@ -569,14 +569,25 @@ Fresh profiles/designation, revocation and corrupt protection are tested;
 initial designation still grants no unrelated action. Additive generated
 identity contracts preserve every accepted bootstrap operation/component.
 The combined gate passes 52 both-provider native/session/route/API cases.
-Independent adapter/configuration tests pass 51 cases; 78 total web units,
-lint/types and the candidate Next route build pass. T034 remains unchecked:
-the owned live parity probe cannot start because post-build process-group
-cleanup raises `PermissionError`/`EPERM` after Next exits 0. The ledger records
-that blocker; ownership-safe cleanup and actual route verification are next.
-UI, enrollment, sign-out, development sessions and identity recovery
-remain dependent work (67 unchecked tasks); no complete browser journey
-or feature acceptance is claimed.
+Independent adapter/configuration tests pass 51 cases. T034 now passes all
+sixteen actual owned host/Next parity observations and verified cleanup:
+a post-exit `EPERM` requires a zero-signal kernel confirmation that the
+entire group is absent; present/unverifiable descendants still fail.
+T035/T036 deliver `/identity` as a non-personal, no-store shell with deliberate
+sign-in, fresh token pairs, bounded verification, escaped display and
+stale-state clearing. All 98 web units, lint/types/build pass. The UI's
+sign-in Server Action forwards actual Origin, credential evidence and the
+explicit CSRF pair through the same bounded fixed-backend adapter; validated
+cookies are published before the framework redirect. This is transport, not
+another authentication authority or a contract relaxation. A real native
+form under required `no-referrer` produced `Origin: null`, which remains
+refused. Local HTTPS runs still fail browser lifecycle/cleanup; the existing
+Ubuntu browser job now executes both public login/trust recipes on both
+stores, with no passing result claimed yet. Full browser
+login evidence, enrollment, sign-out, development sessions and identity
+recovery remain dependent work (64 unchecked tasks). Published `f89c1ec`
+passed all eleven CI contexts; no complete browser journey or feature
+acceptance is claimed.
 
 The completed specify-through-analyze history below is retained on
 `feature/005-authentication-bootstrap`. Its

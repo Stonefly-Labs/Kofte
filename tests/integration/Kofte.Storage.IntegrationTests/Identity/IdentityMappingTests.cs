@@ -6,6 +6,7 @@ using Kofte.Infrastructure.Storage;
 using Kofte.Platform.Modules.Storage;
 using Kofte.Storage.IntegrationTests.Registry;
 using Kofte.TestSupport;
+using Kofte.TestSupport.Identity;
 using Microsoft.Data.Sqlite;
 using Npgsql;
 
@@ -16,6 +17,82 @@ public abstract class IdentityMappingTests
     protected abstract string Provider { get; }
     private CancellationToken Token => TestContext.Current.CancellationToken;
     private static readonly DateTime Now = new(2030, 1, 1, 12, 0, 0, DateTimeKind.Utc);
+
+    [Fact]
+    public async Task DeliveredNativeSessionsAndExactMappingsSurviveThreeFreshProductProcessesAndProfileChanges()
+    {
+        await using var fixture = await LoginCommitFixture.CreateProductAsync(Provider, Token);
+        fixture.Protocol.DisplayName = "Original synthetic profile";
+        async Task LoginAsync()
+        {
+            var csrf = await fixture.ProductContextAsync(Token);
+            using var request = fixture.ProductLoginRequest("/identity", csrf);
+            using var start = await fixture.SendProductAsync(request, Token);
+            using var complete = await fixture.CompleteProductAsync(start, Token);
+            Assert.Equal(303, (int)complete.StatusCode);
+        }
+        async Task AssertCurrentAsync(Guid expectedId, string expectedDisplay)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, "/api/identity/v1/me");
+            using var response = await fixture.SendProductAsync(request, Token);
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+            using var body = JsonDocument.Parse(await response.Content.ReadAsByteArrayAsync(Token));
+            Assert.Equal(expectedId.ToString("D"), body.RootElement.GetProperty("userId").GetString());
+            Assert.Equal(expectedDisplay, body.RootElement.GetProperty("displayName").GetString());
+            Assert.Equal("oidc", body.RootElement.GetProperty("identityMode").GetString());
+            Assert.False(body.RootElement.GetProperty("isInitialAdministrator").GetBoolean());
+        }
+        await LoginAsync();
+        var initial = await fixture.SnapshotAsync(Token);
+        var original = Assert.Single(initial.Users);
+        var mapping = Assert.Single(initial.Mappings);
+        var created = Assert.Single(initial.Events, item => item.Code == "user_created");
+        fixture.Protocol.DisplayName = "Changed synthetic profile";
+        var processes = new HashSet<int>();
+        for (var restart = 0; restart < 3; restart++)
+        {
+            Assert.True(processes.Add(await fixture.RestartProductAsync(Token)));
+            await AssertCurrentAsync(original.Id, restart == 0 ? original.DisplayName! : "Changed synthetic profile");
+            await LoginAsync();
+            await AssertCurrentAsync(original.Id, "Changed synthetic profile");
+            var state = await fixture.SnapshotAsync(Token);
+            Assert.Equal(original.Id, Assert.Single(state.Users).Id);
+            Assert.Equal(original.CreatedAt, Assert.Single(state.Users).CreatedAt);
+            Assert.Equal(mapping, Assert.Single(state.Mappings));
+            Assert.Equal(created, Assert.Single(state.Events, item => item.Code == "user_created"));
+            Assert.Equal(initial.RegistryRevision, state.RegistryRevision);
+            Assert.Equal("disabled", state.BootstrapState);
+            Assert.All(state.Sessions, session => Assert.Equal(original.Id, session.UserId));
+        }
+        fixture.Protocol.Subject = "different-subject-with-identical-profile";
+        await LoginAsync();
+        var distinct = await fixture.SnapshotAsync(Token);
+        var other = Assert.Single(distinct.Users, value => value.Id != original.Id);
+        await AssertCurrentAsync(other.Id, "Changed synthetic profile");
+        Assert.Equal(2, distinct.Mappings.Count);
+        Assert.Equal(2, distinct.Events.Count(item => item.Code == "user_created"));
+        Assert.Equal("disabled", distinct.BootstrapState);
+        var originalIssuer = fixture.Issuer;
+        await fixture.ReconcileProductProviderAsync(Token);
+        using (var request = new HttpRequestMessage(HttpMethod.Get, "/api/identity/v1/me"))
+        using (var denied = await fixture.SendProductAsync(request, Token))
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, denied.StatusCode);
+        fixture.Protocol.DisplayName = "Changed synthetic profile";
+        await LoginAsync();
+        var replacement = await fixture.SnapshotAsync(Token);
+        var newMapping = Assert.Single(replacement.Mappings, value => value.Issuer != originalIssuer);
+        Assert.Equal(mapping.Subject, newMapping.Subject);
+        Assert.NotEqual(original.Id, newMapping.UserId);
+        Assert.NotEqual(other.Id, newMapping.UserId);
+        await AssertCurrentAsync(newMapping.UserId, "Changed synthetic profile");
+        Assert.Contains(mapping, replacement.Mappings);
+        Assert.Contains(created, replacement.Events);
+        Assert.Equal(3, replacement.Users.Count);
+        Assert.Equal(3, replacement.Events.Count(item => item.Code == "user_created"));
+        Assert.NotEqual(initial.Epoch, replacement.Epoch);
+        Assert.Equal(initial.RegistryRevision, replacement.RegistryRevision);
+        Assert.Equal("disabled", replacement.BootstrapState);
+    }
 
     [Fact]
     public async Task ConcurrentExactKeyCreatesOneStableUserAndOneTransactionalCreationEvent()
