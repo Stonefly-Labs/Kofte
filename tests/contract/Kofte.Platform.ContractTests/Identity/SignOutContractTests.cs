@@ -53,8 +53,8 @@ public abstract class SignOutContractTests
         await LoginAsync(production);
         var before = await production.SnapshotAsync(Token);
         var originalCookie = production.ProductCookieHeader;
-        var developmentCookie = development.ProductCookieHeader;
-        Assert.StartsWith("kofte-dev-session=", developmentCookie);
+        var developmentCookie = Assert.Single(development.ProductCookieHeader.Split("; "),
+            cookie => cookie.StartsWith("kofte-dev-session=", StringComparison.Ordinal));
         foreach (var cookie in new[] { developmentCookie,
             developmentCookie.Replace("kofte-dev-session=", "__Host-kofte-session=", StringComparison.Ordinal) })
             foreach (var path in new[] { "/api/identity/v1/me", "/fixture-actor" })

@@ -13,6 +13,34 @@ resolves that blocker and resumes the original implement stage. The later
 adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
 
+## Continued implementation: preserve the session-only foreign-cookie contract
+
+Actual assessed `d1c2f50` Linux run
+[40928353045](https://github.com/Stonefly-Labs/Kofte/actions/runs/40928353045)
+finds a coupled fixture regression before the retained composition selection:
+both `ActualDevelopmentCookieCannotAuthenticateProductionEvenAfterRenamingItsCookie`
+provider cases fail at the old whole-header prefix assertion. The delivered
+Development operation now correctly retains browser-context/CSRF cookies before
+its session cookie. The test incorrectly assumed the manually seeded session
+was the entire cookie header.
+
+The contract now requires exactly one actual Development session cookie from
+that header and exercises both its original and production-renamed form.
+All four 401 refusals, preserved real production cookie, unchanged authority/
+events and active production session assertions remain unchanged. No context
+cookie is discarded from the fixture or product behavior.
+
+The actual exact two-case selection first fails both providers in 22.073s
+(`contract-both-9c0af49876b14a71ac79b51d6b604ce0.json`), then passes both with
+zero skipped in 38.274s
+(`contract-both-d9b666f72ad74989a09f7e5db9e76f12.json`):
+`KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore -c Release --filter-method '*ActualDevelopmentCookieCannotAuthenticateProductionEvenAfterRenamingItsCookie' --minimum-expected-tests 2 --show-stdout None --show-stderr None`.
+Both run through the verifier's strict private XML/cleanup handling; the initial
+red command additionally uses `--no-build`. `python3 scripts/verify.py --suite quality`
+passes all 21 steps after the fix, including format, build, Python, dependencies,
+repository and whitespace. Fresh assessed CI is still required; no stage gate
+is marked complete.
+
 ## Continued implementation: locate the retained Linux contract timeout
 
 The complete retained composition selection passes locally without an extended

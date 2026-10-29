@@ -126,6 +126,9 @@ All 84 retained composition cases pass locally within the original timeout;
 Linux still times out. Failed contract reports now retain only source-known
 completed method names to locate the unfinished work, never private arguments
 or a progress-as-success fallback.
+The foreign-cookie contract now isolates the actual Development session cookie
+from its real context/CSRF siblings; both provider refusal cases pass again
+without changing any production authentication or preservation assertions.
 
 ### Historical implementation increments
 
