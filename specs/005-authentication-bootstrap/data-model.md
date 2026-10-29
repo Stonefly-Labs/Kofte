@@ -114,6 +114,9 @@ Ticket protection uses an installation/purpose-bound Data Protection protector.
 
 At most eight active sessions per user and 50,000 installation-wide; overflow
 refuses new sessions, never silently revokes a different user/session.
+The [human-directed verification amendment](../../docs/adr/0007-authentication-bootstrap-boundary.md#human-directed-verification-scope-amendment-installation-session-capacity)
+removes installation-wide session boundary testing, not this runtime policy;
+that boundary is not claimed verified.
 Idle lifetime is 30 minutes; absolute lifetime eight hours. Activity can
 advance idle expiry to `min(now + 30 minutes, absolute expiry)` but cannot
 extend absolute expiry. Cookie lifetime cannot override these server limits.

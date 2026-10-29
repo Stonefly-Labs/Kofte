@@ -121,12 +121,17 @@ replaced by a unit-only or partial passing selection.
 | US5.3 | Capture successful/rejected login/enrollment/session expiry/sign-out and operator actions across public responses/redirects, pages, logs/spans/metrics/IPC/durable events. Seeded canaries excluded outside protected exchange; truthful correlation/durability, record capacity/retention/sink failures and zero other-user profile disclosure. Privacy/contract/integration, FR-017-019; SC-007. |
 | US5.4 | Every identity state at 320px/200% text, keyboard/focus/announcements, axe zero serious/critical, safe local return and correction/retry. Measure provider-return to actionable UI <= five seconds on documented actual profile, provider interaction separately. Browser, FR-020; SC-005/007. |
 
-Boundary corpus additionally covers every numeric limit in identity-v1 at
-limit/one-over and every exact method/path/body/header/cookie/redirect allowlist,
+Boundary corpus additionally covers numeric limits in identity-v1 at
+limit/one-over except the human-rejected installation session boundary, and
+every exact method/path/body/header/cookie/redirect allowlist,
 including individual Set-Cookie preservation and no automatic proxy retry.
 Record actual request counts/bytes/time and no effects after timeout.
 Required audit-capacity failure rolls back its owner mutation; expired record
 pruning never deletes installation-retained events.
+The [ADR amendment](../../docs/adr/0007-authentication-bootstrap-boundary.md#human-directed-verification-scope-amendment-installation-session-capacity)
+removes the 50,000-session proof, exclusive seed helpers and numeric corpus
+cases from both providers. It is not skipped or replaced; the runtime cap is
+unchanged and is not claimed verified. Historical results remain historical.
 
 ## Delivered guide consumer
 

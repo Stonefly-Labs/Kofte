@@ -362,6 +362,48 @@ class RuntimeSupportTests(unittest.TestCase):
         diagnostic.clear()
         self.assertEqual({}, diagnostic.safe_fields())
 
+    def test_host_browser_timing_retains_only_known_failed_test_phases_and_bounds(self):
+        name = "Kofte.Host.IntegrationTests.Identity.SqliteKnownTests.KnownCase"
+        owner, method = name.rsplit(".", 1)
+        phase = "identity_browser_profile_capture_request_failed"
+        path = self.root / "storage.xml"
+        valid = f"{phase}:2:4300"
+        def case(result, text, selected_owner=owner):
+            return (f'<test type="{selected_owner}" method="{method}" result="{result}">'
+                    '<failure><message><![CDATA[' + text + ']]></message></failure></test>')
+        path.write_text("<assemblies>" + "".join((
+            case("Fail", "\n".join((
+                valid, "identity_browser_profile_credential_canary:2:1",
+                f"{phase}:3:1", f"{phase}:2:60001", f"{phase}:2:-1",
+                f"{phase}:2:0001", f"/private/credential-canary/{phase}:2:42",
+                f"{phase}:2:42 credential-canary",
+            ))),
+            case("Pass", f"{phase}:1:100"), case("Fail", f"{phase}:1:101", "unknown"),
+        )) + "</assemblies>")
+        diagnostic = support.CommandDiagnostics("host", codes=[phase], tests=[name])
+        diagnostic.read_storage_report(path)
+        self.assertEqual([{"phase": phase, "launch": 2, "elapsedMilliseconds": 4300}],
+                         diagnostic.safe_fields()["hostBrowserPhases"])
+        self.assertNotIn("credential", json.dumps(vars(diagnostic), default=str))
+        diagnostic.clear()
+        self.assertEqual({}, diagnostic.safe_fields())
+
+    def test_host_browser_timing_keeps_early_and_final_evidence_with_a_fixed_limit(self):
+        name = "Kofte.Host.IntegrationTests.Identity.SqliteKnownTests.KnownCase"
+        owner, method = name.rsplit(".", 1)
+        phase = "identity_browser_profile_capture_request_failed"
+        path = self.root / "storage.xml"
+        path.write_text(f'<assemblies><test type="{owner}" method="{method}" result="Fail">'
+                        '<failure><message><![CDATA[' +
+                        "\n".join(f"{phase}:2:{index}" for index in range(65)) +
+                        ']]></message></failure></test></assemblies>')
+        diagnostic = support.CommandDiagnostics("host", codes=[phase], tests=[name])
+        diagnostic.read_storage_report(path)
+        timeline = diagnostic.safe_fields()["hostBrowserPhases"]
+        self.assertEqual(64, len(timeline))
+        self.assertEqual(list(range(16)), [item["elapsedMilliseconds"] for item in timeline[:16]])
+        self.assertEqual(64, timeline[-1]["elapsedMilliseconds"])
+
     def test_failed_composition_output_retains_only_known_scenario_and_assertion_symbols(self):
         name = "Kofte.Storage.IntegrationTests.Composition.SqliteCompositionProviderTests.KnownCase"
         owner, method = name.rsplit(".", 1)

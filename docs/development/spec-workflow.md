@@ -56,11 +56,22 @@ with bounded independent fixture scheduling and verified owned administration
 cleanup. The same cases, product deadlines and within-test contention remain;
 that isolated result was not itself a passing serial/nested aggregate gate.
 The [runtime guide](../../specs/005-authentication-bootstrap/quickstart.md)
-separates delivered interfaces from exact results. The ledger records
-005/implement/blocked at the failed verification boundary, with exact local/CI
-reasons, not a pending human approval. Resume the same feature branch/draft PR
-to continue the remaining engineering work; converge/review/acceptance have
-not run.
+separates delivered interfaces from exact results. The ledger recorded
+005/implement/blocked at the failed verification boundary, not a pending human
+approval; the current invocation resumes it as running on the same branch/PR.
+The [human-directed capacity-test amendment](../adr/0007-authentication-bootstrap-boundary.md#human-directed-verification-scope-amendment-installation-session-capacity)
+removes the 50,000-session boundary tests and exclusive helpers/corpus cases,
+without changing the runtime cap or claiming it verified. Chromium capture
+diagnosis now retains bounded source-allowlisted phase timings. Local quality
+and both-provider browser gates pass; a Linux capture fix is not yet established.
+Converge/review/acceptance have not run.
+
+For focused Linux browser diagnostics on a published task branch, run
+`gh workflow run product-checks.yml --ref feature/005-authentication-bootstrap -f suite=browser`.
+This manual selection still executes the real browser suite and its public
+recipes with the existing pinned tools and guards. PR/main runs and default
+manual dispatch retain all ten contexts. Inspect actual safe artifacts and
+revision identity; a dispatch request alone is not test evidence.
 
 **Earlier implementation increments (historical):** The
 `a0c1fb0` Ubuntu browser job passes all eight HTTPS recipes, including both

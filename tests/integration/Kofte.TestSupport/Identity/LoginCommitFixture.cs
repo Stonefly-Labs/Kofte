@@ -48,8 +48,6 @@ public sealed record LoginSessionObservation(string Digest, Guid UserId, string 
     DateTime CreatedAt, DateTime IdleExpiresAt, DateTime AbsoluteExpiresAt, string State, DateTime LastSeenAt, DateTime? TerminalAt);
 public sealed record LoginSessionProbe(int Status, Guid? UserId, string? Mode, bool IsInitialAdministrator);
 public sealed record LoginCommitCrash(Guid AttemptId, bool AcknowledgementLost, bool ExitVerified);
-public sealed record LoginCapacitySnapshot(long Revision, long Users, long Sessions, long LiveSessions,
-    string OriginalDigest, string OriginalState, string AttemptState, IReadOnlyList<LoginEventObservation> Events);
 public sealed record LoginEventObservation(Guid Id, long Revision, string Code, string Correlation, Guid? UserId);
 public sealed record LoginBootstrapObservation(Guid InstallationId, string State, long Generation,
     string? Issuer, string? Subject, string? Digest, DateTime? Expires, Guid? InitialUser,
@@ -88,7 +86,6 @@ public sealed partial class LoginCommitFixture : IAsyncDisposable
     private Guid lastAttempt;
     private AuthenticationTicket? lastTicket;
     private bool reusedRefused;
-    private string? capacityOriginal;
     private bool productRoutes;
     private bool failEnrollmentCommit;
     private string? signOutFailurePhase;
@@ -950,80 +947,6 @@ public sealed partial class LoginCommitFixture : IAsyncDisposable
         await database.QueryAsync(
             $"UPDATE {database.Prefix}__kofte_bootstrap SET state='recovery_locked' WHERE singleton_key=1");
         await database.CommitAsync();
-    }
-
-    public async Task SeedGlobalCapacityAsync(CancellationToken token)
-    {
-        capacityOriginal = (await SnapshotAsync(token)).Sessions.Single().Digest;
-        using var cancel = CancellationTokenSource.CreateLinkedTokenSource(token, scope!.Token);
-        using var budget = new OperationBudget(TimeSpan.FromSeconds(90), cancel.Token);
-        await using var database = await DeadlineStore.OpenAsync(installation, budget);
-        await database.BeginWriteAsync();
-        var metadata = await IdentityStore.ReadMetadataAsync(database);
-        var tickets = application!.Services.GetRequiredService<IdentityTicketStore>();
-        var now = clock.GetUtcNow().UtcDateTime;
-        var remaining = 49_999;
-        for (var index = 0; remaining != 0; index++)
-        {
-            budget.Check();
-            var user = new IdentityUser(Guid.NewGuid(), "oidc", null, now, now);
-            await database.QueryAsync($"""
-                INSERT INTO {database.Prefix}__kofte_users (user_id,mode,created_at_utc,updated_at_utc)
-                VALUES (@id,'oidc',@now,@now)
-                """, ("id", user.UserId), ("now", now));
-            await database.QueryAsync($"""
-                INSERT INTO {database.Prefix}__kofte_external_identities (mode,issuer,subject,user_id,created_at_utc)
-                VALUES ('oidc',@issuer,@subject,@id,@now)
-                """, ("issuer", Issuer), ("subject", "capacity-seed-" + index.ToString(CultureInfo.InvariantCulture)),
-                ("id", user.UserId), ("now", now));
-            var count = Math.Min(8, remaining);
-            var parameters = new List<(string Name, object? Value)>
-            {
-                ("user", user.UserId), ("epoch", metadata.Epoch),
-                ("ticket", tickets.Protect(IdentityTicketStore.CreateTicket(user, now))),
-                ("now", now), ("idle", now.AddMinutes(30)), ("absolute", now.AddHours(8))
-            };
-            for (var session = 0; session < count; session++)
-                parameters.Add(("digest" + session.ToString(CultureInfo.InvariantCulture),
-                    IdentityTicketStore.NewReference().Digest));
-            var values = string.Join(",", Enumerable.Range(0, count).Select(session =>
-                $"(@digest{session},@user,'oidc',@epoch,@ticket,@now,@now,@idle,@absolute,'active')"));
-            await database.QueryAsync($"""
-                INSERT INTO {database.Prefix}__kofte_sessions
-                (reference_digest,user_id,mode,session_epoch,protected_ticket,created_at_utc,last_seen_at_utc,
-                 idle_expires_at_utc,absolute_expires_at_utc,state) VALUES {values}
-                """, parameters.ToArray());
-            remaining -= count;
-        }
-        await database.CommitAsync();
-    }
-
-    public async Task<LoginCapacitySnapshot> CapacitySnapshotAsync(CancellationToken token)
-    {
-        if (capacityOriginal is null) throw new InvalidOperationException("identity_fixture_capacity_not_seeded");
-        using var budget = new OperationBudget(TimeSpan.FromSeconds(1), token);
-        await using var database = await DeadlineStore.OpenAsync(installation, budget);
-        var metadata = await IdentityStore.ReadMetadataAsync(database);
-        var events = await database.QueryAsync($"""
-            SELECT event_id,security_revision,event_code,correlation_id,user_id
-            FROM {database.Prefix}__kofte_identity_events ORDER BY event_id
-            """);
-        return new(metadata.Revision,
-            (long)DeadlineStore.AssertScalar(await database.QueryAsync(
-                $"SELECT COUNT(*) FROM {database.Prefix}__kofte_users"))!,
-            (long)DeadlineStore.AssertScalar(await database.QueryAsync(
-                $"SELECT COUNT(*) FROM {database.Prefix}__kofte_sessions"))!,
-            (long)DeadlineStore.AssertScalar(await database.QueryAsync($"""
-                SELECT COUNT(*) FROM {database.Prefix}__kofte_sessions WHERE state='active'
-                AND idle_expires_at_utc>@now AND absolute_expires_at_utc>@now
-                """, ("now", clock.GetUtcNow().UtcDateTime)))!,
-            capacityOriginal, (string)DeadlineStore.AssertScalar(await database.QueryAsync(
-                $"SELECT state FROM {database.Prefix}__kofte_sessions WHERE reference_digest=@digest",
-                ("digest", capacityOriginal)))!,
-            (string)DeadlineStore.AssertScalar(await database.QueryAsync(
-                $"SELECT state FROM {database.Prefix}__kofte_login_attempts"))!,
-            events.Select(row => new LoginEventObservation(Id(row[0]), (long)row[1]!, (string)row[2]!,
-                (string)row[3]!, row[4] is null ? null : Id(row[4]))).ToArray());
     }
 
     private AuthenticationTicket CurrentCookieTicket()

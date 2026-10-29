@@ -152,7 +152,6 @@ export const identityNumericBoundaries = [
   ["session_idle_ms", 1_800_000, 1_800_001, "401_expired", "401_expired"],
   ["session_absolute_ms", 28_800_000, 28_800_001, "401_expired", "401_expired"],
   ["sessions_user", 8, 9, "admitted", "429_no_new_session"],
-  ["sessions_installation", 50_000, 50_001, "admitted", "429_no_new_session"],
   ["users", 10_000, 10_001, "admitted", "429_no_new_user"],
   ["enrollment_secret_characters", 43, 44, "admitted", "400_no_enrollment"],
   ["enrollment_random_bits", 256, 255, "admitted", "refused"],

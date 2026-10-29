@@ -13,6 +13,58 @@ resolves that blocker and resumes the original implement stage. The later
 adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
 
+## Continued implementation: human-directed session-test scope
+
+The human's explicit 2026-10-29 direction **"We will NOT test it"** removes
+the installation-wide 50,000-session boundary proof. The subsequent
+`/drive-speckit` invocation resumes only the recorded 005 implement stage,
+not feature acceptance or later MVP stages. The
+[ADR amendment](../../docs/adr/0007-authentication-bootstrap-boundary.md#human-directed-verification-scope-amendment-installation-session-capacity)
+records the changed verification obligation; the runtime cap is unchanged.
+
+Removed both shared provider-inherited storage/HTTP boundary methods, their
+exclusive population/snapshot helpers and C#/TypeScript corpus entries.
+They are not skipped, replaced or reported as passing. Other session, expiry,
+revocation, rate, evidence-retention and recovery tests remain. Historical
+50,000-session executions below retain their original results.
+
+The contract-project Release build with `--no-restore -warnaserror` passes,
+zero warnings/errors. The initial quality command failed `dotnet-version`
+because the shell had not selected the repository SDK; selecting the existing
+`artifacts/toolchain/dotnet-10.0.402` fixes that invocation without installing
+or changing any dependency.
+
+The existing C# browser projector already retained safe phase timings in its
+exception, but the Python report reduced them to code names. New regressions
+first failed because `hostBrowserPhases` was absent, then pass after preserving
+at most 64 source-allowlisted phase/launch/elapsed observations. Invalid types,
+out-of-range values, unknown codes, passed/unknown native tests and private
+suffixes are rejected. The isolated propagation reader revalidates the same
+schema rather than trusting its child report. Raw output is still discarded.
+
+The browser helper now observes fixed blur/focus/visibility categories without
+changing focus, cancellation, analyzer mode or deadlines. Capture progress adds
+the actual context request/response/body-completion boundaries. These are
+diagnostic observations, not a claimed Chromium fix. CI manual dispatch adds
+only `suite=browser`; normal PR/main and default manual runs retain all ten
+unchanged contexts, commands, pinned tools and limits.
+
+| Exact executed command | Actual result |
+| --- | --- |
+| `python3 -m unittest scripts.tests.test_runtime_support.RuntimeSupportTests.test_host_browser_timing_retains_only_known_failed_test_phases_and_bounds scripts.tests.test_runtime_support.RuntimeSupportTests.test_host_browser_timing_keeps_early_and_final_evidence_with_a_fixed_limit scripts.tests.test_failure_propagation.FailurePropagationTests.test_host_failure_evidence_is_revalidated_inside_isolated_reports -v` | Initial three errors for absent timing fields; after the correction all three pass. |
+| `node --test tests/e2e/identityPrivacyCapture.unit.ts tests/e2e/identityBrowserOwnership.unit.ts` | Passed 20 cases, zero skipped; strict missing-body, abort, framing, ownership and close guards retained. |
+| `npm exec -- prettier --write tests/e2e/identityBrowser.ts tests/e2e/identityPrivacyCapture.ts .github/workflows/product-checks.yml` | Passed; formatting unchanged. |
+| `python3 scripts/verify.py --suite quality` with the existing pinned SDK selected | Passed all 21 steps, 43.610s; `quality-none-f5079b7085ec4d9391b06d2c72009faa.json`, including 149 Python cases, formatting/build/types/dependency/contract checks. |
+| `python3 scripts/verify.py --suite browser --disposable-postgres` with the same SDK | Passed, 153.122s; `browser-none-07591db0ceb144379b8c107f17e247ca.json`. Native SQLite/PostgreSQL each passed two cases, zero skipped, with their required class admitted. |
+| `python3 scripts/check_repository.py` | Passed after documentation reconciliation. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed after documentation reconciliation: 149 cases, 6.913s. |
+| `git diff --check` | Passed after documentation reconciliation. |
+
+These are local results at `d14764f` plus this scoped working-tree increment;
+matching Linux assessment and remaining diagnosis continue. No rejected capacity
+test was run. No complete-gate or assessed-head CI pass is inferred.
+T092-T100 remain unchecked; the same implementation stage is resumed/running.
+
 ## Continued implementation: short private Chromium temporaries
 
 The verifier-owned canary repair was committed and immediately pushed as

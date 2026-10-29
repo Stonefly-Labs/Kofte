@@ -273,6 +273,10 @@ class FailurePropagationTests(unittest.TestCase):
             hostFailureCodes=["Busy"], hostDiagnosticCode="unavailable",
             hostFailureLocations=[location],
             hostFailureStatuses=["expected_303_actual_503"],
+            hostBrowserPhases=[{
+                "phase": "identity_browser_profile_capture_request_failed",
+                "launch": 2, "elapsedMilliseconds": 4300,
+            }],
         )
 
         def checked():
@@ -282,7 +286,7 @@ class FailurePropagationTests(unittest.TestCase):
 
         result = checked()
         for key in ("failedHostTests", "hostFailureCodes", "hostDiagnosticCode",
-                    "hostFailureLocations", "hostFailureStatuses"):
+                    "hostFailureLocations", "hostFailureStatuses", "hostBrowserPhases"):
             self.assertEqual(evidence["steps"][0][key], result["steps"][0][key])
         self.assertNotIn("credential-canary", json.dumps(result))
         for key, value in (
@@ -298,6 +302,15 @@ class FailurePropagationTests(unittest.TestCase):
             ("hostFailureStatuses", ["expected_303_actual_credential_canary"]),
             ("hostFailureStatuses", ["expected_303_actual_503", "expected_303_actual_503"]),
             ("hostFailureStatuses", []),
+            ("hostBrowserPhases", []),
+            ("hostBrowserPhases", [{"phase": "credential-canary", "launch": 2, "elapsedMilliseconds": 1}]),
+            ("hostBrowserPhases", [{"phase": "identity_browser_profile_capture_request_failed",
+                                   "launch": True, "elapsedMilliseconds": 1}]),
+            ("hostBrowserPhases", [{"phase": "identity_browser_profile_capture_request_failed",
+                                   "launch": 2, "elapsedMilliseconds": 60001}]),
+            ("hostBrowserPhases", [{"phase": "identity_browser_profile_capture_request_failed",
+                                   "launch": 2, "elapsedMilliseconds": 1, "extra": "credential-canary"}]),
+            ("hostBrowserPhases", evidence["steps"][0]["hostBrowserPhases"] * 65),
         ):
             with self.subTest(key=key):
                 evidence["steps"][0][key] = value

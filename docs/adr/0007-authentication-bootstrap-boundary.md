@@ -211,3 +211,19 @@ removing a decryptor, and no serve-time replacement, automatic retirement,
 rewrapping, new command, cloud dependency or provider-trust relaxation is added.
 Explicit session revocation remains the invalidation mechanism. This implements
 005's existing rotation requirement, not human acceptance or production readiness.
+
+## Human-directed verification scope amendment: installation session capacity
+
+On 2026-10-29 the human explicitly rejected the 50,000-session boundary test:
+**"We will NOT test it."** Remove that installation-wide boundary proof from
+both providers' storage and HTTP contract tests, its exclusive population/
+snapshot helpers and the C#/TypeScript numeric corpora. It is not a skipped,
+deferred or passing test, and no replacement boundary test is required.
+
+The runtime cap remains 50,000 active sessions; this decision changes evidence
+scope, not admission policy. No claim of verified behavior or scalability at
+that boundary follows. Preserve unrelated per-user, expiry, revocation,
+admission, retention, privacy and recovery checks. Earlier executed results
+remain historical, including failures. This explicitly supersedes the
+all-numeric-boundaries obligation for this one case in the plan, guide and
+T006/T088; it does not accept feature 005 or alter other delivery gates.

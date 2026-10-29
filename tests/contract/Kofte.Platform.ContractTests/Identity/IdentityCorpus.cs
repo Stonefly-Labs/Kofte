@@ -85,7 +85,6 @@ public static class IdentityCorpus
         new("session-idle", 1_800_000, 1_800_001, "ms", "401_expired", "401_expired"),
         new("session-absolute", 28_800_000, 28_800_001, "ms", "401_expired", "401_expired"),
         new("sessions-user", 8, 9, "rows", "admitted", "429_no_new_session"),
-        new("sessions-installation", 50_000, 50_001, "rows", "admitted", "429_no_new_session"),
         new("users", 10_000, 10_001, "rows", "admitted", "429_no_new_user"),
         new("enrollment-secret", 43, 44, "base64url_characters", "admitted", "400_no_enrollment"),
         new("enrollment-randomness", 256, 255, "bits", "admitted", "refused"),

@@ -21,7 +21,11 @@ export type IdentityCapturePhase =
   | "capture_storage_read"
   | "capture_responses_drained"
   | "capture_snapshot_finished"
-  | "capture_request_failed";
+  | "capture_request_failed"
+  | "capture_context_requested"
+  | "capture_context_response_started"
+  | "capture_context_body_finished"
+  | "capture_context_body_failed";
 
 const responseFailures = new Set([
   "identity_browser_capture_response_headers_failed",
@@ -92,6 +96,8 @@ export class IdentityPrivacyCapture {
 
   private readonly observeRequest = (request: Request) => {
     const url = new URL(request.url());
+    if (url.pathname === "/api/identity/v1/browser-context")
+      this.progress?.("capture_context_requested");
     const csrf = request.headers()["x-kofte-csrf"];
     if (csrf) {
       if (csrf.length < 16 || csrf.length > 8192) {
@@ -282,6 +288,8 @@ export class IdentityPrivacyCapture {
       !url.pathname.startsWith("/api/identity/v1/")
     )
       return;
+    if (url.pathname === "/api/identity/v1/browser-context")
+      this.progress?.("capture_context_response_started");
     let headers: Record<string, string>;
     try {
       headers = await response.allHeaders();
@@ -347,7 +355,11 @@ export class IdentityPrivacyCapture {
       // The pinned client's finished() never settles for requestfailed.
       // text() awaits server completion; the failure event is captured separately.
       body = await response.text();
+      if (url.pathname === "/api/identity/v1/browser-context")
+        this.progress?.("capture_context_body_finished");
     } catch {
+      if (url.pathname === "/api/identity/v1/browser-context")
+        this.progress?.("capture_context_body_failed");
       bodyFailureCode =
         url.pathname === "/api/identity/v1/me"
           ? "identity_browser_capture_identity_body_failed"

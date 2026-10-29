@@ -83,6 +83,12 @@ Initial administrator is a seed for 006, never a universal allow bit. Teams,
 machine credentials, MCP authorization/server, general audit administration,
 full UI shell and deployment/release proof remain 006/007/009/008/022-024.
 
+**Human-directed verification amendment (2026-10-29):** The
+[ADR 0007 amendment](../../docs/adr/0007-authentication-bootstrap-boundary.md#human-directed-verification-scope-amendment-installation-session-capacity)
+removes the 50,000-session boundary tests and associated corpus cases, not the
+runtime cap. Do not run or replace that proof or claim verified scalability
+at the boundary. All other validation and feature acceptance gates remain.
+
 ## Constitution Check
 
 **Pre-research assessment:** accepted 001-004 source and the clarified spec

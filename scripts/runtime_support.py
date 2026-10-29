@@ -66,6 +66,10 @@ class CommandDiagnostics:
         r"(?<![A-Za-z0-9_.-])(tests/(?:[A-Za-z0-9_.-]+/)*[A-Za-z0-9_.-]+\.cs)"
         r":line ([1-9][0-9]{0,5})(?![0-9])",
     )
+    browser_phase = re.compile(
+        r"(?m)^[ \t]*(identity_browser_profile_[a-z_]{1,100}):([12]):"
+        r"(0|[1-9][0-9]{0,4})[ \t]*\r?$",
+    )
 
     def __init__(self, kind, codes=(), tests=(), *, scenarios=(), source_lines=None):
         self.kind, self.codes = kind, frozenset(codes)
@@ -78,6 +82,7 @@ class CommandDiagnostics:
         self.failed_operations = set()
         self.failed_scenarios = set()
         self.failed_statuses = set()
+        self.browser_phases = []
         self.storage_report_code = None
         self.lock = threading.Lock()
         self.closed = False
@@ -175,6 +180,13 @@ class CommandDiagnostics:
                 if text.strip() in self.codes:
                     found.add(text.strip())
                 self.storage_codes.update(sorted(found)[:max(0, 32 - len(self.storage_codes))])
+                if self.kind == "host":
+                    for phase, launch, elapsed in self.browser_phase.findall(text):
+                        value = {"phase": phase, "launch": int(launch), "elapsedMilliseconds": int(elapsed)}
+                        if self.valid_browser_phase(value):
+                            if len(self.browser_phases) == 64:
+                                self.browser_phases.pop(16)
+                            self.browser_phases.append(value)
                 self.failed_operations.update(
                     re.findall(r"\boperation=(acquire|register|setup)\b", text)
                 )
@@ -252,6 +264,15 @@ class CommandDiagnostics:
                         or re.search(r"(?<![a-z0-9])" + re.escape(code) + r"(?![a-z0-9])", event["eventCode"])):
                     self.storage_codes.add(code)
 
+    def valid_browser_phase(self, value):
+        return (
+            type(value) is dict and set(value) == {"phase", "launch", "elapsedMilliseconds"}
+            and isinstance(value["phase"], str) and value["phase"] in self.codes
+            and value["phase"].startswith("identity_browser_profile_")
+            and type(value["launch"]) is int and value["launch"] in (1, 2)
+            and type(value["elapsedMilliseconds"]) is int and 0 <= value["elapsedMilliseconds"] <= 60000
+        )
+
     def safe_fields(self):
         with self.lock:
             if self.kind == "browser" and self.sources:
@@ -268,6 +289,8 @@ class CommandDiagnostics:
                     **({f"{prefix}FailureLocations": sorted(self.sources)} if self.sources else {}),
                     **({"hostFailureStatuses": sorted(self.failed_statuses)} if self.kind == "host"
                        and self.failed_statuses else {}),
+                    **({"hostBrowserPhases": list(self.browser_phases)} if self.kind == "host"
+                       and self.browser_phases else {}),
                     **({f"{prefix}DiagnosticCode": self.storage_report_code} if self.storage_report_code else {}),
                 }
             return {}
@@ -282,6 +305,7 @@ class CommandDiagnostics:
             self.failed_operations.clear()
             self.failed_scenarios.clear()
             self.failed_statuses.clear()
+            self.browser_phases.clear()
             self.storage_report_code = None
 
 

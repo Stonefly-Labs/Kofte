@@ -96,42 +96,6 @@ public abstract class IdentityCapacityTests
         Assert.Equal(1L, await fixture.ScalarAsync("SELECT count FROM {0}__kofte_identity_admission"));
     }
 
-    [Fact]
-    public async Task FiftiethThousandthSessionCommitsButTheNextCannotEvictAnyUserOrReference()
-    {
-        await using var fixture = await AdmissionFixture.CreateAsync(Provider, Token);
-        var owner = await CreateUserSessionAsync(fixture, "owner", Key);
-        await SeedSessionCapacityAsync(fixture);
-        Assert.Equal(49_999L, await fixture.ScalarAsync("SELECT COUNT(*) FROM {0}__kofte_sessions"));
-        var other = await RowsAsync(fixture, "__kofte_sessions",
-            "WHERE reference_digest=@digest", ("digest", 1.ToString("x64", CultureInfo.InvariantCulture)));
-        var ownerBefore = await RowsAsync(fixture, "__kofte_sessions", "WHERE reference_digest=@digest", ("digest", Key));
-        var lastDigest = new string('e', 64);
-        using (var budget = LocalBudget())
-            await fixture.Store().MutateAsync(budget, change =>
-                IdentitySessionStore.CreateAsync(change, owner.User, lastDigest, [1, 2, 3], Now));
-        await ReopenAsync(fixture);
-        var metadata = await fixture.MetadataAsync();
-        var events = await RowsAsync(fixture, "__kofte_identity_events");
-        using (var budget = LocalBudget())
-        {
-            var refused = await Assert.ThrowsAsync<IdentityAdmissionException>(() => fixture.Store().MutateAsync(budget,
-                change => IdentitySessionStore.CreateAsync(change, owner.User, new string('d', 64), [4], Now)));
-            Assert.Null(refused.RetryAt);
-        }
-        Assert.Equal(metadata, await fixture.MetadataAsync());
-        Assert.Equal(events, await RowsAsync(fixture, "__kofte_identity_events"));
-        Assert.Equal(50_000L, await fixture.ScalarAsync("SELECT COUNT(*) FROM {0}__kofte_sessions"));
-        Assert.Equal(50_000L, await fixture.ScalarAsync(
-            "SELECT COUNT(DISTINCT reference_digest) FROM {0}__kofte_sessions WHERE state='active' AND terminal_at_utc IS NULL"));
-        Assert.Equal(6251L, await fixture.ScalarAsync("SELECT COUNT(*) FROM {0}__kofte_users"));
-        Assert.Equal(6251L, await fixture.ScalarAsync("SELECT COUNT(*) FROM {0}__kofte_external_identities"));
-        Assert.Equal(other, await RowsAsync(fixture, "__kofte_sessions",
-            "WHERE reference_digest=@digest", ("digest", 1.ToString("x64", CultureInfo.InvariantCulture))));
-        Assert.Equal(ownerBefore, await RowsAsync(fixture, "__kofte_sessions", "WHERE reference_digest=@digest", ("digest", Key)));
-        Assert.Equal(0L, await fixture.ScalarAsync("SELECT registry_revision FROM {0}__kofte_installation"));
-    }
-
     [Theory]
     [InlineData(-1)]
     [InlineData(0)]
@@ -443,41 +407,6 @@ public abstract class IdentityCapacityTests
         return JsonSerializer.Serialize(rows.Order(StringComparer.Ordinal));
     }
 
-    private async Task SeedSessionCapacityAsync(AdmissionFixture fixture)
-    {
-        await fixture.ExecuteAsync(Provider == "sqlite" ? """
-            WITH RECURSIVE n(value) AS (SELECT 1 UNION ALL SELECT value+1 FROM n WHERE value<6250)
-            INSERT INTO __kofte_users (user_id,mode,created_at_utc,updated_at_utc)
-            SELECT printf('10000000-0000-0000-0000-%012x',value),'oidc',@now,@now FROM n
-            """ : """
-            INSERT INTO kofte_system.__kofte_users (user_id,mode,created_at_utc,updated_at_utc)
-            SELECT ('10000000-0000-0000-0000-' || lpad(to_hex(value),12,'0'))::uuid,'oidc',@now,@now
-            FROM generate_series(1,6250) AS n(value)
-            """, ("now", Now));
-        await fixture.ExecuteAsync("""
-            INSERT INTO {0}__kofte_external_identities (mode,issuer,subject,user_id,created_at_utc)
-            SELECT mode,'https://seed.invalid',CAST(user_id AS TEXT),user_id,created_at_utc
-            FROM {0}__kofte_users WHERE user_id<>@owner
-            """, ("owner", IdentityValues.Id(await fixture.ScalarAsync(
-                "SELECT user_id FROM {0}__kofte_sessions WHERE reference_digest=@digest", ("digest", Key)))));
-        var epoch = (await fixture.MetadataAsync()).Epoch;
-        await fixture.ExecuteAsync(Provider == "sqlite" ? """
-            WITH RECURSIVE n(value) AS (SELECT 1 UNION ALL SELECT value+1 FROM n WHERE value<49998)
-            INSERT INTO __kofte_sessions
-            (reference_digest,user_id,mode,session_epoch,protected_ticket,created_at_utc,last_seen_at_utc,
-             idle_expires_at_utc,absolute_expires_at_utc,state)
-            SELECT printf('%064x',value),printf('10000000-0000-0000-0000-%012x',(value-1)/8+1),
-                   'oidc',@epoch,@ticket,@now,@now,@idle,@absolute,'active' FROM n
-            """ : """
-            INSERT INTO kofte_system.__kofte_sessions
-            (reference_digest,user_id,mode,session_epoch,protected_ticket,created_at_utc,last_seen_at_utc,
-             idle_expires_at_utc,absolute_expires_at_utc,state)
-            SELECT lpad(to_hex(value),64,'0'),('10000000-0000-0000-0000-' || lpad(to_hex((value-1)/8+1),12,'0'))::uuid,
-                   'oidc',@epoch,@ticket,@now,@now,@idle,@absolute,'active'
-            FROM generate_series(1,49998) AS n(value)
-            """, ("epoch", epoch), ("ticket", new byte[] { 7 }), ("now", Now),
-            ("idle", Now.AddMinutes(30)), ("absolute", Now.AddHours(8)));
-    }
 }
 
 [Trait("Provider", "sqlite")]

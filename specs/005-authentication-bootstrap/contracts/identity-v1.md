@@ -169,6 +169,9 @@ No test-only endpoint or permission bypass ships in production.
 These are design acceptance bounds, not measurements. Tests use a controlled
 clock for lifetime boundaries, real wall-clock deadlines for effects, and
 one-over-limit cases. Do not lengthen inherited startup/maintenance budgets.
+The [human-directed verification amendment](../../../docs/adr/0007-authentication-bootstrap-boundary.md#human-directed-verification-scope-amendment-installation-session-capacity)
+excludes the installation-wide 50,000-session boundary from testing and numeric
+corpora. Its runtime cap below remains unchanged and is not claimed verified.
 
 | Boundary | Limit and refusal |
 | --- | --- |

@@ -214,8 +214,9 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
                 location_key = f"{kind}FailureLocations"
                 status_key = f"{kind}FailureStatuses"
                 report_key = f"{kind}DiagnosticCode"
+                phase_key = f"{kind}BrowserPhases"
                 if not any(key in step for key in (
-                    test_key, code_key, operation_key, scenario_key, location_key, status_key, report_key,
+                    test_key, code_key, operation_key, scenario_key, location_key, status_key, report_key, phase_key,
                 )):
                     continue
                 diagnostic = api.command_diagnostics(step["command"])
@@ -239,6 +240,12 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
                             or len(set(values)) != len(values)):
                         raise error("failure_child_report_unsafe")
                     selected[key] = values
+                if phase_key in step:
+                    values = step[phase_key]
+                    if (kind != "host" or not isinstance(values, list) or not 1 <= len(values) <= 64
+                            or any(not diagnostic.valid_browser_phase(value) for value in values)):
+                        raise error("failure_child_report_unsafe")
+                    selected[phase_key] = values
                 if location_key in step:
                     values = step[location_key]
                     if (not isinstance(values, list) or not 1 <= len(values) <= 32

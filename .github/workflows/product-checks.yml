@@ -6,6 +6,12 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      suite:
+        description: Run the full matrix or targeted browser diagnostics
+        type: choice
+        options: [all, browser]
+        default: all
 
 permissions:
   contents: read
@@ -18,47 +24,23 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - name: quality
-            arguments: --suite quality
-            postgres: false
-            browser: false
-          - name: unit
-            arguments: --suite unit
-            postgres: false
-            browser: false
-          - name: integration-sqlite
-            arguments: --suite integration --provider sqlite
-            postgres: false
-            browser: false
-          - name: integration-postgres
-            arguments: --suite integration --provider postgres --disposable-postgres
-            postgres: true
-            browser: false
-          - name: recovery
-            arguments: --suite recovery --provider both --disposable-postgres
-            postgres: true
-            browser: true
-          - name: contract
-            arguments: --suite contract --provider both --disposable-postgres
-            postgres: true
-            browser: true
-          - name: browser
-            arguments: --suite browser --disposable-postgres
-            postgres: true
-            browser: true
-          - name: privacy
-            arguments: --suite privacy --provider both --disposable-postgres
-            postgres: true
-            browser: true
-          - name: startup
-            arguments: --suite startup --warm-starts 10
-            postgres: false
-            browser: true
-          - name: failure-propagation
-            arguments: --suite failure-propagation --disposable-postgres
-            postgres: true
-            browser: true
+        include: >-
+          ${{ fromJSON(
+            github.event_name == 'workflow_dispatch' && inputs.suite == 'browser' &&
+            '[{"name":"browser","arguments":"--suite browser --disposable-postgres","postgres":true,"browser":true}]' ||
+            '[
+              {"name":"quality","arguments":"--suite quality","postgres":false,"browser":false},
+              {"name":"unit","arguments":"--suite unit","postgres":false,"browser":false},
+              {"name":"integration-sqlite","arguments":"--suite integration --provider sqlite","postgres":false,"browser":false},
+              {"name":"integration-postgres","arguments":"--suite integration --provider postgres --disposable-postgres","postgres":true,"browser":false},
+              {"name":"recovery","arguments":"--suite recovery --provider both --disposable-postgres","postgres":true,"browser":true},
+              {"name":"contract","arguments":"--suite contract --provider both --disposable-postgres","postgres":true,"browser":true},
+              {"name":"browser","arguments":"--suite browser --disposable-postgres","postgres":true,"browser":true},
+              {"name":"privacy","arguments":"--suite privacy --provider both --disposable-postgres","postgres":true,"browser":true},
+              {"name":"startup","arguments":"--suite startup --warm-starts 10","postgres":false,"browser":true},
+              {"name":"failure-propagation","arguments":"--suite failure-propagation --disposable-postgres","postgres":true,"browser":true}
+            ]'
+          ) }}
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: "1"
       NEXT_TELEMETRY_DISABLED: "1"

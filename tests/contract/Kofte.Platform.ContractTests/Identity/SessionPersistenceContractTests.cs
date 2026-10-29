@@ -142,43 +142,6 @@ public abstract class SessionPersistenceContractTests
         Assert.Equal("pending", pending.State);
     }
 
-    [Fact]
-    public async Task InstallationLimitRefusesTheNextSessionButAdmitsFreshLoginAfterStoredSessionsExpire()
-    {
-        var clock = new SessionClock();
-        await using var fixture = await LoginCommitFixture.CreateAsync(Provider, Token, clock);
-        Assert.Equal(303, (await fixture.LoginAsync(LoginCommitFault.None, Token)).Status);
-        await fixture.SeedGlobalCapacityAsync(Token);
-        var before = await fixture.CapacitySnapshotAsync(Token);
-        Assert.Equal(50_000, before.Sessions);
-        Assert.Equal(50_000, before.LiveSessions);
-        Assert.Equal(6_251, before.Users);
-        var refusal = await fixture.LoginAsync(LoginCommitFault.None, Token);
-        Assert.Equal(429, refusal.Status);
-        Assert.False(refusal.SessionCookieIssued);
-        var after = await fixture.CapacitySnapshotAsync(Token);
-        Assert.Equal(before.Revision + 1, after.Revision);
-        Assert.Equal(before.Sessions, after.Sessions);
-        Assert.Equal(before.Users, after.Users);
-        Assert.Equal(before.OriginalDigest, after.OriginalDigest);
-        Assert.Equal("active", after.OriginalState);
-        Assert.Equal(before.Events, after.Events);
-        Assert.Equal("pending", after.AttemptState);
-        clock.Now = clock.Now.AddMinutes(30);
-        var corrected = await fixture.LoginAsync(LoginCommitFault.None, Token);
-        Assert.Equal(303, corrected.Status);
-        Assert.True(corrected.SessionCookieIssued);
-        var fresh = await fixture.CapacitySnapshotAsync(Token);
-        Assert.Equal(50_001, fresh.Sessions);
-        Assert.Equal(1, fresh.LiveSessions);
-        Assert.Equal(before.Users, fresh.Users);
-        Assert.Equal(before.OriginalDigest, fresh.OriginalDigest);
-        Assert.Equal("active", fresh.OriginalState);
-        Assert.Equal("consumed", fresh.AttemptState);
-        Assert.Equal(before.Events.Count + 1, fresh.Events.Count);
-        Assert.Equal(200, (await fixture.ProbeAsync(Token)).Status);
-    }
-
     private sealed class SessionClock : TimeProvider
     {
         internal DateTimeOffset Now { get; set; } = new(2030, 1, 1, 12, 0, 0, TimeSpan.Zero);

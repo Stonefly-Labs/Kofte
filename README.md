@@ -43,7 +43,7 @@ explicit Development identity and operational recovery are implemented.
 The owning browser gate passes locally, and a separate Linux Chromium launch
 failure is reproduced and corrected; complete local/CI verification still fails.
 These are engineering failures, not a request for human approval.
-The ledger records failed verification (`blocked`), not feature completion.
+The ledger resumes that failed verification boundary as `running`, not complete.
 The same branch/draft PR continues from the
 [current evidence](specs/005-authentication-bootstrap/implementation.md#continued-implementation-short-private-chromium-temporaries).
 The [runtime guide](specs/005-authentication-bootstrap/quickstart.md) distinguishes
@@ -61,6 +61,17 @@ fresh private profile-owned temporary root, retaining TLS/ownership/cleanup
 checks. The new local complete gate passes seven suites but fails contract,
 PostgreSQL privacy and isolated propagation baseline; no full pass is claimed.
 T092–T100 remain open; no feature acceptance is claimed.
+
+The [human-directed validation amendment](docs/adr/0007-authentication-bootstrap-boundary.md#human-directed-verification-scope-amendment-installation-session-capacity)
+removes installation-wide 50,000-session boundary testing, exclusive seed
+helpers and numeric corpus cases from both providers. The runtime cap remains
+unchanged and is not claimed verified; unrelated coverage is retained.
+The same implement stage now resumes with Chromium response capture as its
+first diagnostic priority, followed by the remaining native/public failures.
+Local quality and both-provider browser checks pass with bounded phase timings
+now preserved in safe reports; this diagnostic increment is not a claimed
+Linux response-capture fix. Manual CI supports `suite=browser`; ordinary PR/main
+checks still run the complete matrix.
 
 ### Historical implementation increments
 
