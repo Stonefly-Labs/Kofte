@@ -27,6 +27,72 @@ function response(overrides: Partial<Response>): Response {
   } as unknown as Response;
 }
 
+test("journey failure remains the cause when strict capture cleanup also fails", async () => {
+  const phases: IdentityCapturePhase[] = [];
+  const page = new EventEmitter();
+  const capture = new IdentityPrivacyCapture(
+    page as unknown as Page,
+    [],
+    "development",
+    (phase) => phases.push(phase),
+  );
+  const journeyFailure = new Error("primary-journey-failure");
+  await assert.rejects(
+    () =>
+      capture.run(async () => {
+        page.emit(
+          "response",
+          response({
+            text: async () => {
+              throw new Error("private-protocol-failure");
+            },
+          }),
+        );
+        throw journeyFailure;
+      }),
+    (error: unknown) =>
+      error instanceof AggregateError &&
+      error.message === "identity_browser_capture_identity_body_failed" &&
+      error.cause === journeyFailure &&
+      error.errors[0] === journeyFailure &&
+      error.errors[1] instanceof Error &&
+      !error.message.includes("private-protocol-failure"),
+  );
+  assert.ok(phases.includes("journey_failure_observed"));
+  assert.ok(phases.includes("capture_cleanup_failed"));
+  assert.equal(page.listenerCount("response"), 0);
+});
+
+test("a successful journey still fails when a body is unavailable to the capture", async () => {
+  const phases: IdentityCapturePhase[] = [];
+  const page = new EventEmitter();
+  const capture = new IdentityPrivacyCapture(
+    page as unknown as Page,
+    [],
+    "development",
+    (phase) => phases.push(phase),
+  );
+  await assert.rejects(
+    () =>
+      capture.run(async () => {
+        page.emit(
+          "response",
+          response({
+            text: async () => {
+              throw new Error(
+                "Protocol error (Network.getResponseBody): No resource with given identifier found",
+              );
+            },
+          }),
+        );
+      }),
+    { message: "identity_browser_capture_identity_body_failed" },
+  );
+  assert.ok(phases.includes("capture_body_resource_missing"));
+  assert.ok(phases.includes("capture_identity_body_failed"));
+  assert.ok(!phases.includes("journey_failure_observed"));
+});
+
 test("snapshot progress identifies the exact pending capture boundary", async () => {
   const phases: IdentityCapturePhase[] = [];
   let releaseCookies!: (cookies: []) => void;

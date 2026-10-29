@@ -116,6 +116,12 @@ public static class IdentityBrowserFailureDiagnostics
         ["owned_process_group_unverified"] = "identity_browser_profile_owned_process_group_unverified",
         ["owned_close_finished"] = "identity_browser_profile_owned_close_finished",
         ["trusted_journey_started"] = "identity_browser_profile_trusted_journey_started",
+        ["development_journey_started"] = "identity_browser_profile_development_journey_started",
+        ["development_selection_started"] = "identity_browser_profile_development_selection_started",
+        ["development_selection_finished"] = "identity_browser_profile_development_selection_finished",
+        ["sign_out_started"] = "identity_browser_profile_sign_out_started",
+        ["signed_in_accessibility_started"] = "identity_browser_profile_signed_in_accessibility_started",
+        ["signed_in_accessibility_finished"] = "identity_browser_profile_signed_in_accessibility_finished",
         ["loading_accessibility_started"] = "identity_browser_profile_loading_accessibility_started",
         ["loading_accessibility_finished"] = "identity_browser_profile_loading_accessibility_finished",
         ["signed_out_accessibility_started"] = "identity_browser_profile_signed_out_accessibility_started",
@@ -131,6 +137,12 @@ public static class IdentityBrowserFailureDiagnostics
         ["capture_context_response_started"] = "identity_browser_profile_capture_context_response_started",
         ["capture_context_body_finished"] = "identity_browser_profile_capture_context_body_finished",
         ["capture_context_body_failed"] = "identity_browser_profile_capture_context_body_failed",
+        ["capture_identity_requested"] = "identity_browser_profile_capture_identity_requested",
+        ["capture_identity_response_started"] = "identity_browser_profile_capture_identity_response_started",
+        ["capture_identity_body_finished"] = "identity_browser_profile_capture_identity_body_finished",
+        ["capture_identity_body_failed"] = "identity_browser_profile_capture_identity_body_failed",
+        ["capture_body_resource_missing"] = "identity_browser_profile_capture_body_resource_missing",
+        ["capture_body_target_closed"] = "identity_browser_profile_capture_body_target_closed",
         ["client_window_blurred"] = "identity_browser_profile_client_window_blurred",
         ["client_window_focused"] = "identity_browser_profile_client_window_focused",
         ["client_document_hidden"] = "identity_browser_profile_client_document_hidden",
@@ -202,6 +214,7 @@ public static class IdentityBrowserFailureDiagnostics
     public static string DescribePlaywrightFailure(ProcessOutput result)
     {
         var evidence = new List<string>();
+        var console = new List<string>();
         if (System.Text.Encoding.UTF8.GetByteCount(result.Stdout) is > 0 and <= 1_000_000)
         {
             try
@@ -211,7 +224,7 @@ public static class IdentityBrowserFailureDiagnostics
             }
             catch (JsonException) { }
         }
-        return DescribeFailure(new(result.ExitCode, "", string.Join('\n', evidence)), timedOut: false);
+        return DescribeFailure(new(result.ExitCode, string.Join('\n', console), string.Join('\n', evidence)), timedOut: false);
 
         void Collect(JsonElement value)
         {
@@ -220,9 +233,38 @@ public static class IdentityBrowserFailureDiagnostics
             else if (value.ValueKind == JsonValueKind.Object)
                 foreach (var property in value.EnumerateObject())
                 {
+                    if (property.Name == "stdout" && property.Value.ValueKind == JsonValueKind.Array)
+                    {
+                        foreach (var item in property.Value.EnumerateArray())
+                            if (item.ValueKind == JsonValueKind.Object &&
+                                item.EnumerateObject().Count() == 1 &&
+                                item.TryGetProperty("text", out var text) &&
+                                text.ValueKind == JsonValueKind.String &&
+                                text.GetString() is { Length: <= 513 } line)
+                                console.Add(line);
+                        continue;
+                    }
                     if (property.Name is "message" or "stack" && property.Value.ValueKind == JsonValueKind.String)
                     {
                         var text = property.Value.GetString()!;
+                        foreach (Match matcher in Regex.Matches(text,
+                            @"\b(toHaveText|toContainText|toHaveAttribute|toBeFocused|toBeVisible|toHaveCount|toBe|toEqual|toMatch|toBeLessThan)\(",
+                            RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(100)))
+                        {
+                            var code = matcher.Groups[1].Value switch
+                            {
+                                "toHaveText" or "toContainText" => "identity_browser_assert_text_failed",
+                                "toHaveAttribute" => "identity_browser_assert_attribute_failed",
+                                "toBeFocused" => "identity_browser_assert_focus_failed",
+                                "toBeVisible" => "identity_browser_assert_visibility_failed",
+                                "toHaveCount" => "identity_browser_assert_count_failed",
+                                "toBe" or "toEqual" => "identity_browser_assert_equal_failed",
+                                "toMatch" => "identity_browser_assert_match_failed",
+                                "toBeLessThan" => "identity_browser_assert_latency_failed",
+                                _ => throw new InvalidOperationException("identity_browser_matcher_unknown")
+                            };
+                            if (!evidence.Contains(code)) evidence.Add(code);
+                        }
                         foreach (Match code in Regex.Matches(text, @"\bidentity_browser_[a-z_]{1,80}\b",
                             RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(100)))
                             if (Failures.Contains(code.Value) && !evidence.Contains(code.Value))

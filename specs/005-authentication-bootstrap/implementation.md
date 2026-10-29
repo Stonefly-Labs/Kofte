@@ -1,6 +1,6 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement incomplete; verification failed, 91/100 complete (T001-T091). The owning browser gate passes locally, and the separate Linux Chromium temporary-path failure is reproduced and corrected. The ledger records this failed verification boundary as blocked; remaining native/contract/privacy/propagation work is engineering, not a human approval gate.
+**Result:** implement incomplete; verification failed, 91/100 complete (T001-T091). The owning browser gate passes locally, and the separate Linux Chromium temporary-path failure is reproduced and corrected. The ledger resumes this failed verification boundary as running; remaining native/contract/privacy/propagation work is engineering, not a human approval gate.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-29.
 **Assessed baseline:** complete local/hosted assessment of published `c7f68a786ebc51c935d8df455d926d79d88a8725`; subsequent focused checks add this checkpoint's browser-helper/native-fixture changes. Earlier assessments retain their original baselines below.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
@@ -12,6 +12,53 @@ The initial blocked assessment below is retained as history. The
 resolves that blocker and resumes the original implement stage. The later
 adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
+
+## Continued implementation: actual Development capture diagnostics
+
+The published session-test removal checkpoint is
+`cb188df10933292ee0f559728a4ee5a9b4ade846`. Actual targeted Linux x64
+[run 40908757787](https://github.com/Stonefly-Labs/Kofte/actions/runs/40908757787)
+fails the native SQLite Development fact with
+`identity_browser_capture_identity_body_failed`. Its production
+cancellation/refusal/retry fact passes; PostgreSQL and the twelve later public
+recipes do not execute. The automatic PR browser job in
+[run 40908717056](https://github.com/Stonefly-Labs/Kofte/actions/runs/40908717056)
+independently fails the same Development fact. Its privacy job fails the
+public SQLite recipe with `identity_browser_transport_capture_missing`.
+Repository checks, quality, unit and startup pass; other product jobs were
+still running when inspected. The automatic report's merge revision
+`46b86112b242a4c51a0fbef5c3f338c7c6875ca5` has verified parents
+`3e416813233c9d291eb20cf72d5882dbddf3e1b6` and `cb188df10933292ee0f559728a4ee5a9b4ade846`.
+No complete matrix pass is claimed.
+
+The failed Development path uses a separate Playwright JSON child, not the
+instrumented full-Chromium production helper. Its `finally` capture cleanup
+could also hide an earlier journey assertion. The test now preserves both
+errors, retaining the original as `cause` because the pinned Playwright
+serializer does not serialize `AggregateError.errors`. Capture failure still
+fails a successful journey. The child now emits the same bounded, closed
+request/body and client-lifecycle phases; the native JSON projector validates
+those envelopes and classifies assertion names without retaining matcher values.
+Only fixed protocol resource-missing/target-closed categories are projected,
+never raw browser errors. No request, body, TLS, focus, cancellation, analyzer,
+deadline or cleanup guard is waived. This is diagnostic work, not an
+established response-capture fix.
+
+Focused regressions first failed (two absent `run` methods; one absent native
+matcher/phase projection), then pass:
+
+| Exact executed command | Actual result |
+| --- | --- |
+| `node --test tests/e2e/identityPrivacyCapture.unit.ts tests/e2e/identityBrowserOwnership.unit.ts` | Passed 22 cases, zero skipped; both errors are preserved and successful journeys still fail missing-body capture. |
+| `dotnet test --project tests/unit/Kofte.Host.Tests --no-restore -c Release --filter-query '/*/*/IdentityBrowserFailureDiagnosticsTests/*' --minimum-expected-tests 1` with the pinned SDK selected | Passed 17 cases, zero skipped; known child phases/cause retained, private matcher values and extra-field envelopes rejected. |
+| `python3 scripts/verify.py --suite quality` with the pinned SDK selected | Initial increment failed ESLint's unsafe-finally/cause rules; preserving both errors outside `finally` corrects it. Final run passed all 21 steps in 41.936s, `quality-none-c6912748daeb40c8bb8a66e51d7c51b6.json`. |
+| `python3 scripts/verify.py --suite browser --disposable-postgres` with the same SDK | Passed root/Development and both native providers, 155.772s, `browser-none-dccede2d2aab4c50857d622d040efb87.json`. Each provider passed two cases, zero skipped and one required class. |
+| `python3 scripts/check_repository.py` | Passed. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed all 149 cases. |
+| `git diff --check` | Passed. |
+
+These are local results at `cb188df` plus the diagnostic increment, not a Linux
+capture fix or complete-gate pass. T092-T100 remain open.
 
 ## Continued implementation: human-directed session-test scope
 

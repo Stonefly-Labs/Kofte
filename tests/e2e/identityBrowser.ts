@@ -2,8 +2,44 @@ import { createHash, X509Certificate } from "node:crypto";
 import { lstat, mkdtemp, readFile, realpath, rmdir } from "node:fs/promises";
 import { join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
-import { chromium, expect, type BrowserContext } from "@playwright/test";
+import {
+  chromium,
+  expect,
+  type BrowserContext,
+  type Page,
+} from "@playwright/test";
 import { IdentityBrowserOwnership } from "./identityBrowserOwnership.ts";
+
+export async function observeIdentityBrowserLifecycle(
+  page: Page,
+  phase: (name: string) => void,
+) {
+  const lifecycle = new Map([
+    ["identity_browser_window_blurred", "client_window_blurred"],
+    ["identity_browser_window_focused", "client_window_focused"],
+    ["identity_browser_document_hidden", "client_document_hidden"],
+    ["identity_browser_document_visible", "client_document_visible"],
+  ]);
+  page.on("console", (message) => {
+    const observed = lifecycle.get(message.text());
+    if (observed) phase(observed);
+  });
+  await page.addInitScript(() => {
+    window.addEventListener("blur", () =>
+      console.debug("identity_browser_window_blurred"),
+    );
+    window.addEventListener("focus", () =>
+      console.debug("identity_browser_window_focused"),
+    );
+    document.addEventListener("visibilitychange", () =>
+      console.debug(
+        document.hidden
+          ? "identity_browser_document_hidden"
+          : "identity_browser_document_visible",
+      ),
+    );
+  });
+}
 
 export async function withIdentityBrowser(
   root: string,
@@ -57,12 +93,6 @@ export async function withIdentityBrowser(
         elapsedMilliseconds: Math.round(performance.now() - began),
       }),
     );
-  const lifecycle = new Map([
-    ["identity_browser_window_blurred", "client_window_blurred"],
-    ["identity_browser_window_focused", "client_window_focused"],
-    ["identity_browser_document_hidden", "client_document_hidden"],
-    ["identity_browser_document_visible", "client_document_visible"],
-  ]);
   const launch = async () => {
     launches++;
     phase("launch_started");
@@ -80,26 +110,7 @@ export async function withIdentityBrowser(
       },
     });
     phase("context_created");
-    const page = context.pages()[0];
-    page.on("console", (message) => {
-      const observed = lifecycle.get(message.text());
-      if (observed) phase(observed);
-    });
-    await page.addInitScript(() => {
-      window.addEventListener("blur", () =>
-        console.debug("identity_browser_window_blurred"),
-      );
-      window.addEventListener("focus", () =>
-        console.debug("identity_browser_window_focused"),
-      );
-      document.addEventListener("visibilitychange", () =>
-        console.debug(
-          document.hidden
-            ? "identity_browser_document_hidden"
-            : "identity_browser_document_visible",
-        ),
-      );
-    });
+    await observeIdentityBrowserLifecycle(context.pages()[0], phase);
     const browser = context.browser();
     if (!browser) throw new Error("identity_browser_ownership_required");
     const transport = { context: false, browser: false, launch: launches };

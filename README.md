@@ -73,6 +73,13 @@ now preserved in safe reports; this diagnostic increment is not a claimed
 Linux response-capture fix. Manual CI supports `suite=browser`; ordinary PR/main
 checks still run the complete matrix.
 
+Actual Linux runs at `cb188df` isolate the current failure to native
+Development `/me` response capture; the production retry fact passes.
+The separate Development child now preserves primary and capture-cleanup
+failures and emits validated lifecycle/body timings. This closes a diagnostic
+blind spot, not the unresolved Linux capture failure. See the
+[current assessment](specs/005-authentication-bootstrap/implementation.md#continued-implementation-actual-development-capture-diagnostics).
+
 ### Historical implementation increments
 
 The expanded actual HTTPS TypeScript corpus now

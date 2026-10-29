@@ -38,6 +38,37 @@ public sealed class IdentityBrowserFailureDiagnosticsTests
         Assert.DoesNotContain(privateValue, failure, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void PlaywrightReportRetainsFailedJourneyCauseAndValidatedConsolePhases()
+    {
+        var privateValue = "private-" + Guid.NewGuid().ToString("N");
+        var report = System.Text.Json.JsonSerializer.Serialize(new
+        {
+            suites = new[] { new { tests = new[] { new { results = new[] { new
+            {
+                stdout = new[] {
+                    new { text = """{"eventCode":"identity_browser_profile_phase","phase":"capture_identity_body_failed","launch":1,"elapsedMilliseconds":850}""" },
+                    new { text = $$"""{"eventCode":"identity_browser_profile_phase","phase":"launch_started","launch":1,"elapsedMilliseconds":900,"private":"{{privateValue}}"}""" },
+                    new { text = privateValue }
+                },
+                errors = new[] { new
+                {
+                    message = "AggregateError: identity_browser_capture_identity_body_failed",
+                    cause = new {
+                        message = $"Error: expect(locator).toBeVisible() failed: {privateValue}",
+                        stack = $"Error: {privateValue}\n at /private/identity.spec.ts:123:19"
+                    }
+                } }
+            } } } } } }
+        });
+        var failure = IdentityBrowserFailureDiagnostics.DescribePlaywrightFailure(new(1, report, ""));
+        Assert.Contains("identity_browser_capture_identity_body_failed", failure, StringComparison.Ordinal);
+        Assert.Contains("identity_browser_assert_visibility_failed", failure, StringComparison.Ordinal);
+        Assert.Contains("identity_browser_profile_capture_identity_body_failed:1:850", failure, StringComparison.Ordinal);
+        Assert.DoesNotContain("identity_browser_profile_launch_started", failure, StringComparison.Ordinal);
+        Assert.DoesNotContain(privateValue, failure, StringComparison.Ordinal);
+    }
+
     [Theory]
     [InlineData("{")]
     [InlineData("{\"errors\":[{\"message\":\"identity_browser_unknown_private_value\"}]}")]

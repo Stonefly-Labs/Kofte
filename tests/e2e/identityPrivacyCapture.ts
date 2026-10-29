@@ -25,7 +25,17 @@ export type IdentityCapturePhase =
   | "capture_context_requested"
   | "capture_context_response_started"
   | "capture_context_body_finished"
-  | "capture_context_body_failed";
+  | "capture_context_body_failed"
+  | "capture_identity_requested"
+  | "capture_identity_response_started"
+  | "capture_identity_body_finished"
+  | "capture_identity_body_failed"
+  | "capture_body_resource_missing"
+  | "capture_body_target_closed"
+  | "journey_failure_observed"
+  | "capture_cleanup_started"
+  | "capture_cleanup_finished"
+  | "capture_cleanup_failed";
 
 const responseFailures = new Set([
   "identity_browser_capture_response_headers_failed",
@@ -98,6 +108,8 @@ export class IdentityPrivacyCapture {
     const url = new URL(request.url());
     if (url.pathname === "/api/identity/v1/browser-context")
       this.progress?.("capture_context_requested");
+    if (url.pathname === "/api/identity/v1/me")
+      this.progress?.("capture_identity_requested");
     const csrf = request.headers()["x-kofte-csrf"];
     if (csrf) {
       if (csrf.length < 16 || csrf.length > 8192) {
@@ -290,6 +302,8 @@ export class IdentityPrivacyCapture {
       return;
     if (url.pathname === "/api/identity/v1/browser-context")
       this.progress?.("capture_context_response_started");
+    if (url.pathname === "/api/identity/v1/me")
+      this.progress?.("capture_identity_response_started");
     let headers: Record<string, string>;
     try {
       headers = await response.allHeaders();
@@ -357,9 +371,28 @@ export class IdentityPrivacyCapture {
       body = await response.text();
       if (url.pathname === "/api/identity/v1/browser-context")
         this.progress?.("capture_context_body_finished");
-    } catch {
+      if (url.pathname === "/api/identity/v1/me")
+        this.progress?.("capture_identity_body_finished");
+    } catch (error) {
       if (url.pathname === "/api/identity/v1/browser-context")
         this.progress?.("capture_context_body_failed");
+      if (url.pathname === "/api/identity/v1/me")
+        this.progress?.("capture_identity_body_failed");
+      if (error instanceof Error) {
+        if (
+          error.message.includes("No resource with given identifier found") ||
+          error.message.includes(
+            "No data found for resource with given identifier",
+          )
+        )
+          this.progress?.("capture_body_resource_missing");
+        else if (
+          error.message.includes(
+            "Target page, context or browser has been closed",
+          )
+        )
+          this.progress?.("capture_body_target_closed");
+      }
       bodyFailureCode =
         url.pathname === "/api/identity/v1/me"
           ? "identity_browser_capture_identity_body_failed"
@@ -549,6 +582,40 @@ export class IdentityPrivacyCapture {
     await exportIdentityCanaries(process.env.KOFTE_IDENTITY_PRIVATE_ROOT, [
       ...new Set([...this.secrets, ...this.transportCanaries]),
     ]);
+  }
+
+  async run(visit: () => Promise<void>) {
+    let journeyFailure: unknown;
+    let journeyFailed = false;
+    try {
+      await visit();
+    } catch (error) {
+      journeyFailed = true;
+      journeyFailure = error;
+      this.progress?.("journey_failure_observed");
+    }
+    let captureFailure: unknown;
+    let captureFailed = false;
+    this.progress?.("capture_cleanup_started");
+    try {
+      await this.close();
+      this.progress?.("capture_cleanup_finished");
+    } catch (error) {
+      captureFailed = true;
+      captureFailure = error;
+      this.progress?.("capture_cleanup_failed");
+    }
+    if (journeyFailed && captureFailed)
+      // Playwright serializes Error.cause, not AggregateError.errors.
+      throw new AggregateError(
+        [journeyFailure, captureFailure],
+        captureFailure instanceof Error
+          ? captureFailure.message
+          : "identity_browser_privacy_capture_failed",
+        { cause: journeyFailure },
+      );
+    if (journeyFailed) throw journeyFailure;
+    if (captureFailed) throw captureFailure;
   }
 
   async close() {

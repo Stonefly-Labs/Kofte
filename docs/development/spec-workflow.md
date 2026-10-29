@@ -66,6 +66,13 @@ diagnosis now retains bounded source-allowlisted phase timings. Local quality
 and both-provider browser gates pass; a Linux capture fix is not yet established.
 Converge/review/acceptance have not run.
 
+The actual `cb188df` Linux browser assessments fail only the native Development
+fact's `/me` body capture; the production retry fact passes. The previously
+instrumented helper did not cover that separate Playwright child. Its new
+diagnostics preserve primary assertions alongside strict capture-cleanup errors
+and retain only validated phase timings/fixed failure categories. This does not
+establish a browser fix or change the remaining task markers.
+
 For focused Linux browser diagnostics on a published task branch, run
 `gh workflow run product-checks.yml --ref feature/005-authentication-bootstrap -f suite=browser`.
 This manual selection still executes the real browser suite and its public

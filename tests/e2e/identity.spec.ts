@@ -3,6 +3,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { controlRuntime } from "./control";
 import { identityAccessibility } from "./identityAccessibility";
 import { IdentityPrivacyCapture } from "./identityPrivacyCapture";
+import { observeIdentityBrowserLifecycle } from "./identityBrowser";
 
 test("the actual identity page uses a private non-personal shell and explicit development context", async ({
   page,
@@ -102,8 +103,20 @@ test("configured Development selection uses the real browser boundary and never 
 }) => {
   const host = process.env.KOFTE_HOST_URL;
   if (!host) throw new Error("isolated_test_host_required");
-  const privacy = new IdentityPrivacyCapture(page, [], "development");
-  try {
+  const started = performance.now();
+  const phase = (name: string) =>
+    console.log(
+      JSON.stringify({
+        eventCode: "identity_browser_profile_phase",
+        phase: name,
+        launch: 1,
+        elapsedMilliseconds: Math.round(performance.now() - started),
+      }),
+    );
+  const privacy = new IdentityPrivacyCapture(page, [], "development", phase);
+  await privacy.run(async () => {
+    await observeIdentityBrowserLifecycle(page, phase);
+    phase("development_journey_started");
     await page.goto("/identity");
     await expect(
       page.getByText("You are signed out", { exact: true }),
@@ -116,10 +129,12 @@ test("configured Development selection uses the real browser boundary and never 
     await expect(submit).toBeDisabled();
     await selection.selectOption("synthetic");
     const began = performance.now();
+    phase("development_selection_started");
     await submit.click();
     await expect(
       page.getByText("You are signed in", { exact: true }),
     ).toBeVisible({ timeout: 5000 });
+    phase("development_selection_finished");
     expect(performance.now() - began).toBeLessThan(5000);
     await expect(
       page.getByText("Development identity", { exact: true }),
@@ -144,11 +159,13 @@ test("configured Development selection uses the real browser boundary and never 
     await expect(
       page.getByText(identity.userId, { exact: true }),
     ).toBeVisible();
+    phase("signed_in_accessibility_started");
     await identityAccessibility(
       page,
       page.getByText("You are signed in", { exact: true }),
       page.getByRole("button", { name: "Sign out", exact: true }),
     );
+    phase("signed_in_accessibility_finished");
     await privacy.snapshot(context);
     const direct = await page.request.get(
       new URL("/api/identity/v1/me", host).href,
@@ -161,6 +178,7 @@ test("configured Development selection uses the real browser boundary and never 
     expect(
       await page.evaluate(() => localStorage.length + sessionStorage.length),
     ).toBe(0);
+    phase("sign_out_started");
     await page.getByRole("button", { name: "Sign out" }).click();
     await expect(
       page.getByText("You are signed out", { exact: true }),
@@ -168,11 +186,13 @@ test("configured Development selection uses the real browser boundary and never 
     await expect(page.getByText(identity.userId, { exact: true })).toHaveCount(
       0,
     );
+    phase("signed_out_accessibility_started");
     await identityAccessibility(
       page,
       page.getByText("You are signed out", { exact: true }),
       page.getByLabel("Configured Development identity"),
     );
+    phase("signed_out_accessibility_finished");
     expect((await page.request.get("/api/identity/v1/me")).status()).toBe(401);
     expect(
       (
@@ -180,7 +200,5 @@ test("configured Development selection uses the real browser boundary and never 
       ).status(),
     ).toBe(401);
     await privacy.proveCapture(context);
-  } finally {
-    await privacy.close();
-  }
+  });
 });
