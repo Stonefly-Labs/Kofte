@@ -94,13 +94,16 @@ fails. It is not a floating dependency or a capture exception; production
 readers and all existing guards remain unchanged. Actual Linux qualification
 and the remaining native/public gates are still required.
 
-The repaired-head Linux named browser verification now passes, admitting the
-separate public HTTPS recipes. Its automatic unit job exposed seven action
+The repaired-head Linux named browser verification and all twelve separate
+public HTTPS recipes pass, as do both complete native provider integrations.
+Its automatic unit job exposed seven action
 request doubles missing `Request.failure()`; both shared builders are corrected
 and the complete local unit gate passes, including all 38 capture cases.
-The hosted public privacy recipe still fails transport-capture completeness.
-These are separate boundaries; neither the unit fix nor the named browser pass
-completes T092-T100.
+A separate public session keyboard-audit race is reproduced and corrected:
+wait for the actual control before pressing Tab, without requiring enablement
+of intentionally ARIA-disabled loading controls. The hosted public privacy
+recipe still fails transport-capture completeness. These separate boundaries
+do not complete T092-T100.
 
 For focused Linux browser diagnostics on a published task branch, run
 `gh workflow run product-checks.yml --ref feature/005-authentication-bootstrap -f suite=browser`.

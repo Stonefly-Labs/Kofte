@@ -1,6 +1,6 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement incomplete; verification failed, 91/100 complete (T001-T091). The latest local browser gate passes with an exact-pinned Chromium containing the matching upstream repair; Linux qualification and remaining native/contract/privacy/propagation failures remain open. The separate Linux Chromium temporary-path failure is reproduced and corrected. The ledger remains running; this is engineering, not a human approval gate.
+**Result:** implement incomplete; verification failed, 91/100 complete (T001-T091). The exact-pinned upstream Chromium repair passes local and Linux named browser gates and all twelve focused Linux public HTTPS recipes. A separate keyboard-audit readiness race is reproduced and corrected; public privacy/contract/propagation closeout remains open. The ledger remains running; this is engineering, not a human approval gate.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-29.
 **Assessed baseline:** complete local/hosted assessment of published `c7f68a786ebc51c935d8df455d926d79d88a8725`; subsequent focused checks add this checkpoint's browser-helper/native-fixture changes. Earlier assessments retain their original baselines below.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
@@ -12,6 +12,49 @@ The initial blocked assessment below is retained as history. The
 resolves that blocker and resumes the original implement stage. The later
 adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
+
+## Continued implementation: wait for the keyboard audit's actual control
+
+The upstream repair is published as `ce2af5f`; its exact Linux
+[run 40917432573](https://github.com/Stonefly-Labs/Kofte/actions/runs/40917432573)
+**passes** named browser verification and all twelve public HTTPS recipes.
+`browser-none-90ce79fc652c453589a5ceed7459fc32.json` records both native
+providers, each two passed / zero skipped / one required class. Safe consumer
+envelopes independently confirm all six browser recipes per provider.
+The automatic matrix also passes both complete provider integrations
+(SQLite report `integration-sqlite-9f6c4fd6dfab4b46a82813616240cf1b.json`,
+607.988s). These results do not retroactively diagnose the older native 503/count
+failures.
+
+The parallel automatic browser job passes named verification but fails the
+PostgreSQL session recipe at `identityAccessibility.ts:31`, after all twenty
+controls and complete context bodies. Its uncertain-sign-out alert is visible
+before the refreshed sign-in control exists. The audit focused the heading
+and pressed Tab too early, leaving focus on Retry. A new isolated browser
+regression reproduces that exact inactive-control assertion. The helper now
+waits for control visibility before the unchanged heading/Tab/focus/outline/axe
+checks. It does not require semantic enablement: loading-state Retry is
+deliberately keyboard-focusable with `aria-disabled="true"`.
+
+At `4949167` plus this readiness correction, pinned SDK selected:
+
+| Exact executed command | Actual result |
+| --- | --- |
+| `npm exec --workspace tests/e2e -- playwright test accessibility.spec.ts --grep 'identity keyboard audit waits'` | Initially fails the expected inactive-control assertion; passes after visibility synchronization, including an ARIA-disabled focusable control. |
+| `python3 scripts/verify.py --suite browser --disposable-postgres` | First increment incorrectly also required enablement and failed the intentional held loading state, 73.953s, `browser-none-44f020f4589442e0963cc7381e6212dc.json`. Removing that overconstraint preserves loading semantics; final gate passes root and both native providers, 84.645s, `browser-none-3a646577de914c98a2d8da4c5a9ec9db.json`. |
+| `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore -c Release --filter-query '/*/*/SqliteIdentityPrivacyGuideTests/*' --minimum-expected-tests 1 --max-threads 4` | Passed all five cases, zero skipped, 79.131s. This unchanged isolated run does not diagnose hosted privacy failure. |
+| `npm run lint --workspace tests/e2e` | Passed. |
+| `npm run typecheck --workspace tests/e2e` | Passed. |
+| `npm exec -- prettier --check tests/e2e/accessibility.spec.ts tests/e2e/identityAccessibility.ts` | Passed. |
+| `python3 scripts/check_repository.py` | Passed. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed 150 cases, 5.622s. |
+| `git diff --check` | Passed. |
+
+The subsequent `4949167` hosted unit and complete browser jobs pass, including
+their public recipes. Its hosted SQLite public privacy selection still fails
+`identity_browser_transport_capture_missing` in
+`privacy-both-0be97e3f918c4123b6ed1472bca54a1f.json`.
+No public privacy/full-gate pass or stage completion is claimed.
 
 ## Continued implementation: complete aborted-request test doubles
 

@@ -1,5 +1,38 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { identityAccessibility } from "./identityAccessibility";
+
+test("the identity keyboard audit waits for the control after an already-visible outcome", async ({
+  page,
+}) => {
+  await page.setContent(`
+    <!doctype html>
+    <html lang="en">
+      <head><title>Identity keyboard audit fixture</title></head>
+      <body>
+        <main>
+          <section aria-labelledby="identity-heading">
+            <h2 id="identity-heading" tabindex="-1">Your identity</h2>
+            <p role="status" aria-live="polite" aria-atomic="true">Checking your identity</p>
+            <p role="alert">Server revocation could not be confirmed</p>
+            <button type="button" id="sign-in" aria-disabled="true" hidden>Sign in</button>
+            <button type="button">Retry identity check</button>
+          </section>
+        </main>
+      </body>
+    </html>
+  `);
+  await page.evaluate(() => {
+    setTimeout(() => {
+      document.getElementById("sign-in")!.hidden = false;
+    }, 500);
+  });
+  await identityAccessibility(
+    page,
+    page.getByRole("alert"),
+    page.getByRole("button", { name: "Sign in", exact: true }),
+  );
+});
 
 for (const width of [320, 768, 1440]) {
   test(`bootstrap is accessible and fits at ${width}px`, async ({ page }) => {

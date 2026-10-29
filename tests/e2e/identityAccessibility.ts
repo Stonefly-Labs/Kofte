@@ -24,6 +24,7 @@ export async function identityAccessibility(
     "aria-atomic",
     "true",
   );
+  await expect(nextControl).toBeVisible();
   await panel
     .getByRole("heading", { name: "Your identity", exact: true })
     .focus();
