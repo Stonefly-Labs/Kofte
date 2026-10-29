@@ -19,11 +19,19 @@ T095 reconciles delivered setup/API/operator documentation, private custody,
 session/capacity/retention and recovery limits. T096 reconciles the actual
 reviewed graph/archives/notices, generated contracts and zero-finding npm/NuGet
 audits. T097–T100 retain complete local/assessed-head CI and traceability/
-publication gates. This is not
-acceptance or permission to advance to converge.
-The [current evidence](../../specs/005-authentication-bootstrap/implementation.md#t094-t095-complete-public-catalog-and-delivered-documentation)
-preserves actual sources/results and historical failures. The ledger remains
-`running` on the same draft PR, with no pending approval request.
+publication gates. The current exact local gate fails native PostgreSQL identity
+and retained registration; contract was deliberately interrupted afterward for
+diagnosis, not timed out or completed. Actual assessed-head Linux CI passes eight
+contexts, including complete contract and propagation, but both native
+integration contexts fail. These are engineering failures, not an approval gate
+or permission to advance to converge.
+The [current evidence](../../specs/005-authentication-bootstrap/implementation.md#t097-in-progress-current-full-gate-and-assessed-head-failures)
+preserves actual sources/results and historical failures. Temporary probes are
+removed; uninstrumented subsets still reproduce healthy 503s and separate
+fixture/acquisition failures. The finite verifier now retains source-known
+PostgreSQL fixture codes/locations without raw logs, not a speculative runtime
+fix. The ledger records an engineering `blocked` state on the same draft PR,
+with no pending approval request. Resume implement there; do not advance stages.
 
 ### Historical implementation verification
 

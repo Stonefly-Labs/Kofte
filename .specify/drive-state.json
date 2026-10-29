@@ -29,9 +29,9 @@
     "spec": "005",
     "step": "implement",
     "directory": "specs/005-authentication-bootstrap",
-    "status": "running",
+    "status": "blocked",
     "branch": "feature/005-authentication-bootstrap",
-    "reason": "",
+    "reason": "T097 remains incomplete: uninstrumented PostgreSQL healthy identity requests still return 503; separate fixture-creation and retained 20x10 acquisition/register deadline failures are reproduced. Temporary probes are removed. Finite native diagnostics now retain source-known PostgreSQL fixture codes without raw logs. No root-cause repair or passing complete local/assessed-head CI is established; no human approval is requested.",
     "started_at": "2026-10-26T21:30:18+00:00"
   },
   "history": [

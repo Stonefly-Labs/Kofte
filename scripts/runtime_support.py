@@ -184,7 +184,7 @@ class CommandDiagnostics:
                         if expected in self.http_statuses.values() and actual in self.http_statuses.values():
                             self.failed_statuses.add(f"expected_{expected}_actual_{actual}")
                 found = {
-                    code for code in re.findall(r"\b(?:storage|composition|identity)_[A-Za-z0-9_]{1,120}\b", text)
+                    code for code in re.findall(r"\b(?:storage|composition|identity|postgres)_[A-Za-z0-9_]{1,120}\b", text)
                     if code in self.codes
                 }
                 if text.strip() in self.codes:

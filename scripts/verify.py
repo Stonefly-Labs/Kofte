@@ -557,17 +557,17 @@ def command_diagnostics(command):
         for path in (ROOT / "tests/contract/Kofte.Composition.Consumer").rglob("*.cs"):
             if not {"bin", "obj"}.intersection(path.relative_to(ROOT).parts):
                 composition_codes.update(re.findall(r'"(composition_[a-z0-9_]{1,160})"', path.read_text()))
-        identity_codes = set()
+        fixture_codes = set()
         if kind in ("host", "storage", "contract"):
-            for directory in ("tests/integration/Kofte.TestSupport/Identity",
+            for directory in ("tests/integration/Kofte.TestSupport",
                               "tests/contract/Kofte.Identity.Consumer"):
                 for path in (ROOT / directory).rglob("*.cs"):
                     if {"bin", "obj"}.intersection(path.relative_to(ROOT).parts):
                         continue
                     source = path.read_text()
                     source_lines[path.relative_to(ROOT).as_posix()] = len(source.splitlines())
-                    identity_codes.update(re.findall(r'"(identity_[a-z0-9_]{1,110})"', source))
-            identity_codes.update(identity_constructed_failure_codes(ROOT))
+                    fixture_codes.update(re.findall(r'"((?:identity|postgres)_[a-z0-9_]{1,110})"', source))
+            fixture_codes.update(identity_constructed_failure_codes(ROOT))
             for observed in ("no_response", *(f"http_{value}" for value in
                     runtime_support.CommandDiagnostics.http_statuses.values()),
                     *(f"transport_{value}" for value in (
@@ -577,11 +577,11 @@ def command_diagnostics(command):
                         "ResponseEnded", "ConfigurationLimitExceeded",
                     ))):
                 for phase in ("configured", "owner_opened", "built", "mapped", "serving", "unknown"):
-                    identity_codes.add(f"identity_fixture_child_readiness_{observed}_{phase}")
+                    fixture_codes.add(f"identity_fixture_child_readiness_{observed}_{phase}")
         return runtime_support.CommandDiagnostics(kind, (
             *codes, *("storage_" + re.sub(r"(?<!^)(?=[A-Z])", "_", code).lower() for code in codes),
             "composition_consumer_failed", "composition_consumer_output_limit", "composition_consumer_result_invalid",
-            *composition_codes, *identity_codes,
+            *composition_codes, *fixture_codes,
         ), tests, scenarios=(*COMPOSITION_OBSERVATIONS, *IDENTITY_SCENARIOS, "all"),
             source_lines=source_lines)
     return None

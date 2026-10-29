@@ -49,9 +49,17 @@ strict browser completeness rejects missing cases, skips and retries.
 The [current evidence](specs/005-authentication-bootstrap/implementation.md#t094-t095-complete-public-catalog-and-delivered-documentation)
 also records final dependency/contract checks and zero npm/NuGet advisory findings.
 Complete-local-gate, assessed-head CI and traceability tasks T097–T100 remain.
-Historical failed native/
-composition/propagation checks remain failed, not diagnosed by later passes.
-The ledger is `running`, not complete or awaiting human approval.
+The current full local attempt fails native PostgreSQL identity and retained
+registration; its later contract selection was deliberately interrupted for
+diagnosis, not completed. Actual assessed-head Linux CI passes eight contexts,
+including contract and complete failure propagation, but both native integration
+contexts fail. The [exact failures and reports](specs/005-authentication-bootstrap/implementation.md#t097-in-progress-current-full-gate-and-assessed-head-failures)
+remain engineering work, not waived by focused passes or a historical deferral.
+Uninstrumented follow-ups reproduce healthy identity 503s and separate fixture/
+acquisition failures. The verifier now preserves source-known PostgreSQL fixture
+codes without retaining raw logs; this is a diagnostics repair, not their cause.
+The ledger records an engineering `blocked` state, not completion or a request
+for human approval.
 Continue on the same branch/draft PR #8. Converge, review and explicit feature
 acceptance are later stages; designation grants no module permissions.
 Specs 006–009/022–024 and production-readiness claims remain out of scope.

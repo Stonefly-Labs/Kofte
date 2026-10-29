@@ -1,8 +1,8 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement incomplete; 96/100 complete (T001-T096). Chromium, the complete both-provider public catalog and final dependency reconciliation are qualified. Complete local/assessed-head CI and traceability gates remain T097-T100; historical failed native/composition/propagation results are not waived or diagnosed by focused passes. The ledger remains running; this is engineering, not a human approval gate.
+**Result:** implement incomplete; 96/100 complete (T001-T096). Chromium, the complete both-provider public catalog and final dependency reconciliation are qualified. Complete local/assessed-head CI and traceability gates remain T097-T100; historical failed native/composition/propagation results are not waived or diagnosed by focused passes. The ledger records the reproduced engineering failures as blocked; no human approval is requested.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-29.
-**Assessed baseline:** complete local/hosted assessment of published `c7f68a786ebc51c935d8df455d926d79d88a8725`; subsequent focused checks add this checkpoint's browser-helper/native-fixture changes. Earlier assessments retain their original baselines below.
+**Assessed baseline:** current full-gate local attempt and hosted assessment of published `30178ebf77916be706806d9a02bbede479596108`, plus explicitly identified temporary diagnostic experiments and uninstrumented subsets below. Earlier assessments, including `c7f68a786ebc51c935d8df455d926d79d88a8725`, retain their original baselines.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
 `specs/005-authentication-bootstrap`.
 **Checkpoint:** [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8).
@@ -12,6 +12,161 @@ The initial blocked assessment below is retained as history. The
 resolves that blocker and resumes the original implement stage. The later
 adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
+
+## T097 in progress: current full-gate and assessed-head failures
+
+The exact command
+`python3 scripts/verify.py --suite all --disposable-postgres --warm-starts 10`
+at published `30178ebf77916be706806d9a02bbede479596108` is **not a passing
+complete gate**. Its completed macOS arm64 results are:
+
+| Suite / safe report | Actual result |
+| --- | --- |
+| Quality `quality-none-3096d7b2a32647babd63529a77faf500.json` | Passed, 37.866s. |
+| Unit `unit-none-9dd8055b68aa495f9862b4762e3f8d24.json` | Passed, 50.758s. |
+| SQLite integration `integration-sqlite-c589d9de46274cd59a6d32643eb24c78.json` | All three native/storage/composition commands passed, 634.786s. |
+| PostgreSQL integration `integration-postgres-d20ce7052ba043419be5462c7495c28f.json` | Native and storage failed; composition passed, 998.595s overall. |
+| Recovery `recovery-both-76aa53d01de34644ae7b8b0a27689b92.json` | Both providers, strict browser evidence, capture and cleanup passed, 1185.472s. |
+| Contract `contract-both-5bfede2100b14cecb4835448e5973991.json` | Deliberately interrupted for native diagnosis after the aggregate had already failed; `platform-public-contracts` records `verification_interrupted` at 144.842s, not timeout or a completed native assertion. |
+
+No native/Next rebuild occurred during this aggregate. After its PostgreSQL
+failures and completed recovery, the verifier received a graceful termination
+to permit a controlled diagnostic build. The remaining contract steps and later
+browser/privacy/startup/propagation suites were not reached in this attempt.
+`completeGate` remains false. The interruption is not evidence that contract
+hung, nor a substitute for rerunning the exact complete gate after repair.
+
+The native PostgreSQL command fails in 498.921s at these methods:
+`PostgresEnrollmentTests.ARealStoredDevelopmentSessionHasAnActorButCannotEnroll`,
+`PostgresIdentityFailureTests.LostStoreAuthorityOrCorruptTicketCannotServeAWarmedIdentityAndNeedsExplicitCorrection`,
+`PostgresIdentityKeyTests.ActualDatabaseRecoverySetDoesNotContainSeparatelyRetainedKeyCustody`,
+`PostgresIdentityPreparationTests.ActualRestoreCommandResumesARealPartiallyFlushedJournal`
+and
+`PostgresOidcBudgetTests.DeliveredProviderFailuresAreBoundedWithoutRetryRedirectOrPersistentIdentity`.
+Safe evidence includes expected 200/actual 503,
+`identity_fixture_browser_context_failed` and
+`identity_fixture_request_failure_unobserved`; the provider-failure rows also
+require an actual selected issuer observation, not just refusal.
+The separate retained storage command fails in 399.786s at
+`PostgresRegistrationConcurrencyTests.TwentyRoundsOfTenSeparateProcessesKeepActualOwnershipUnique`
+with `storage_deadline_exceeded`, operation `register`. Its twenty rounds,
+ten processes, assertions and deadlines remain unchanged. The two failures
+have no established common cause.
+
+Actual Ubuntu 24.04 x64/four-logical-CPU
+[run 40941594959](https://github.com/Stonefly-Labs/Kofte/actions/runs/40941594959)
+is complete: **eight contexts pass; both integration contexts fail**.
+The assessed merge `9615d70c98af9d8c354721cc811da2588c2bd806` has directly
+verified main `3e416813233c9d291eb20cf72d5882dbddf3e1b6` and feature
+`30178ebf77916be706806d9a02bbede479596108` parents. Repository checks in
+run 40941595105 pass independently.
+
+| Linux context / safe report | Actual result |
+| --- | --- |
+| Quality `quality-none-784ff5c9771d4ad8a32b6004ab84640b.json` | Passed, 128.712s. |
+| Unit `unit-none-fa617e990e4c427caf8d205399a9f1d3.json` | Passed, 64.302s. |
+| SQLite integration `integration-sqlite-e50a46138d9b428e9e8389369fdf72ab.json` | Failed, 719.748s; native failed 303.256s, retained storage 236/zero skipped and composition 57/zero skipped passed. |
+| PostgreSQL integration `integration-postgres-91558daf671b494bbeddcccbaf9b3479.json` | Failed, 1049.061s; native failed 374.245s, retained storage 211/zero skipped and composition 59/zero skipped passed. |
+| Contract `contract-both-f0fe7b32f327467cacf9bbab84cca8b8.json` | Passed, 2613.983s; platform 265/zero skipped, retained composition 84/zero skipped in 788.633s under the unchanged 900s bound, both ten-row identity catalogs and remaining public HTTP/scanner/cleanup steps passed. |
+| Browser `browser-none-288b5110ec43403bbf90f9d129ebc16e.json` | Passed, 145.382s; strict browser 12/zero skipped/four required files and both native providers two/zero skipped each. |
+| Recovery `recovery-both-84c3ef9cf24d400396dc92c17baea95a.json` | Passed, 1634.096s; both providers, strict browser inventory, scanners and owned cleanup. |
+| Privacy `privacy-both-d788e045d5ed4e76a83b72a12ebad071.json` | Passed, 725.410s; both providers and strict private capture. |
+| Startup `startup-none-1b2ce9561d6c45f49cb489a23794441a.json` | Passed, 72.695s; actual empty and composition restart evidence with strict browser completeness. |
+| Failure propagation `failure-propagation-none-e9bc8071b6984c4c99f9ce6bf50ffe91.json` | Passed, 1270.045s; actual complete isolated exercise, not the earlier timed-out PostgreSQL baseline. |
+
+Linux SQLite fails
+`OidcProtocolTests.IndependentlyInvalidEvidenceNeverReachesTicketSeamAndFreshCorrectedLoginWorks`,
+`SqliteEnrollmentTests.ActualStoppedReplacementRefusesTheOriginalSecretAndConsumesOnlyTheNewGeneration`,
+`SqliteOidcBudgetTests.DeliveredDiscoveryDeadlineIsIdentifiableWithoutRelaxingLoginOrPublishingIdentity`
+and
+`SqliteOidcBudgetTests.DeliveredProviderFailuresAreBoundedWithoutRetryRedirectOrPersistentIdentity`.
+Safe observations include expected 302/actual 500 and exhausted/before-deadline/
+unobserved request reasons. The independent pre-session protocol fixture does
+not use the product identity store: these results cannot all be assigned to
+database commits. Linux PostgreSQL fails
+`PostgresIdentityFailureTests.ActualLockedOrPausedStoreRefusesEveryIdentityOperationAndCorrectionPreservesAuthority`
+at its initial healthy expected-303/actual-503 login, not proof that the intended
+outage assertion failed.
+
+The older `012ab8a` run 40938967726 remains failed: platform 265/zero skipped
+passes in 511.076s, but retained composition reaches 900.054s
+(`contract-both-bc95ddf058824d98b2e8de46b5715994.json`, total 1447.479s).
+Its isolated PostgreSQL propagation baseline also times out at 900.365s
+(`failure-propagation-none-968f20d4e71041a1afe7c92aa2618527.json`,
+total 1031.264s); no browser baseline/injection is reached there. The newer
+complete contract/propagation passes preserve, rather than diagnose or waive,
+those earlier failures.
+
+T097-T100 stay unchecked. Temporary native diagnostics are private experiments,
+not deployed behavior or acceptance evidence, and have now been removed.
+No positive retry, timeout increase, reduced contender count, arbitrary
+serialization or installation-wide session-capacity test is introduced.
+
+### Native deadline investigation and finite fixture diagnostics
+
+Five temporary full PostgreSQL native selections preserved the original
+provider/browser filters, four test threads and 900-second command bound.
+They used `--no-build` and `DOTNET_PROCESSOR_COUNT=4`; the latter changes the
+runtime's reported processor count, not physical CPU affinity. All failed and
+all are targeted experiments with `completeGate=false`, not qualification:
+
+| Safe report | Actual result |
+| --- | --- |
+| `identity-native-phase-probe-postgres-4991564beebb4095a96998bfd50927de.json` | Failed, 376.701s; console projection captured no samples. |
+| `identity-native-private-phase-probe-postgres-71f750ef29a44391893f50e2c72bc45f.json` | Failed, 313.248s; the global exception limit omitted the unexpected healthy-context cancellation. |
+| `identity-native-context-timing-postgres-ac260444350245938071fc4962d8892a.json` | Failed, 387.596s; context-only capture did not cover the failed operations. |
+| `identity-native-terminal-timing-postgres-ac6f6d77bd964d83b9e340fe4518ff2b.json` | Failed, 273.003s; per-request terminal capture located several cancellations at the awaited PostgreSQL commit. |
+| `identity-native-store-wait-probe-postgres-809cfa300f2f4eef956c259e0cccf0a0.json` | Failed, 272.313s; only the paused-store method failed, at lines 49/50/63. No unexpected healthy commit stall was captured by the wait observer. |
+
+One healthy browser-context refusal has completed observed database activities
+by 21ms, then cancellation at 955ms with 46ms left on the outer request budget,
+caller not cancelled and source `DeadlineStore.CommitAsync:115`.
+That line awaits `transaction.CommitAsync(work.Token)`; it is not the preceding
+external `Check()`. This does **not** establish WAL/fsync delay, a network await
+versus an internal driver check, thread scheduling, or a common cause with
+registration. Observed database activities had only the closed `other` operation
+category; they do not prove which SQL statements completed. The later
+read-only wait observer did not resolve this uncertainty.
+
+The temporary test-support file and middleware hook are removed. Actual
+uninstrumented Release rebuilds of the host and storage integration projects
+pass with zero warnings/errors in 16.140s and 11.840s respectively. Subsequent
+commands have no processor-count override and still reproduce failures:
+
+| Uninstrumented command selection / safe report | Actual result |
+| --- | --- |
+| Host `--filter-class '*PostgresIdentityFailureTests' --filter-class '*OidcProtocolTests' --filter-class '*SqliteOidcBudgetTests' --minimum-expected-tests 35` | Failed, 462.854s; five PostgreSQL failure-test methods fail, including fixture creation at `LoginCommitFixture.cs:117` before the intended product assertions. |
+| Storage `--filter-trait Provider=postgres --filter-method '*TwentyRoundsOfTenSeparateProcessesKeepActualOwnershipUnique' --minimum-expected-tests 2` | Failed, 106.986s; both original twenty-by-ten rows report `storage_deadline_exceeded`, operation `acquire`, at the startup barrier. This is distinct from the original full gate's `register` failure. |
+| Host `--filter-class '*PostgresIdentityFailureTests' --filter-trait Provider=postgres --filter-method '*LostStoreAuthorityOrCorruptTicketCannotServeAWarmedIdentityAndNeedsExplicitCorrection' --minimum-expected-tests 2` | Failed, 73.707s; both rows fail healthy expected-200/actual-503 assertions at `IdentityFailureTests.cs:115/141`, not only fixture creation. |
+
+These commands use `dotnet test --project` with the respective existing
+`tests/integration/Kofte.Host.IntegrationTests` or
+`tests/integration/Kofte.Storage.IntegrationTests` project, common
+`--no-restore --no-build -c Release --max-threads 4` and the unchanged
+900-second runner bound. The first two selections share
+`native-uninstrumented-failure-projection-both-c1eb8e7e9b93452c96e141406157817e.json`;
+the third is
+`native-fixture-start-projection-postgres-73605997099e438ba70bfef23ec00e52.json`.
+Private XML is projected then discarded. No passing count is inferred from a
+failed selection.
+
+One concrete verifier gap is repaired: the source whitelist previously omitted
+PostgreSQL infrastructure codes and source locations outside the identity
+subdirectory. `command_diagnostics` now discovers fixed `postgres_*` literals
+from dedicated test support, and the private XML projector admits them only
+when source-whitelisted. The existing native-report regression now requires a
+known assembly-start code/location while rejecting an invented PostgreSQL
+canary, private paths and raw framework output. Limits, failure status and
+private report cleanup are unchanged. This improves the next failure report;
+it does **not** repair the identity or registration failures.
+
+`python3 -m unittest scripts.tests.test_verify.VerifyTests.test_failed_host_command_retains_known_case_without_private_framework_output -v`
+passes its focused regression.
+`python3 scripts/check_repository.py`,
+`python3 -m unittest discover -s scripts/tests -v` (159 tests, 20.605s)
+and `git diff --check` pass after the diagnostic change. The full local gate
+has not been repeated without a demonstrated repair. The active implement
+stage is explicitly blocked on engineering evidence, not waiting for approval.
 
 ## T096: final dependency, contract and advisory reconciliation
 
