@@ -14,6 +14,7 @@ function response(overrides: Partial<Response>): Response {
       url: () => "https://127.0.0.1:12345/api/identity/v1/me",
       resourceType: () => "fetch",
       headers: () => ({}),
+      failure: () => ({ errorText: "net::ERR_ABORTED" }),
     }),
     url: () => "https://127.0.0.1:12345/api/identity/v1/me",
     status: () => 401,
@@ -244,6 +245,25 @@ test("a real request failure during final drainage fails closed even when its bo
   await refused;
 });
 
+test("unknown network failures stay fatal without projecting their private error text", async () => {
+  const phases: IdentityCapturePhase[] = [];
+  const page = new EventEmitter();
+  const capture = new IdentityPrivacyCapture(
+    page as unknown as Page,
+    [],
+    "development",
+    (phase) => phases.push(phase),
+  );
+  const request = response({}).request();
+  request.failure = () => ({ errorText: "private-network-canary" });
+  page.emit("requestfailed", request);
+  await assert.rejects(capture.close(), {
+    message: "identity_browser_capture_current_identity_fetch_aborted",
+  });
+  assert.ok(phases.includes("capture_network_failure_unclassified"));
+  assert.ok(!JSON.stringify(phases).includes("private-network-canary"));
+});
+
 function signOutResponse(headers: Record<string, string> = {}): Response {
   return response({
     request: () =>
@@ -252,6 +272,7 @@ function signOutResponse(headers: Record<string, string> = {}): Response {
         url: () => "http://127.0.0.1:12345/api/identity/v1/sign-out",
         resourceType: () => "fetch",
         headers: () => ({}),
+        failure: () => ({ errorText: "net::ERR_ABORTED" }),
       }) as ReturnType<Response["request"]>,
     url: () => "http://127.0.0.1:12345/api/identity/v1/sign-out",
     status: () => 204,

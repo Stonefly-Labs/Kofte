@@ -40,8 +40,8 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 **Current stage: 005 / implement in progress; 91/100 tasks complete.** T001–T091
 are evidenced. Login, nominated enrollment, shared session boundaries,
 explicit Development identity and operational recovery are implemented.
-The owning browser gate passes locally, and a separate Linux Chromium launch
-failure is reproduced and corrected; complete local/CI verification still fails.
+Earlier local browser gates pass, and a separate Linux Chromium launch
+failure is reproduced and corrected; the latest local/CI verification still fails.
 These are engineering failures, not a request for human approval.
 The ledger resumes that failed verification boundary as `running`, not complete.
 The same branch/draft PR continues from the
@@ -83,9 +83,13 @@ blind spot, not the unresolved Linux capture failure. See the
 The subsequent `092ce94` Linux timelines expose a production retry-test race:
 the old signed-out text could pass before the new check completed, allowing the
 next navigation to abort capture. The test now proves a fresh real loading/result
-cycle and drains capture before continuing. Local quality and both-provider
-browser gates pass; matching Linux verification and remaining native failures
-still need closure.
+cycle and drains capture before continuing. Matching `07eb672` Linux verification
+still fails both native browser facts, including Development capture before any
+selection. New finite network/client-abort observations distinguish causes without
+relaxing capture. Latest local quality and SQLite browser checks pass, but
+PostgreSQL production fails a journey text assertion after successful signed-out
+capture. See the [actual results](specs/005-authentication-bootstrap/implementation.md#continued-implementation-distinguish-network-failure-from-client-cancellation);
+no complete browser or implementation pass is claimed.
 
 ### Historical implementation increments
 

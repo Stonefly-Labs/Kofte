@@ -1,6 +1,6 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement incomplete; verification failed, 91/100 complete (T001-T091). The owning browser gate passes locally, and the separate Linux Chromium temporary-path failure is reproduced and corrected. The ledger resumes this failed verification boundary as running; remaining native/contract/privacy/propagation work is engineering, not a human approval gate.
+**Result:** implement incomplete; verification failed, 91/100 complete (T001-T091). Earlier local browser gates pass, but the latest local PostgreSQL journey assertion and Linux response-capture failures remain unresolved. The separate Linux Chromium temporary-path failure is reproduced and corrected. The ledger resumes this failed verification boundary as running; remaining native/contract/privacy/propagation work is engineering, not a human approval gate.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-29.
 **Assessed baseline:** complete local/hosted assessment of published `c7f68a786ebc51c935d8df455d926d79d88a8725`; subsequent focused checks add this checkpoint's browser-helper/native-fixture changes. Earlier assessments retain their original baselines below.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
@@ -12,6 +12,43 @@ The initial blocked assessment below is retained as history. The
 resolves that blocker and resumes the original implement stage. The later
 adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
+
+## Continued implementation: distinguish network failure from client cancellation
+
+The retry synchronization checkpoint is published as
+`07eb672e457cd525fe0b92aaf41889002001a2c4`. Actual Linux
+[run 40912819509](https://github.com/Stonefly-Labs/Kofte/actions/runs/40912819509)
+still fails both native SQLite browser facts. Its safe report
+`browser-none-33bb47b087a5486c881b7cf36d31bb86.json` records Development
+context requests at 173ms, headers at 221ms, request failure at 223ms and
+missing body resource at 226ms, before selection starts at 272ms. The UI
+subsequently reaches signed-in. The production context body also fails at
+3.284s. Root browser tests pass; PostgreSQL and public recipes do not execute.
+Thus the real retry test gap was not a sufficient capture root-cause repair.
+
+The test observer now categorizes only fixed Chromium abort, length-mismatch,
+encoding and unclassified network failures. It also observes the actual client
+AbortSignals for context/current-user fetches, returning the original fetch
+promise with unchanged arguments. No raw error text is projected; unknown
+failures remain fatal. These observations distinguish hypotheses, not a
+demonstrated product fix. Capture, TLS, focus, analyzer and deadline guards
+remain unchanged.
+
+At `07eb672` plus these observations, with the pinned SDK selected:
+
+| Exact executed command | Actual result |
+| --- | --- |
+| `node --test tests/e2e/identityPrivacyCapture.unit.ts` | Passed 16 cases, zero skipped; private unknown network text is not projected and failure remains fatal. |
+| `python3 scripts/verify.py --suite quality` | Passed 21 steps, 58.750s; `quality-none-7a93833bb45c4e08ac4dd2c3a819ddbb.json`. |
+| `python3 scripts/verify.py --suite browser --disposable-postgres` | Failed, 186.243s; `browser-none-e66e59ed3172408eaef29d17176a677c.json`. Root/Development and native SQLite pass. PostgreSQL production fails a text assertion after signed-out capture succeeds; no request/body failure is recorded in that timeline. This is not a both-provider pass or a diagnosed cause. |
+| `python3 scripts/check_repository.py` | Passed after documentation reconciliation. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed 149 cases, 5.397s. |
+| `git diff --check` | Passed. |
+
+The completed earlier `cb188df` automatic matrix also times out its retained
+composition contract selection at 900.054s before later identity contracts;
+its recovery job passes. Prior native provider failures and the isolated
+propagation-baseline timeout remain unresolved. T092-T100 stay open.
 
 ## Continued implementation: await the actual retry cycle
 

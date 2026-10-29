@@ -19,12 +19,31 @@ export async function observeIdentityBrowserLifecycle(
     ["identity_browser_window_focused", "client_window_focused"],
     ["identity_browser_document_hidden", "client_document_hidden"],
     ["identity_browser_document_visible", "client_document_visible"],
+    ["identity_browser_context_fetch_aborted", "client_context_fetch_aborted"],
+    ["identity_browser_current_fetch_aborted", "client_identity_fetch_aborted"],
   ]);
   page.on("console", (message) => {
     const observed = lifecycle.get(message.text());
     if (observed) phase(observed);
   });
   await page.addInitScript(() => {
+    const fetch = window.fetch.bind(window);
+    window.fetch = (input, init) => {
+      if (
+        typeof input === "string" &&
+        (input === "/api/identity/v1/browser-context" ||
+          input === "/api/identity/v1/me")
+      ) {
+        const code =
+          input === "/api/identity/v1/browser-context"
+            ? "identity_browser_context_fetch_aborted"
+            : "identity_browser_current_fetch_aborted";
+        init?.signal?.addEventListener("abort", () => console.debug(code), {
+          once: true,
+        });
+      }
+      return fetch(input, init);
+    };
     window.addEventListener("blur", () =>
       console.debug("identity_browser_window_blurred"),
     );

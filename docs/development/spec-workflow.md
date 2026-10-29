@@ -77,8 +77,13 @@ Subsequent `092ce94` Linux manual/automatic timelines instead pass Development
 and expose an aborted context response during production retry. The loop could
 accept pre-retry signed-out text and navigate before the new check completed.
 It now proves the fresh loading/result cycle through the unchanged actual
-request and drains strict capture before continuing. Local quality and
-both-provider browser gates pass; Linux validation is still required.
+request and drains strict capture before continuing. Matching `07eb672` Linux
+validation still fails both native browser facts; Development capture fails
+before any selection. Closed network categories and actual client AbortSignal
+observations now distinguish hypotheses without relaxing strict capture.
+Latest local quality and SQLite browser checks pass, but PostgreSQL production
+fails a text assertion after successful signed-out capture. Earlier passing
+local gates do not establish the cause or erase these failures.
 
 For focused Linux browser diagnostics on a published task branch, run
 `gh workflow run product-checks.yml --ref feature/005-authentication-bootstrap -f suite=browser`.

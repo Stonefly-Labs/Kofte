@@ -22,6 +22,10 @@ export type IdentityCapturePhase =
   | "capture_responses_drained"
   | "capture_snapshot_finished"
   | "capture_request_failed"
+  | "capture_network_aborted"
+  | "capture_network_length_mismatch"
+  | "capture_network_incomplete_encoding"
+  | "capture_network_failure_unclassified"
   | "capture_context_requested"
   | "capture_context_response_started"
   | "capture_context_body_finished"
@@ -172,6 +176,17 @@ export class IdentityPrivacyCapture {
                 : "identity_browser_capture_response_aborted";
     this.aborted.set(request, code);
     this.progress?.("capture_request_failed");
+    const network = request.failure()?.errorText;
+    this.progress?.(
+      network === "net::ERR_ABORTED"
+        ? "capture_network_aborted"
+        : network === "net::ERR_CONTENT_LENGTH_MISMATCH"
+          ? "capture_network_length_mismatch"
+          : network === "net::ERR_INCOMPLETE_CHUNKED_ENCODING" ||
+              network === "net::ERR_CONTENT_DECODING_FAILED"
+            ? "capture_network_incomplete_encoding"
+            : "capture_network_failure_unclassified",
+    );
     const captureId = request.headers()[identityActionCaptureHeader];
     if (
       captureId &&
