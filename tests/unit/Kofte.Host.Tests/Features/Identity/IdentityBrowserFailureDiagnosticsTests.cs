@@ -7,6 +7,48 @@ namespace Kofte.Host.Tests.Features.Identity;
 public sealed class IdentityBrowserFailureDiagnosticsTests
 {
     [Fact]
+    public void ProductionFailureRetainsOnlyTheKnownSourceLocation()
+    {
+        var privateValue = "private-" + Guid.NewGuid().ToString("N");
+        var observed = IdentityBrowserFailureDiagnostics.Project(new(1, "",
+            $"identity.production.ts:450:17\nidentity_browser_page_line_450\n{privateValue}"), timedOut: false);
+        Assert.Equal("identity.production.ts", observed.SourceFile);
+        Assert.Equal(450, observed.SourceLine);
+        Assert.DoesNotContain(privateValue, System.Text.Json.JsonSerializer.Serialize(observed), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void PlaywrightReportRetainsOnlyKnownCaptureFailureAndSourceWithoutPrivateMatcherValues()
+    {
+        var privateValue = "private-" + Guid.NewGuid().ToString("N");
+        var report = System.Text.Json.JsonSerializer.Serialize(new
+        {
+            suites = new[] { new { errors = new[] { new
+            {
+                message = $"Error: identity_browser_capture_current_identity_fetch_aborted {privateValue}",
+                stack = $"Error: {privateValue}\n at /private/identity.spec.ts:184:19",
+                unknown = "identity_browser_private_cache_invalid"
+            } } } }
+        });
+        var failure = IdentityBrowserFailureDiagnostics.DescribePlaywrightFailure(
+            new(1, report, privateValue));
+        Assert.Contains("identity_browser_capture_current_identity_fetch_aborted", failure, StringComparison.Ordinal);
+        Assert.Contains("identity.spec.ts:184", failure, StringComparison.Ordinal);
+        Assert.DoesNotContain("identity_browser_private_cache_invalid", failure, StringComparison.Ordinal);
+        Assert.DoesNotContain(privateValue, failure, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData("{")]
+    [InlineData("{\"errors\":[{\"message\":\"identity_browser_unknown_private_value\"}]}")]
+    public void PlaywrightReportRefusesMalformedOrUnknownDiagnosticEvidence(string report)
+    {
+        var failure = IdentityBrowserFailureDiagnostics.DescribePlaywrightFailure(new(1, report, ""));
+        Assert.StartsWith("identity_browser_failure_boundaries_failed", failure, StringComparison.Ordinal);
+        Assert.DoesNotContain("unknown_private_value", failure, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void RetainsOperationalStageAndMatcherWithoutReplacingThemWithCleanup()
     {
         var result = new ProcessOutput(1, """

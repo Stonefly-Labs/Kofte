@@ -30,7 +30,8 @@ internal sealed partial class IdentityBrowserIngress
         }
     }
 
-    private async Task<string> CaptureActionResponseAsync(HttpResponseMessage response, CancellationToken token)
+    private async Task<string> CaptureActionResponseAsync(HttpResponseMessage response, CancellationToken token,
+        string route = "identity-next-action", string? requestId = null)
     {
         await response.Content.LoadIntoBufferAsync(65_536, token);
         var body = (await response.Content.ReadAsByteArrayAsync(token)).ToArray();
@@ -42,7 +43,7 @@ internal sealed partial class IdentityBrowserIngress
                 string.Join(',', response.Content.Headers.ContentEncoding).ToLowerInvariant();
             if (body.Length > 65_536 || encoding is not ("identity" or "gzip" or "deflate" or "br"))
                 throw new InvalidOperationException("identity_browser_action_capture_limit");
-            var id = Guid.NewGuid().ToString("N");
+            var id = requestId ?? Guid.NewGuid().ToString("N");
             string root;
             lock (actionCaptureGate)
                 root = actionCaptureRoot ?? throw new InvalidOperationException("identity_browser_action_capture_scope_invalid");
@@ -51,7 +52,7 @@ internal sealed partial class IdentityBrowserIngress
                 version = 1,
                 id,
                 method = "POST",
-                route = "identity-next-action",
+                route,
                 rootBinding = Convert.ToHexStringLower(SHA256.HashData(
                     Encoding.UTF8.GetBytes(Path.TrimEndingDirectorySeparator(root)))),
                 status = (int)response.StatusCode,
@@ -77,6 +78,39 @@ internal sealed partial class IdentityBrowserIngress
         {
             CryptographicOperations.ZeroMemory(body);
             if (encoded is not null) CryptographicOperations.ZeroMemory(encoded);
+        }
+    }
+
+    private async Task CaptureLostAcknowledgementAsync(HttpResponseMessage response, string requestId,
+        string requestDigest, string path, CancellationToken token)
+    {
+        await response.Content.LoadIntoBufferAsync(8192, token);
+        var body = await response.Content.ReadAsByteArrayAsync(token);
+        byte[]? envelope = null;
+        try
+        {
+            if (response.Content.Headers.ContentEncoding.Count != 0 ||
+                path is not ("/api/identity/v1/first-administrator" or "/api/identity/v1/sign-out"))
+                throw new InvalidOperationException("identity_browser_action_capture_scope_invalid");
+            envelope = JsonSerializer.SerializeToUtf8Bytes(new
+            {
+                method = "POST",
+                path,
+                requestSha256 = requestDigest,
+                headers = response.Headers.Concat(response.Content.Headers)
+                    .ToDictionary(header => header.Key.ToLowerInvariant(), header => header.Value.ToArray()),
+                body = new UTF8Encoding(false, true).GetString(body)
+            });
+            using var captured = new HttpResponseMessage(response.StatusCode)
+            { Content = new ByteArrayContent(envelope) };
+            await CaptureActionResponseAsync(captured, token,
+                path.EndsWith("/sign-out", StringComparison.Ordinal)
+                    ? "identity-sign-out-lost-ack" : "identity-enrollment-lost-ack", requestId);
+        }
+        finally
+        {
+            CryptographicOperations.ZeroMemory(body);
+            if (envelope is not null) CryptographicOperations.ZeroMemory(envelope);
         }
     }
 

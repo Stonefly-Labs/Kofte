@@ -1,4 +1,5 @@
 import { exportIdentityCanaries } from "./identityCanaryExport.ts";
+import { createHash } from "node:crypto";
 import {
   consumeIdentityActionCapture,
   identityActionCaptureHeader,
@@ -35,6 +36,16 @@ const responseFailures = new Set([
   "identity_browser_private_identity_invalid",
   "identity_browser_private_action_capture_invalid",
 ]);
+
+function hasEmptySignOutFraming(headers: Record<string, string>) {
+  return (
+    headers["content-type"] === undefined &&
+    headers["content-encoding"] === undefined &&
+    headers["transfer-encoding"] === undefined &&
+    (headers["content-length"] === undefined ||
+      headers["content-length"] === "0")
+  );
+}
 
 export class IdentityPrivacyCapture {
   private readonly secrets = new Set<string>();
@@ -143,7 +154,113 @@ export class IdentityPrivacyCapture {
                 : "identity_browser_capture_response_aborted";
     this.aborted.set(request, code);
     this.progress?.("capture_request_failed");
+    const captureId = request.headers()[identityActionCaptureHeader];
+    if (
+      captureId &&
+      request.method() === "POST" &&
+      [
+        "/api/identity/v1/first-administrator",
+        "/api/identity/v1/sign-out",
+      ].includes(path)
+    ) {
+      const read = this.readLostAcknowledgement(request, path, captureId).catch(
+        () => {
+          this.failures.push("identity_browser_private_action_capture_invalid");
+        },
+      );
+      this.pending.add(read);
+      void read.finally(() => this.pending.delete(read));
+    }
   };
+
+  private captureHeaders(headers: Record<string, string>, login: boolean) {
+    for (const [name, value] of Object.entries(headers)) {
+      if (name === "set-cookie") {
+        for (const match of value.matchAll(
+          /(?:^|\n|, )(?:__Host-kofte-|kofte-dev-)[^=;\s]+=([^;\s,]+)/g,
+        )) {
+          if (match[1].length >= 16) this.secrets.add(match[1]);
+        }
+      } else if (login && ["location", "x-action-redirect"].includes(name)) {
+        const target = new URL(value.split(";")[0]);
+        if (
+          target.protocol !== "https:" ||
+          target.pathname !== "/authorize" ||
+          target.username ||
+          target.password ||
+          target.hash ||
+          !target.searchParams.get("state") ||
+          !target.searchParams.get("nonce")
+        )
+          throw new Error("identity_browser_private_handoff_invalid");
+        this.handoffs.add(target.href);
+        this.add("handoff", value);
+        this.transportObserved = true;
+      } else this.add(name === "location" ? "redirect" : "response", value);
+    }
+  }
+
+  private async readLostAcknowledgement(
+    request: Request,
+    path: string,
+    id: string,
+  ) {
+    const signOut = path === "/api/identity/v1/sign-out";
+    const text = await consumeIdentityActionCapture(
+      process.env.KOFTE_IDENTITY_PRIVATE_ROOT,
+      id,
+      signOut ? 204 : 200,
+      undefined,
+      signOut ? "identity-sign-out-lost-ack" : "identity-enrollment-lost-ack",
+    );
+    const value: unknown = JSON.parse(text);
+    if (
+      typeof value !== "object" ||
+      value === null ||
+      Object.keys(value).join(",") !==
+        "method,path,requestSha256,headers,body" ||
+      !("method" in value) ||
+      value.method !== "POST" ||
+      !("path" in value) ||
+      value.path !== path ||
+      !("requestSha256" in value) ||
+      value.requestSha256 !==
+        createHash("sha256")
+          .update(request.postDataBuffer() ?? Buffer.alloc(0))
+          .digest("hex") ||
+      !("headers" in value) ||
+      typeof value.headers !== "object" ||
+      value.headers === null ||
+      Array.isArray(value.headers) ||
+      !("body" in value) ||
+      typeof value.body !== "string" ||
+      Buffer.byteLength(value.body) > 8192 ||
+      (signOut && value.body !== "")
+    )
+      throw new Error("identity_browser_private_action_capture_invalid");
+    const headers: Record<string, string> = {};
+    for (const [name, values] of Object.entries(value.headers)) {
+      if (
+        !/^[a-z0-9-]+$/.test(name) ||
+        !Array.isArray(values) ||
+        !values.length ||
+        values.some((item: unknown) => typeof item !== "string")
+      )
+        throw new Error("identity_browser_private_action_capture_invalid");
+      headers[name] = values.join("\n");
+    }
+    if (
+      !headers["cache-control"]?.includes("no-store") ||
+      headers["referrer-policy"] !== "no-referrer" ||
+      headers["location"] !== undefined ||
+      headers[identityActionCaptureHeader] !== undefined ||
+      (signOut && !hasEmptySignOutFraming(headers))
+    )
+      throw new Error("identity_browser_private_action_capture_invalid");
+    this.captureHeaders(headers, false);
+    this.add("response", value.body);
+    this.capturedActions.add(request);
+  }
 
   private readonly observeResponse = (response: Response) => {
     const read = this.readResponse(response).catch((error: unknown) => {
@@ -172,30 +289,7 @@ export class IdentityPrivacyCapture {
       throw new Error("identity_browser_capture_response_headers_failed");
     }
     const login = request.method() === "POST" && url.pathname === "/identity";
-    for (const [name, value] of Object.entries(headers)) {
-      if (name === "set-cookie") {
-        for (const match of value.matchAll(
-          /(?:^|\n|, )(?:__Host-kofte-|kofte-dev-)[^=;\s]+=([^;\s,]+)/g,
-        )) {
-          if (match[1].length >= 16) this.secrets.add(match[1]);
-        }
-      } else if (login && ["location", "x-action-redirect"].includes(name)) {
-        const target = new URL(value.split(";")[0]);
-        if (
-          target.protocol !== "https:" ||
-          target.pathname !== "/authorize" ||
-          target.username ||
-          target.password ||
-          target.hash ||
-          !target.searchParams.get("state") ||
-          !target.searchParams.get("nonce")
-        )
-          throw new Error("identity_browser_private_handoff_invalid");
-        this.handoffs.add(target.href);
-        this.add("handoff", value);
-        this.transportObserved = true;
-      } else this.add(name === "location" ? "redirect" : "response", value);
-    }
+    this.captureHeaders(headers, login);
     if (
       login &&
       request.resourceType() === "fetch" &&
@@ -234,6 +328,18 @@ export class IdentityPrivacyCapture {
         headers["referrer-policy"] !== "no-referrer"
       )
         throw new Error("identity_browser_private_cache_invalid");
+    }
+    if (
+      url.pathname === "/api/identity/v1/sign-out" &&
+      request.method() === "POST" &&
+      response.status() === 204
+    ) {
+      if (
+        !hasEmptySignOutFraming(headers) ||
+        (await response.finished()) !== null
+      )
+        throw new Error("identity_browser_capture_response_body_failed");
+      return;
     }
     let body = "";
     let bodyFailureCode: string | undefined;

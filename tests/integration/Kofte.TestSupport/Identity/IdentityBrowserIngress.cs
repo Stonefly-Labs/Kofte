@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
@@ -87,6 +88,12 @@ internal sealed partial class IdentityBrowserIngress : IAsyncDisposable
             context.Request.Path == "/identity" &&
             context.Request.Headers.TryGetValue("Next-Action", out var action) &&
             action.Count == 1 && action[0] is { Length: > 0 and <= 256 };
+        var captureAcknowledgement = ActionCaptureEnabled && context.Request.Method == "POST" &&
+            context.Request.Path.Value is "/api/identity/v1/first-administrator" or "/api/identity/v1/sign-out" &&
+            context.Request.Headers.TryGetValue(ActionCaptureHeader, out var captureRequest) &&
+            captureRequest.Count == 1 && captureRequest[0] is { Length: 32 } captureId &&
+            captureId.All(char.IsAsciiHexDigitLower);
+        var requestId = captureAcknowledgement ? context.Request.Headers[ActionCaptureHeader][0] : null;
         using var budget = CancellationTokenSource.CreateLinkedTokenSource(captureAction
             ? application!.Lifetime.ApplicationStopping : context.RequestAborted);
         budget.CancelAfter(TimeSpan.FromSeconds(5));
@@ -105,9 +112,21 @@ internal sealed partial class IdentityBrowserIngress : IAsyncDisposable
             request.Content = new StreamContent(context.Request.Body);
         foreach (var header in context.Request.Headers)
         {
-            if (HopByHop(header.Key) || header.Key.Equals("Host", StringComparison.OrdinalIgnoreCase)) continue;
+            if (HopByHop(header.Key) || header.Key.Equals("Host", StringComparison.OrdinalIgnoreCase) ||
+                header.Key.Equals(ActionCaptureHeader, StringComparison.OrdinalIgnoreCase)) continue;
             if (!request.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray()))
                 request.Content?.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
+        }
+        string? requestDigest = null;
+        if (captureAcknowledgement)
+        {
+            if (request.Content is null)
+                request.Content = new ByteArrayContent([]);
+            await request.Content.LoadIntoBufferAsync(8192, budget.Token);
+            var body = await request.Content.ReadAsByteArrayAsync(budget.Token);
+            try { requestDigest = Convert.ToHexStringLower(SHA256.HashData(body)); }
+            finally { CryptographicOperations.ZeroMemory(body); }
+            request.Headers.Remove("Accept-Encoding");
         }
         using var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, budget.Token);
         var actionCaptureId = captureAction
@@ -120,6 +139,7 @@ internal sealed partial class IdentityBrowserIngress : IAsyncDisposable
             "/api/identity/v1/me" => "current_identity",
             "/api/identity/v1/first-administrator" => "enrollment",
             "/api/identity/v1/sign-out" => "sign_out",
+            _ when context.Request.Path.StartsWithSegments("/api/identity", StringComparison.Ordinal) => "unknown_identity",
             _ => null
         };
         if (operation is not null)
@@ -151,6 +171,9 @@ internal sealed partial class IdentityBrowserIngress : IAsyncDisposable
             Interlocked.Exchange(ref loseEnrollmentAcknowledgement, 0) == 1)
         {
             await response.Content.LoadIntoBufferAsync(8192, budget.Token);
+            if (captureAcknowledgement)
+                await CaptureLostAcknowledgementAsync(response, requestId!, requestDigest!,
+                    context.Request.Path.Value!, budget.Token);
             Volatile.Write(ref enrollmentAcknowledgementLost, 1);
             context.Abort();
             return;
@@ -160,6 +183,9 @@ internal sealed partial class IdentityBrowserIngress : IAsyncDisposable
             Interlocked.Exchange(ref loseSignOutAcknowledgement, 0) == 1)
         {
             await response.Content.LoadIntoBufferAsync(8192, budget.Token);
+            if (captureAcknowledgement)
+                await CaptureLostAcknowledgementAsync(response, requestId!, requestDigest!,
+                    context.Request.Path.Value!, budget.Token);
             Volatile.Write(ref signOutAcknowledgementLost, 1);
             context.Abort();
             return;

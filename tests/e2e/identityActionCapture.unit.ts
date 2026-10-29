@@ -207,6 +207,193 @@ test("refuses missing, foreign, symlinked and non-private evidence", async () =>
   });
 });
 
+function lostAcknowledgement(
+  root: string,
+  path: string,
+  body = '{"authorization":"synthetic-private-authorization"}',
+  patch: Record<string, unknown> = {},
+) {
+  const signOut = path.endsWith("/sign-out");
+  const request = {
+    method: () => "POST",
+    url: () => "https://127.0.0.1:12345" + path,
+    resourceType: () => "fetch",
+    postDataBuffer: () => Buffer.from(body),
+    headers: () => ({ [identityActionCaptureHeader]: record.id }),
+  } as unknown as Request;
+  const observed = {
+    method: "POST",
+    path,
+    requestSha256: createHash("sha256").update(body).digest("hex"),
+    headers: {
+      "cache-control": ["no-store"],
+      "referrer-policy": ["no-referrer"],
+      ...(signOut ? {} : { "content-type": ["application/json"] }),
+    },
+    body: signOut ? "" : '{"version":"1","status":"enrolled"}',
+    ...patch,
+  };
+  const record = envelope(root, Buffer.from(JSON.stringify(observed)));
+  record.route = signOut
+    ? "identity-sign-out-lost-ack"
+    : "identity-enrollment-lost-ack";
+  record.status = signOut ? 204 : 200;
+  return { request, record };
+}
+
+for (const path of [
+  "/api/identity/v1/first-administrator",
+  "/api/identity/v1/sign-out",
+]) {
+  test(`captures the actual intentionally lost acknowledgement only with its private request-bound receipt: ${path}`, async () => {
+    await ownedRoot(async (root) => {
+      const { request, record } = lostAcknowledgement(root, path);
+      const file = await writeRecord(root, record);
+      const previous = process.env.KOFTE_IDENTITY_PRIVATE_ROOT;
+      process.env.KOFTE_IDENTITY_PRIVATE_ROOT = root;
+      try {
+        const page = new EventEmitter();
+        const capture = new IdentityPrivacyCapture(page as unknown as Page);
+        page.emit("requestfailed", request);
+        await capture.close();
+        await assert.rejects(lstat(file), { code: "ENOENT" });
+        const replay = new IdentityPrivacyCapture(page as unknown as Page);
+        page.emit("requestfailed", request);
+        await assert.rejects(replay.close(), rejected);
+      } finally {
+        if (previous === undefined)
+          delete process.env.KOFTE_IDENTITY_PRIVATE_ROOT;
+        else process.env.KOFTE_IDENTITY_PRIVATE_ROOT = previous;
+      }
+    });
+  });
+}
+
+test("lost acknowledgements refuse missing, wrong-route, wrong-request and unexpected response evidence", async () => {
+  const path = "/api/identity/v1/first-administrator";
+  for (const patch of [
+    { path: "/other" },
+    { requestSha256: "0".repeat(64) },
+    { method: "GET" },
+    {
+      headers: {
+        "cache-control": ["public"],
+        "referrer-policy": ["no-referrer"],
+      },
+    },
+    {
+      headers: {
+        "cache-control": ["no-store"],
+        "referrer-policy": ["no-referrer"],
+        location: ["/other"],
+      },
+    },
+    { body: 123 },
+  ]) {
+    await ownedRoot(async (root) => {
+      const { request, record } = lostAcknowledgement(
+        root,
+        path,
+        "actual-request",
+        patch,
+      );
+      await writeRecord(root, record);
+      const previous = process.env.KOFTE_IDENTITY_PRIVATE_ROOT;
+      process.env.KOFTE_IDENTITY_PRIVATE_ROOT = root;
+      try {
+        const page = new EventEmitter();
+        const capture = new IdentityPrivacyCapture(page as unknown as Page);
+        page.emit("requestfailed", request);
+        await assert.rejects(capture.close(), rejected);
+      } finally {
+        if (previous === undefined)
+          delete process.env.KOFTE_IDENTITY_PRIVATE_ROOT;
+        else process.env.KOFTE_IDENTITY_PRIVATE_ROOT = previous;
+      }
+    });
+  }
+});
+
+test("lost acknowledgement scans the actual upstream body and headers rather than exempting the failed request", async () => {
+  const canary = "private-lost-acknowledgement-canary";
+  for (const patch of [
+    { body: canary },
+    {
+      headers: {
+        "cache-control": ["no-store"],
+        "referrer-policy": ["no-referrer"],
+        "x-private": [canary],
+      },
+    },
+  ]) {
+    await ownedRoot(async (root) => {
+      const { request, record } = lostAcknowledgement(
+        root,
+        "/api/identity/v1/first-administrator",
+        "actual-request",
+        patch,
+      );
+      await writeRecord(root, record);
+      const previous = process.env.KOFTE_IDENTITY_PRIVATE_ROOT;
+      process.env.KOFTE_IDENTITY_PRIVATE_ROOT = root;
+      try {
+        const page = new EventEmitter();
+        const capture = new IdentityPrivacyCapture(page as unknown as Page, [
+          canary,
+        ]);
+        page.emit("requestfailed", request);
+        await assert.rejects(capture.close(), {
+          message: "identity_browser_privacy_disclosure",
+        });
+      } finally {
+        if (previous === undefined)
+          delete process.env.KOFTE_IDENTITY_PRIVATE_ROOT;
+        else process.env.KOFTE_IDENTITY_PRIVATE_ROOT = previous;
+      }
+    });
+  }
+});
+
+test("lost sign-out acknowledgement still requires its exact empty response framing", async () => {
+  for (const patch of [
+    { body: "unexpected-response" },
+    ...[
+      { "content-length": ["1"] },
+      { "content-type": ["application/json"] },
+      { "transfer-encoding": ["chunked"] },
+      { "content-encoding": ["gzip"] },
+    ].map((framing) => ({
+      headers: {
+        "cache-control": ["no-store"],
+        "referrer-policy": ["no-referrer"],
+        ...framing,
+      },
+    })),
+  ]) {
+    await ownedRoot(async (root) => {
+      const { request, record } = lostAcknowledgement(
+        root,
+        "/api/identity/v1/sign-out",
+        "",
+        patch,
+      );
+      await writeRecord(root, record);
+      const previous = process.env.KOFTE_IDENTITY_PRIVATE_ROOT;
+      process.env.KOFTE_IDENTITY_PRIVATE_ROOT = root;
+      try {
+        const page = new EventEmitter();
+        const capture = new IdentityPrivacyCapture(page as unknown as Page);
+        page.emit("requestfailed", request);
+        await assert.rejects(capture.close(), rejected);
+      } finally {
+        if (previous === undefined)
+          delete process.env.KOFTE_IDENTITY_PRIVATE_ROOT;
+        else process.env.KOFTE_IDENTITY_PRIVATE_ROOT = previous;
+      }
+    });
+  }
+});
+
 function actionResponse(id: string | undefined, encoding?: string): Response {
   const request = {
     method: () => "POST",

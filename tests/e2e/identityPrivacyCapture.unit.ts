@@ -13,6 +13,7 @@ function response(overrides: Partial<Response>): Response {
       method: () => "GET",
       url: () => "https://127.0.0.1:12345/api/identity/v1/me",
       resourceType: () => "fetch",
+      headers: () => ({}),
     }),
     url: () => "https://127.0.0.1:12345/api/identity/v1/me",
     status: () => 401,
@@ -175,4 +176,82 @@ test("a real request failure during final drainage fails closed even when its bo
   page.emit("requestfailed", captured.request());
   releaseBody('{"code":"identity_unauthenticated"}');
   await refused;
+});
+
+function signOutResponse(headers: Record<string, string> = {}): Response {
+  return response({
+    request: () =>
+      ({
+        method: () => "POST",
+        url: () => "http://127.0.0.1:12345/api/identity/v1/sign-out",
+        resourceType: () => "fetch",
+        headers: () => ({}),
+      }) as ReturnType<Response["request"]>,
+    url: () => "http://127.0.0.1:12345/api/identity/v1/sign-out",
+    status: () => 204,
+    allHeaders: async () => ({
+      "cache-control": "no-store",
+      "referrer-policy": "no-referrer",
+      ...headers,
+    }),
+    text: async () => {
+      throw new Error("Chromium has no response-body resource for HTTP 204");
+    },
+  });
+}
+
+test("the exact bodyless sign-out contract awaits completion without requesting a Chromium body resource", async () => {
+  const page = new EventEmitter();
+  let finish!: (error: Error | null) => void;
+  const completed = new Promise<Error | null>((resolve) => {
+    finish = resolve;
+  });
+  const capture = new IdentityPrivacyCapture(page as unknown as Page);
+  page.emit("response", signOutResponse({}));
+  page.emit(
+    "response",
+    signOutResponse({
+      "content-length": "0",
+    }),
+  );
+  const pending = signOutResponse();
+  pending.finished = () => completed;
+  page.emit("response", pending);
+  let closed = false;
+  const closing = capture.close().then(() => {
+    closed = true;
+  });
+  await new Promise<void>((resolve) => setImmediate(resolve));
+  assert.equal(closed, false);
+  finish(null);
+  await closing;
+  assert.equal(closed, true);
+});
+
+const invalidSignOutFraming: Record<string, string>[] = [
+  { "content-length": "1" },
+  { "content-type": "application/json" },
+  { "transfer-encoding": "chunked" },
+  { "content-encoding": "gzip" },
+];
+for (const headers of invalidSignOutFraming) {
+  test(`bodyless sign-out refuses unexpected framing ${Object.keys(headers)[0]}`, async () => {
+    const page = new EventEmitter();
+    const capture = new IdentityPrivacyCapture(page as unknown as Page);
+    page.emit("response", signOutResponse(headers));
+    await assert.rejects(capture.close(), {
+      message: "identity_browser_capture_response_body_failed",
+    });
+  });
+}
+
+test("bodyless sign-out still refuses an aborted request even after response completion", async () => {
+  const page = new EventEmitter();
+  const capture = new IdentityPrivacyCapture(page as unknown as Page);
+  const outgoing = signOutResponse();
+  page.emit("response", outgoing);
+  page.emit("requestfailed", outgoing.request());
+  await assert.rejects(capture.close(), {
+    message: "identity_browser_capture_response_aborted",
+  });
 });

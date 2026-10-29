@@ -14,12 +14,18 @@ The [technology-stack exploration](kofte-technology-stack-architecture.md) is hi
 
 ## Working in the repository
 
-**Current Spec Kit checkpoint: 005 / implement running, T001–T088 complete (88/100).**
+**Current Spec Kit checkpoint: 005 / implement blocked, T001–T089 and T091 complete (90/100).**
 The [runtime guide](../specs/005-authentication-bootstrap/quickstart.md) covers
 delivered sign-in, enrollment, session/Development and stopped operator commands.
 All three public operational recipes now pass on both providers; complete
-privacy/accessibility, public-catalog and local/assessed-head CI gates remain
+accessibility/browser and local/assessed-head CI gates remain
 in progress. Focused passes do not erase failed full gates.
+Strict Development browser/transport proof now passes on both providers, and
+the complete contract/privacy suites pass both providers, including all twenty
+public recipe rows. The exact full local gate exits 1 on direct PostgreSQL
+integration/key recovery, retained browser checks and the propagation browser
+baseline. Its passing nested PostgreSQL baseline does not replace direct
+failures or establish their cause. T090 and T092–T100 remain open.
 The detailed US1 increments below are historical.
 The [implementation evidence](../specs/005-authentication-bootstrap/implementation.md)
 records reviewed OIDC adoption (403 npm / 87 NuGet), independent HTTPS/process

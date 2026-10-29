@@ -2,10 +2,12 @@ import { expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { lstat, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
+import { randomBytes } from "node:crypto";
 import type { BrowserContext, Page } from "@playwright/test";
 import { withIdentityBrowser } from "./identityBrowser.ts";
 import { identityAccessibility } from "./identityAccessibility.ts";
 import { IdentityPrivacyCapture } from "./identityPrivacyCapture.ts";
+import { identityActionCaptureHeader } from "./identityActionCapture.ts";
 
 async function verifyLogin() {
   const origin = process.env.KOFTE_IDENTITY_WEB_URL;
@@ -22,9 +24,9 @@ async function verifyLogin() {
   ) {
     throw new Error("identity_browser_owned_fixture_required");
   }
-  await withIdentityBrowser(root, origin, authority, async (context) => {
+  await withIdentityBrowser(root, origin, authority, async (context, phase) => {
     const page = context.pages()[0];
-    const privacy = new IdentityPrivacyCapture(page);
+    const privacy = new IdentityPrivacyCapture(page, [], "oidc", phase);
     try {
       console.log("identity_browser_stage_trust_ready");
       await page.bringToFront();
@@ -151,11 +153,26 @@ async function verifyLogin() {
         "?returnPath=%2F%2Fforeign.invalid",
         "?returnPath=%2F&returnPath=%2Fidentity",
       ]) {
-        await page.goto(new URL("/identity" + query, origin).href);
+        const [, browserContext, identity] = await Promise.all([
+          page.goto(new URL("/identity" + query, origin).href),
+          page.waitForResponse(
+            (response) =>
+              response.request().method() === "GET" &&
+              new URL(response.url()).pathname ===
+                "/api/identity/v1/browser-context",
+          ),
+          page.waitForResponse(
+            (response) =>
+              response.request().method() === "GET" &&
+              new URL(response.url()).pathname === "/api/identity/v1/me",
+          ),
+        ]);
+        await Promise.all([browserContext.body(), identity.body()]);
         await expect(page.getByRole("status")).toHaveText(
           "Identity navigation is unavailable",
         );
         await expect(page.locator("form")).toHaveCount(0);
+        await privacy.snapshot(context);
       }
       console.log("identity_browser_stage_safe_returns_verified");
       await privacy.proveCapture(context);
@@ -228,8 +245,9 @@ async function verifySession(
       method: "POST",
       cache: "no-store",
       redirect: "error",
-      headers: { "X-Kofte-CSRF": "invalid-pair" },
+      headers: { "X-Kofte-CSRF": "invalid-pair-not-a-token" },
     });
+    await response.arrayBuffer();
     return response.status;
   });
   expect(invalid).toBe(403);
@@ -381,15 +399,14 @@ async function verifySession(
   for (let index = 1; index <= 16; index++) {
     await browserControl(root, `activity-${String(index).padStart(2, "0")}`);
     expect(
-      await page.evaluate(
-        async () =>
-          (
-            await fetch("/api/identity/v1/me", {
-              cache: "no-store",
-              redirect: "error",
-            })
-          ).status,
-      ),
+      await page.evaluate(async () => {
+        const response = await fetch("/api/identity/v1/me", {
+          cache: "no-store",
+          redirect: "error",
+        });
+        await response.arrayBuffer();
+        return response.status;
+      }),
     ).toBe(200);
   }
   await browserControl(root, "expire-absolute");
@@ -448,6 +465,7 @@ async function verifySession(
   const other = await enter();
   await expect(page.getByText(user, { exact: true })).toHaveCount(0);
   await browserControl(root, "lose-sign-out");
+  await captureLostAcknowledgement(page, "/api/identity/v1/sign-out");
   const uncertain = performance.now();
   await panel.getByRole("button", { name: "Sign out", exact: true }).click();
   await expect(panel.getByRole("alert")).toContainText(
@@ -459,8 +477,12 @@ async function verifySession(
   await identityAccessibility(
     page,
     panel.getByRole("alert"),
-    panel.getByRole("button", { name: "Retry identity check" }),
+    panel.getByRole("button", { name: "Sign in", exact: true }),
   );
+  await page.keyboard.press("Tab");
+  await expect(
+    panel.getByRole("button", { name: "Retry identity check" }),
+  ).toBeFocused();
   await denied();
   await page.addInitScript(watchPreviousIdentity, other);
   await page.evaluate(watchPreviousIdentity, other);
@@ -601,6 +623,10 @@ async function verifyEnrollment(
   await identityAccessibility(page, panel.getByRole("alert"), entry);
   await privacy.snapshot(context);
   const queriesBefore = identityQueries;
+  await captureLostAcknowledgement(
+    page,
+    "/api/identity/v1/first-administrator",
+  );
   await entry.fill(authorization);
   const began = performance.now();
   await entry.press("Enter");
@@ -633,15 +659,32 @@ async function verifyEnrollment(
   console.log("identity_browser_stage_enrollment_verified");
 }
 
+async function captureLostAcknowledgement(page: Page, path: string) {
+  const id = randomBytes(16).toString("hex");
+  await page.route(
+    `**${path}`,
+    async (route) => {
+      await route.continue({
+        headers: {
+          ...route.request().headers(),
+          [identityActionCaptureHeader]: id,
+        },
+      });
+    },
+    { times: 1 },
+  );
+}
+
 function reportFailure(error: unknown) {
   const message = error instanceof Error ? error.message : "";
   const code = message.match(/\bidentity_browser_[a-z_]{1,70}\b/)?.[0];
   const line =
     error instanceof Error
       ? error.stack?.match(
-          /\b(identity\.production|identityBrowser)\.ts:(\d{1,4}):\d+/,
+          /\b(identity\.production|identityBrowser|identityAccessibility|identityPrivacyCapture|identityCanaryExport)\.ts:([1-9][0-9]{0,3}):[1-9][0-9]{0,4}\b/,
         )
       : undefined;
+  if (line) console.error(line[0]);
   console.error(
     code ??
       (line

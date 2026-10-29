@@ -1,8 +1,8 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement paused at a human-requested context checkpoint; 88/100 complete (T001-T088); both-provider strengthened session/browser stories, complete HTTP/Development corpus, generated contracts, recovery/quarantine, actual key/preparation, failure/capacity, stopped bounded maintenance and three public operational recipes evidenced; complete privacy/accessibility, public-catalog and final evidence unfinished.
+**Result:** implement blocked; 90/100 complete (T001-T089 and T091). Strict privacy proof and both-provider public catalogs pass. The exact complete local gate fails PostgreSQL integration/recovery, retained browser checks and the failure-propagation browser baseline; accessibility and final reconciliation remain unfinished.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-29.
-**Assessed baseline:** `6df9eebdcfa6b273126b0c51c272d1b2c2f953e6`.
+**Assessed baseline:** `6f4e4a7e5f2246011fbe35928af759aa300317b3` plus this checkpoint's uncommitted-at-test-time capture/ingress changes; earlier assessments retain their original baselines below.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
 `specs/005-authentication-bootstrap`.
 **Checkpoint:** [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8).
@@ -13,7 +13,173 @@ resolves that blocker and resumes the original implement stage. The later
 adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
 
+## Continued implementation: strict bodyless and lost-ack privacy capture
+
+The original branch/open draft PR and both completed checklists were verified,
+and the driver resumed the human-requested pause as 005/implement/running.
+This continuation does not advance another stage or change the approved
+requirements, reviewer-owned checklists, product dependencies or deadlines.
+The completed both-provider privacy suite and owning public catalogs now close
+T089 and T091. T090 and T092-T100 remain unchecked; the stage is blocked, not
+complete.
+
+The actual Development browser failure was Chromium's unavailable body resource
+for a legitimate HTTP 204 sign-out. The scanner now requires the exact private
+bodyless response framing and successful response completion without calling
+`text()` for that status. An observed abort still fails. Six regressions cover
+completion, unexpected framing and aborts; both real provider Development facts
+now pass.
+
+The production ingress still actually aborts successful enrollment/sign-out
+acknowledgements. Before that intentional loss, it captures the complete actual
+upstream headers/body into the existing bounded, private, single-use receipt
+boundary. Only the exact failed request can consume it: route/status, method,
+path, request-body SHA-256, root/ID, freshness, file ownership, response framing
+and receipt digest must match. The scanner examines the captured headers/body;
+missing/replayed/mismatched receipts and seeded disclosures remain fatal.
+The test correlation header is removed before forwarding upstream. No product
+endpoint, deployment flag, synthetic success response or ignored abort is added.
+
+The real session journey also exposed two test errors: the deliberately invalid
+CSRF literal was too short to be a privacy canary, and the uncertain signed-out
+state's first keyboard control is **Sign in**, followed by **Retry identity
+check**. Both controls are now verified in that actual order. Status-only
+browser probes consume their responses. Unsafe-return probes now await and
+scan the actual context/identity bodies before navigating again; a direct
+PostgreSQL login reproduction failed drainage before that change and passes
+after it.
+
+Hosted unknown-path/version parity failures were independently reproduced on
+both providers: the strict transport guard correctly refused an absent ingress
+channel because unknown routes generated no access records. The test ingress
+now emits a fixed `unknown_identity` operation category, not raw paths, identity
+or query values. Both original negative facts then pass without relaxing the
+three-channel scanner.
+
+Failure diagnostics project only known codes and finite source locations from
+bounded Playwright JSON and production observations. They never retain private
+matcher values, raw protocol output or arbitrary error text.
+
+| Exact executed command / selection | Result |
+| --- | --- |
+| `dotnet build Kofte.slnx --no-restore -c Release -warnaserror` and `dotnet format Kofte.slnx --verify-no-changes --no-restore` | Passed after the joined capture/ingress changes. |
+| `dotnet test --project tests/unit/Kofte.Host.Tests --no-build --no-restore -c Release --filter-class '*IdentityBrowserFailureDiagnosticsTests' --minimum-expected-tests 16` | Passed 16, zero skipped. |
+| `node --test tests/e2e/identityPrivacyCapture.unit.ts tests/e2e/identityCanaryExport.unit.ts tests/e2e/identityActionCapture.unit.ts tests/e2e/identityBrowserOwnership.unit.ts` | Passed all 35 cases, zero skipped, including actual-body canary, wrong request/route, replay, framing and ownership refusals. |
+| `npm run lint --workspace tests/e2e` and `npm run typecheck --workspace tests/e2e` | Both passed. |
+| `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-build --no-restore -c Release --filter-class '*SqliteIdentityBrowserFailureTests' --filter-display-name '*RealDevelopmentSelectionAndSignOutRequirePrivateBrowserAndTransportEvidence*' --minimum-expected-tests 1` | Passed 1, zero skipped, 7.5s. PostgreSQL counterpart with disposable admission passed 1, zero skipped, 13.5s. |
+| `dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario nominated-enrollment --provider sqlite` | Passed all 17 exact observations, including actual lost acknowledgement and fresh designation without retry. |
+| Same consumer with `--scenario session-boundary --provider sqlite` | Passed all 19 observations after the keyboard/capture corrections. |
+| `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*IdentityGuideTests' --minimum-expected-tests 20` | **Failed:** 17 passed, 3 failed, zero skipped; 943.947s. All ten SQLite rows passed; PostgreSQL `oidc-login`, `all` and `session-boundary` failed. This incremental diagnostic run is not proof of the named 900-second gates. |
+| Direct PostgreSQL `oidc-login` and `session-boundary` consumer commands with `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true` | Each subsequently passed its exact 8/19 observations. The unsafe-return drainage failure was reproduced and corrected; the isolated session pass does not establish the earlier session failure's cause or replace the failed catalog. |
+| `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*IdentityParityTests' --filter-display-name '*UnknownIdentityPathsAndVersionsRemainEmptyPrivate404sForEveryAdmittedMethod*' --minimum-expected-tests 2` | Initially failed both providers with `identity_browser_transport_capture_missing`; after fixed-category ingress capture, passed 2, zero skipped, 25.439s. |
+| `dotnet run --project tests/contract/Kofte.Identity.Consumer -c Release --no-build -- --scenario all --provider sqlite` | The guide's literal command passed all nine exact scenario catalogs and 235 observations. This separate pass does not replace the owning-harness or complete-gate results. |
+| `python3 scripts/check_repository.py && python3 -m unittest discover -s scripts/tests -v && git diff --check` | Passed before reconciliation (143 Python cases, 7.308s) and again after final ledger/task/documentation reconciliation (143 cases, 5.707s). |
+
+An inherited `--filter-method` selector initially ran zero tests and exited 8;
+the explicit display-name selections above executed the required facts.
+The initial complete ten-row SQLite catalog failed three rows before these
+fixes; that failure is preserved, not reclassified by later focused passes.
+
+### Exact complete-gate result
+
+`python3 scripts/verify.py --suite all --disposable-postgres --warm-starts 10`
+completed serially with **exit 1**. Product/test source stayed unchanged throughout
+the run. All ten safe reports have `scope: all`, `completeGate: false` and the
+baseline above. Durations below are suite durations, not expanded command or
+product deadlines. Reports remain ignored under `artifacts/verification/`.
+
+| Suite | Actual result | Safe report |
+| --- | --- | --- |
+| Quality | Passed all 21 steps, 33.222s, including full build/format/lint/types, dependency and generated-contract checks. | `quality-none-adc5200481ea4a4ab0be4adf14a4e3a1.json` |
+| Unit | Passed all 16 steps, 52.781s, including 35 browser helper cases and 143 Python tests. | `unit-none-6ef26d10979646f0a13713834a741e10.json` |
+| SQLite integration | Passed, 567.762s: host 209, storage 237 and composition 57 cases; zero skipped. | `integration-sqlite-15d6a68482644e1187a3f40161414a59.json` |
+| PostgreSQL integration | Failed, 815.012s: host and composition fail; storage passes 212 cases, zero skipped, 293.993s. | `integration-postgres-6ee1d51737f34d97b9c96e454b745ed0.json` |
+| Recovery | Failed, 660.781s: SQLite native/storage/public/composition/browser steps pass; PostgreSQL native key recovery fails before later PostgreSQL steps execute. | `recovery-both-0dcbdc656dbf4c9d87d13acad6400fda.json` |
+| Contract | Passed, 2715.759s: native platform 267 and composition 84 cases; each provider's complete ten-row identity catalog passes, zero skipped, in 337.105s/664.531s. Direct/adapted HTTP and all retained composition recipes also pass. | `contract-both-3b51b1b55111486a9e0e9d122664ae29.json` |
+| Browser | Failed, 53.890s: retained accessibility/bootstrap/recovery source locations below; runtime cleanup and output scan pass. | `browser-none-044a1070dcc84b628c58ed2d78763674.json` |
+| Privacy | Passed both providers, 648.677s: actual storage/public/composition/native identity browser, HTTP/browser and supervisor captures all pass. | `privacy-both-8160747168c44324839e289f80790dcf.json` |
+| Startup | Passed, 13.714s, including ten empty warm starts and the retained composition starts/observations. | `startup-none-44ca257cdbae4a24a8b8da80e5bb0f34.json` |
+| Failure propagation | Failed, 716.337s: isolated quality and PostgreSQL baselines pass; isolated browser baseline fails with `failure_baseline_not_green`. Injected failure exercises therefore do not execute. | `failure-propagation-none-bdd8be114e7e4ac68d77d3d92c3ef798.json` |
+
+This full contract result establishes every individual recipe plus `all` through
+both owning harnesses; the earlier 17/20 diagnostic catalog remains failed.
+The operational recipes validate exact 8/13/9 observation catalogs for
+upgrade preservation, interrupted recovery and private evidence, including
+IdP-loss/no-reassignment and stale-copy/unknown-history refusal. Together with
+the completed privacy suite, this closes T089/T091, not T094's unfinished
+dependencies or T097's complete gate.
+
+The privacy suite passes 17 SQLite and 21 PostgreSQL native storage cases, seven public storage
+cases per provider and both composition privacy selections per provider.
+Both native identity browser facts pass on each provider, zero skipped, in
+35.588s/52.633s: real Development selection/sign-out and actual cancelled,
+refused, unavailable and corrected OIDC callbacks. These join the complete
+production login/enrollment/session journeys and private actual .NET/Next/
+ingress scans; absent capture, wrong receipts, aborts, disclosure and unverified
+cleanup still fail closed. No human usability study is claimed. T090 stays
+open because the complete retained accessibility/browser selection fails and
+its final profile/SC-005 reconciliation is unfinished.
+
+### Remaining failures and next resume
+
+The direct PostgreSQL host failures are these six source-known facts:
+
+- `PostgresEnrollmentTests.EnrollmentChecksCurrentCeremonyAndExactNomineeWithoutReopeningHistory`
+- `PostgresEnrollmentTests.OrdinaryProductionLoginCannotDesignateAndProtectedEnrollmentNeedsAnOperatorCeremony`
+- `PostgresIdentityKeyTests.KeyFailureCannotRepairItselfOrReplaceConsumedAuthority`
+- `PostgresOidcBudgetTests.DeliveredBrowserLoginRateRefusesTheEleventhAttemptBeforeProviderOrIdentityEffects`
+- `PostgresOidcBudgetTests.DeliveredInvalidEvidenceCannotCreateAUserSessionOrCommittedLoginEvent`
+- `PostgresOidcBudgetTests.DeliveredProviderFailuresAreBoundedWithoutRetryRedirectOrPersistentIdentity`
+
+The safe host projection records `identity_fixture_browser_context_failed`
+at `LoginCommitFixture.cs:507` and `expected_303_actual_503` at actual login/
+enrollment assertions, including `OidcBudgetTests.cs:234` and
+`IdentityKeyTests.cs:132`. The separate recovery failure is the same key
+fact **after retained-custody repair**, at `IdentityKeyTests.cs:40,160`,
+with `expected_200_actual_503`. The composition step exits 2 in 187.566s;
+its safe projection reports `no_known_failure`, not an established assertion
+or diagnosis.
+
+The isolated failure-propagation PostgreSQL baseline subsequently passes
+all three commands in 619.530s: host 119, storage 212 and composition 59,
+zero skipped, in 224.768s/284.307s/110.237s. This is actual passing nested
+baseline evidence within the unchanged limits, **not** replacement of the
+failed direct integration/recovery results or proof of their cause.
+
+Both direct and isolated browser baselines retain failures at
+`accessibility.spec.ts:5:3`, `bootstrap.spec.ts:3:1` and
+`recovery.spec.ts:4:1,32:1,54:1`. The isolated browser suite fails in 52.641s.
+These are source locations, not inferred matcher details or a diagnosis.
+The previously timed-out PostgreSQL baseline is no longer the current
+propagation blocker; the actual current blocker is its failed browser baseline.
+
+Resume **005 / implement** on this same branch/draft PR with `/drive-speckit`
+and explicit `SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap`.
+First reproduce the retained browser assertions and native PostgreSQL
+login/context/post-repair actor failures with safe diagnostics; preserve both
+failed direct and passing nested evidence. Do not assign resource/timing/key
+causes without proof, relax the one-second/product/900-second limits, suppress
+cases or treat prior acceptance as a waiver. Finish T090 and T092-T099,
+including delivered documentation, dependency reconciliation, a genuinely
+passing complete gate, assessed-head CI and final traceability. T100 and
+implement completion remain gated on that work. This invocation publishes
+only the safe partial checkpoint; converge, review and acceptance do not run.
+
+Prior-head CI was independently assessed at
+`6f4e4a7e5f2246011fbe35928af759aa300317b3`:
+[product run 40799306697](https://github.com/Stonefly-Labs/Kofte/actions/runs/40799306697)
+**failed**. Quality, unit, recovery and startup passed; both integrations,
+contract, browser, privacy and failure-propagation failed.
+[Repository run 40799306721](https://github.com/Stonefly-Labs/Kofte/actions/runs/40799306721)
+passed. Safe reports identify the reproduced missing-ingress negative,
+SQLite key/invalid-evidence failures, a PostgreSQL session-capacity setup
+failure, retained bootstrap/accessibility/recovery browser failures and the
+nested PostgreSQL baseline timeout. These observations remain failures,
+not diagnoses or results for this checkpoint's changes.
+
 ## Context-clear checkpoint: resume implement
+
+**Historical pause, superseded by the continuation above.**
 
 The human explicitly requested a resumable checkpoint on 2026-10-29 UTC.
 This pauses work; it does **not** complete implement or require a new design

@@ -12,6 +12,7 @@ export async function consumeIdentityActionCapture(
   id: string | undefined,
   status: number,
   encoding: string | undefined,
+  route = "identity-next-action",
 ): Promise<string> {
   let encoded: Buffer | undefined;
   let raw: Buffer | undefined;
@@ -83,7 +84,12 @@ export async function consumeIdentityActionCapture(
         record.version !== 1 ||
         record.id !== id ||
         record.method !== "POST" ||
-        record.route !== "identity-next-action" ||
+        ![
+          "identity-next-action",
+          "identity-enrollment-lost-ack",
+          "identity-sign-out-lost-ack",
+        ].includes(route) ||
+        record.route !== route ||
         record.rootBinding !==
           createHash("sha256").update(resolve(root)).digest("hex") ||
         record.status !== status ||

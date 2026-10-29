@@ -180,7 +180,7 @@ public static class IdentityBrowserFailureDiagnostics
             .Where(Failures.Contains).Distinct(StringComparer.Ordinal).Take(2).ToArray();
         if (codes.Length == 0) codes = ["identity_browser_failure_boundaries_failed"];
         var location = Regex.Match(result.Stderr,
-            @"(?m)^(identity\.failures|identityBrowser|identityAccessibility|identityPrivacyCapture|identityCanaryExport)\.ts:([1-9][0-9]{0,3}):[1-9][0-9]{0,4}\r?$",
+            @"(?m)^(identity\.failures|identity\.production|identity\.spec|identityBrowser|identityAccessibility|identityPrivacyCapture|identityCanaryExport)\.ts:([1-9][0-9]{0,3}):[1-9][0-9]{0,4}\r?$",
             RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(100));
         return new(codes[0], codes, stage, profilePhase, profileLaunch, profileElapsed,
             location.Success ? location.Groups[1].Value + ".ts" : null,
@@ -189,6 +189,44 @@ public static class IdentityBrowserFailureDiagnostics
             timedOut, result.ExitCode is >= -1 and <= 255 ? result.ExitCode : null,
             result.Stdout.Length != 0 || result.Stderr.Length != 0, cleanupObserved,
             timeline.ToArray(), timelineTruncated);
+    }
+
+    public static string DescribePlaywrightFailure(ProcessOutput result)
+    {
+        var evidence = new List<string>();
+        if (System.Text.Encoding.UTF8.GetByteCount(result.Stdout) is > 0 and <= 1_000_000)
+        {
+            try
+            {
+                using var document = JsonDocument.Parse(result.Stdout, new() { MaxDepth = 32 });
+                Collect(document.RootElement);
+            }
+            catch (JsonException) { }
+        }
+        return DescribeFailure(new(result.ExitCode, "", string.Join('\n', evidence)), timedOut: false);
+
+        void Collect(JsonElement value)
+        {
+            if (value.ValueKind == JsonValueKind.Array)
+                foreach (var item in value.EnumerateArray()) Collect(item);
+            else if (value.ValueKind == JsonValueKind.Object)
+                foreach (var property in value.EnumerateObject())
+                {
+                    if (property.Name is "message" or "stack" && property.Value.ValueKind == JsonValueKind.String)
+                    {
+                        var text = property.Value.GetString()!;
+                        foreach (Match code in Regex.Matches(text, @"\bidentity_browser_[a-z_]{1,80}\b",
+                            RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(100)))
+                            if (Failures.Contains(code.Value) && !evidence.Contains(code.Value))
+                                evidence.Add(code.Value);
+                        var location = Regex.Match(text,
+                            @"\b(identity\.spec|identityPrivacyCapture|identityAccessibility|identityCanaryExport)\.ts:[1-9][0-9]{0,3}:[1-9][0-9]{0,4}\b",
+                            RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(100));
+                        if (location.Success && !evidence.Contains(location.Value)) evidence.Add(location.Value);
+                    }
+                    else Collect(property.Value);
+                }
+        }
     }
 
     public static string DescribeFailure(ProcessOutput result, bool timedOut)
@@ -222,6 +260,7 @@ public static class IdentityBrowserFailureDiagnostics
         return string.Join(" ", observed.FailureCodes.Concat(new[]
         {
             observed.LastStage, observed.ProfilePhase,
+            observed.SourceFile is null ? null : $"{observed.SourceFile}:{observed.SourceLine}",
             timedOut ? "identity_browser_deadline_exceeded" : null
         }.OfType<string>())) + Environment.NewLine + string.Join(Environment.NewLine,
             observed.ProfileTimeline.Select(phase =>

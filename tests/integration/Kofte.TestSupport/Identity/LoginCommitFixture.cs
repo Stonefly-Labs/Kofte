@@ -245,6 +245,7 @@ public sealed partial class LoginCommitFixture : IAsyncDisposable
             !result.Stdout.Split('\n', StringSplitOptions.TrimEntries)
                 .Contains("identity_browser_stage_owned_browser_closed", StringComparer.Ordinal))
         {
+            _ = IdentityBrowserFailureDiagnostics.DescribeFailure(result, timedOut);
             var observed = issuer.Observations.Skip(providerRequests).ToArray();
             var output = Regex.Replace(result.Stdout + "\n" + result.Stderr, @"\x1b\[[0-9;]*m", "");
             var stage = Regex.Matches(output,
@@ -304,12 +305,7 @@ public sealed partial class LoginCommitFixture : IAsyncDisposable
         browserCompleted = false;
         var result = await OwnedProcesses.RunAsync(start, TimeSpan.FromSeconds(45), token);
         if (result.ExitCode != 0)
-        {
-            var line = Regex.Match(result.Stdout + "\n" + result.Stderr,
-                @"identity\.spec\.ts:([1-9][0-9]{0,3}):");
-            throw new InvalidOperationException("identity_fixture_development_browser_failed" +
-                (line.Success ? "_line_" + line.Groups[1].Value : ""));
-        }
+            throw new InvalidOperationException(IdentityBrowserFailureDiagnostics.DescribePlaywrightFailure(result));
         if (Encoding.UTF8.GetByteCount(result.Stdout) is 0 or > 1_000_000)
             throw new InvalidOperationException("identity_fixture_development_browser_report_invalid");
         using var report = JsonDocument.Parse(result.Stdout);
