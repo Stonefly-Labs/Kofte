@@ -210,7 +210,7 @@ public abstract class EnrollmentTests
         var csrf = await fixture.ProductContextAsync(Token);
         using var request = fixture.ProductLoginRequest("/identity", csrf);
         using var start = await fixture.SendProductAsync(request, Token);
-        Assert.Equal(303, (int)start.StatusCode);
+        Assert.True((int)start.StatusCode == 303, fixture.RequestFailureCode);
         using var response = await fixture.CompleteProductAsync(start, Token);
         Assert.Equal(303, (int)response.StatusCode);
     }

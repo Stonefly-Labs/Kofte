@@ -132,6 +132,48 @@ class FailurePropagationTests(unittest.TestCase):
         with self.assertRaisesRegex(verify.VerificationError, "failure_baseline_not_green"):
             exercises.checked_evidence(self.evidence(), "quality", None, None, None, 1, verify)
 
+    def test_missing_chromium_requires_the_real_browser_failure_and_exact_capture_refusal(self):
+        evidence = self.evidence()
+        evidence["suite"] = "browser"
+        command = ["npm", "run", "test", "--workspace", "tests/e2e", "--", "identity.spec.ts"]
+        primary = evidence["steps"][0]
+        primary.update(name="browser-tests", command=command)
+        cleanup = copy.deepcopy(primary)
+        cleanup.update(name="identity-browser-canaries", command=[], exitCode=None,
+                       failureCode="identity_browser_transport_canaries_invalid")
+        evidence["steps"].append(cleanup)
+
+        def checked(report, browser_unavailable=True):
+            return exercises.checked_evidence(
+                report, "browser", None, "browser-tests", command, 1, verify,
+                browser_unavailable=browser_unavailable,
+            )
+
+        result = checked(evidence)
+        self.assertEqual(["browser-tests", "identity-browser-canaries"],
+                         [step["name"] for step in result["steps"]])
+        self.assertNotIn("credential-canary", json.dumps(result))
+        with self.assertRaisesRegex(verify.VerificationError, "failure_did_not_reach_expected_command"):
+            checked(evidence, browser_unavailable=False)
+        for mutation in ("missing-capture-refusal", "capture-only", "wrong-order",
+                         "wrong-refusal", "extra-failure", "successful-browser"):
+            changed = copy.deepcopy(evidence)
+            if mutation == "missing-capture-refusal":
+                changed["steps"].pop()
+            elif mutation == "capture-only":
+                changed["steps"].pop(0)
+            elif mutation == "wrong-order":
+                changed["steps"].reverse()
+            elif mutation == "wrong-refusal":
+                changed["steps"][-1]["failureCode"] = "runtime_cleanup_process_failed"
+            elif mutation == "extra-failure":
+                changed["steps"].append(copy.deepcopy(cleanup))
+            else:
+                changed["steps"][0].update(outcome="passed", exitCode=0)
+            with self.subTest(mutation=mutation), self.assertRaisesRegex(
+                    verify.VerificationError, "failure_did_not_reach_expected_command"):
+                checked(changed)
+
     def test_native_success_counts_are_revalidated_without_impossible_class_or_skip_claims(self):
         evidence = self.evidence()
         evidence["steps"][0]["nativeEvidence"] = {"passed": 2, "skipped": 0, "requiredClasses": 1}

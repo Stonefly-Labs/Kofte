@@ -144,7 +144,7 @@ public abstract class IdentityKeyTests
         var csrf = await fixture.ProductContextAsync(Token);
         using var request = fixture.ProductLoginRequest("/identity", csrf);
         using var start = await fixture.SendProductAsync(request, Token);
-        Assert.Equal(303, (int)start.StatusCode);
+        Assert.True((int)start.StatusCode == 303, fixture.RequestFailureCode);
         return await fixture.CompleteProductAsync(start, Token);
     }
 

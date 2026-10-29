@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Net;
+using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -151,24 +152,18 @@ public sealed partial class LoginCommitFixture : IAsyncDisposable
     {
         if (configuration.Mode != IdentityMode.Development || !productRoutes || application is null)
             throw new InvalidOperationException("identity_fixture_development_required");
-        using var services = application.Services.CreateScope();
-        var context = new DefaultHttpContext { RequestServices = services.ServiceProvider, RequestAborted = token };
-        var tickets = services.ServiceProvider.GetRequiredService<IdentityTicketStore>();
-        var reference = IdentityTicketStore.NewReference();
-        using var budget = new OperationBudget(TimeSpan.FromSeconds(1), token);
-        var committed = await store.MutateAsync(budget, async change =>
+        var csrf = await ProductContextAsync(token);
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/api/identity/v1/development-session")
         {
-            var now = clock.GetUtcNow().UtcDateTime;
-            var user = await IdentityUserStore.ResolveAsync(change, "kofte:development:v1", "synthetic", null, now);
-            var ticket = IdentityTicketStore.CreateTicket(user, now);
-            await IdentitySessionStore.CreateAsync(change, user, reference.Digest, tickets.Protect(ticket), now);
-            return (User: user, Ticket: ticket);
-        });
-        IdentityTicketStore.BindCommitted(context, reference.Reference, committed.Ticket);
-        await context.SignInAsync(OidcConfiguration.SessionScheme, committed.Ticket.Principal, committed.Ticket.Properties);
-        foreach (var value in context.Response.Headers.SetCookie)
-            cookies.SetCookies(configuration.PublicOrigin, value!);
-        return committed.User.UserId;
+            Content = JsonContent.Create(new { identityKey = "synthetic" })
+        };
+        request.Headers.Add("Origin", configuration.PublicOrigin.OriginalString);
+        request.Headers.Add("X-Kofte-CSRF", csrf);
+        using var response = await SendProductAsync(request, token);
+        if (response.StatusCode != HttpStatusCode.OK)
+            throw new InvalidOperationException("identity_fixture_development_session_failed:" + RequestFailureCode);
+        using var body = JsonDocument.Parse(await response.Content.ReadAsByteArrayAsync(token));
+        return body.RootElement.GetProperty("userId").GetGuid();
     }
 
     public async Task RunBrowserAsync(Guid expectedUser, CancellationToken token, string? authorization = null,
@@ -302,7 +297,8 @@ public sealed partial class LoginCommitFixture : IAsyncDisposable
         browserCompleted = false;
         var result = await OwnedProcesses.RunAsync(start, TimeSpan.FromSeconds(45), token);
         if (result.ExitCode != 0)
-            throw new InvalidOperationException(IdentityBrowserFailureDiagnostics.DescribePlaywrightFailure(result));
+            throw new InvalidOperationException(IdentityBrowserFailureDiagnostics.DescribePlaywrightFailure(result) +
+                Environment.NewLine + RequestFailureCode);
         if (Encoding.UTF8.GetByteCount(result.Stdout) is 0 or > 1_000_000)
             throw new InvalidOperationException("identity_fixture_development_browser_report_invalid");
         using var report = JsonDocument.Parse(result.Stdout);
@@ -501,7 +497,7 @@ public sealed partial class LoginCommitFixture : IAsyncDisposable
         using var request = new HttpRequestMessage(HttpMethod.Get, "/api/identity/v1/browser-context");
         using var response = await SendProductAsync(request, token);
         if ((int)response.StatusCode != 200)
-            throw new InvalidOperationException("identity_fixture_browser_context_failed");
+            throw new InvalidOperationException("identity_fixture_browser_context_failed:" + RequestFailureCode);
         using var body = JsonDocument.Parse(await response.Content.ReadAsByteArrayAsync(token));
         return body.RootElement.GetProperty("csrfToken").GetString()!;
     }

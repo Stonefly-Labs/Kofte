@@ -178,6 +178,28 @@ public abstract class OidcBudgetTests
     }
 
     [Fact]
+    public async Task DeliveredDiscoveryDeadlineIsIdentifiableWithoutRelaxingLoginOrPublishingIdentity()
+    {
+        await using var fixture = await LoginCommitFixture.CreateProductAsync(Provider, Token);
+        var before = await fixture.SnapshotAsync(Token);
+        fixture.Protocol.BeforeResponse = (operation, token) => operation == "discovery"
+            ? Task.Delay(TimeSpan.FromSeconds(10), token) : Task.CompletedTask;
+        var csrf = await fixture.ProductContextAsync(Token);
+        using var request = fixture.ProductLoginRequest("/identity", csrf);
+        var elapsed = Stopwatch.StartNew();
+        using var response = await fixture.SendProductAsync(request, Token);
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+        Assert.Equal("identity_fixture_request_deadline_exhausted", fixture.RequestFailureCode);
+        Assert.True(elapsed.Elapsed < TimeSpan.FromSeconds(5));
+        AssertNoSession(response);
+        var after = await fixture.SnapshotAsync(Token);
+        Assert.Empty(after.Users);
+        Assert.Empty(after.Mappings);
+        Assert.Empty(after.Sessions);
+        Assert.Equal(before.Events, after.Events);
+    }
+
+    [Fact]
     public async Task DeliveredTokenDeadlineHasNoLateCommitAndValidLocalSessionSurvivesProviderOutage()
     {
         await using var fixture = await LoginCommitFixture.CreateProductAsync(Provider, Token);
@@ -231,7 +253,7 @@ public abstract class OidcBudgetTests
         if (allowStartRefusal && (int)start.StatusCode != 303) return start;
         try
         {
-            Assert.Equal(303, (int)start.StatusCode);
+            Assert.True((int)start.StatusCode == 303, fixture.RequestFailureCode);
             return await fixture.CompleteProductAsync(start, Token);
         }
         finally { start.Dispose(); }

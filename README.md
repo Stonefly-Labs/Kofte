@@ -103,19 +103,25 @@ separate public HTTPS recipes; both complete native provider integrations also
 pass. The complete unit gate passes after correcting aborted-action request
 doubles. A separate keyboard-audit race is reproduced and corrected by waiting
 for the actual control before testing Tab focus, preserving intentionally
-ARIA-disabled loading controls. Hosted public privacy still fails transport
-completeness; no full-gate pass is claimed. See the
+ARIA-disabled loading controls. No full-gate pass is claimed. See the
 [current evidence](specs/005-authentication-bootstrap/implementation.md#continued-implementation-wait-for-the-keyboard-audits-actual-control).
 Safe failure reports now distinguish exact catalogued public scenarios within
-failed native theories, without retaining private arguments. The latest isolated
+failed native theories, without retaining private arguments. An earlier isolated
 propagation baseline fails an initial login 303/503 assertion, not its aggregate
 timeout; its storage/composition selections pass and injections remain unrun.
 The hosted privacy failures now have a concrete cause: a fresh privacy job
 started all four browser-backed public scenarios before building Next. The
-verifier now builds that dependency first; fresh hosted qualification remains
-required, without relaxing capture or product deadlines.
+verifier now builds that dependency first, and actual fresh Linux both-provider
+privacy now passes, without relaxing capture or product deadlines.
 Missing-build fixture setup also preserves its specific refusal instead of
 masking it as a transport-capture failure.
+The latest propagation run reaches all injections; its final intentionally
+missing Chromium correctly also refuses absent canaries. The harness now
+requires both exact failures for that negative only. Development fixture setup
+uses the delivered context/CSRF/session operation, and native failures retain
+finite actual-budget observations. Remaining work includes intermittent native
+deadlines and the retained composition-contract timeout; see the
+[current evidence](specs/005-authentication-bootstrap/implementation.md#continued-implementation-delivered-development-setup-and-expected-chromium-refusal).
 
 ### Historical implementation increments
 

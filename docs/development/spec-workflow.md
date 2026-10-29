@@ -101,19 +101,26 @@ request doubles missing `Request.failure()`; both shared builders are corrected
 and the complete local unit gate passes, including all 38 capture cases.
 A separate public session keyboard-audit race is reproduced and corrected:
 wait for the actual control before pressing Tab, without requiring enablement
-of intentionally ARIA-disabled loading controls. The hosted public privacy
-recipe still fails transport-capture completeness. These separate boundaries
+of intentionally ARIA-disabled loading controls. These separate boundaries
 do not complete T092-T100.
 Native failure reports now retain only exact source-known/catalogued scenario
-arguments, independently revalidated in isolated reports. The latest isolated
+arguments, independently revalidated in isolated reports. An earlier isolated
 PostgreSQL propagation baseline fails an initial login 303/503 assertion rather
 than timing out; passing independent integrations do not diagnose that failure.
 The exact privacy scenario evidence exposes a missing producer dependency:
 fresh jobs attempted all four browser-backed public guides before the first
 Next build. Privacy now builds the production web workspace before those guides
 and native browser selections, after disposable-provider admission. Existing
-local builds had masked this orchestration defect; actual fresh CI is still
-required.
+local builds had masked this orchestration defect; actual fresh Linux
+both-provider privacy now passes at `376c7a1`, with verified assessed parents.
+Its isolated baselines and first four injections also pass; the final missing
+Chromium exercise exposes a harness expectation defect, not failure to propagate.
+For that negative only, require the exact nonzero browser command and the exact
+subsequent missing-canary refusal. Ordinary capture/cleanup remains strict.
+Native Development fixture setup now uses the real context/CSRF/session flow;
+finite actual-budget observations identify request exhaustion without changing
+budgets. The retained composition timeout and intermittent native positives
+remain engineering work, not a human approval gate.
 
 For focused Linux browser diagnostics on a published task branch, run
 `gh workflow run product-checks.yml --ref feature/005-authentication-bootstrap -f suite=browser`.

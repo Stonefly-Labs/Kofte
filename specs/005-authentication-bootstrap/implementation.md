@@ -13,6 +13,84 @@ resolves that blocker and resumes the original implement stage. The later
 adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
 
+## Continued implementation: delivered Development setup and expected Chromium refusal
+
+The published privacy dependency repair `376c7a1` is now qualified on actual
+fresh Linux [run 40923555808](https://github.com/Stonefly-Labs/Kofte/actions/runs/40923555808):
+`privacy-both-a7150eab2ba64dc7b18b4c3b8ed9b007.json` **passes**, 725.679s.
+Both provider public selections pass seven cases including their required
+identity privacy class; both native browser selections pass two cases, zero
+skipped and their required class. All later runtime/scanner steps pass.
+Assessed merge `8a4f909cf51b9d1dbfe13731b42bfbdd7fe68c4f` has verified parents
+main `3e416813233c9d291eb20cf72d5882dbddf3e1b6` and the published feature head.
+This closes the missing-build investigation, not all implementation gates.
+
+The same actual run's propagation report
+`failure-propagation-none-821305793fc44d7a80ef0c1dd339cd18.json` reaches **all**
+injections. Its quality/PostgreSQL/browser baselines and test/formatter/build/
+unavailable-PostgreSQL injections pass. The final deliberately missing Chromium
+fails the real `browser-tests` command, then correctly refuses missing browser
+canaries during cleanup. The harness expected only the first failure and
+incorrectly rejects the exact second refusal as
+`failure_did_not_reach_expected_command`, 1085.219s total.
+
+Only that intentional missing-browser exercise now requires both exact fatal
+steps: the original nonzero browser command and the subsequent specific
+empty-command/no-child-exit canary refusal, in order, with safe correlations.
+An absent/different/extra cleanup failure, capture-only failure or successful
+browser is rejected; all ordinary baseline rules remain unchanged. Runtime
+capture is still mandatory and fatal. The new checker accepts the actual
+retained Linux negative above; this is revalidation, **not** a newly executed
+complete propagation gate.
+
+Native positives also now retain a finite test-only observation of the actual
+request budget at the existing diagnostic sink: unobserved, caller cancelled,
+outer deadline exhausted, or failure while outer time remains. No arbitrary
+exception/log payload enters captures. Browser-context and initial-login helper
+failures report this code, as does a failed Development browser journey.
+A real forced discovery deadline proves exhausted classification, bounded 503
+and no published identity/session/event on both providers. A before-outer-deadline
+classification does not rule out an earlier nested store deadline.
+
+Two prior affected-class selections fail the manually constructed Development
+seed's commit deadline (104/106 and 105/106 passed). That helper bypassed the
+delivered mandatory browser-context/CSRF flow and constructed its own ticket
+inside a transaction. It now creates the same stored identity using the actual
+context and Development HTTP operation, with the original product budgets and
+no retry, artificial warm-up or direct database mutation. Both real actor/
+enrollment-refusal cases and both strict browser cases pass with this setup.
+
+At `376c7a1` plus this increment:
+
+| Exact executed command | Actual result |
+| --- | --- |
+| `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore -c Release --filter-method '*ARealStoredDevelopmentSessionHasAnActorButCannotEnroll' --filter-method '*RealDevelopmentSelectionAndSignOutRequirePrivateBrowserAndTransportEvidence' --filter-method '*DeliveredDiscoveryDeadlineIsIdentifiableWithoutRelaxingLoginOrPublishingIdentity' --minimum-expected-tests 6 --max-threads 4 --show-stdout None --show-stderr None` | Final pass: six cases, zero skipped, 19.767s. An initial temporary-instrumentation removal had a brace error, corrected before this result. |
+| `python3 scripts/verify.py --suite quality` | Passed 21 steps, 34.217s; `quality-none-73d0781fe3184caca5488fde18a78e1a.json`. Final C# sources, before the subsequent Python-only injection-checker correction. |
+| `python3 -m unittest scripts.tests.test_failure_propagation.FailurePropagationTests.test_missing_chromium_requires_the_real_browser_failure_and_exact_capture_refusal -v` | Initial missing-argument error; final pass including seven refusal mutations/default strictness. |
+| `python3 scripts/check_repository.py` | Passed after the injection-checker correction. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed 152 cases, 8.420s after the correction. |
+| `git diff --check` | Passed. |
+
+The broader uninstrumented affected-class run remains **103/106 passed**,
+zero skipped, 340.914s. It proves an actual PostgreSQL context outer-deadline
+exhaustion, another context failure while outer time remains, and an enrollment
+409/503 failure. The original seed failure no longer occurs in that run, but
+unrelated positives are not diagnosed or waived. A temporary numeric-only
+Npgsql listener's subsequent 106/106 pass (428.118s) observes no failure and
+establishes no database-time cause; the listener is removed before the final
+six-case/quality results and is not published.
+
+Latest published SQLite integration still fails native positives and a storage
+restart login in `integration-sqlite-500696e843f54ac7ad98e0a029f57bd6.json`.
+Published PostgreSQL integration and browser verification pass. Prior `8cacf8e`
+contract report `contract-both-e0f9e5862142412f85c0c48565667de5.json`
+fails the retained composition selection at 900.061s (1450.331s total);
+its merge has verified main/`8cacf8e` parents. A bounded full-selection local
+diagnostic now observes only source-known method progress to identify the slow
+work. No command, product deadline or positive assertion is weakened.
+T092-T100 remain open, implement remains running, and no rejected capacity
+proof is run.
+
 ## Continued implementation: build the privacy browser dependency first
 
 The actual `8cacf8e` hosted privacy report

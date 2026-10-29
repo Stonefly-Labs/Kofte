@@ -22,6 +22,7 @@ public sealed partial class LoginCommitFixture
 {
     private readonly List<string> operationsDiagnosticLines = [];
     private int operationsDiagnosticBytes;
+    public string RequestFailureCode { get; private set; } = "identity_fixture_request_failure_unobserved";
     public IReadOnlyList<string> OperationsDiagnosticLines
     {
         get { lock (operationsDiagnosticLines) return operationsDiagnosticLines.ToArray(); }
@@ -30,6 +31,15 @@ public sealed partial class LoginCommitFixture
     private void ConfigureOperationsOwner(IServiceCollection services) =>
         services.AddSingleton(new IdentityDiagnosticContext(installation.Provider, record =>
         {
+            if (record.Operation is "browser_context" or "login" or "development_session" &&
+                record.Outcome is "unavailable" or "uncertain" or "cancelled")
+            {
+                var budget = Kofte.Infrastructure.Identity.IdentityDiagnostics.Current?.Budget;
+                RequestFailureCode = budget is null ? "identity_fixture_request_failure_unobserved" :
+                    budget.CallerCancelled ? "identity_fixture_request_caller_cancelled" :
+                    budget.Remaining == TimeSpan.Zero ? "identity_fixture_request_deadline_exhausted" :
+                    "identity_fixture_request_failed_before_deadline";
+            }
             var line = Encoding.UTF8.GetString(Kofte.Infrastructure.Identity.IdentityDiagnostics.Serialize(record));
             lock (operationsDiagnosticLines)
             {

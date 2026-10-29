@@ -158,7 +158,7 @@ def isolated_environment(original, directory, api):
 
 
 def checked_evidence(report, suite, provider, expected_step, expected_command, exit_code, api,
-                     *, expected_followups=()):
+                     *, expected_followups=(), browser_unavailable=False):
     error = api.VerificationError
     if (report.get("suite") != suite or report.get("provider") != provider
             or report.get("scope") != "targeted" or report.get("completeGate") is not False
@@ -260,6 +260,15 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
                     selected[report_key] = code
         result["steps"].append(selected)
     failed = [step for step in steps if step["outcome"] == "failed"]
+    capture_refused = not browser_unavailable or (
+        expected_step == "browser-tests" and len(failed) >= 2
+        and failed[-1].get("name") == "identity-browser-canaries"
+        and failed[-1].get("command") == [] and failed[-1].get("exitCode") is None
+        and failed[-1].get("failureCode") == "identity_browser_transport_canaries_invalid"
+        and re.fullmatch(r"[a-f0-9]{32}", failed[-1].get("failureCorrelation", "")) is not None
+    )
+    if browser_unavailable and capture_refused:
+        failed = failed[:-1]
     expected_failures = []
     for name, command in ((expected_step, expected_command), *expected_followups):
         commands = [command]
@@ -276,7 +285,7 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
         if exit_code or report.get("outcome") != "passed" or failed:
             code = "failure_baseline_not_green"
     elif (exit_code == 0 or report.get("outcome") != "failed"
-          or len(failed) != len(expected_failures) or any(
+          or not capture_refused or len(failed) != len(expected_failures) or any(
               step.get("name") != name or step.get("command") not in commands
               or step.get("failureCode") != "command_failed"
               or not isinstance(step.get("exitCode"), int) or step["exitCode"] == 0
@@ -329,7 +338,7 @@ def run(runner, api):
         runner.operation("failure-docker-prerequisite", docker_endpoint)
 
         def invoke(name, arguments, expected_step=None, expected_command=None, extra=None,
-                   *, expected_followups=()):
+                   *, expected_followups=(), browser_unavailable=False):
             def exercise(step):
                 reports = checkout / "artifacts/verification"
                 before = set(reports.glob("*.json"))
@@ -355,7 +364,7 @@ def run(runner, api):
                 try:
                     step["verification"] = checked_evidence(
                         report, suite, provider, expected_step, expected_command, exit_code, api,
-                        expected_followups=expected_followups,
+                        expected_followups=expected_followups, browser_unavailable=browser_unavailable,
                     )
                 except error as failure:
                     if hasattr(failure, "evidence"):
@@ -394,7 +403,7 @@ def run(runner, api):
         specs = api.browser_specs(checkout)
         invoke("chromium-unavailable-propagates", BROWSER, "browser-tests", [
             "npm", "run", "test", "--workspace", "tests/e2e", "--", *specs,
-        ], {"PLAYWRIGHT_BROWSERS_PATH": str(missing_browser)})
+        ], {"PLAYWRIGHT_BROWSERS_PATH": str(missing_browser)}, browser_unavailable=True)
 
 
 if __name__ == "__main__":
