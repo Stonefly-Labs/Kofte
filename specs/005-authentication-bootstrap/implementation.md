@@ -1,6 +1,6 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement incomplete; verification failed, 91/100 complete (T001-T091). The exact-pinned upstream Chromium repair passes local and Linux named browser gates and all twelve focused Linux public HTTPS recipes. Fresh Linux both-provider integration, recovery, privacy and complete failure propagation pass at `d1c2f50`; newer native positives and retained composition closeout remain unresolved. The ledger remains running; this is engineering, not a human approval gate.
+**Result:** implement incomplete; verification failed, 93/100 complete (T001-T093). The exact-pinned upstream Chromium repair passes local and Linux named browser gates and all twelve focused Linux public HTTPS recipes. Fresh Linux both-provider integration, recovery, privacy and complete failure propagation pass at `d1c2f50`; newer native positives and retained composition closeout remain unresolved. The ledger remains running; this is engineering, not a human approval gate.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-29.
 **Assessed baseline:** complete local/hosted assessment of published `c7f68a786ebc51c935d8df455d926d79d88a8725`; subsequent focused checks add this checkpoint's browser-helper/native-fixture changes. Earlier assessments retain their original baselines below.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
@@ -12,6 +12,97 @@ The initial blocked assessment below is retained as history. The
 resolves that blocker and resumes the original implement stage. The later
 adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
+
+## T093: require actual complete browser evidence, not exit status
+
+The existing required source/project/scanner/observation inventories and strict
+native XML/class gates already include identity in every applicable named suite.
+The remaining root Playwright gap is reproduced: a real Python child exits zero
+without running any browser and was incorrectly accepted. Its new regression
+fails before the repair.
+
+Every Playwright command now first discovers its actual cases through the pinned
+runner's private JSON reporter. Required file/case minima reject omitted source
+and empty/partial inventories. Execution must match every discovered case ID,
+source location, title and project exactly, with one passing first attempt,
+no declared expected failure, skip, retry, flaky result or global error.
+Only positive counts enter `browserEvidence`. Missing/malformed/duplicate,
+publicly readable, linked, nonregular and oversized reports are fatal. Both
+private reports are discarded after verified child cleanup.
+
+Discovery and execution share the **original overall command deadline**;
+selection, fixture concurrency, product budgets and all ten CI contexts remain
+unchanged. The existing propagation checker recognizes only the exact reporter-
+augmented command and independently validates safe browser counts. Its special
+missing-Chromium pair still requires the actual nonzero browser command and
+the exact subsequent missing-canary refusal.
+
+Actual final-source `python3 scripts/verify.py --suite browser --disposable-postgres`
+passes in 100.758s (`browser-none-08c39ad844b94f00a9ee63d1a1da5733.json`):
+12 passed/zero skipped/four required files, followed by two native cases and
+one required identity class **per real provider**, zero skipped. Strict canary
+and transport scanning/owned cleanup also pass. This is macOS arm64, not a
+new Linux qualification claim.
+
+`python3 -m unittest scripts.tests.test_verify scripts.tests.test_failure_propagation -v`
+passes 82 cases after fixing the success-shaped negative's missing new evidence.
+Final `python3 scripts/verify.py --suite quality` passes all 21 steps in
+33.560s (`quality-none-fd28c7f5a6714c6b89ced5c793551247.json`), including all
+159 Python cases, formats/build/types/dependency/contract checks. New regressions
+exercise real zero-exit and report-producing children, inventory substitution,
+all non-passing outcomes, privacy/discard and unsafe physical reports.
+T093 closes; T094's complete public catalog is now executing. T097-T098 still
+require actual full local and assessed-head CI results, including the unresolved
+native/composition failures.
+Independent final `python3 scripts/check_repository.py`,
+`python3 -m unittest discover -s scripts/tests -v` (159 cases, 7.128s) and
+`git diff --check` also pass.
+
+The completed earlier `dee39c5` Linux contract now **passes** in 2983.009s:
+`contract-both-73a6d3350f8d47719b9eb90f2998ba01.json`, actual run 40930623203.
+Platform 265/zero skipped/18 required classes passes 450.281s; retained
+composition **84/zero skipped passes 889.447s under the unchanged 900s bound**;
+both ten-row identity guide catalogs pass 235.848s/433.563s, each with its
+required class. Every standalone retained composition guide and `all`, native
+OpenAPI and both-provider HTTP/scanner/cleanup also pass. This is actual Linux
+qualification, not a diagnosis of the earlier timeout or the separate failed
+local four-processor `failure-correction` comparison. That run remains red
+overall because of the recorded SQLite native DNS positive.
+
+## T092: qualified focused operations checkpoint, not a complete-gate pass
+
+The actual passing focused Linux integrations at `d1c2f50` below close T092's
+provider join. The newer `dee39c5` operational jobs independently pass:
+recovery 1720.656s (`recovery-both-ee9f03d7764e4a2c97458b1d90f41a62.json`),
+privacy 732.400s (`privacy-both-6fd9954e939448db96147da751229719.json`),
+browser 143.572s (`browser-none-d49af7702b074748a38923ae365700fc.json`), and
+complete failure propagation 1203.524s
+(`failure-propagation-none-bf9db734bc8343f18e3afa0db1378d11.json`).
+These execute the exact named suite commands below with unchanged bounds.
+Assessed merge `11026caf9b827909992f5821a76675710b672683` has independently
+verified main `3e416813233c9d291eb20cf72d5882dbddf3e1b6` and feature
+`dee39c5b47d0e762a25c5ef5e7253a733a6c4d35` parents.
+
+| US5 acceptance | Delivered assertions and actual focused evidence |
+| --- | --- |
+| US5.1 | Both-provider format/preparation/startup and upgrade-preservation cases preserve original module assignments, history and data; serving remains read-only. The T079 and T080-T085 evidence below records physical checks and real complete-set recovery. |
+| US5.2 | `IdentityFailureTests`, key/preparation crash facts and actual interrupted-recovery recipes require bounded truthful refusal, explicit correction, retained mappings and consumed designation. Newer recovery passes native 50/42, storage 73/57 and all retained public/composition selections with zero skips. |
+| US5.3 | Real `IdentityPrivacyTests`, public privacy recipes, native browser journeys and runtime channel scanners pass on both providers; required classes and zero native skips are verified. No missing-capture exception or private raw report is published. |
+| US5.4 | Actual browser/accessibility and production retry journeys pass, including the corrected keyboard-control readiness race, narrow width, enlarged text, explicit retry/sign-out and safe destinations. Complete failure propagation proves all three baselines and all five injections. |
+
+T083-T088 retain actual key custody/overlap, smaller admission/capacity,
+retention, checked-overflow, restore-decision and rollback proofs; the rejected
+installation-session boundary remains removed and unverified. Complete-set
+backups do not provide OS-copy fencing, invalidate an old independently running
+instance, establish missing historical administrator state or make external
+systems atomic. Restored unknown history stays locked; operators must fence
+old instances and preserve independent protected key custody.
+
+This closes the **specific focused operations checkpoint**, not the newest
+SQLite DNS positive, local PostgreSQL composition failure or complete matrix.
+Those failures remain failed and must be resolved at T097-T098; this is not
+a rerun waiver or a claim that the latest full source passes. T093-T100 remain
+open, with verifier completeness next. All earlier evidence below is historical.
 
 ## Continued implementation: qualified propagation and remaining native timing
 

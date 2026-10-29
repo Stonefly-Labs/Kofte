@@ -189,6 +189,19 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
                         not 1 <= evidence["requiredClasses"] <= evidence["passed"])):
                 raise error("failure_child_report_unsafe")
             selected["nativeEvidence"] = evidence
+        if "browserEvidence" in step or (
+                step["outcome"] == "passed" and
+                step["command"][:5] == ["npm", "run", "test", "--workspace", "tests/e2e"]):
+            evidence = step.get("browserEvidence")
+            required = api.required_browser_cases(step["command"])
+            if (not isinstance(evidence, dict) or set(evidence) != {"passed", "skipped", "requiredFiles"}
+                    or type(evidence.get("passed")) is not int
+                    or not sum(required.values()) <= evidence["passed"] <= 4096
+                    or type(evidence.get("skipped")) is not int or evidence["skipped"] != 0
+                    or type(evidence.get("requiredFiles")) is not int
+                    or evidence["requiredFiles"] != len(required)):
+                raise error("failure_child_report_unsafe")
+            selected["browserEvidence"] = evidence
         if step["outcome"] == "failed":
             selected["failureCode"] = step["failureCode"]
             selected["failureCorrelation"] = step["failureCorrelation"]
@@ -279,6 +292,8 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
                 "--report-xunit-xml-filename", "storage.xml",
                 "--results-directory", "<private-results>",
             ]))
+        elif diagnostic and diagnostic.kind == "browser":
+            commands.append(api.safe_command(api.playwright_command(command)))
         expected_failures.append((name, commands))
     code = None
     if expected_step is None:

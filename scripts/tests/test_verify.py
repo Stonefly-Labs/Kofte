@@ -1,4 +1,5 @@
 from contextlib import contextmanager, redirect_stdout
+import copy
 import io
 import json
 from pathlib import Path
@@ -523,16 +524,134 @@ class VerifyTests(unittest.TestCase):
         diagnostic.clear()
         self.assertEqual({}, diagnostic.safe_fields())
 
-    def test_successful_browser_command_never_publishes_failure_diagnostics(self):
+    def test_zero_exit_browser_without_actual_structured_evidence_cannot_pass(self):
         report = self.report("browser")
         runner = verify.Runner(self.root, report, {})
         diagnostic = verify.command_diagnostics(["npm", "run", "test", "--workspace", "tests/e2e"])
-        runner.command("browser-tests", [
-            "python3", "-c", "print('credential-canary /private/tests/e2e/recovery.spec.ts:7:8')",
-        ], diagnostics=diagnostic)
+        with self.assertRaisesRegex(verify.VerificationError, "browser_evidence_missing"):
+            runner.command("browser-tests", [
+                "python3", "-c", "print('credential-canary /private/tests/e2e/recovery.spec.ts:7:8')",
+            ], diagnostics=diagnostic)
+        self.assertEqual("failed", report.data["steps"][-1]["outcome"])
         self.assertNotIn("sourceLocations", report.data["steps"][-1])
         self.assertNotIn("credential-canary", report.path.read_text())
         self.assertEqual(set(), diagnostic.sources)
+
+    def browser_report(self, count=2, *, executed=False):
+        return {
+            "errors": [], "stats": {"expected": count if executed else 0,
+                                   "skipped": 0 if executed else count, "unexpected": 0, "flaky": 0},
+            "suites": [{"specs": [{
+                "file": "identity.spec.ts", "id": f"case-{index}", "title": f"reviewed case {index}",
+                "line": index + 1, "column": 1, "ok": True,
+                "tests": [{"projectId": "", "expectedStatus": "passed",
+                           "status": "expected" if executed else "skipped",
+                           "results": [{"status": "passed", "retry": 0, "errors": [],
+                                        "stdout": [{"text": "credential-canary"}]}] if executed else []}],
+            } for index in range(count)]}],
+        }
+
+    def test_browser_wrapper_compares_real_child_reports_and_discards_all_private_json(self):
+        runner = verify.Runner(self.root, self.report("browser"), {})
+        discovery = self.browser_report(count=4)
+        execution = self.browser_report(count=4, executed=True)
+        script = (
+            "import json, os, sys; from pathlib import Path; "
+            f"report = {discovery!r} if '--list' in sys.argv else {execution!r}; "
+            "Path(os.environ['PLAYWRIGHT_JSON_OUTPUT_FILE']).write_text(json.dumps(report))"
+        )
+        command = ["python3", "-c", script, "identity.spec.ts"]
+        runner.command("browser-tests", command, diagnostics=verify.runtime_support.CommandDiagnostics("browser"))
+        step = runner.report.data["steps"][-1]
+        self.assertEqual({"passed": 4, "skipped": 0, "requiredFiles": 1}, step["browserEvidence"])
+        self.assertEqual([], list((self.root / "artifacts/verification/.private").iterdir()))
+        self.assertNotIn("credential-canary", runner.report.path.read_text())
+        self.assertNotIn("reviewed case", runner.report.path.read_text())
+
+    def test_browser_success_requires_every_discovered_case_and_no_skips_failures_or_retries(self):
+        path = self.root / "browser.json"
+        path.touch(mode=0o600)
+        path.write_text(json.dumps(self.browser_report()))
+        expected, _ = verify.playwright_evidence(path, {"identity.spec.ts": 2})
+        actual = self.browser_report(executed=True)
+        path.write_text(json.dumps(actual))
+        _, evidence = verify.playwright_evidence(path, {"identity.spec.ts": 2}, expected)
+        self.assertEqual({"passed": 2, "skipped": 0, "requiredFiles": 1}, evidence)
+        self.assertNotIn("credential-canary", json.dumps(evidence))
+        for mutation in ("missing", "duplicate", "changed-id", "changed-title", "skipped",
+                         "expected-failure", "flaky", "retry", "missing-result", "global-error", "bad-count"):
+            invalid = copy.deepcopy(actual)
+            cases = invalid["suites"][0]["specs"]
+            if mutation == "missing":
+                cases.pop()
+            elif mutation == "duplicate":
+                cases.append(copy.deepcopy(cases[0]))
+            elif mutation == "changed-id":
+                cases[0]["id"] = "substitute"
+            elif mutation == "changed-title":
+                cases[0]["title"] = "substitute"
+            elif mutation == "skipped":
+                cases[0]["tests"][0]["results"][0]["status"] = "skipped"
+            elif mutation == "expected-failure":
+                cases[0]["tests"][0]["expectedStatus"] = "failed"
+            elif mutation == "flaky":
+                cases[0]["tests"][0]["status"] = "flaky"
+            elif mutation == "retry":
+                cases[0]["tests"][0]["results"][0]["retry"] = 1
+            elif mutation == "missing-result":
+                cases[0]["tests"][0]["results"] = []
+            elif mutation == "global-error":
+                invalid["errors"] = [{"message": "credential-canary"}]
+            else:
+                invalid["stats"]["expected"] = 1
+            path.write_text(json.dumps(invalid))
+            with self.subTest(mutation=mutation), self.assertRaisesRegex(
+                    verify.runtime_support.RuntimeFailure, "browser_evidence_invalid"):
+                verify.playwright_evidence(path, {"identity.spec.ts": 2}, expected)
+
+    def test_browser_discovery_cannot_hide_a_missing_file_case_or_declared_skip(self):
+        path = self.root / "browser.json"
+        path.touch(mode=0o600)
+        for mutation in ("missing-file", "too-few", "declared-skip", "duplicate-json", "malformed"):
+            report = self.browser_report()
+            required = {"identity.spec.ts": 2}
+            if mutation == "missing-file":
+                required["bootstrap.spec.ts"] = 1
+            elif mutation == "too-few":
+                report["suites"][0]["specs"].pop()
+            elif mutation == "declared-skip":
+                report["suites"][0]["specs"][0]["tests"][0]["expectedStatus"] = "skipped"
+            content = json.dumps(report)
+            if mutation == "duplicate-json":
+                content = '{"errors": [],' + content[1:]
+            elif mutation == "malformed":
+                content = content[:-1]
+            path.write_text(content)
+            with self.subTest(mutation=mutation), self.assertRaisesRegex(
+                    verify.runtime_support.RuntimeFailure, "browser_evidence_invalid"):
+                verify.playwright_evidence(path, required)
+
+    def test_browser_private_report_refuses_public_permissions_links_special_files_and_unbounded_input(self):
+        source = self.root / "source.json"
+        source.touch(mode=0o600)
+        source.write_text(json.dumps(self.browser_report()))
+        path = self.root / "browser.json"
+        for kind in ("public", "symlink", "hardlink", "fifo", "oversized"):
+            if kind == "symlink":
+                path.symlink_to(source)
+            elif kind == "hardlink":
+                path.hardlink_to(source)
+            elif kind == "fifo":
+                verify.os.mkfifo(path, 0o600)
+            else:
+                path.touch(mode=0o644 if kind == "public" else 0o600)
+                path.write_bytes(source.read_bytes() if kind == "public" else b"x" * (16 * 1024 * 1024 + 1))
+            try:
+                with self.subTest(kind=kind), self.assertRaisesRegex(
+                        verify.runtime_support.RuntimeFailure, "browser_evidence_invalid"):
+                    verify.playwright_evidence(path, {"identity.spec.ts": 2})
+            finally:
+                path.unlink()
 
     def test_failed_composition_theory_preserves_safe_assertion_and_scenario_before_private_cleanup(self):
         runner = verify.Runner(self.root, self.report("integration"), {})
@@ -1059,10 +1178,14 @@ class VerifyTests(unittest.TestCase):
     def test_normal_browser_does_not_run_privacy_without_its_seeded_capture_session(self):
         directory = self.root / "tests/e2e"
         directory.mkdir(parents=True, exist_ok=True)
-        for name in ("bootstrap.spec.ts", "recovery.spec.ts", "startup.spec.ts", "privacy.spec.ts"):
+        for name in ("accessibility.spec.ts", "bootstrap.spec.ts", "recovery.spec.ts",
+                     "startup.spec.ts", "privacy.spec.ts"):
             (directory / name).write_text("isolated selector fixture")
-        self.assertEqual(["bootstrap.spec.ts", "identity.spec.ts", "recovery.spec.ts"],
+        self.assertEqual(["accessibility.spec.ts", "bootstrap.spec.ts", "identity.spec.ts", "recovery.spec.ts"],
                          verify.browser_specs(self.root))
+        (directory / "accessibility.spec.ts").unlink()
+        with self.assertRaisesRegex(verify.VerificationError, "browser_source_inventory_invalid"):
+            verify.browser_specs(self.root)
 
     def test_postgres_pause_requires_the_matching_real_fixture_acknowledgment(self):
         runner = verify.Runner(self.root, self.report(), {})

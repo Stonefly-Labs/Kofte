@@ -6,10 +6,14 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement in progress; 91/100 complete** (T001–T091), on
+**Current checkpoint: 005 / implement in progress; 93/100 complete** (T001–T093), on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. Implementation continues until the entire
 spec is ready for converge, not until an incremental subset passes.
+T092's focused operations join now has actual Linux qualification. T093 also
+requires exact private Playwright discovery/execution completeness, not just
+zero exit: no missing case, skip, retry or flaky result. Its complete local
+browser and quality gates pass; public catalog and final full-gate/CI work remain.
 The human-requested context pause has been resumed on the same branch/draft PR;
 it was not completion or a new approval gate.
 The [implementation checkpoint](../../specs/005-authentication-bootstrap/implementation.md#continued-implementation-short-private-chromium-temporaries)

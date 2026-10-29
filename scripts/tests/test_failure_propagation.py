@@ -153,6 +153,9 @@ class FailurePropagationTests(unittest.TestCase):
         self.assertEqual(["browser-tests", "identity-browser-canaries"],
                          [step["name"] for step in result["steps"]])
         self.assertNotIn("credential-canary", json.dumps(result))
+        evidence["steps"][0]["command"] = verify.safe_command(verify.playwright_command(command))
+        checked(evidence)
+        evidence["steps"][0]["command"] = command
         with self.assertRaisesRegex(verify.VerificationError, "failure_did_not_reach_expected_command"):
             checked(evidence, browser_unavailable=False)
         for mutation in ("missing-capture-refusal", "capture-only", "wrong-order",
@@ -169,10 +172,29 @@ class FailurePropagationTests(unittest.TestCase):
             elif mutation == "extra-failure":
                 changed["steps"].append(copy.deepcopy(cleanup))
             else:
-                changed["steps"][0].update(outcome="passed", exitCode=0)
+                changed["steps"][0].update(outcome="passed", exitCode=0,
+                                          browserEvidence={"passed": 4, "skipped": 0, "requiredFiles": 1})
             with self.subTest(mutation=mutation), self.assertRaisesRegex(
                     verify.VerificationError, "failure_did_not_reach_expected_command"):
                 checked(changed)
+
+    def test_browser_baseline_requires_revalidated_structured_completeness(self):
+        evidence = self.evidence()
+        evidence.update(suite="browser", outcome="passed")
+        step = evidence["steps"][0]
+        step.update(name="browser-tests", outcome="passed", exitCode=0,
+                    command=["npm", "run", "test", "--workspace", "tests/e2e", "--", "identity.spec.ts"],
+                    browserEvidence={"passed": 4, "skipped": 0, "requiredFiles": 1})
+        checked = lambda: exercises.checked_evidence(evidence, "browser", None, None, None, 0, verify)
+        self.assertEqual(step["browserEvidence"], checked()["steps"][0]["browserEvidence"])
+        for invalid in (None, {"passed": 3, "skipped": 0, "requiredFiles": 1},
+                        {"passed": 4, "skipped": 1, "requiredFiles": 1},
+                        {"passed": 4, "skipped": 0, "requiredFiles": 2},
+                        {"passed": True, "skipped": 0, "requiredFiles": 1}):
+            step["browserEvidence"] = invalid
+            with self.subTest(evidence=invalid), self.assertRaisesRegex(
+                    verify.VerificationError, "failure_child_report_unsafe"):
+                checked()
 
     def test_native_success_counts_are_revalidated_without_impossible_class_or_skip_claims(self):
         evidence = self.evidence()

@@ -55,6 +55,10 @@ REQUIRED_SUITE_FILES = {
         "scripts/tests/test_dev_output.py",
     ),
 }
+BROWSER_CASE_MINIMA = {
+    "accessibility.spec.ts": 4, "bootstrap.spec.ts": 1, "identity.spec.ts": 4,
+    "recovery.spec.ts": 3, "privacy.spec.ts": 1, "startup.spec.ts": 5,
+}
 PLATFORM_REQUIRED_FILES = (
     "src/Kofte.Platform/Kofte.Platform.csproj",
     "tests/unit/Kofte.Platform.Tests/Kofte.Platform.Tests.csproj",
@@ -757,15 +761,17 @@ class Runner:
 
     def command(self, name, command, *, environment=None, timeout=900, health_check=None, capture=None,
                 diagnostics=None):
-        def run(step, diagnostic, actual_command, storage_report=None):
-            processes = OwnedProcesses(self.root, environment or self.environment, capture=capture or diagnostic)
+        def run(step, diagnostic, actual_command, storage_report=None, *, command_environment=None,
+                command_timeout=timeout):
+            processes = OwnedProcesses(self.root, command_environment or environment or self.environment,
+                                       capture=capture or diagnostic)
             try:
                 child = processes.start(actual_command, stdin=subprocess.DEVNULL)
                 try:
                     if health_check is None:
-                        step["exitCode"] = child.wait(timeout=timeout)
+                        step["exitCode"] = child.wait(timeout=command_timeout)
                     else:
-                        deadline = time.monotonic() + timeout
+                        deadline = time.monotonic() + command_timeout
                         while True:
                             health_check()
                             remaining = deadline - time.monotonic()
@@ -815,6 +821,23 @@ class Runner:
                         "--report-xunit-xml-filename", "storage.xml",
                         "--results-directory", str(directory),
                     ], directory / "storage.xml")
+            elif diagnostic and diagnostic.kind == "browser":
+                deadline = time.monotonic() + timeout
+                with private_root(self.root) as directory:
+                    reports = [directory / name for name in ("discovery.json", "execution.json")]
+                    for path in reports:
+                        path.touch(mode=0o600, exist_ok=False)
+                    required = required_browser_cases(command)
+                    step["command"] = safe_command(playwright_command(command))
+                    base_environment = environment or self.environment
+                    run(step, diagnostic, playwright_command(command, list_tests=True),
+                        command_environment=dict(base_environment, PLAYWRIGHT_JSON_OUTPUT_FILE=str(reports[0])),
+                        command_timeout=min(30, max(0, deadline - time.monotonic())))
+                    expected, _ = playwright_evidence(reports[0], required)
+                    run(step, runtime_support.CommandDiagnostics("browser"), playwright_command(command),
+                        command_environment=dict(base_environment, PLAYWRIGHT_JSON_OUTPUT_FILE=str(reports[1])),
+                        command_timeout=max(0, deadline - time.monotonic()))
+                    _, step["browserEvidence"] = playwright_evidence(reports[1], required, expected)
             else:
                 run(step, diagnostic, command)
         self.operation(name, execute, command)
@@ -1188,10 +1211,120 @@ def runtime(runner, provider, disposable, external_connection=None, privacy_cana
 
 
 def browser_specs(root):
-    return sorted(
+    observed = sorted(
         path.name for path in (root / "tests/e2e").glob("*.spec.ts")
         if path.name not in ("startup.spec.ts", "privacy.spec.ts")
     )
+    expected = sorted(set(BROWSER_CASE_MINIMA) - {"startup.spec.ts", "privacy.spec.ts"})
+    if observed != expected:
+        raise VerificationError("browser_source_inventory_invalid")
+    return observed
+
+
+def playwright_command(command, *, list_tests=False):
+    return [*command, *(["--list"] if list_tests else []), "--reporter", "json" if list_tests else "list,json"]
+
+
+def required_browser_cases(command):
+    selected = [value for value in command if value.endswith(".spec.ts")]
+    selected = selected or sorted(set(BROWSER_CASE_MINIMA) - {"startup.spec.ts", "privacy.spec.ts"})
+    if any(value not in BROWSER_CASE_MINIMA for value in selected) or len(set(selected)) != len(selected):
+        raise VerificationError("browser_source_inventory_invalid")
+    required = {name: BROWSER_CASE_MINIMA[name] for name in selected}
+    if "startup.spec.ts" in required:
+        if "--grep-invert" in command:
+            required["startup.spec.ts"] = 4
+        elif "--grep" in command:
+            required["startup.spec.ts"] = 1
+    return required
+
+
+def playwright_evidence(path, required, expected=None):
+    def unique_fields(pairs):
+        fields = {}
+        for name, value in pairs:
+            if name in fields:
+                raise ValueError
+            fields[name] = value
+        return fields
+
+    try:
+        flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+        with os.fdopen(os.open(path, flags), "rb") as stream:
+            metadata = os.fstat(stream.fileno())
+            if (not stat.S_ISREG(metadata.st_mode) or stat.S_IMODE(metadata.st_mode) != 0o600
+                    or metadata.st_uid != os.getuid() or metadata.st_nlink != 1):
+                raise ValueError
+            if metadata.st_size == 0:
+                raise runtime_support.RuntimeFailure("browser_evidence_missing")
+            if metadata.st_size > 16 * 1024 * 1024:
+                raise ValueError
+            content = stream.read(16 * 1024 * 1024 + 1)
+            if len(content) != metadata.st_size:
+                raise ValueError
+        report = json.loads(content, object_pairs_hook=unique_fields)
+        if not isinstance(report, dict) or report.get("errors") != []:
+            raise ValueError
+        if not isinstance(report["suites"], list):
+            raise ValueError
+        pending = list(report["suites"])
+        cases, counts = {}, dict.fromkeys(required, 0)
+        visited = 0
+        while pending:
+            suite = pending.pop()
+            visited += 1
+            if (visited > 1024 or not isinstance(suite, dict)
+                    or not isinstance(suite.get("suites", []), list)
+                    or not isinstance(suite.get("specs"), list)):
+                raise ValueError
+            pending.extend(suite.get("suites", []))
+            for spec in suite["specs"]:
+                if not isinstance(spec, dict):
+                    raise ValueError
+                file, identity, title = spec["file"], spec["id"], spec["title"]
+                if (file not in required or not isinstance(identity, str)
+                        or re.fullmatch(r"[A-Za-z0-9_-]{1,256}", identity) is None
+                        or not isinstance(title, str) or not 1 <= len(title) <= 512
+                        or any(type(spec[name]) is not int or not 1 <= spec[name] <= 1_000_000
+                               for name in ("line", "column"))):
+                    raise ValueError
+                if not isinstance(spec["tests"], list) or not spec["tests"]:
+                    raise ValueError
+                for test in spec["tests"]:
+                    if not isinstance(test, dict):
+                        raise ValueError
+                    project = test["projectId"]
+                    if (not isinstance(project, str) or len(project) > 256
+                            or test["expectedStatus"] != "passed"):
+                        raise ValueError
+                    key = (file, identity, project)
+                    if key in cases or len(cases) >= 4096:
+                        raise ValueError
+                    cases[key] = (spec["line"], spec["column"], title)
+                    counts[file] += 1
+                    results = test["results"]
+                    if expected is None:
+                        if results != []:
+                            raise ValueError
+                    elif (spec["ok"] is not True or test["status"] != "expected"
+                          or not isinstance(results, list) or len(results) != 1
+                          or not isinstance(results[0], dict)
+                          or results[0]["status"] != "passed" or results[0]["errors"] != []
+                          or type(results[0]["retry"]) is not int or results[0]["retry"] != 0):
+                        raise ValueError
+        if not cases or any(counts[file] < minimum for file, minimum in required.items()):
+            raise ValueError
+        if expected is not None:
+            stats = report["stats"]
+            if cases != expected or any(
+                    type(stats[name]) is not int or stats[name] != value
+                    for name, value in (("expected", len(cases)), ("skipped", 0), ("unexpected", 0), ("flaky", 0))):
+                raise ValueError
+        return cases, {"passed": len(cases), "skipped": 0, "requiredFiles": len(required)}
+    except FileNotFoundError as error:
+        raise runtime_support.RuntimeFailure("browser_evidence_missing") from error
+    except (OSError, ValueError, TypeError, KeyError, UnicodeError, RecursionError) as error:
+        raise runtime_support.RuntimeFailure("browser_evidence_invalid") from error
 
 
 def startup_observations(directory, cycles, *, composition=False):

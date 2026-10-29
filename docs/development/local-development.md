@@ -1167,6 +1167,14 @@ Raw arguments, other assertion values, exceptions, traces, output and private XM
 not retained or uploaded. This makes failing host CI diagnosable without exposing
 identity exchanges.
 
+Every Playwright command also discovers its actual selected cases before
+execution and requires matching private JSON evidence: all required files/case
+minima, every discovered case passing exactly once, no skips/retries/flakiness
+or global error. Discovery and execution share the original command deadline.
+Only `browserEvidence` counts are retained; owner-only transient JSON, including
+any child output, is discarded after verified cleanup. Zero exit alone is not
+browser proof. Missing or unsafe reports fail the suite and isolated baselines.
+
 | Suite                      | Underlying runner                                                                                                                                                                                                                     |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | unit                       | `dotnet test --project tests/unit/Kofte.Host.Tests --no-restore -c Release --minimum-expected-tests 1`; web and shared-contract `test:unit`; complete Python discovery                                                                |
