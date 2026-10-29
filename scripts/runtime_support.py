@@ -61,6 +61,9 @@ class CommandDiagnostics:
         rb"^\s*failed (Kofte\.(?:Host\.IntegrationTests|Storage\.IntegrationTests|Platform\.ContractTests)\."
         rb"[A-Za-z0-9_.+]{1,240})(?=[( ])",
     )
+    completed_contract = re.compile(
+        rb"^\s*passed (Kofte\.Platform\.ContractTests\.[A-Za-z0-9_.+]{1,240})(?=[( ])",
+    )
     storage_code = re.compile(rb"\b(?:StorageException|XunitException)\s*:\s*([A-Za-z_]{1,64})\b")
     native_location = re.compile(
         r"(?<![A-Za-z0-9_.-])(tests/(?:[A-Za-z0-9_.-]+/)*[A-Za-z0-9_.-]+\.cs)"
@@ -79,6 +82,7 @@ class CommandDiagnostics:
         self.failures = Failures()
         self.sources, self.dependency_codes = set(), set()
         self.failed_tests, self.storage_codes = set(), set()
+        self.completed_methods = set()
         self.failed_operations = set()
         self.failed_scenarios = set()
         self.failed_statuses = set()
@@ -116,9 +120,12 @@ class CommandDiagnostics:
         elif self.kind in ("host", "storage", "contract"):
             test = self.storage_test.match(line)
             code = self.storage_code.search(line)
+            completed = self.completed_contract.match(line) if self.kind == "contract" else None
             with self.lock:
                 if self.closed:
                     return
+                if completed and completed[1].decode("ascii") in self.tests and len(self.completed_methods) < 256:
+                    self.completed_methods.add(completed[1].decode("ascii"))
                 if test and test[1].decode("ascii") in self.tests and len(self.failed_tests) < 32:
                     self.failed_tests.add(test[1].decode("ascii"))
                 if code and code[1].decode("ascii") in self.codes and len(self.storage_codes) < 32:
@@ -286,6 +293,8 @@ class CommandDiagnostics:
                 prefix = self.kind
                 return {
                     **({f"failed{prefix.title()}Tests": sorted(self.failed_tests)} if self.failed_tests else {}),
+                    **({"contractCompletedMethods": sorted(self.completed_methods)} if self.kind == "contract"
+                       and self.completed_methods else {}),
                     **({f"{prefix}FailureCodes": sorted(self.storage_codes)} if self.storage_codes else {}),
                     **({f"{prefix}FailureOperations": sorted(self.failed_operations)} if self.failed_operations else {}),
                     **({f"{prefix}FailureScenarios": sorted(self.failed_scenarios)} if self.failed_scenarios else {}),
@@ -304,6 +313,7 @@ class CommandDiagnostics:
             self.sources.clear()
             self.dependency_codes.clear()
             self.failed_tests.clear()
+            self.completed_methods.clear()
             self.storage_codes.clear()
             self.failed_operations.clear()
             self.failed_scenarios.clear()

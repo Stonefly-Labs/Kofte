@@ -300,6 +300,25 @@ class RuntimeSupportTests(unittest.TestCase):
                 diagnostic.clear()
                 self.assertEqual({}, diagnostic.safe_fields())
 
+    def test_completed_contract_methods_exclude_theory_arguments_unknown_names_and_late_output(self):
+        name = "Kofte.Platform.ContractTests.Composition.KnownTests.KnownCase"
+        diagnostic = support.CommandDiagnostics("contract", tests=[name])
+        for line in (
+            f" passed {name}(secret: credential-canary) (10ms)",
+            f" passed {name} (10ms)",
+            " passed Kofte.Platform.ContractTests.Unknown.CredentialCanary (10ms)",
+            f" failed {name}(secret: credential-canary)",
+            f" arbitrary passed {name} (10ms)",
+        ):
+            diagnostic.inspect(line.encode())
+        self.assertEqual({
+            "contractCompletedMethods": [name], "failedContractTests": [name],
+        }, diagnostic.safe_fields())
+        self.assertNotIn("credential", json.dumps(vars(diagnostic), default=str))
+        diagnostic.clear()
+        diagnostic.inspect(f" passed {name} (10ms)".encode())
+        self.assertEqual({}, diagnostic.safe_fields())
+
     def test_native_failure_locations_require_known_failed_tests_and_bounded_source_lines(self):
         name = "Kofte.Host.IntegrationTests.Identity.SqliteKnownTests.KnownCase"
         owner, method = name.rsplit(".", 1)

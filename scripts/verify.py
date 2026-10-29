@@ -1389,6 +1389,7 @@ def execute_suite(runner, suite, provider, arguments):
             runner.command("composition-public-contracts", [
                 "dotnet", "test", "--project", "tests/contract/Kofte.Platform.ContractTests",
                 "--no-restore", "-c", "Release", *public_selector, "--filter-class", "*Composition*",
+                "--output", "Detailed", "--show-stdout", "None", "--show-stderr", "None",
                 "--minimum-expected-tests", "84" if provider == "both" else "1",
             ], environment=public_environment)
             runner.command("module-manifest-schema", [

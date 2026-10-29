@@ -121,6 +121,10 @@ Native Development fixture setup now uses the real context/CSRF/session flow;
 finite actual-budget observations identify request exhaustion without changing
 budgets. The retained composition timeout and intermittent native positives
 remain engineering work, not a human approval gate.
+The full retained composition selection passes locally (84 cases, zero skipped,
+583.290s) but still times out on Linux. Its failed reports now preserve only
+source-known completed method names; progress does not replace required XML
+success evidence or extend the original 900-second bound.
 
 For focused Linux browser diagnostics on a published task branch, run
 `gh workflow run product-checks.yml --ref feature/005-authentication-bootstrap -f suite=browser`.

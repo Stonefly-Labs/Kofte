@@ -122,6 +122,10 @@ uses the delivered context/CSRF/session operation, and native failures retain
 finite actual-budget observations. Remaining work includes intermittent native
 deadlines and the retained composition-contract timeout; see the
 [current evidence](specs/005-authentication-bootstrap/implementation.md#continued-implementation-delivered-development-setup-and-expected-chromium-refusal).
+All 84 retained composition cases pass locally within the original timeout;
+Linux still times out. Failed contract reports now retain only source-known
+completed method names to locate the unfinished work, never private arguments
+or a progress-as-success fallback.
 
 ### Historical implementation increments
 

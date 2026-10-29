@@ -597,6 +597,26 @@ class VerifyTests(unittest.TestCase):
         self.assertNotIn("credential", runner.report.path.read_text())
         self.assertEqual(set(), diagnostic.failed_tests)
 
+    def test_contract_timeout_keeps_completed_source_methods_without_turning_progress_into_success(self):
+        runner = verify.Runner(self.root, self.report("contract"), {})
+        name = "Kofte.Platform.ContractTests.Composition.KnownTests.KnownCase"
+        diagnostic = verify.runtime_support.CommandDiagnostics("contract", tests=[name])
+        script = (
+            "import time; "
+            f"print(' passed {name}(secret: credential-canary) (10ms)', flush=True); "
+            "print('private credential-canary', flush=True); time.sleep(10)"
+        )
+        with self.assertRaisesRegex(verify.VerificationError, "command_timeout"):
+            runner.command("composition-public-contracts", ["python3", "-c", script],
+                           diagnostics=diagnostic, timeout=1)
+        step = runner.report.data["steps"][-1]
+        self.assertEqual("failed", step["outcome"])
+        self.assertEqual([name], step["contractCompletedMethods"])
+        self.assertEqual("unavailable", step["contractDiagnosticCode"])
+        self.assertNotIn("nativeEvidence", step)
+        self.assertNotIn("credential", runner.report.path.read_text())
+        self.assertEqual({}, diagnostic.safe_fields())
+
     def test_identity_recipe_failure_keeps_known_consumer_source_not_private_exception(self):
         runner = verify.Runner(self.root, self.report("contract"), {})
         diagnostic = verify.command_diagnostics([

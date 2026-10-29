@@ -13,6 +13,42 @@ resolves that blocker and resumes the original implement stage. The later
 adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
 
+## Continued implementation: locate the retained Linux contract timeout
+
+The complete retained composition selection passes locally without an extended
+deadline: 84 passed, zero skipped, 583.290s in
+`contract-both-1d5c5a418b4f44c7baeab8b0ccf15287.json`.
+The session-only observer executes
+`dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*Composition*' --minimum-expected-tests 84 --output Detailed --show-stdout None --show-stderr None --long-running 60 --xunit-diagnostics on`
+through the verifier's unchanged 900-second command bound and strict private XML
+validation. This is macOS arm64/18 logical CPUs, not Linux qualification or a
+root-cause diagnosis. The report's historical head is `376c7a1`; source includes
+the subsequently published `d1c2f50` increment.
+
+The completed Linux `376c7a1` contract result is still red:
+`contract-both-2ae8f33b9a45436895071f9eac5b84b0.json`, 1419.587s.
+Its preceding platform selection passes 265 cases/zero skipped/18 required
+classes in 485.518s. Its composition selection times out at 900.056s without
+completed XML. Recovery on the same assessed run passes; SQLite integration
+and the final intentional-Chromium checker remain the other failed contexts.
+
+The composition command now requests detailed method progress while hiding
+test stdout/stderr. On failure only, the existing transient parser projects a
+bounded set of completed **source-known method symbols**. No theory arguments,
+private output, invented elapsed measurements or success evidence are retained.
+A real timed-out Python child regression proves this additional diagnostic
+survives cleanup while the original timeout remains fatal and XML absence
+cannot become success. Unknown names, duplicate theory rows and late capture
+are independently checked. Selection, minima, command/product deadlines and
+ordinary capture requirements remain unchanged.
+
+At `d1c2f50` plus this Python-only diagnostic increment,
+`python3 scripts/verify.py --suite quality` passes all 21 steps in 40.235s
+(`quality-none-203b0c6ec703433a90e2d5099620c57d.json`);
+`python3 scripts/check_repository.py`, `python3 -m unittest discover -s scripts/tests -v`
+(154 cases, 7.246s) and `git diff --check` pass. Fresh assessed Linux evidence
+is still required. T092-T100 and the active implement stage remain open.
+
 ## Continued implementation: delivered Development setup and expected Chromium refusal
 
 The published privacy dependency repair `376c7a1` is now qualified on actual
