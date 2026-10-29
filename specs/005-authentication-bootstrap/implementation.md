@@ -1,6 +1,6 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement incomplete; verification failed, 91/100 complete (T001-T091). The exact-pinned upstream Chromium repair passes local and Linux named browser gates and all twelve focused Linux public HTTPS recipes. A separate keyboard-audit readiness race is reproduced and corrected; public privacy/contract/propagation closeout remains open. The ledger remains running; this is engineering, not a human approval gate.
+**Result:** implement incomplete; verification failed, 91/100 complete (T001-T091). The exact-pinned upstream Chromium repair passes local and Linux named browser gates and all twelve focused Linux public HTTPS recipes. Fresh Linux both-provider integration, recovery, privacy and complete failure propagation pass at `d1c2f50`; newer native positives and retained composition closeout remain unresolved. The ledger remains running; this is engineering, not a human approval gate.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-29.
 **Assessed baseline:** complete local/hosted assessment of published `c7f68a786ebc51c935d8df455d926d79d88a8725`; subsequent focused checks add this checkpoint's browser-helper/native-fixture changes. Earlier assessments retain their original baselines below.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
@@ -12,6 +12,78 @@ The initial blocked assessment below is retained as history. The
 resolves that blocker and resumes the original implement stage. The later
 adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
+
+## Continued implementation: qualified propagation and remaining native timing
+
+Actual assessed `d1c2f50` Linux
+[run 40928353045](https://github.com/Stonefly-Labs/Kofte/actions/runs/40928353045)
+finishes with **nine passing contexts** and the one coupled cookie-contract
+failure repaired in `dee39c5`. Merge `84326761d92c21085cac92ea0fd0ec3ac6391e5d`
+has verified parents main `3e416813233c9d291eb20cf72d5882dbddf3e1b6` and `d1c2f50`.
+This is not a completely green matrix or a completed implement stage.
+
+| Exact verifier invocation | Actual result |
+| --- | --- |
+| `python3 scripts/verify.py --suite integration --provider sqlite` | Passed 740.252s; `integration-sqlite-d575707a447a46589208765b9d5a315a.json`. Native 210 cases/13 required classes, storage 236/11, retained composition 57; zero skipped. |
+| `python3 scripts/verify.py --suite integration --provider postgres --disposable-postgres` | Passed 693.494s; `integration-postgres-4c92adcb25224f439cc72e39c6a724ff.json`. Native 120 cases/eight required classes, storage 211/11, composition 59; zero skipped. |
+| `python3 scripts/verify.py --suite recovery --provider both --disposable-postgres` | Passed 1599.521s; `recovery-both-09b38086f9e342329e0ed36d50945e10.json`. Both providers' native, storage, standalone public and retained composition selections pass with zero skipped. |
+| `python3 scripts/verify.py --suite failure-propagation --disposable-postgres` | Passed 1039.268s; `failure-propagation-none-b39a17611a734f9cbc77a75150b2d309.json`. Actual isolated quality/PostgreSQL/browser baselines **and all five real injections pass**. Missing Chromium and its subsequent missing-canary refusal remain fatal in the child evidence. |
+
+Privacy, browser (including the separate public HTTPS recipes), quality, unit
+and startup also pass in that actual run. Its retained contract is not reached
+after the coupled foreign-cookie assertion failure; the earlier retained Linux
+composition timeout is not thereby resolved. Diagnostic matrix `23d9373`
+is explicitly cancelled as superseded, freeing capacity for the repaired head;
+it supplies no passing-gate claim.
+
+A temporary exception-only local investigation of the same 106-case/four-thread
+native selection fails in 575.424s:
+`integration-both-513a160f70ec4b31a512e56e8a21b7d4.json` reports seven distinct
+failed methods. Five samples reach the PostgreSQL `DeadlineStore.CommitAsync`
+boundary while outer request time remains, with seven to nine runtime workers
+and zero or one pending item at observation. This does **not** distinguish its
+preflight budget check from an awaited commit, prove database/fsync causality,
+or rule out earlier contention. A narrower 26-case PostgreSQL distinction
+experiment passes 149.219s/zero skipped, obtaining no failed sample. All temporary
+first-chance handlers, dictionaries and fields are removed; the complete
+published solution is then rebuilt with zero warnings/errors. No instrumented
+pass substitutes for an uninstrumented gate.
+
+Actual `dee39c5` Linux run
+[40930623203](https://github.com/Stonefly-Labs/Kofte/actions/runs/40930623203)
+still reports one SQLite initial DNS-test challenge as expected 303/actual 503
+in `integration-sqlite-7423a50a40c54b5cba9ce21e3536b19c.json`; its storage
+236-case and composition 57-case selections pass. That explicit positive
+assertion now preserves the same finite request-budget reason as its shared
+helper. `CompleteProductAsync` also preserves that reason instead of replacing
+it with only a generic challenge error. A real forced-discovery regression
+first fails both providers (18.636s), then the two deadline and four DNS
+re-admission cases pass (six total, zero skipped, 17.410s):
+`KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore -c Release --filter-method '*DeliveredDiscoveryDeadlineIsIdentifiableWithoutRelaxingLoginOrPublishingIdentity' --filter-method '*DeliveredDnsChangesAreReadmittedBeforeTheRealTokenConnection' --minimum-expected-tests 6 --max-threads 4 --show-stdout None --show-stderr None`.
+Safe reports are `integration-both-51344939f971412fb6a1a04f232cde00.json` (red,
+deadline-only selection) and `integration-both-a011eb0c37d14ba8bb889bd3bd8deb6e.json`
+(green). Resetting the finite reason before each send prevents a previous
+failure being attributed to a healthy later request. The regression also
+requires a successful follow-up context to clear it. The exact final six-case
+command above passes again with zero skipped, 34.264s:
+`integration-both-15241e9a52994ef39131ad68ace0a918.json`. This repairs diagnostic
+loss, not the intermittent timing root cause.
+
+The complete retained local selection with `DOTNET_PROCESSOR_COUNT=4` and
+the same 900-second bound finishes **failed**, not timed out, in 667.391s:
+`contract-both-83bfdf0f12c045debb394756b45e4407.json`. It identifies the PostgreSQL
+`failure-correction` case, with `composition_test_execution_failed` and
+`composition_consumer_failed`; all source-known method symbols have completed
+output. Method progress is not unique-case completeness or passing XML.
+The earlier 18-processor 84-case pass and this failed comparison establish
+neither a scheduler root cause nor a Linux timeout repair. No scheduling,
+selection, minimum, product budget or command bound is changed.
+
+Final `python3 scripts/verify.py --suite quality` passes all 21 steps in
+37.315s (`quality-none-eca7e194c7a94ed7bf0c4c0e1a73c19d.json`).
+`python3 scripts/check_repository.py`, `python3 -m unittest discover -s scripts/tests -v`
+(154 cases, 6.746s) and `git diff --check` also pass. T092-T100 remain open;
+neither the rejected capacity proof nor a later stage is run.
 
 ## Continued implementation: preserve the session-only foreign-cookie contract
 

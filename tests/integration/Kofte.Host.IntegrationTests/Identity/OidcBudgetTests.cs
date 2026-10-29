@@ -150,7 +150,7 @@ public abstract class OidcBudgetTests
         var csrf = await fixture.ProductContextAsync(Token);
         using var request = fixture.ProductLoginRequest("/identity", csrf);
         using var start = await fixture.SendProductAsync(request, Token);
-        Assert.Equal(303, (int)start.StatusCode);
+        Assert.True((int)start.StatusCode == 303, fixture.RequestFailureCode);
         Assert.Equal(2, resolutions);
         fixture.ProtocolDns = (_, token) =>
         {
@@ -190,6 +190,10 @@ public abstract class OidcBudgetTests
         using var response = await fixture.SendProductAsync(request, Token);
         Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
         Assert.Equal("identity_fixture_request_deadline_exhausted", fixture.RequestFailureCode);
+        var refused = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            fixture.CompleteProductAsync(response, Token));
+        Assert.Equal("identity_fixture_product_challenge_failed:identity_fixture_request_deadline_exhausted",
+            refused.Message);
         Assert.True(elapsed.Elapsed < TimeSpan.FromSeconds(5));
         AssertNoSession(response);
         var after = await fixture.SnapshotAsync(Token);
@@ -197,6 +201,8 @@ public abstract class OidcBudgetTests
         Assert.Empty(after.Mappings);
         Assert.Empty(after.Sessions);
         Assert.Equal(before.Events, after.Events);
+        _ = await fixture.ProductContextAsync(Token);
+        Assert.Equal("identity_fixture_request_failure_unobserved", fixture.RequestFailureCode);
     }
 
     [Fact]

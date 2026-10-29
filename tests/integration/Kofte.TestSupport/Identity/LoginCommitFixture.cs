@@ -486,6 +486,7 @@ public sealed partial class LoginCommitFixture : IAsyncDisposable
             request.RequestUri = new(browserIngress.Origin, request.RequestUri);
             transport = providerClient;
         }
+        RequestFailureCode = "identity_fixture_request_failure_unobserved";
         var response = await transport.SendAsync(request, token);
         if (response.Headers.TryGetValues("Set-Cookie", out var values))
             foreach (var value in values) cookies.SetCookies(origin, value);
@@ -517,7 +518,7 @@ public sealed partial class LoginCommitFixture : IAsyncDisposable
     public async Task<HttpResponseMessage> CompleteProductAsync(HttpResponseMessage start, CancellationToken token)
     {
         if ((int)start.StatusCode != 303 || start.Headers.Location is null)
-            throw new InvalidOperationException("identity_fixture_product_challenge_failed");
+            throw new InvalidOperationException("identity_fixture_product_challenge_failed:" + RequestFailureCode);
         using var authorization = await providerClient.GetAsync(start.Headers.Location, token);
         if ((int)authorization.StatusCode != 302 || authorization.Headers.Location is null)
             throw new InvalidOperationException("identity_fixture_product_authorization_failed");

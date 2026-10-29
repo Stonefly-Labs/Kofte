@@ -115,11 +115,11 @@ verifier now builds that dependency first, and actual fresh Linux both-provider
 privacy now passes, without relaxing capture or product deadlines.
 Missing-build fixture setup also preserves its specific refusal instead of
 masking it as a transport-capture failure.
-The latest propagation run reaches all injections; its final intentionally
-missing Chromium correctly also refuses absent canaries. The harness now
-requires both exact failures for that negative only. Development fixture setup
-uses the delivered context/CSRF/session operation, and native failures retain
-finite actual-budget observations. Remaining work includes intermittent native
+A fresh Linux propagation run now passes all three real baselines and all five
+intentional failures, including the exact Chromium/canary pair. Development
+fixture setup uses the delivered context/CSRF/session operation, and native
+helpers preserve finite current-request budget observations without stale
+reasons from earlier requests. Remaining work includes intermittent native
 deadlines and the retained composition-contract timeout; see the
 [current evidence](specs/005-authentication-bootstrap/implementation.md#continued-implementation-delivered-development-setup-and-expected-chromium-refusal).
 All 84 retained composition cases pass locally within the original timeout;

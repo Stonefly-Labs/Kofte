@@ -113,13 +113,14 @@ Next build. Privacy now builds the production web workspace before those guides
 and native browser selections, after disposable-provider admission. Existing
 local builds had masked this orchestration defect; actual fresh Linux
 both-provider privacy now passes at `376c7a1`, with verified assessed parents.
-Its isolated baselines and first four injections also pass; the final missing
-Chromium exercise exposes a harness expectation defect, not failure to propagate.
-For that negative only, require the exact nonzero browser command and the exact
-subsequent missing-canary refusal. Ordinary capture/cleanup remains strict.
+Fresh `d1c2f50` Linux both-provider integration/recovery also pass, along with
+all three isolated propagation baselines and all five intentional failures.
+For missing Chromium only, require the exact nonzero browser command and the
+exact subsequent missing-canary refusal. Ordinary capture/cleanup remains strict.
 Native Development fixture setup now uses the real context/CSRF/session flow;
-finite actual-budget observations identify request exhaustion without changing
-budgets. The retained composition timeout and intermittent native positives
+helpers preserve finite current-request budget observations without changing
+budgets or leaking prior failures into later requests. The retained composition
+timeout and intermittent native positives
 remain engineering work, not a human approval gate.
 The full retained composition selection passes locally (84 cases, zero skipped,
 583.290s) but still times out on Linux. Its failed reports now preserve only
