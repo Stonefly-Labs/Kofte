@@ -13,6 +13,50 @@ resolves that blocker and resumes the original implement stage. The later
 adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
 
+## Continued implementation: await the actual retry cycle
+
+The diagnostic checkpoint was published as
+`092ce94e67d18ec00c25c46f6783a3bb9d321e6b`. Its actual Linux
+[manual run 40911153756](https://github.com/Stonefly-Labs/Kofte/actions/runs/40911153756)
+and [automatic browser job 40911155006](https://github.com/Stonefly-Labs/Kofte/actions/runs/40911155006)
+pass Development but fail the production retry journey. The manual report
+`browser-none-a134ffd4588d459abc6db4be61515380.json` records a fresh
+context/current-user check at 3.463 seconds, context headers at 3.483 seconds,
+then request failure and `capture_context_body_failed` /
+`capture_body_resource_missing` at 3.485 seconds. There is no intervening
+blur/focus/visibility event. The independent automatic timeline records the
+same resource-missing/context-abort boundary at 4.711 seconds. This is not a
+Chromium launch, TLS or axe-finding failure.
+
+The keyboard-retry loop asserted the same signed-out text that was visible
+before Retry, then immediately started the next sign-in. That assertion did
+not prove the new verification completed. The loop now holds only the real
+context request, proves its fresh loading state and disabled retry affordance,
+releases the unchanged request, waits for signed-out/focus and drains the strict
+capture before the next deliberate sign-in. This follows the existing initial
+loading-state gate; it adds no synthetic response, sleep, ignored abort, legacy
+analyzer mode, focus emulation or deadline extension. Fixed retry phase markers
+are source-allowlisted. This corrects a demonstrated test synchronization defect;
+it does not establish a cause for every earlier Development/native failure.
+
+At `092ce94` plus this synchronization increment, with the existing pinned SDK:
+
+| Exact executed command | Actual result |
+| --- | --- |
+| `python3 scripts/verify.py --suite quality` | Passed 21 steps, 45.051s; `quality-none-0e176fe5951145008abf35af72d3367f.json`. |
+| `python3 scripts/verify.py --suite browser --disposable-postgres` | Passed root/Development and both native providers, 137.155s; `browser-none-769ef5e0d70a40c688b014ffd2c7f202.json`. Each provider passed two cases, zero skipped and one required class. |
+| `python3 scripts/check_repository.py` | Passed. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed 149 cases, 6.276s. |
+| `git diff --check` | Passed. |
+
+The earlier `cb188df` automatic assessment additionally fails native SQLite
+`DeliveredProviderFailuresAreBoundedWithoutRetryRedirectOrPersistentIdentity`
+at its provider-request count assertions (104/106), and three PostgreSQL
+enrollment/key positive cases with expected 303 / actual 503. Isolated
+PostgreSQL propagation baseline times out at the unchanged 900-second limit,
+before injections. These are retained engineering failures, not removed session
+capacity tests or a human approval gate. T092-T100 remain open.
+
 ## Continued implementation: actual Development capture diagnostics
 
 The published session-test removal checkpoint is

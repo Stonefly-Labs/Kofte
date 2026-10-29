@@ -117,10 +117,32 @@ async function verifyFailures() {
         ).toBe(false);
         await privacy.snapshot(context);
         const before = submissions;
-        await retry.focus();
-        await page.keyboard.press("Enter");
+        let releaseRetry: (() => void) | undefined;
+        await page.route(
+          "**/api/identity/v1/browser-context",
+          async (route) => {
+            await new Promise<void>((resolve) => {
+              releaseRetry = resolve;
+            });
+            await route.continue();
+          },
+          { times: 1 },
+        );
+        phase("retry_started");
+        try {
+          await retry.focus();
+          await page.keyboard.press("Enter");
+          await expect.poll(() => typeof releaseRetry).toBe("function");
+          await expect(status).toHaveText("Checking your identity");
+          await expect(retry).toHaveAttribute("aria-disabled", "true");
+          phase("retry_loading_observed");
+        } finally {
+          releaseRetry?.();
+        }
         await expect(status).toHaveText("You are signed out");
         await expect(retry).toBeFocused();
+        await privacy.snapshot(context);
+        phase("retry_finished");
         expect(submissions).toBe(before);
         console.log(`identity_browser_stage_${outcome}_retry_accessible`);
         // The next sign-in remains a deliberate keyboard action, not an automatic retry.

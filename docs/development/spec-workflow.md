@@ -73,6 +73,13 @@ diagnostics preserve primary assertions alongside strict capture-cleanup errors
 and retain only validated phase timings/fixed failure categories. This does not
 establish a browser fix or change the remaining task markers.
 
+Subsequent `092ce94` Linux manual/automatic timelines instead pass Development
+and expose an aborted context response during production retry. The loop could
+accept pre-retry signed-out text and navigate before the new check completed.
+It now proves the fresh loading/result cycle through the unchanged actual
+request and drains strict capture before continuing. Local quality and
+both-provider browser gates pass; Linux validation is still required.
+
 For focused Linux browser diagnostics on a published task branch, run
 `gh workflow run product-checks.yml --ref feature/005-authentication-bootstrap -f suite=browser`.
 This manual selection still executes the real browser suite and its public

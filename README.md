@@ -80,6 +80,13 @@ failures and emits validated lifecycle/body timings. This closes a diagnostic
 blind spot, not the unresolved Linux capture failure. See the
 [current assessment](specs/005-authentication-bootstrap/implementation.md#continued-implementation-actual-development-capture-diagnostics).
 
+The subsequent `092ce94` Linux timelines expose a production retry-test race:
+the old signed-out text could pass before the new check completed, allowing the
+next navigation to abort capture. The test now proves a fresh real loading/result
+cycle and drains capture before continuing. Local quality and both-provider
+browser gates pass; matching Linux verification and remaining native failures
+still need closure.
+
 ### Historical implementation increments
 
 The expanded actual HTTPS TypeScript corpus now
