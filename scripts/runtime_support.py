@@ -163,6 +163,9 @@ class CommandDiagnostics:
                 continue
             if len(self.failed_tests) < 32:
                 self.failed_tests.add(name)
+            for scenario in self.scenarios:
+                if test.get("name") == name + f'(scenario: \\"{scenario}\\")':
+                    self.failed_scenarios.add(scenario)
             for message in test.findall("failure/message"):
                 text = message.text or ""
                 if self.kind == "host" and len(text) <= 256:

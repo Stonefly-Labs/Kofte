@@ -13,6 +13,37 @@ resolves that blocker and resumes the original implement stage. The later
 adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
 
+## Continued implementation: identify the failing public scenario safely
+
+The published keyboard-audit repair is `4691c16`. Repeated hosted privacy
+reports identify only the five-row theory method, not which public scenario
+failed. The verifier now projects a scenario only when the failed test's exact
+source-known method/display name matches a closed catalog entry. An actual
+ten-case native report confirmed xUnit's escaped argument framing. Passed
+cases, unknown tests/scenarios, extra arguments and trailing private text are
+excluded. Existing isolated-child report validation independently checks the
+same catalog; no raw display name or new free-text field is retained.
+
+At `4691c16` plus this diagnostic correction, pinned SDK selected:
+
+| Exact executed command | Actual result |
+| --- | --- |
+| `python3 -m unittest scripts.tests.test_verify.VerifyTests.test_failed_identity_scenario_retains_only_exact_known_theory_arguments scripts.tests.test_failure_propagation.FailurePropagationTests.test_native_failure_evidence_is_allowlisted_again_inside_isolated_baselines -v` | Initial projection regression fails for the missing scenario; final two pass, including isolated-report rejection of unknown/duplicate values. |
+| `python3 scripts/verify.py --suite quality` | Passed 21 steps, 32.909s; `quality-none-dd23036dbcd245bd86408f81e2ba694c.json`. |
+| `python3 scripts/check_repository.py` | Passed. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed 151 cases, 5.625s. |
+| `git diff --check` | Passed. |
+
+The completed `ce2af5f` isolated propagation attempt
+`failure-propagation-none-cc7a3a2014914fb29a8421ffeee950a4.json`
+fails the PostgreSQL baseline after 666.449s, not an aggregate timeout:
+`PostgresIdentityKeyTests.KeyFailureCannotRepairItselfOrReplaceConsumedAuthority`
+expects an initial 303 but receives 503. Storage (211 cases) and composition
+(59 cases) pass in that same baseline; fault injections are not admitted.
+The separate complete PostgreSQL integration passes in 684.278s,
+`integration-postgres-cebf2a566ce240d9b2985c005c9e663c.json`.
+No budget cause or whole-stage success is inferred from that independent pass.
+
 ## Continued implementation: wait for the keyboard audit's actual control
 
 The upstream repair is published as `ce2af5f`; its exact Linux

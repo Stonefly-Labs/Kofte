@@ -104,6 +104,10 @@ wait for the actual control before pressing Tab, without requiring enablement
 of intentionally ARIA-disabled loading controls. The hosted public privacy
 recipe still fails transport-capture completeness. These separate boundaries
 do not complete T092-T100.
+Native failure reports now retain only exact source-known/catalogued scenario
+arguments, independently revalidated in isolated reports. The latest isolated
+PostgreSQL propagation baseline fails an initial login 303/503 assertion rather
+than timing out; passing independent integrations do not diagnose that failure.
 
 For focused Linux browser diagnostics on a published task branch, run
 `gh workflow run product-checks.yml --ref feature/005-authentication-bootstrap -f suite=browser`.

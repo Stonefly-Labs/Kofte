@@ -106,6 +106,10 @@ for the actual control before testing Tab focus, preserving intentionally
 ARIA-disabled loading controls. Hosted public privacy still fails transport
 completeness; no full-gate pass is claimed. See the
 [current evidence](specs/005-authentication-bootstrap/implementation.md#continued-implementation-wait-for-the-keyboard-audits-actual-control).
+Safe failure reports now distinguish exact catalogued public scenarios within
+failed native theories, without retaining private arguments. The latest isolated
+propagation baseline fails an initial login 303/503 assertion, not its aggregate
+timeout; its storage/composition selections pass and injections remain unrun.
 
 ### Historical implementation increments
 

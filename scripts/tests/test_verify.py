@@ -8,6 +8,7 @@ import subprocess
 import tempfile
 import unittest
 from unittest.mock import Mock, patch
+import xml.etree.ElementTree as ET
 
 from scripts import verify
 
@@ -492,6 +493,35 @@ class VerifyTests(unittest.TestCase):
         self.assertNotIn("credential", runner.report.path.read_text())
         self.assertEqual(set(), diagnostic.failed_tests)
         self.assertEqual(set(), diagnostic.sources)
+
+    def test_failed_identity_scenario_retains_only_exact_known_theory_arguments(self):
+        name = ("Kofte.Platform.ContractTests.Identity.SqliteIdentityPrivacyGuideTests."
+                "ActualIdentityJourneysRequireTheirPrivateCapturedEvidence")
+        owner, method = name.rsplit(".", 1)
+        diagnostic = verify.command_diagnostics([
+            "dotnet", "test", "--project", "tests/contract/Kofte.Platform.ContractTests",
+        ])
+        root = ET.Element("assemblies")
+        for result, selected_owner, display in (
+            ("Fail", owner, name + '(scenario: \\"session-boundary\\")'),
+            ("Pass", owner, name + '(scenario: \\"oidc-login\\")'),
+            ("Fail", "unknown", name + '(scenario: \\"private-evidence\\")'),
+            ("Fail", owner, name + '(scenario: \\"credential-canary\\")'),
+            ("Fail", owner, name + '(scenario: \\"oidc-login\\", value: \\"credential-canary\\")'),
+            ("Fail", owner, name + '(scenario: \\"oidc-login\\") credential-canary'),
+        ):
+            ET.SubElement(root, "test", type=selected_owner, method=method,
+                          result=result, name=display)
+        path = self.root / "storage.xml"
+        ET.ElementTree(root).write(path)
+        diagnostic.read_storage_report(path)
+        self.assertEqual({
+            "failedContractTests": [name],
+            "contractFailureScenarios": ["session-boundary"],
+        }, diagnostic.safe_fields())
+        self.assertNotIn("credential-canary", json.dumps(vars(diagnostic), default=str))
+        diagnostic.clear()
+        self.assertEqual({}, diagnostic.safe_fields())
 
     def test_successful_browser_command_never_publishes_failure_diagnostics(self):
         report = self.report("browser")

@@ -578,7 +578,8 @@ def command_diagnostics(command):
             *codes, *("storage_" + re.sub(r"(?<!^)(?=[A-Z])", "_", code).lower() for code in codes),
             "composition_consumer_failed", "composition_consumer_output_limit", "composition_consumer_result_invalid",
             *composition_codes, *identity_codes,
-        ), tests, scenarios=(*COMPOSITION_OBSERVATIONS, "all"), source_lines=source_lines)
+        ), tests, scenarios=(*COMPOSITION_OBSERVATIONS, *IDENTITY_SCENARIOS, "all"),
+            source_lines=source_lines)
     return None
 
 
