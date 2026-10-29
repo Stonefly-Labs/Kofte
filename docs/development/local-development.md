@@ -1,5 +1,21 @@
 # Local bootstrap development
 
+**Current identity workflow:** Spec 005 remains implement/running, not accepted.
+Use its [runtime guide](../../specs/005-authentication-bootstrap/quickstart.md)
+and [operator-v1 contract](../../specs/005-authentication-bootstrap/contracts/operator-v1.md)
+for exact configuration/private files and delivered stopped commands.
+Initialize an empty store, explicitly upgrade its registry and run
+`--identity prepare` while stopped before `scripts/dev.py`; the supervisor
+never initializes, upgrades or repairs identity/key custody. Local Development
+uses explicit configured synthetic selection, without Docker or a real IdP.
+Production OIDC needs exact HTTPS/public-origin trust, private client-secret
+delivery and retained protected keys; an unsafe-exposure switch is not a bypass.
+The named browser suite now also exercises actual PostgreSQL identity failures:
+use `python3 scripts/verify.py --suite browser --disposable-postgres`.
+This verification dependency does not make Docker a local-development dependency.
+Earlier numbered-feature/checkpoint evidence below is historical; current
+commands are not a claim that the final local/CI matrix passes.
+
 **Status:** Spec 001 implementation is complete. Local SQLite/host/web,
 owned PostgreSQL verification, guarded store recovery and generated Development
 OpenAPI and fixture-owning named verification have final local/CI evidence and
@@ -1021,6 +1037,21 @@ their three-second connection/query limits; product acquisition, lifecycle and
 probe deadlines are unchanged. A controlled pause of an owned disposable
 service exercises this distinction without retries or shared-service mutation.
 
+Ordinary fixtures may share an assembly-owned server, never a database or role.
+Each resource owns a maximum-one-connection administration data source for
+system-database queries and closes it before cleanup or an ownership refusal.
+Target-database and exported connections remain unpooled. The real two-scope
+regression verifies that disposing one removes its administration backend,
+database and roles without closing the other's backend.
+
+The verifier limits independently scheduled provider fixture collections to
+at most four, or the reported logical CPU count when smaller. This bounds
+competing native fixture processes; it does not reduce contenders within a
+test, skip cases, reorder provider phases or extend application/test deadlines.
+The unavailable-PostgreSQL failure exercise reuses the same three serial
+phase commands. It requires all three exact ordered nonzero command failures;
+an omitted phase, substituted selector, missing tool or timeout is not proof.
+
 The registry's twenty-round, ten-connection/process contention tests run in an
 exclusive xUnit collection. Their intended ten-way workload is unchanged, but
 unrelated hosted lifecycle fixtures do not compete with that benchmark's fixed
@@ -1098,7 +1129,7 @@ python3 scripts/verify.py --suite integration --provider sqlite
 python3 scripts/verify.py --suite integration --provider postgres --disposable-postgres
 python3 scripts/verify.py --suite recovery --provider both --disposable-postgres
 python3 scripts/verify.py --suite contract --provider both --disposable-postgres
-python3 scripts/verify.py --suite browser
+python3 scripts/verify.py --suite browser --disposable-postgres
 python3 scripts/verify.py --suite privacy --provider both --disposable-postgres
 python3 scripts/verify.py --suite startup --warm-starts 10
 python3 scripts/verify.py --suite failure-propagation --disposable-postgres
@@ -1142,8 +1173,8 @@ identity exchanges.
 | integration, each provider | `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore -c Release --filter-trait Provider=PROVIDER --minimum-expected-tests 1`                                                                             |
 | recovery, each provider    | Same integration project with `--filter-query "/[(Suite=recovery)&(Provider=PROVIDER)]" --minimum-expected-tests 1`, then `npm run test --workspace tests/e2e -- recovery.spec.ts --workers=1 --output PRIVATE_DIRECTORY`             |
 | contract, each provider    | Same integration project with `--filter-class "*OpenApiTests" --filter-trait Provider=PROVIDER --minimum-expected-tests 1`, then `npm run test --workspace tests/contract -- --no-file-parallelism bootstrap.test.ts adapter.test.ts` |
-| browser                    | `npm run test --workspace tests/e2e -- accessibility.spec.ts bootstrap.spec.ts recovery.spec.ts` against owned SQLite; one configured worker                                                                                          |
-| privacy, each provider     | `npm run test --workspace tests/contract -- --no-file-parallelism privacy.test.ts`; E2E `privacy.spec.ts --workers=1 --output PRIVATE_DIRECTORY`; then `python3 scripts/run_python_tests.py --pattern test_dev_output.py`             |
+| browser                    | All required E2E specs, including `identity.spec.ts`, against owned SQLite; then actual native identity failure/correction journeys on SQLite and owned PostgreSQL. Requires `--disposable-postgres`; one browser worker. |
+| privacy, each provider     | Existing provider storage/public captures, actual identity privacy guide journeys and native callback-failure browser captures; HTTP `privacy.test.ts`, E2E `privacy.spec.ts`, and `python3 scripts/run_python_tests.py --pattern test_dev_output.py`. |
 | startup                    | `npm run test --workspace tests/e2e -- startup.spec.ts --output tests/e2e/test-results/verify-startup-UUID`, with `BOOTSTRAP_WARM_STARTS` set to the requested 2-10 cycles                                                            |
 | failure-propagation        | `tests/integration/tooling/test_failure_propagation.py` exercises the actual wrapper in an isolated no-hardlinks checkout, never the working checkout                                                                                 |
 

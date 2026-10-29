@@ -13,6 +13,94 @@ public abstract class IdentityFailureTests
     private CancellationToken Token => TestContext.Current.CancellationToken;
 
     [Theory]
+    [InlineData("login")]
+    [InlineData("current")]
+    [InlineData("sign_out")]
+    [InlineData("enrollment")]
+    public async Task ActualLockedOrPausedStoreRefusesEveryIdentityOperationAndCorrectionPreservesAuthority(
+        string operation)
+    {
+        await using var fixture = await LoginCommitFixture.CreateAsync(Provider, Token,
+            productRoutes: true, sharePostgres: false);
+        await LoginAsync(fixture);
+        var authorization = operation == "enrollment" ? await fixture.NominateProductAsync(Token) : null;
+        var csrf = await fixture.ProductContextAsync(Token);
+        var before = await fixture.SnapshotAsync(Token);
+        var bootstrap = await fixture.BootstrapAsync(Token);
+        var providerRequests = fixture.ProductProviderRequests;
+        using var request = operation switch
+        {
+            "login" => fixture.ProductLoginRequest("/identity", csrf),
+            "current" => new(HttpMethod.Get, "/api/identity/v1/me"),
+            "sign_out" => new(HttpMethod.Post, "/api/identity/v1/sign-out"),
+            "enrollment" => Enrollment(fixture, csrf, authorization),
+            _ => throw new InvalidOperationException("identity_failure_operation_invalid")
+        };
+        if (operation == "sign_out")
+        {
+            request.Headers.Add("Origin", fixture.PublicOrigin.OriginalString);
+            request.Headers.Add("X-Kofte-CSRF", csrf);
+        }
+        await using (await fixture.InterruptProductStoreAsync(Token))
+        {
+            var elapsed = Stopwatch.StartNew();
+            using var unavailable = await fixture.SendProductAsync(request, Token);
+            await RequireUnavailableAsync(unavailable);
+            Assert.True(elapsed.Elapsed < TimeSpan.FromSeconds(2));
+        }
+        var after = await fixture.SnapshotAsync(Token);
+        Assert.Equal(before.Users, after.Users);
+        Assert.Equal(before.Mappings, after.Mappings);
+        Assert.Equal(before.Events, after.Events);
+        Assert.Equal(before.Attempts, after.Attempts);
+        Assert.Equal(before.Sessions.Select(row => (row.Digest, row.UserId, row.State, row.LastSeenAt)),
+            after.Sessions.Select(row => (row.Digest, row.UserId, row.State, row.LastSeenAt)));
+        Assert.Equal(bootstrap, await fixture.BootstrapAsync(Token));
+        Assert.Equal(providerRequests, fixture.ProductProviderRequests);
+        using var currentRequest = new HttpRequestMessage(HttpMethod.Get, "/api/identity/v1/me");
+        using var corrected = await fixture.SendProductAsync(currentRequest, Token);
+        Assert.Equal(HttpStatusCode.OK, corrected.StatusCode);
+        Assert.Equal(bootstrap, await fixture.BootstrapAsync(Token));
+    }
+
+    [Theory]
+    [InlineData(LoginCommitFault.BeforeCommit, false)]
+    [InlineData(LoginCommitFault.AfterCommit, true)]
+    public async Task ActualProductLoginCommitRefusalNeverAcknowledgesSuccessAndExplicitRetryKeepsOneMapping(
+        LoginCommitFault fault, bool committed)
+    {
+        await using var fixture = await LoginCommitFixture.CreateProductAsync(Provider, Token);
+        using var request = fixture.ProductLoginRequest("/identity", await fixture.ProductContextAsync(Token));
+        using var start = await fixture.SendProductAsync(request, Token);
+        Assert.Equal(HttpStatusCode.SeeOther, start.StatusCode);
+        var before = await fixture.SnapshotAsync(Token);
+        fixture.SetProductLoginFault(fault);
+        var elapsed = Stopwatch.StartNew();
+        using (var unavailable = await fixture.CompleteProductAsync(start, Token))
+            await RequireUnavailableAsync(unavailable);
+        Assert.True(elapsed.Elapsed < TimeSpan.FromSeconds(5));
+        fixture.SetProductLoginFault(LoginCommitFault.None);
+        var refused = await fixture.SnapshotAsync(Token);
+        Assert.Equal(committed ? 1 : 0, refused.Users.Count);
+        Assert.Equal(committed ? 1 : 0, refused.Mappings.Count);
+        Assert.Equal(committed ? 1 : 0, refused.Sessions.Count);
+        Assert.Equal(committed ? "consumed" : "pending", Assert.Single(refused.Attempts).State);
+        Assert.Equal(before.BootstrapState, refused.BootstrapState);
+        using (var anonymousRequest = new HttpRequestMessage(HttpMethod.Get, "/api/identity/v1/me"))
+        using (var anonymous = await fixture.SendProductAsync(anonymousRequest, Token))
+            Assert.Equal(HttpStatusCode.Unauthorized, anonymous.StatusCode);
+        await LoginAsync(fixture);
+        var corrected = await fixture.SnapshotAsync(Token);
+        Assert.Single(corrected.Users);
+        Assert.Single(corrected.Mappings);
+        Assert.Single(corrected.Events, row => row.Code == "user_created");
+        Assert.Equal(committed ? 2 : 1, corrected.Events.Count(row => row.Code == "session_created"));
+        Assert.Equal(before.BootstrapState, corrected.BootstrapState);
+        Assert.DoesNotContain(corrected.Events, row => row.Code == "initial_administrator_enrolled");
+        if (committed) Assert.Equal(Assert.Single(refused.Users).Id, Assert.Single(corrected.Users).Id);
+    }
+
+    [Theory]
     [InlineData(false)]
     [InlineData(true)]
     public async Task LostStoreAuthorityOrCorruptTicketCannotServeAWarmedIdentityAndNeedsExplicitCorrection(
@@ -151,11 +239,11 @@ public abstract class IdentityFailureTests
         Assert.Equal(303, (int)response.StatusCode);
     }
 
-    private static HttpRequestMessage Enrollment(LoginCommitFixture fixture, string csrf)
+    private static HttpRequestMessage Enrollment(LoginCommitFixture fixture, string csrf, string? authorization = null)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, "/api/identity/v1/first-administrator")
         {
-            Content = JsonContent.Create(new { authorization = new string('A', 43) })
+            Content = JsonContent.Create(new { authorization = authorization ?? new string('A', 43) })
         };
         request.Headers.Add("Origin", fixture.PublicOrigin.OriginalString);
         request.Headers.Add("X-Kofte-CSRF", csrf);

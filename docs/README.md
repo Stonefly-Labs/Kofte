@@ -14,7 +14,13 @@ The [technology-stack exploration](kofte-technology-stack-architecture.md) is hi
 
 ## Working in the repository
 
-**Current Spec Kit checkpoint: 005 / implement running, T001–T040 complete (40/100).**
+**Current Spec Kit checkpoint: 005 / implement running, T001–T088 complete (88/100).**
+The [runtime guide](../specs/005-authentication-bootstrap/quickstart.md) covers
+delivered sign-in, enrollment, session/Development and stopped operator commands.
+All three public operational recipes now pass on both providers; complete
+privacy/accessibility, public-catalog and local/assessed-head CI gates remain
+in progress. Focused passes do not erase failed full gates.
+The detailed US1 increments below are historical.
 The [implementation evidence](../specs/005-authentication-bootstrap/implementation.md)
 records reviewed OIDC adoption (403 npm / 87 NuGet), independent HTTPS/process
 fixtures and corpora, strict configuration/public actor-v1, and both-provider
@@ -80,7 +86,7 @@ passes with concrete coverage of all 29 requirements/outcomes and 22 scenarios,
 100 mapped unchecked tasks, 242 acyclic dependency edges and no actionable or
 constitutional finding at the historical analysis checkpoint.
 Specification, planning artifacts, approved ADR and both reviewed checklists
-remain unchanged; the current implementation markers are T001–T040.
+remain unchanged; the current implementation markers are T001–T088.
 The historical design checkpoint did not introduce runtime proof or acceptance;
 no intermediate merge is requested.
 See the [current workflow record](development/spec-workflow.md#invocation-and-current-progress).

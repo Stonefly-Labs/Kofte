@@ -1,7 +1,7 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement in progress; 80/100 complete (T001-T079 and T087); both-provider strengthened session/browser stories, complete HTTP/Development corpus, generated contracts, upgrade preservation and stopped bounded maintenance evidenced; recovery/reconciliation and final evidence unfinished.
-**Stage / date:** implement, 2026-10-26; continued 2026-10-28.
+**Result:** implement paused at a human-requested context checkpoint; 88/100 complete (T001-T088); both-provider strengthened session/browser stories, complete HTTP/Development corpus, generated contracts, recovery/quarantine, actual key/preparation, failure/capacity, stopped bounded maintenance and three public operational recipes evidenced; complete privacy/accessibility, public-catalog and final evidence unfinished.
+**Stage / date:** implement, 2026-10-26; continued 2026-10-29.
 **Assessed baseline:** `6df9eebdcfa6b273126b0c51c272d1b2c2f953e6`.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
 `specs/005-authentication-bootstrap`.
@@ -11,7 +11,433 @@ The initial blocked assessment below is retained as history. The
 [source-provenance follow-up](#t002-follow-up-source-provenance-resolved)
 resolves that blocker and resumes the original implement stage. The later
 adoption and setup sections record the actual code increments; authentication
-is not yet wired or accepted.
+is now wired but feature 005 is not accepted.
+
+## Context-clear checkpoint: resume implement
+
+The human explicitly requested a resumable checkpoint on 2026-10-29 UTC.
+This pauses work; it does **not** complete implement or require a new design
+approval. The ledger records the pause as `blocked` with an actionable resume
+note. **T001-T088 remain checked; T089-T100 remain unchecked.**
+
+After clearing context, invoke **`/drive-speckit`**. Resume this same
+`feature/005-authentication-bootstrap` branch and existing draft PR #8, not
+main, a new branch, a replacement PR or another numbered feature. Read this
+checkpoint, the newer execution details below and `tasks.md`, verify Git/PR
+ownership, and use the driver's `resume --branch
+feature/005-authentication-bootstrap`. Set
+`SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap` explicitly on
+every downstream command. Do not rerun specify/plan or infer implementation
+completion from the existing artifacts.
+
+Remaining work, in order:
+
+1. Finish strict actual browser/privacy/accessibility proof. The existing
+   callback fact now passes on SQLite and owned PostgreSQL, including confirmed
+   close protocol; all 24 Node cases pass. The complete SQLite guides still
+   fail with `identity_scenario_development_line_23` and
+   `identity_consumer_failed`, without a finer browser phase. Start with the
+   new inherited fact
+   `IdentityBrowserFailureTests.RealDevelopmentSelectionAndSignOutRequirePrivateBrowserAndTransportEvidence`
+   on SQLite and PostgreSQL: it compiles in the checkpoint quality build but
+   has **not** executed. Preserve primary/disposal errors and owned private
+   recovery receipts; never weaken capture/ownership guards or use personal
+   browser profiles.
+2. Execute all nine public recipes individually plus `all` on each provider
+   through `IdentityGuideTests`; validate the exact catalog/observations and
+   the guide's literal `dotnet run ... --scenario all --provider sqlite`.
+   The three operational recipes already pass independently on both stores;
+   that is not complete-catalog evidence.
+3. Establish the full serial and nested PostgreSQL baseline within the original
+   900-second bounds. The complete 119-case host selection passes in 339.057s,
+   but the historical aggregate baseline remains failed. The unavailable-store
+   exercise now shares and strictly requires all three exact ordered failing
+   commands; its new 143-case Python proof is not actual propagation execution.
+4. Close T089-T096 only from their actual dependencies/evidence, run the exact
+   complete `python3 scripts/verify.py --suite all --disposable-postgres
+   --warm-starts 10` plus repository/Python/whitespace checks, observe assessed
+   CI, and finish T097-T100 traceability/publication. Preserve all historical
+   failures. No deadline, case minimum, contender count or suite is waived.
+
+Use the existing pinned local toolchain when needed:
+`DOTNET_ROOT="$PWD/artifacts/toolchain/dotnet-10.0.402"` with that directory
+prepended to `PATH`. No new package, provider account, personal secret or human
+merge is needed just to resume. Complete **only implement** when genuinely
+ready for converge; do not invoke converge, accept, mark the PR ready or request
+an intermediate merge.
+
+All retained agents are source-frozen; the browser native window is returned.
+No known owned command/server remains active. Failed-case private roots are
+intentionally preserved inactive receipts, not source to commit or directories
+to remove without their ownership proof. Resume does not depend on retaining
+agent IDs or this conversation.
+
+Final checkpoint checks:
+`python3 scripts/verify.py --suite quality` passes all 21 steps, including
+locked restores, full solution warnings-as-errors build/format, web
+build/lint/types/Prettier, generated contract and dependency review
+(`quality-none-b419cbad00fb427eb6dc35d262ff3039.json`, 43.068s).
+`python3 scripts/verify.py --suite unit` also passes all 16 steps, including
+the current host/platform/composition/web/contract suites, all 24 browser
+helper cases and 143 Python cases
+(`unit-none-4638337b3a184dbf840056b8de7cfabe.json`, 51.038s).
+The driver's real `Ledger.resume` also selects 005/implement/running in memory
+on the original branch without changing the saved paused ledger; this verifies
+the requested same-stage restart rather than merely the presence of files.
+Required repository/Python/whitespace checks
+pass independently (143 tests, 8.102s). These are targeted checkpoint results,
+not the unfinished complete gate or new-head CI.
+
+The latest browser reports are
+`identity-browser-confirmed-close-sqlite-sqlite-cdced3adeb974c82a5da5efb3d22a722.json`
+and
+`identity-browser-confirmed-close-pg-guides-both-324fad39e8d94f5490fd5115a17ddbb4.json`.
+The existing actual callback fact passes once per provider in 30.661s/30.662s,
+with the unchanged 45-second child limit. The PostgreSQL probe uses a verified
+owned local PostgreSQL 17.9 server; it is not an immutable-container-image run.
+Its zero database/role/client-backend inventory and server stop are verified.
+The same report remains **failed** because the complete ten-case SQLite guide
+selection fails in 317.853s with the Development codes above. PostgreSQL's
+complete guide selection is **unrun**, not passed. The new Development browser
+fact was added afterward and is compiled, not yet actual behavior evidence.
+
+## Continued implementation: closed diagnostics and current operational failures
+
+The following newer executions still assess the dirty worktree based on
+`203e0437e90011bf157d6927ddef639f257346d6`; they do not complete implement or
+replace any historical failed result. The public consumer and owning harness
+now share a finite failure codebook. Stopped-command failures retain only
+strictly parsed, known operation/event codes, never private child output.
+The verifier derives the corresponding finite operator, recipe and source-line
+codes from source, rejecting unknown commands and out-of-range lines.
+
+| Exact executed command / selection | Result |
+| --- | --- |
+| `dotnet build Kofte.slnx --no-restore -c Release -warnaserror` | Passed after compiling the shared codebook and latest browser projections. |
+| `dotnet test --project tests/unit/Kofte.Host.Tests --no-build --no-restore -c Release --filter-class '*IdentityBrowserFailureDiagnosticsTests' --minimum-expected-tests 9` | Passed 9, zero skipped. |
+| `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*IdentityConsumerHarnessTests' --minimum-expected-tests 77` | Passed 77, zero skipped. |
+| Same contract project with `--filter-class '*PostgresIdentityGuideTests' --filter-display-name '*upgrade-preservation*' --minimum-expected-tests 1` | Passed the actual PostgreSQL recipe, zero skipped, 40.345s. |
+| Same contract project with `--filter-class '*IdentityGuideTests' --filter-display-name '*interrupted-recovery*' --minimum-expected-tests 2` | Failed both providers, 91.897s; exact closed code `identity_fixture_browser_context_failed`. |
+| `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore -c Release --filter-query '/[(Suite=browser)&(Provider=sqlite)]' --minimum-expected-tests 1 --no-build` | Failed, 49.348s; `identity_browser_deadline_exceeded` at `identity_browser_stage_loading_signed_out_accessible`. The unchanged 45-second child limit is not relaxed. |
+| `python3 scripts/check_repository.py && python3 -m unittest discover -s scripts/tests -v && git diff --check` | Passed; 141 Python tests, 5.879s, including strict constructed-code/private-source projection. |
+| `npm run lint --workspaces --if-present && npm run typecheck --workspaces --if-present && npm run format:check` | All passed after the joined reader/diagnostic fixes. |
+
+Safe reports:
+`identity-closed-diagnostics-build-both-05634cba3a214023bdc4c5f3e6241309.json`
+and `identity-specific-failure-proof-both-bd075a959cff44499fceaa30cbbd9a71.json`.
+The latter is **failed**, despite the independent PostgreSQL upgrade success.
+Recovery and browser source investigations continue; T089-T100 remain open.
+
+The subsequent affected warnings-as-errors build and strict
+`interrupted-recovery` guide selections now pass independently: SQLite 1 case,
+zero skipped, 52.944s; PostgreSQL 1 case, zero skipped, 77.996s, retaining all
+13 ordered observations
+(`identity-recovery-stale-copy-both-573c4f0b6dfd410facf3e718ee95ba88.json`).
+The restored browser must first demonstrate refusal of its stale binding,
+then discard those browser cookies before a genuinely fresh login. The recipe
+also creates the verified quarantined copy before advancing the original,
+then reconciles it afterward; it does not weaken PostgreSQL's source-freshness
+guard. These corrections establish both actual restored-copy recipes, not
+the still-pending complete privacy/browser/public-catalog or final gates.
+
+The newer browser probes identify distinct real capture failures without
+relaxing the child deadline. The pinned Playwright `Response.finished()` can
+remain pending after `requestfailed`; reading through the existing bounded
+body path removes that hang. The client also now consumes the actual 401
+response before navigation, with three focused regressions and a rebuilt
+Next application. The initial capture then completes at 14.055s, but the
+next real `POST /identity` fetch aborts at 14.079s: Next's external Server
+Action redirect hard-navigates without consuming its body. Strict capture
+still refuses that unread response. Actual bounded upstream-body capture
+through the owned ingress is being implemented; there is no abort exemption
+or successful PostgreSQL/browser/transport claim.
+Relevant safe reports are
+`identity-browser-finished-fix-sqlite-886d7aaa141447219df99bf763987f10.json`
+and `identity-browser-completed-body-sqlite-b5894d7c47e34a43b539989d6cdffe4c.json`.
+The affected builds, eleven native diagnostic cases and seven Node cases
+pass; these are not a successful actual browser journey.
+
+The subsequent actual bounded ingress capture now passes the complete SQLite
+callback/scanner journey
+(`identity-action-ingress-proof-sqlite-e87d79c0c38e48d5912a1275a99a51d2.json`).
+PostgreSQL finishes capture at 17.288s but fails Chromium shutdown within the
+unchanged 45-second child limit
+(`identity-action-ingress-proof-postgres-2362af24aed442e5d92b2e5daa64db80c.json`).
+An unsuccessful pages-first shutdown experiment is reverted, not claimed as
+a fix. A guarded owned-process teardown now has four Node regressions; all
+21 capture/canary/action/ownership cases pass together with zero skipped.
+The verifier requires all four helper/unit sources and executes them in its
+existing named unit suite. The 73 focused verifier/failure-propagation tests
+also pass after that wiring. Native shutdown and complete public-guide proof
+remain in progress; source-only checks cannot close them.
+
+The subsequent owned-stop source check passes **22 Node cases**, including
+five ownership regressions, plus affected e2e lint/typecheck/Prettier and
+whitespace checks
+(`identity-browser-owned-stop-source-final-none-a5440060ca5b437b99fd0855db780a60.json`).
+The first actual SQLite owned-stop probe still fails its ownership guard;
+disposal also masked the primary failure as missing transport capture
+(`identity-browser-owned-stop-native-sqlite-sqlite-9947fba9ef8c472e89bd5adebea6a99f.json`).
+An isolated measured Chromium probe confirms that its command/title can change
+after termination while cleanup completes
+(`identity-browser-owned-chromium-guard-measured-none-f8db8f183e23473cbb20de3b6af56c4c.json`).
+The follow-up keeps changed-command processes unsignalled, verifies their exit
+passively, preserves primary and disposal failures, and retains private roots
+when cleanup is unverified. Fresh native callback and complete guide evidence
+for this latest source are still pending; neither process exit alone nor the
+source-only pass establishes a successful close protocol.
+
+The subsequent serial PostgreSQL baseline measurement also remains **failed**:
+`identity-postgres-baseline-profile-postgres-20e209162ed14b188092a146b1f4ab07.json`,
+1108.196s total. It uses the complete existing host, non-composition storage
+and composition integration selections with `--no-build`, preserving all
+selectors/minima and each 900-second command limit; it is not the nested
+900-second baseline or a passing complete gate.
+The host phase fails in 580.134s at
+`PostgresEnrollmentConcurrencyTests.TwentyEligibleHttpContendersCommitExactlyOneNomineeGenerationAndImmutableEvent`
+and
+`PostgresIdentityFailureTests.ActualProductLoginCommitRefusalNeverAcknowledgesSuccessAndExplicitRetryKeepsOneMapping`.
+Its closed evidence is
+`identity_fixture_child_readiness_transport_ConnectionError_owner_opened`
+and `expected_303_actual_503`.
+Non-composition storage fails in 390.871s at three
+`PostgresIdentityMappingTests` cases (native session/process/profile preservation,
+Unicode text limits and sequential trust changes) and
+`PostgresEnrollmentRestartTests.OriginalModuleDataAndConsumedDesignationSurviveRestartsPreparationAndUnavailableAdministrator`;
+the report retains `DeadlineExceeded` and exact source locations.
+Composition fails in 137.187s at
+`PostgresCompositionMigrationTests.AdditiveReleasePreservesEveryAssignmentAndOriginalOwnerSentinel`
+and
+`PostgresCompositionRecipeTests.TypedBusinessOperationsRefuseAnotherOwnersAcceptedBindingWithoutWriting`.
+No native selection passed, so the success-only per-class timing hook produced
+no class profile. These are current assertions requiring diagnosis, not an
+assumed CPU/cold-start cause or a waiver based on the earlier focused passes.
+
+Exact reproduction then identified one deterministic dependent-assertion bug:
+`EnrollmentRestartTests` still expected the old generic operator failure,
+although the shared codebook now preserves the precise consumed-nomination
+refusal. It now requires
+`identity_fixture_operator_bootstrap_authorize_bootstrap_authorize_identity_enrollment_unavailable`;
+the authority/state/module assertions are unchanged. Formatting, the affected
+warnings-as-errors build and that original restart test pass on **both
+providers**, zero skipped
+(`identity-closed-nomination-refusal-both-45e641baef78404c8ee35bc86a27b3f0.json`).
+The isolated host failures also pass all three selected cases, and a complete
+composition rerun passes 59 cases with safe per-class timing
+(`identity-pg-exact-host-repro-postgres-6c9f5914c1b54024881e6e79e2e3be44.json`,
+`identity-pg-composition-failure-profile-postgres-7fcd436bec0f4dd9ae6d42f2eb0791b9.json`).
+Those reruns do not establish the causes of the other aggregate failures or
+replace a passing complete gate. The actual pinned image is `linux/arm64`,
+not x64 emulation; the local engine reports 18 CPUs and 16,816,451,584 memory
+bytes. Neither observation establishes a performance root cause.
+
+A further complete PostgreSQL host selection runs 119 actual cases in
+415.952s but still fails three:
+`PostgresIdentityKeyTests.ActualDatabaseRecoverySetDoesNotContainSeparatelyRetainedKeyCustody`
+at its enrollment `expected_200_actual_503`,
+`PostgresEnrollmentTests.EnrollmentChecksCurrentCeremonyAndExactNomineeWithoutReopeningHistory`
+and
+`PostgresIdentityFailureTests.LostStoreAuthorityOrCorruptTicketCannotServeAWarmedIdentityAndNeedsExplicitCorrection`.
+The latter two retain `identity_fixture_browser_context_failed`.
+The failure-safe profile records class times and closed exception types
+without raw XML/messages
+(`identity-pg-complete-host-profile-postgres-bd406c1c110f4e97adc457c597fed26a.json`).
+Its 29 OIDC-budget cases sum to 352.720s; 17 enrollment cases to 259.891s;
+10 actual-failure cases to 216.118s; six key cases to 202.963s.
+These class sums overlap and are not additive wall-clock phases. Different
+failing cases and a lower elapsed time do not establish an environmental
+cause or a successful baseline.
+
+The fixture-only administration change uses an independently owned,
+one-connection `NpgsqlDataSource` per resource for system-database queries,
+instead of repeating physical administration authentication for each setup
+statement. It closes before cleanup/refusal checks; target-database, runtime
+and provisioner connections remain unpooled. There is no global pool or
+changed query, role, durability setting, selector, deadline or minimum.
+The existing real two-scope cleanup test now also requires both administration
+backends before disposal, then the first absent and the second still present.
+The affected format, complete warnings-as-errors solution build, real
+`PostgresScopeTests` case and all four existing `PostgresOwnershipTests` pass
+(`identity-owned-administration-postgres-f46a07af0416424f960da52e552e782b.json`).
+That includes actual backend disposal/isolation, ownership refusals and the
+assembly's zero-borrower/no-leftover-backend check, not just connection counts.
+This is not a diagnosed cause or a passing aggregate performance result.
+Current required repository/whitespace checks and all 141 Python cases pass,
+7.724s. The subsequent complete host measurement with the same provider/source
+selections and four concurrent fixture collections **passes all 119 cases**,
+zero skipped, 339.057s
+(`identity-pg-bounded-host-profile-postgres-514d1411de304b74869844d9bd90ae1c.json`).
+The application deadlines and twenty-way contenders inside their test are
+unchanged. The verifier now caps independent provider fixture collections at
+four, never above the reported logical CPU count; unknown CPU count uses one.
+The unavailable-PostgreSQL propagation exercise reuses this exact command
+builder, preserving the browser-suite exclusion and scheduling options instead
+of a stale hand-maintained expected command. Repository/whitespace checks and
+all **142 Python tests** then pass, 6.085s, including CPU-bound/selector/minimum
+regression coverage. This passing host profile does not replace the required
+complete serial/nested baseline or diagnose every historical failure.
+
+Source review then identifies a second tightly coupled propagation mismatch:
+the integration suite deliberately executes all three serial phases after a
+native failure, while the unavailable-PostgreSQL exercise previously required
+exactly one failed phase. The suite and exercise now share the unchanged
+three-command builder. Only that injection explicitly requires all three
+ordered failures, each with its exact command, nonzero exit, `command_failed`
+and valid correlation. Other injections still require exactly their single
+expected failure; missing/extra/reordered phases, substituted commands,
+missing tools and timeouts are rejected. All **143 Python tests** and required
+repository/whitespace checks pass, 9.273s. Actual complete failure-propagation
+execution remains required; this source regression is not its result.
+
+## Continued implementation: actual failures, legacy binary and capture inventories
+
+The following are focused executions on the dirty feature worktree based on
+`203e0437e90011bf157d6927ddef639f257346d6`, not a newly assessed published head
+or a passing complete gate. The implement/running ledger is unchanged.
+T080-T082 are now closed against the delivered recovery source and actual
+both-provider recovery CI on `203e0437e90011bf157d6927ddef639f257346d6`:
+[recovery job 122936525187](https://github.com/Stonefly-Labs/Kofte/actions/runs/40722399761/job/122936525187),
+whose success was independently re-observed. The enclosing run failed; this
+is evidence for the specific recovery tasks, not a complete-gate pass.
+Current full PostgreSQL storage and actual accepted-old-binary results below
+add independent current-worktree proof. The subsequent complete host recovery
+selection below closes T083-T085; actual failure/capacity evidence then closes
+T086/T088. T089-T100 remain open.
+
+| Exact executed command / selection | Result |
+| --- | --- |
+| `dotnet build Kofte.slnx --no-restore -c Release -warnaserror` | Passed after joining operations, actual failure, strict capture and legacy-host sources. |
+| `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-build --no-restore -c Release --filter-class '*SqliteIdentityFailureTests' --minimum-expected-tests 10` | Passed 10, zero skipped; 69.983s. |
+| Same command with `'*PostgresIdentityFailureTests'` and `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true` | Passed 10, zero skipped; 124.820s, actual pinned owned image. |
+| `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*IdentityConsumerHarnessTests' --minimum-expected-tests 40` | Passed 40, zero skipped; 4.129s. |
+| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --filter-method '*ActualAcceptedPreIdentityBinaryRefusesFormatTwoServingAndUpgradeWithoutChangingAnyState' --minimum-expected-tests 2` with disposable PostgreSQL admission | Passed both providers, zero skipped; 10.904s. |
+| Same storage project with `--filter-class '*PostgresScopeTests' --minimum-expected-tests 1` | Passed actual independent databases/roles, borrower cleanup and owned-image archive; 5.720s. |
+| `python3 -m unittest scripts.tests.test_verify scripts.tests.test_failure_propagation -v` | Passed 72 tests including named suite routing, nested positive-evidence bounds, safe timeout diagnostics and exact ordered scenario inventory. |
+| `npm run dependencies:check` and `npm run contract:check` | Both passed; no new external package/pin/notice or generated-contract drift. |
+| `python3 scripts/check_repository.py && python3 -m unittest discover -s scripts/tests -v && git diff --check` | Passed; 140 Python tests, 5.131s. Later source/task edits still require final checks. |
+
+Safe reports:
+`identity-failure-boundaries-both-7fefc448564d4af9a65dede1235c50c7.json`,
+`identity-legacy-and-capture-both-0919353da74c4e9d8002ba73ba04c732.json`
+(build/40 negatives pass; initial legacy selection fails),
+`identity-legacy-refusal-both-5ecfc41d40b84461988e6e418ed5ee10.json`,
+and `identity-final-dependencies-none-ae6f2690da1b41cfa5edcf6c90a5b411.json`.
+The initial legacy failure was an actual fixture admission bug: PostgreSQL
+serving received the maintenance-only provisioning environment variable, which
+the immutable older parser rightly rejects. Serving now receives runtime
+configuration only; maintenance alone receives provisioning authority.
+The corrected test builds the actual accepted `3e416813233c9d291eb20cf72d5882dbddf3e1b6`
+source in an owned private root with locked dependencies, executes both serving
+and registry upgrade against real format-2 state, requires `storage_invalid`
+and compares exact security snapshot, allocation/history/revision and populated
+module values. It does not substitute copied compatibility logic.
+
+The new failure cases lock the actual SQLite database or pause a dedicated
+owned PostgreSQL server for login, current identity, sign-out and enrollment.
+Each returns private bounded 503, makes no provider request or durable change,
+and recovers only after explicit correction. Real before-/after-login-commit
+refusals never acknowledge a new cookie; fresh explicit login retains one
+user/mapping and the exact durable event history.
+
+Verification now requires identity source/scanner/project inventories, zero
+native skips/failures and source-known class presence before deleting private
+XML. Named contract gates require all ten standalone/aggregate guide rows per
+provider; named browser/privacy gates include actual native identity journeys.
+Actual Next stdout/stderr, bounded useful ingress-access records and .NET
+diagnostics are scanned against privately delivered browser canaries and then
+discarded; this capture implementation still awaits successful actual browser
+execution. Development has no ingress component: its new path requires the two
+actual Next/.NET channels; production still requires all three. This latest
+Development extension and its extra strict-scanner theory row now compile and
+pass the focused negatives; the actual Development browser remains unproved.
+Successful capture deletes its private canary file and discards
+buffers/XML; unverified browser ownership still retains its private profile
+rather than risking deletion of a live process's state.
+
+The full non-composition PostgreSQL storage rerun **still failed**
+at 900.061s:
+`integration-postgres-e29610fa36744a198a093b5134ee50c3.json`.
+It does not establish a new assertion or explain earlier hosted failures.
+Server reuse alone is not claimed to fix the baseline. Ownership discovery
+now uses bounded, project-filtered Docker API reads on the already admitted
+local Unix socket, retaining exact project/run labels and resource-ID checks;
+CLI lifecycle/tools are pinned to that same endpoint. Its scope/archive proof
+passes. The subsequent full non-composition storage rerun now **passes 212
+tests, zero skipped and eleven required identity classes in 832.601s**:
+`identity-engine-storage-postgres-9eb5a21a3fcc4305865e2bb0299e03b3.json`.
+Its exact command is the earlier full storage selection plus
+`--long-running 15 --output Detailed --show-test-results all`; those diagnostic
+options do not change selection or deadlines. This is not the complete
+host/storage/composition baseline or a replacement for the historical timeout.
+A remaining repeated dedicated-server factory was found in the ordinary
+registry fixture; its change to independent databases on the assembly-owned
+server now passes the complete 19-case PostgreSQL registry namespace in
+135.839s. Whole-server outage/native/external fixtures stay dedicated.
+
+### T083-T088: actual keys, preparation, recovery, failures and capacity
+
+`identity-key-preparation-registry-both-60ede811e8eb4f739fca282f4b560458.json`
+passes in 357.547s, with all private native results checked before disposal:
+
+| Exact executed selection | Passed / skipped | Seconds |
+| --- | --- | --- |
+| `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release --filter-class '*IdentityConsumerHarnessTests' --minimum-expected-tests 41` | 41 / 0 | 4.213 |
+| `dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --filter-namespace Kofte.Storage.IntegrationTests.Registry --filter-trait Provider=postgres --minimum-expected-tests 10` | 19 / 0 | 135.839 |
+| `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore -c Release --filter-query '/[(Suite=recovery)&(Provider=sqlite)]' --minimum-expected-tests 1 --no-build` | 50 / 0; both required key/preparation classes | 77.082 |
+| Same host recovery command with `Provider=postgres` and disposable owned-image admission | 42 / 0; both required key/preparation classes | 140.410 |
+
+T083 now has actual both-provider key loss/foreign/undecryptable refusal,
+retained-key/certificate overlap, client-secret correction and consumed actor
+preservation. T084's delivered tests are
+`tests/integration/Kofte.Host.IntegrationTests/Identity/IdentityPreparationTests.cs`,
+not the planned storage-project filename. They exercise actual worker
+termination at commit and key owner/material/inventory/ready boundaries,
+including empty/half-flushed owned inventory; only explicit owned retries
+complete. Existing stopped authority/lease/deadline/worker/cleanup safeguards
+remain in the executed recovery selection and accepted foundation coverage.
+No budget or authority release rule changes.
+
+T085 combines actual both-provider complete-set/quarantine/decision recovery
+CI on `203e043`, current host recovery above, full PostgreSQL storage and the
+actual accepted-old-binary refusal regression. T086's ten real-store failure
+cases per provider are recorded above; no new cause is assigned to historical
+hosted 503 failures. T088 uses the actual 57-case SQLite and 57-case pinned-image
+PostgreSQL capacity/admission/event runs
+(`t088-capacity-sqlite-a5862721bf504cacacca1df60e8ca8a9.json`,
+`t088-capacity-postgres-75b3253dfc0f43b09bd247d25fa302be.json`) plus the current
+212-case PostgreSQL storage pass. These cover durable limits/reopen, warnings,
+retention/maintenance, checked overflow and mutation rollback, not only constants.
+
+The joined solution build and parent formatting pass in
+`identity-post-browser-window-both-a7ae6c09430349be947ed8dee7f9e7ef.json`.
+Two new closed browser-failure diagnostic regressions and their solution build
+also pass in `identity-public-operations-both-6afa97ea816f4881bcc117d7dc6080bd.json`.
+That report **fails** the first actual public `upgrade-preservation` selection
+on both providers (`identity_consumer_failed`, 74.141s). The other two recipes
+were not run by that fail-fast command. T091/T094 remain open; compilable
+recipes are not executed proof. Actual Chromium profile trust now has a
+passing isolated proof, but the latest actual callback journey still fails;
+T089/T090 and the complete local/assessed-head CI gates remain unfinished.
+
+The subsequent coherent build and 43-case strict harness pass in
+`identity-browser-and-operations-both-8d245071b5ed45fcbcf77ca08a34b50a.json`.
+Its actual callbacks fail on both providers at the accessible loading/signed-out
+boundary with `identity_browser_privacy_capture_failed` (39.698s SQLite,
+77.139s PostgreSQL). This is not a trusted-TLS refusal: the closed profile phase
+records an observed browser owner. The public SQLite upgrade and both-provider
+`private-evidence` now pass; PostgreSQL upgrade and both `interrupted-recovery`
+cases still fail. The new operator/consumer codebook mismatch was confirmed to
+hide useful stopped-child errors; diagnostic correction remains in progress.
+No remaining operational recipe is claimed complete from compilation alone.
+
+Current frontend checks: all-workspace TypeScript and 154 web unit tests pass.
+The first joined lint/format run failed on the new privacy cleanup code;
+after correction, e2e ESLint, full Prettier verification and all four actual
+Node reader regression tests pass. These reader tests are now required in the
+named unit suite. The strict C# failure projection gains seven additional
+primary/capture coexistence cases, still awaiting its next native rebuild.
+Two focused Python source-projection/unit-routing regressions pass; the full
+updated Python/repository/whitespace checks remain required before publication.
 
 ## T001: prerequisites and integration boundaries
 

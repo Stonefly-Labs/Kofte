@@ -4,6 +4,8 @@ using System.Text.Json;
 using Kofte.Host.Bootstrap;
 using Npgsql;
 
+[assembly: Xunit.AssemblyFixture(typeof(Kofte.TestSupport.PostgresAssemblyFixture))]
+
 namespace Kofte.Host.IntegrationTests;
 
 public static class FixtureProgram

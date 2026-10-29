@@ -100,6 +100,7 @@ public abstract class IdentityAttemptTests
     [Theory]
     [InlineData(-1)]
     [InlineData(300_000)]
+    [InlineData(300_001)]
     public async Task LocalLifetimeRejectsBeforeCreationAndAtTheExactFiveMinuteExpiry(int milliseconds)
     {
         await using var fixture = await AdmissionFixture.CreateAsync(Provider, Token);

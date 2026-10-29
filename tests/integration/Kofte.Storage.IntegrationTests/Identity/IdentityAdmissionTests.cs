@@ -120,11 +120,14 @@ public abstract class IdentityAdmissionTests
     {
         await using var fixture = await AdmissionFixture.CreateAsync(Provider, Token);
         await fixture.ExecuteAsync("UPDATE {0}__kofte_identity_metadata SET security_revision=@maximum",
-            ("maximum", long.MaxValue));
+            ("maximum", long.MaxValue - 1));
+        await fixture.AdmitAsync(Now, new IdentityAdmissionRequest(IdentityAdmissionCategory.LoginBrowser, Key));
+        Assert.Equal(long.MaxValue, (await fixture.MetadataAsync()).Revision);
         await Assert.ThrowsAsync<OverflowException>(() =>
             fixture.AdmitAsync(Now, new IdentityAdmissionRequest(IdentityAdmissionCategory.LoginBrowser, Key)));
         Assert.Equal(long.MaxValue, (await fixture.MetadataAsync()).Revision);
-        Assert.Equal(0L, await fixture.ScalarAsync("SELECT COUNT(*) FROM {0}__kofte_identity_admission"));
+        Assert.Equal(1L, await fixture.ScalarAsync("SELECT COUNT(*) FROM {0}__kofte_identity_admission"));
+        Assert.Equal(1L, await fixture.ScalarAsync("SELECT count FROM {0}__kofte_identity_admission"));
         Assert.Equal(0L, await fixture.ScalarAsync("SELECT registry_revision FROM {0}__kofte_installation"));
     }
 

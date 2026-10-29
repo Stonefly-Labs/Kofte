@@ -473,10 +473,17 @@ not one passing provider job. PR #7 is now human-merged; its accepted ledger
 and all five acceptance artifact hashes were verified on updated main before
 005 began. Historical failed checks and undiagnosed causes remain unchanged.
 
-**005 / implement is running after T001–T040, not a completed feature**, on
+**005 / implement is running after T001–T088 (88/100), not a completed feature**, on
 `feature/005-authentication-bootstrap`. The
 [implementation checkpoint](../specs/005-authentication-bootstrap/implementation.md)
-retains the source/signature investigation and records the adopted maintained
+retains exact results and historical failures. The
+[runtime guide](../specs/005-authentication-bootstrap/quickstart.md) now describes
+delivered OIDC/Development sessions, nomination and stopped recovery commands.
+Designation does not grant module permissions; 006–009/022–024 remain future
+work. The three public operational recipes now pass on both providers; complete
+privacy/accessibility, public-catalog and final evidence are unfinished.
+The earlier implementation increments below retain the source/signature
+investigation and record the adopted maintained
 OIDC dependency, independent test issuer/ownership/corpora, strict static
 configuration and public actor-v1. Actor identity is immutable and carries
 no credential, database handle or permission grant. Parsing admits only the

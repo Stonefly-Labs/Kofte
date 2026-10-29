@@ -19,7 +19,8 @@ class VerifyTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory(dir=base)
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name).resolve()
-        for name in (*verify.PLATFORM_REQUIRED_FILES, *verify.STORAGE_REQUIRED_FILES, *verify.COMPOSITION_REQUIRED_FILES):
+        for name in (*verify.PLATFORM_REQUIRED_FILES, *verify.STORAGE_REQUIRED_FILES,
+                     *verify.COMPOSITION_REQUIRED_FILES, *verify.IDENTITY_REQUIRED_FILES):
             path = self.root / name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text("required platform fixture")
@@ -27,7 +28,10 @@ class VerifyTests(unittest.TestCase):
             " ".join(json.dumps(name) for name in verify.STORAGE_SCENARIOS))
         (self.root / "tests/integration/Kofte.TestSupport/CompositionScenarioCatalog.cs").write_text(
             "\n".join(f'["{name}"] = Required()' for name in verify.COMPOSITION_OBSERVATIONS))
-        (self.root / "Kofte.slnx").write_text("\n".join(verify.COMPOSITION_REQUIRED_FILES))
+        (self.root / "tests/integration/Kofte.TestSupport/Identity/IdentityScenarioCatalog.cs").write_text(
+            " ".join(json.dumps(name) for name in verify.IDENTITY_SCENARIOS))
+        (self.root / "Kofte.slnx").write_text(
+            "\n".join((*verify.COMPOSITION_REQUIRED_FILES, *verify.IDENTITY_REQUIRED_FILES)))
         for workspace, scripts in verify.REQUIRED_SCRIPTS.items():
             path = self.root / workspace / "package.json"
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -87,6 +91,104 @@ class VerifyTests(unittest.TestCase):
             with self.subTest(name=name), self.assertRaisesRegex(verify.VerificationError, "command_failed"):
                 runner.command(name, ["python3", "-c", f"raise SystemExit({exit_code})"])
             self.assertEqual("failed", runner.report.data["steps"][-1]["outcome"])
+
+    def test_native_success_requires_actual_complete_non_skipped_results_before_private_cleanup(self):
+        diagnostic = verify.runtime_support.CommandDiagnostics("host")
+        for content, code in (
+            ("", "native_evidence_invalid"),
+            ("<assemblies />", "native_evidence_cases_missing"),
+            ('<assemblies><test result="Skip" /></assemblies>', "native_evidence_skipped"),
+            ('<assemblies><test result="Fail" /></assemblies>', "native_evidence_not_passed"),
+            ('<assemblies><test result="Pass" /><error /></assemblies>', "native_evidence_not_passed"),
+        ):
+            runner = verify.Runner(self.root, self.report(), {})
+            script = (
+                "import pathlib,sys; p=pathlib.Path(sys.argv[sys.argv.index('--results-directory')+1]);"
+                f"(p/'storage.xml').write_text({content!r})"
+            )
+            with self.subTest(code=code), self.assertRaisesRegex(verify.VerificationError, f"^{code}$"):
+                runner.command("native-evidence", ["python3", "-c", script], diagnostics=diagnostic)
+            self.assertFalse(any((self.root / "artifacts/verification/.private").iterdir()))
+        runner = verify.Runner(self.root, self.report(), {})
+        script = (
+            "import pathlib,sys; p=pathlib.Path(sys.argv[sys.argv.index('--results-directory')+1]);"
+            "(p/'storage.xml').write_text('<assemblies><test result=\"Pass\" /></assemblies>')"
+        )
+        runner.command("native-evidence", ["python3", "-c", script], diagnostics=diagnostic)
+        self.assertEqual({"passed": 1, "skipped": 0}, runner.report.data["steps"][-1]["nativeEvidence"])
+        self.assertFalse(any((self.root / "artifacts/verification/.private").iterdir()))
+
+    def test_native_success_cannot_satisfy_a_larger_required_case_inventory(self):
+        path = self.root / "storage.xml"
+        path.write_text('<assemblies><test result="Pass" /></assemblies>')
+        with self.assertRaisesRegex(verify.runtime_support.RuntimeFailure, "^native_evidence_cases_missing$"):
+            verify.runtime_support.CommandDiagnostics("host").native_success(path, 2)
+
+    def test_native_timeout_retains_known_prior_failure_without_disclosing_private_xml(self):
+        name = sorted(verify.command_diagnostics(
+            ["dotnet", "test", "--project", verify.STORAGE_INTEGRATION]).tests)[0]
+        owner, method = name.rsplit(".", 1)
+        diagnostic = verify.runtime_support.CommandDiagnostics("storage", ["Unavailable"], [name])
+        xml = (
+            f'<assemblies><test type="{owner}" method="{method}" result="Fail">'
+            '<failure><message>StorageException: Unavailable credential-canary</message></failure>'
+            '</test></assemblies>'
+        )
+        script = (
+            "import pathlib,sys,time; p=pathlib.Path(sys.argv[sys.argv.index('--results-directory')+1]);"
+            f"(p/'storage.xml').write_text({xml!r}); time.sleep(30)"
+        )
+        runner = verify.Runner(self.root, self.report(), {})
+        with self.assertRaisesRegex(verify.VerificationError, "^command_timeout$"):
+            runner.command("native-timeout", ["python3", "-c", script],
+                           diagnostics=diagnostic, timeout=1)
+        step = runner.report.data["steps"][-1]
+        self.assertEqual([name], step["failedStorageTests"])
+        self.assertEqual(["Unavailable"], step["storageFailureCodes"])
+        self.assertNotIn("credential-canary", runner.report.path.read_text())
+        self.assertFalse(any((self.root / "artifacts/verification/.private").iterdir()))
+
+    def test_native_success_cannot_omit_a_required_identity_class_behind_retained_passes(self):
+        path = self.root / "storage.xml"
+        diagnostic = verify.runtime_support.CommandDiagnostics("host")
+        path.write_text('<assemblies><test type="RetainedTests" result="Pass" /></assemblies>')
+        with self.assertRaisesRegex(verify.runtime_support.RuntimeFailure,
+                                    "^native_evidence_required_case_missing$"):
+            diagnostic.native_success(path, 1, ("IdentityFailureTests",))
+        path.write_text('<assemblies><test type="Kofte.Host.IdentityFailureTests" result="Pass" /></assemblies>')
+        self.assertEqual({"passed": 1, "skipped": 0, "requiredClasses": 1},
+                         diagnostic.native_success(path, 1, ("IdentityFailureTests",)))
+
+    def test_identity_inventory_requires_sources_scanners_scenarios_and_solution_build_edge(self):
+        verify.identity_inventory(self.root)
+        for name in verify.IDENTITY_REQUIRED_FILES:
+            path = self.root / name
+            original = path.read_text()
+            path.unlink()
+            runner = verify.Runner(self.root, self.report(), {})
+            with self.subTest(name=name), patch.object(runner, "versions") as versions, \
+                    self.assertRaisesRegex(verify.VerificationError, "^identity_target_missing$"):
+                verify.execute_suite(runner, "unit", None, Mock())
+            versions.assert_not_called()
+            path.write_text(original)
+        catalog = self.root / "tests/integration/Kofte.TestSupport/Identity/IdentityScenarioCatalog.cs"
+        catalog.write_text(catalog.read_text().replace('"private-evidence"', '"omitted"'))
+        with self.assertRaisesRegex(verify.VerificationError, "^identity_scenario_missing$"):
+            verify.identity_inventory(self.root)
+        for scenarios in (
+            (*verify.IDENTITY_SCENARIOS, "unexpected-identity"),
+            (*verify.IDENTITY_SCENARIOS, verify.IDENTITY_SCENARIOS[0]),
+            tuple(reversed(verify.IDENTITY_SCENARIOS)),
+        ):
+            catalog.write_text(" ".join(json.dumps(name) for name in scenarios))
+            with self.assertRaisesRegex(verify.VerificationError, "^identity_scenario_missing$"):
+                verify.identity_inventory(self.root)
+        catalog.write_text(" ".join(json.dumps(name) for name in verify.IDENTITY_SCENARIOS))
+        solution = self.root / "Kofte.slnx"
+        solution.write_text(solution.read_text().replace(
+            "tests/contract/Kofte.Identity.Consumer/Kofte.Identity.Consumer.csproj", "omitted"))
+        with self.assertRaisesRegex(verify.VerificationError, "^identity_build_target_missing$"):
+            verify.identity_inventory(self.root)
 
     def test_independent_integration_projects_run_after_a_failed_child_but_the_suite_still_fails(self):
         for code in ("command_failed", "command_timeout"):
@@ -226,6 +328,16 @@ class VerifyTests(unittest.TestCase):
                 self.assertNotIn("--filter-class", focused)
                 self.assertNotIn("--filter-trait", focused)
                 self.assertEqual(focused, verify.safe_command(focused))
+
+    def test_native_fixture_parallelism_is_bounded_without_changing_provider_or_case_minimum(self):
+        for cpus, threads in ((None, "1"), (1, "1"), (2, "2"), (18, "4")):
+            with self.subTest(cpus=cpus), patch.object(verify.os, "cpu_count", return_value=cpus):
+                command = verify.integration_command("postgres")
+                index = command.index("--max-threads")
+                self.assertEqual(threads, command[index + 1])
+                self.assertIn("Provider=postgres", command)
+                self.assertIn("Suite=browser", command)
+                self.assertEqual(["--minimum-expected-tests", "1"], command[-2:])
 
     def test_actual_child_failure_is_named_nonzero_and_output_is_not_saved(self):
         memory_bytes = verify.os.sysconf("SC_PHYS_PAGES") * verify.os.sysconf("SC_PAGE_SIZE")
@@ -455,6 +567,66 @@ class VerifyTests(unittest.TestCase):
         self.assertNotIn("credential", runner.report.path.read_text())
         self.assertEqual(set(), diagnostic.failed_tests)
 
+    def test_identity_recipe_failure_keeps_known_consumer_source_not_private_exception(self):
+        runner = verify.Runner(self.root, self.report("contract"), {})
+        diagnostic = verify.command_diagnostics([
+            "dotnet", "test", "--project", "tests/contract/Kofte.Platform.ContractTests",
+        ])
+        owner = "Kofte.Platform.ContractTests.Identity.SqliteIdentityGuideTests"
+        method = "DeliveredRecipeRequiresEveryExactOrderedObservation"
+        source = "tests/contract/Kofte.Identity.Consumer/Scenarios/OperationsScenarios.cs"
+        xml = (
+            f'<assemblies><test type="{owner}" method="{method}" result="Fail">'
+            '<failure><message>identity_consumer_failed credential-canary '
+            'identity_fixture_operator_prepare_prepare_identity_keys_invalid '
+            'identity_fixture_operator_private_actor_prepare_identity_keys_invalid '
+            'identity_scenario_operations_line_1 identity_scenario_operations_line_999999</message>'
+            f'<stack-trace>at Execute in /private/credential-canary/{source}:line 1'
+            '</stack-trace></failure></test></assemblies>'
+        )
+        script = (
+            "import sys; from pathlib import Path; "
+            "directory=Path(sys.argv[sys.argv.index('--results-directory')+1]); "
+            f"(directory/'storage.xml').write_text({xml!r}); sys.exit(2)"
+        )
+        with self.assertRaisesRegex(verify.VerificationError, "command_failed"):
+            runner.command("identity-public-upgrade", ["python3", "-c", script],
+                           diagnostics=diagnostic)
+        step = runner.report.data["steps"][-1]
+        self.assertEqual([f"{source}:1"], step["contractFailureLocations"])
+        self.assertEqual(["identity_consumer_failed",
+                          "identity_fixture_operator_prepare_prepare_identity_keys_invalid",
+                          "identity_scenario_operations_line_1"], step["contractFailureCodes"])
+        self.assertNotIn("credential", runner.report.path.read_text())
+        self.assertNotIn("private_actor", runner.report.path.read_text())
+        self.assertFalse(list((self.root / "artifacts/verification/.private").rglob("storage.xml")))
+
+    def test_failed_public_recipe_retains_only_its_closed_assertion_and_scenario(self):
+        runner = verify.Runner(self.root, self.report("contract"), {})
+        diagnostic = verify.command_diagnostics([
+            "dotnet", "run", "--project", "tests/contract/Kofte.Composition.Consumer",
+        ])
+        self.assertIsNotNone(diagnostic)
+        event = {
+            "schemaVersion": 1, "eventCode": "composition_test_timeout_changed_original_installation",
+            "attempt": "a" * 32, "provider": "postgres", "scenario": "bounded-stop",
+            "status": "failed", "assertions": 0,
+        }
+        unrelated = dict(event, eventCode="credential-canary", scenario="credential-canary")
+        script = (
+            f"print({json.dumps(event)!r}); print({json.dumps(unrelated)!r}); "
+            "print('/private/credential-canary'); raise SystemExit(1)"
+        )
+        with self.assertRaisesRegex(verify.VerificationError, "command_failed"):
+            runner.command("composition-guide-postgres-bounded-stop", ["python3", "-c", script],
+                           diagnostics=diagnostic)
+        step = runner.report.data["steps"][-1]
+        self.assertEqual(["composition_test_timeout_changed_original_installation"],
+                         step["consumerFailureCodes"])
+        self.assertEqual(["bounded-stop"], step["consumerFailureScenarios"])
+        self.assertNotIn("credential", runner.report.path.read_text())
+        self.assertEqual(set(), diagnostic.storage_codes)
+
     def test_missing_tool_and_timeout_fail_instead_of_skipping(self):
         report = self.report()
         runner = verify.Runner(self.root, report, {})
@@ -574,6 +746,12 @@ class VerifyTests(unittest.TestCase):
         self.assertEqual(["--minimum-expected-tests", "1"], platform.args[1][-2:])
         self.assertNotIn("--if-present", platform.args[1])
         self.assertTrue(any(call.args[0] == "host-unit" for call in command.call_args_list))
+        capture = next(call for call in command.call_args_list
+                       if call.args[0] == "identity-browser-capture-unit")
+        self.assertEqual(["node", "--test", "tests/e2e/identityPrivacyCapture.unit.ts",
+                          "tests/e2e/identityCanaryExport.unit.ts",
+                          "tests/e2e/identityActionCapture.unit.ts",
+                          "tests/e2e/identityBrowserOwnership.unit.ts"], capture.args[1])
 
     def test_platform_child_failure_and_timeout_preserve_safe_named_failure(self):
         for name, command, timeout, code in (
@@ -736,6 +914,16 @@ class VerifyTests(unittest.TestCase):
                     self.assertTrue(call.kwargs["environment"]["BOOTSTRAP_PRIVACY_CANARY"])
             if suite == "privacy":
                 guide.assert_not_called()
+                for provider, prefix in (("sqlite", "Sqlite"), ("postgres", "Postgres")):
+                    browser = next(call for call in command.call_args_list
+                                   if call.args[0] == f"identity-privacy-browser-native-{provider}")
+                    self.assertIn(f"/[(Suite=browser)&(Provider={provider})]", browser.args[1])
+                    self.assertEqual((prefix + "IdentityBrowserFailureTests",),
+                                     verify.required_native_classes(browser.args[0], browser.args[1]))
+                    recipes = next(call for call in command.call_args_list
+                                   if call.args[0] == f"storage-public-privacy-{provider}")
+                    self.assertEqual((prefix + "IdentityPrivacyGuideTests",),
+                                     verify.required_native_classes(recipes.args[0], recipes.args[1]))
                 capture = next(call for call in command.call_args_list
                                if call.args[0] == "privacy-supervisor-capture")
                 self.assertIn("scripts/run_python_tests.py", capture.args[1])
@@ -747,6 +935,15 @@ class VerifyTests(unittest.TestCase):
                     [call.args[:2] for call in guide.call_args_list])
                 public = next(call for call in command.call_args_list
                               if call.args[0] == "platform-public-contracts")
+                self.assertIn("*IdentityGuideTests", public.args[1])
+                self.assertIn("*IdentityPrivacyGuideTests", public.args[1])
+                for provider, prefix in (("sqlite", "Sqlite"), ("postgres", "Postgres")):
+                    recipes = next(call for call in command.call_args_list
+                                   if call.args[0] == f"identity-public-guides-{provider}")
+                    self.assertIn("*" + prefix + "IdentityGuideTests", recipes.args[1])
+                    self.assertEqual(["--minimum-expected-tests", "10"], recipes.args[1][-2:])
+                    self.assertEqual((prefix + "IdentityGuideTests",),
+                                     verify.required_native_classes(recipes.args[0], recipes.args[1]))
                 self.assertEqual(["--minimum-expected-tests", "1"], public.args[1][-2:])
                 self.assertEqual("true", public.kwargs["environment"]["KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE"])
                 author = next(i for i, call in enumerate(command.call_args_list)
@@ -809,7 +1006,8 @@ class VerifyTests(unittest.TestCase):
         directory.mkdir(parents=True, exist_ok=True)
         for name in ("bootstrap.spec.ts", "recovery.spec.ts", "startup.spec.ts", "privacy.spec.ts"):
             (directory / name).write_text("isolated selector fixture")
-        self.assertEqual(["bootstrap.spec.ts", "recovery.spec.ts"], verify.browser_specs(self.root))
+        self.assertEqual(["bootstrap.spec.ts", "identity.spec.ts", "recovery.spec.ts"],
+                         verify.browser_specs(self.root))
 
     def test_postgres_pause_requires_the_matching_real_fixture_acknowledgment(self):
         runner = verify.Runner(self.root, self.report(), {})

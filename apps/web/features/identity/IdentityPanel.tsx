@@ -152,9 +152,15 @@ export function IdentityPanel({
         <>
           {state.notice && (
             <p role="alert">
-              {state.notice.cancelled
-                ? "Sign-in was cancelled. You can try again."
-                : "Sign-in could not be completed. Correct the cause, then try again."}
+              {
+                {
+                  cancelled: "Sign-in was cancelled. You can try again.",
+                  failed:
+                    "Sign-in could not be completed. Correct the cause, then try again.",
+                  unavailable:
+                    "Sign-in is unavailable. Correct the connection or configuration, then retry the identity check.",
+                }[state.notice.outcome]
+              }
               {state.notice.correlationId && (
                 <> Reference: {state.notice.correlationId}</>
               )}
@@ -238,7 +244,11 @@ export function IdentityPanel({
       )}
       <Button
         type="button"
-        onClick={retry}
+        onClick={() => {
+          setLoginFailure(undefined);
+          setEnrollmentNotice(undefined);
+          retry();
+        }}
         aria-label="Retry identity check"
         aria-disabled={state.kind === "loading"}
       >

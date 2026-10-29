@@ -83,6 +83,49 @@ it("announces refusal without retaining the secret, discovering nominees or retr
   expect(fetcher).toHaveBeenCalledTimes(1);
 });
 
+it.each([
+  [
+    400,
+    "identity_request_invalid",
+    "Check the operator-provided authorization",
+  ],
+  [403, "identity_forbidden", "Retry the identity check"],
+  [409, "identity_enrollment_unavailable", "Ask your operator"],
+  [429, "identity_admission_exceeded", "Wait before trying enrollment again"],
+] as const)(
+  "offers scoped correction for a real %s refusal and associates it with the cleared entry",
+  async (status, code, guidance) => {
+    const fetcher = vi.fn().mockResolvedValue(
+      Response.json(
+        {
+          type: `urn:kofte:problem:${code}`,
+          status,
+          code,
+          correlationId: "c".repeat(32),
+          detail: "private-provider-detail",
+        },
+        { status },
+      ),
+    );
+    vi.stubGlobal("fetch", fetcher);
+    const view = form();
+    fireEvent.change(view.input, { target: { value: "A".repeat(43) } });
+    fireEvent.submit(view.form);
+    await act(async () => {});
+    const alert = screen.getByRole("alert");
+    expect(alert.textContent).toContain(guidance);
+    expect(view.input.getAttribute("aria-describedby")?.split(" ")).toContain(
+      alert.id,
+    );
+    expect(view.input.getAttribute("aria-invalid")).toBe("true");
+    expect(document.activeElement).toBe(view.input);
+    expect(view.input.value).toBe("");
+    expect(view.container.textContent).not.toContain("private-provider-detail");
+    expect(view.onRefresh).not.toHaveBeenCalled();
+    expect(fetcher).toHaveBeenCalledTimes(1);
+  },
+);
+
 it("allows only one submission in flight and requests fresh identity after a lost reply", async () => {
   let reject: (error: Error) => void = () => {};
   const fetcher = vi.fn(

@@ -42,9 +42,9 @@ jobs:
           - name: contract
             arguments: --suite contract --provider both --disposable-postgres
             postgres: true
-            browser: false
+            browser: true
           - name: browser
-            arguments: --suite browser
+            arguments: --suite browser --disposable-postgres
             postgres: true
             browser: true
           - name: privacy

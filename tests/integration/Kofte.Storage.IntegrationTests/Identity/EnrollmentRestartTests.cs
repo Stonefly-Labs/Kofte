@@ -97,7 +97,8 @@ public abstract class EnrollmentRestartTests
         await AssertClosedAsync();
         var refusedReplacement = await Assert.ThrowsAsync<InvalidOperationException>(
             () => fixture.NominateProductAsync(Token));
-        Assert.Equal("identity_fixture_operator_failed", refusedReplacement.Message);
+        Assert.Equal("identity_fixture_operator_bootstrap_authorize_bootstrap_authorize_" +
+            "identity_enrollment_unavailable", refusedReplacement.Message);
         Assert.Equal(consumed, await fixture.BootstrapAsync(Token));
         Assert.Equal(enrollment, Assert.Single((await fixture.SnapshotAsync(Token)).Events,
             value => value.Code == "initial_administrator_enrolled"));

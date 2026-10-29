@@ -103,6 +103,13 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.0.13, )"
         }
       },
+      "kofte.storage.consumer": {
+        "type": "Project",
+        "dependencies": {
+          "Kofte.Infrastructure": "[1.0.0, )",
+          "Kofte.TestSupport": "[1.0.0, )"
+        }
+      },
       "kofte.testsupport": {
         "type": "Project",
         "dependencies": {

@@ -78,8 +78,8 @@ public abstract class IdentityEventTests
     public async Task ExactCapacitiesWarnAtNinetyPercentAndRefuseWithoutCommittingEarlierEffects()
     {
         await using var fixture = await AdmissionFixture.CreateAsync(Provider, Token);
-        await fixture.SeedEventsAsync(899_999, session: false, Now.AddDays(-1));
-        await fixture.SeedEventsAsync(179_999, session: true, Now.AddDays(-1));
+        await fixture.SeedEventsAsync(899_998, session: false, Now.AddDays(-1));
+        await fixture.SeedEventsAsync(179_998, session: true, Now.AddDays(-1));
         var originalError = Console.Error;
         using var capture = new StringWriter(CultureInfo.InvariantCulture);
         try
@@ -87,10 +87,13 @@ public abstract class IdentityEventTests
             Console.SetError(capture);
             await RecordAsync(fixture, IdentityEventCode.KeysPrepared);
             await RecordAsync(fixture, IdentityEventCode.SessionCreated);
+            Assert.DoesNotContain("identity_event_capacity_warning", capture.ToString(), StringComparison.Ordinal);
+            await RecordAsync(fixture, IdentityEventCode.KeysPrepared);
+            await RecordAsync(fixture, IdentityEventCode.SessionCreated);
         }
         finally { Console.SetError(originalError); }
         var records = capture.ToString().Split('\n', StringSplitOptions.RemoveEmptyEntries);
-        Assert.Equal(4, records.Length);
+        Assert.Equal(6, records.Length);
         var warnings = 0;
         foreach (var line in records)
         {
@@ -107,9 +110,11 @@ public abstract class IdentityEventTests
             await Assert.ThrowsAsync<IOException>(() => RecordAsync(fixture, IdentityEventCode.KeysPrepared));
         }
         finally { Console.SetError(originalError); }
-        Assert.Equal(2, (await fixture.MetadataAsync()).Revision);
-        await fixture.SeedEventsAsync(100_000, session: false, Now.AddDays(-1), offset: 899_999);
-        await fixture.SeedEventsAsync(20_000, session: true, Now.AddDays(-1), offset: 179_999);
+        Assert.Equal(4, (await fixture.MetadataAsync()).Revision);
+        await fixture.SeedEventsAsync(99_999, session: false, Now.AddDays(-1), offset: 899_998);
+        await fixture.SeedEventsAsync(19_999, session: true, Now.AddDays(-1), offset: 179_998);
+        await RecordAsync(fixture, IdentityEventCode.KeysPrepared);
+        await RecordAsync(fixture, IdentityEventCode.SessionCreated);
         foreach (var code in new[] { IdentityEventCode.UserCreated, IdentityEventCode.SessionCreated })
         {
             using var budget = new OperationBudget(TimeSpan.FromSeconds(1), Token);
@@ -128,7 +133,7 @@ public abstract class IdentityEventTests
 
         Assert.Equal(1_200_000L, await fixture.ScalarAsync("SELECT COUNT(*) FROM {0}__kofte_identity_events"));
         Assert.Equal(0L, await fixture.ScalarAsync("SELECT COUNT(*) FROM {0}__kofte_users"));
-        Assert.Equal(2, (await fixture.MetadataAsync()).Revision);
+        Assert.Equal(6, (await fixture.MetadataAsync()).Revision);
     }
 
     private async Task<IdentityEventReceipt> RecordAsync(AdmissionFixture fixture, IdentityEventCode code, Guid? user = null)

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Text;
 using System.Text.Json;
 using Kofte.Host.Features.IdentityMaintenance;
@@ -138,6 +139,123 @@ public sealed class IdentityDiagnosticsTests
         observation.Dispose();
         Assert.Equal(1, attempts);
         Assert.Null(Diagnostics.Current);
+    }
+
+    [Theory]
+    [InlineData("sqlite")]
+    [InlineData("postgresql")]
+    public void ActualPhaseWarningAndMetricSinksStayBoundedAndNeverAcquireCallerIdentity(string provider)
+    {
+        var records = new List<IdentityDiagnosticRecord>();
+        var spans = new List<Activity>();
+        var measurements = new List<(long Value, KeyValuePair<string, object?>[] Tags)>();
+        var canary = "private-" + Guid.NewGuid().ToString("N");
+        string? correlation = null;
+        using var listener = new ActivityListener
+        {
+            ShouldListenTo = source => source.Name == "Kofte.Identity",
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllData,
+            ActivityStopped = activity =>
+            {
+                if (activity.TraceId.ToHexString() == correlation) spans.Add(activity);
+            }
+        };
+        ActivitySource.AddActivityListener(listener);
+        using var meter = new MeterListener();
+        meter.InstrumentPublished = (instrument, owner) =>
+        {
+            if (instrument.Meter.Name == "Kofte.Identity" &&
+                instrument.Name == "kofte.identity.operations") owner.EnableMeasurementEvents(instrument);
+        };
+        meter.SetMeasurementEventCallback<long>((_, value, tags, _) =>
+        {
+            if (Diagnostics.Current?.CorrelationId == correlation) measurements.Add((value, tags.ToArray()));
+        });
+        meter.Start();
+        using var caller = new Activity("private caller").AddBaggage("subject", canary)
+            .SetTag("cookie", canary).Start();
+        using (var observation = Diagnostics.Begin(IdentityAction.Callback, "oidc", provider,
+            TimeSpan.FromSeconds(4), TestContext.Current.CancellationToken, records.Add))
+        {
+            correlation = observation.CorrelationId;
+            for (var index = 0; index < 32; index++) Diagnostics.Checkpoint("login_before_commit");
+            Assert.Throws<InvalidOperationException>(() => Diagnostics.Checkpoint("login_before_commit"));
+            for (var index = 0; index < 8; index++) observation.Warning("session");
+            Assert.Throws<InvalidOperationException>(() => observation.Warning("session"));
+            observation.PossibleCommit();
+            observation.Fail(new IOException(canary));
+        }
+        Assert.Equal(9, records.Count);
+        Assert.All(records, record =>
+        {
+            var bytes = Diagnostics.Serialize(record);
+            Assert.InRange(bytes.Length, 1, 1024);
+            Assert.DoesNotContain(canary, Encoding.UTF8.GetString(bytes), StringComparison.Ordinal);
+            Assert.Equal(correlation, record.CorrelationId);
+        });
+        Assert.Equal(("identity_unavailable", "uncertain", "retry_explicitly"),
+            (records[^1].EventCode, records[^1].Durability, records[^1].Guidance));
+        Assert.Equal(33, spans.Count);
+        Assert.All(spans, span =>
+        {
+            Assert.Empty(span.Baggage);
+            Assert.DoesNotContain(canary, JsonSerializer.Serialize(span.TagObjects), StringComparison.Ordinal);
+        });
+        var measurement = Assert.Single(measurements);
+        Assert.Equal(1, measurement.Value);
+        Assert.Equal(new[]
+        {
+            new KeyValuePair<string, object?>("operation", "callback"),
+            new("mode", "oidc"), new("provider", provider), new("outcome", "unavailable")
+        }, measurement.Tags);
+        Assert.DoesNotContain(canary, JsonSerializer.Serialize(measurement.Tags), StringComparison.Ordinal);
+        Assert.Null(Diagnostics.Current);
+    }
+
+    [Fact]
+    public void ActualRejectedTerminalSinkEmitsNoSuccessfulTraceOrCounterAndRestoresItsParent()
+    {
+        var spans = new List<Activity>();
+        var measurements = 0;
+        var records = new List<IdentityDiagnosticRecord>();
+        using var parent = Diagnostics.Begin(IdentityAction.Current, "oidc", "sqlite",
+            TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken, records.Add);
+        string? correlation = null;
+        using var listener = new ActivityListener
+        {
+            ShouldListenTo = source => source.Name == "Kofte.Identity",
+            Sample = (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllData,
+            ActivityStopped = activity =>
+            {
+                if (activity.TraceId.ToHexString() == correlation) spans.Add(activity);
+            }
+        };
+        ActivitySource.AddActivityListener(listener);
+        using var meter = new MeterListener();
+        meter.InstrumentPublished = (instrument, owner) =>
+        {
+            if (instrument.Meter.Name == "Kofte.Identity") owner.EnableMeasurementEvents(instrument);
+        };
+        meter.SetMeasurementEventCallback<long>((_, _, _, _) =>
+        {
+            if (Diagnostics.Current?.CorrelationId == correlation) measurements++;
+        });
+        meter.Start();
+        var writes = 0;
+        using var observation = Diagnostics.Begin(IdentityAction.Enrollment, "oidc", "sqlite",
+            TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken, _ =>
+            {
+                writes++;
+                throw new IOException("private-terminal-sink-failed");
+            });
+        correlation = observation.CorrelationId;
+        observation.Committed();
+        Assert.Throws<IOException>(() => observation.Publish(IdentityDiagnosticOutcome.Ready));
+        observation.Dispose();
+        Assert.Equal(1, writes);
+        Assert.Empty(spans);
+        Assert.Equal(0, measurements);
+        Assert.Same(parent, Diagnostics.Current);
     }
 
     [Fact]

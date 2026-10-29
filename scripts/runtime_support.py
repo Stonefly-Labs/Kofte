@@ -82,7 +82,12 @@ class CommandDiagnostics:
         self.closed = False
 
     def inspect(self, line):
-        if self.kind == "browser":
+        if self.kind == "consumer":
+            try:
+                self.read_composition_output(line.decode("utf-8"))
+            except UnicodeError:
+                return
+        elif self.kind == "browser":
             found = [b":".join(match.groups()).decode("ascii")
                      for match in self.locations.finditer(line)]
             with self.lock:
@@ -181,6 +186,32 @@ class CommandDiagnostics:
         if not self.failed_tests:
             self.storage_report_code = "no_known_failure"
 
+    def native_success(self, path, minimum, required_classes=()):
+        try:
+            with path.open("rb") as stream:
+                content = stream.read(16 * 1024 * 1024 + 1)
+            if len(content) > 16 * 1024 * 1024:
+                raise RuntimeFailure("native_evidence_too_large")
+            report = ET.fromstring(content)
+        except OSError as error:
+            raise RuntimeFailure("native_evidence_missing") from error
+        except ET.ParseError as error:
+            raise RuntimeFailure("native_evidence_invalid") from error
+        tests = list(report.iter("test"))
+        if len(tests) < minimum:
+            raise RuntimeFailure("native_evidence_cases_missing")
+        if any(test.get("result") == "Skip" for test in tests):
+            raise RuntimeFailure("native_evidence_skipped")
+        if any(test.get("result") != "Pass" for test in tests) or next(report.iter("error"), None) is not None:
+            raise RuntimeFailure("native_evidence_not_passed")
+        observed_classes = {test.get("type", "").rsplit(".", 1)[-1] for test in tests}
+        if not set(required_classes).issubset(observed_classes):
+            raise RuntimeFailure("native_evidence_required_case_missing")
+        return {
+            "passed": len(tests), "skipped": 0,
+            **({"requiredClasses": len(required_classes)} if required_classes else {}),
+        }
+
     def valid_native_location(self, value):
         if not isinstance(value, str):
             return False
@@ -224,7 +255,7 @@ class CommandDiagnostics:
                 return {"sourceLocations": sorted(self.sources)}
             if self.kind == "dependency" and len(self.dependency_codes) == 1:
                 return {"dependencyFailureCode": next(iter(self.dependency_codes))}
-            if self.kind in ("host", "storage", "contract"):
+            if self.kind in ("host", "storage", "contract", "consumer"):
                 prefix = self.kind
                 return {
                     **({f"failed{prefix.title()}Tests": sorted(self.failed_tests)} if self.failed_tests else {}),

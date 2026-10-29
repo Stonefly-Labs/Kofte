@@ -252,6 +252,33 @@ it("announces a bounded sign-in refusal without retrying the mutation", async ()
   expect(fetcher).toHaveBeenCalledTimes(2);
 });
 
+it("clears a stale start failure on deliberate verification without resubmitting or losing keyboard focus", async () => {
+  vi.mocked(startLogin).mockResolvedValue({
+    kind: "failed",
+    correlationId: "a".repeat(32),
+  });
+  const { container } = render(<IdentityPanel />);
+  await settle();
+  fireEvent.submit(container.querySelector("form")!);
+  await settle();
+  expect(screen.getByRole("alert").textContent).toContain(
+    "could not be started",
+  );
+  token = "corrected-browser-context";
+  const retry = screen.getByRole("button", { name: "Retry identity check" });
+  retry.focus();
+  fireEvent.click(retry);
+  await settle();
+  expect(screen.queryByRole("alert")).toBeNull();
+  expect(
+    document.querySelector<HTMLInputElement>(
+      'input[name="__RequestVerificationToken"]',
+    )!.value,
+  ).toBe(token);
+  expect(document.activeElement).toBe(retry);
+  expect(startLogin).toHaveBeenCalledTimes(1);
+});
+
 it("disables repeated submissions until the user-directed sign-in returns", async () => {
   let finish: (value: { kind: "failed" }) => void = () => {};
   vi.mocked(startLogin).mockImplementation(
@@ -339,7 +366,11 @@ it("shows fixed cancellation and failure messages without reflecting arbitrary q
     const mounted = render(<IdentityPanel />);
     await settle();
     expect(document.body.textContent).toContain(
-      outcome === "cancelled" ? "cancelled" : "could not be completed",
+      outcome === "cancelled"
+        ? "cancelled"
+        : outcome === "unavailable"
+          ? "Sign-in is unavailable"
+          : "could not be completed",
     );
     expect(document.body.textContent).toContain("b".repeat(32));
     expect(document.body.textContent).not.toContain("private-canary");
@@ -413,6 +444,75 @@ it("labels development mode without offering a production login or implicit acco
   expect(screen.getByText("Development identity")).toBeTruthy();
   expect(screen.queryByRole("button", { name: "Sign in" })).toBeNull();
   expect(screen.queryByText("Synthetic user")).toBeNull();
+});
+
+it("fully reads the bounded unauthenticated body without cancelling the protected exchange", async () => {
+  const cancelled = vi.fn();
+  const privateValue = "private-unauthenticated-response";
+  let finishBody = () => {};
+  const body = new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.enqueue(new TextEncoder().encode('{"detail":"'));
+      finishBody = () => {
+        controller.enqueue(new TextEncoder().encode(privateValue + '"}'));
+        controller.close();
+      };
+    },
+    cancel: cancelled,
+  });
+  fetcher.mockImplementation(async (url: string) =>
+    url.endsWith("browser-context")
+      ? Response.json({ version: "1", identityMode: mode, csrfToken: token })
+      : new Response(body, {
+          status: 401,
+          headers: { "Content-Type": "application/problem+json" },
+        }),
+  );
+  render(<IdentityPanel />);
+  await settle();
+  expect(screen.getByRole("status").textContent).toContain("Checking");
+  await act(async () => finishBody());
+  await settle();
+  expect(screen.getByRole("status").textContent).toContain(
+    "You are signed out",
+  );
+  expect(cancelled).not.toHaveBeenCalled();
+  expect(screen.queryByText("Synthetic user")).toBeNull();
+  expect(document.body.textContent).not.toContain(privateValue);
+});
+
+it("fails closed when the unauthenticated body exceeds the existing identity response budget", async () => {
+  const privateValue = "private-oversized-unauthenticated-response";
+  fetcher.mockImplementation(async (url: string) =>
+    url.endsWith("browser-context")
+      ? Response.json({ version: "1", identityMode: mode, csrfToken: token })
+      : Response.json(
+          { detail: privateValue + "x".repeat(8192) },
+          { status: 401 },
+        ),
+  );
+  render(<IdentityPanel />);
+  await settle();
+  expect(screen.getByRole("status").textContent).toContain("unavailable");
+  expect(screen.queryByText("Synthetic user")).toBeNull();
+  expect(document.body.textContent).not.toContain(privateValue);
+  expect(fetcher.mock.calls[0][1].signal.aborted).toBe(true);
+});
+
+it("bounds an unauthenticated body that never finishes within the existing verification deadline", async () => {
+  fetcher.mockImplementation(async (url: string) =>
+    url.endsWith("browser-context")
+      ? Response.json({ version: "1", identityMode: mode, csrfToken: token })
+      : new Response(new ReadableStream<Uint8Array>(), {
+          status: 401,
+          headers: { "Content-Type": "application/problem+json" },
+        }),
+  );
+  render(<IdentityPanel />);
+  await act(() => vi.advanceTimersByTimeAsync(4500));
+  expect(screen.getByRole("status").textContent).toContain("unavailable");
+  expect(screen.queryByText("Synthetic user")).toBeNull();
+  expect(fetcher.mock.calls[0][1].signal.aborted).toBe(true);
 });
 
 const developmentIdentities = [

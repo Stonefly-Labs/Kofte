@@ -6,9 +6,42 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement running; 80/100 complete** (T001–T079 and T087), on
+**Current checkpoint: 005 / implement paused at human request; 88/100 complete** (T001–T088), on
 `feature/005-authentication-bootstrap`, with recorded directory
-`specs/005-authentication-bootstrap`. The
+`specs/005-authentication-bootstrap`. Implementation continues until the entire
+spec is ready for converge, not until an incremental subset passes.
+The human requested this context-clear checkpoint; the ledger uses `blocked`
+with a resume note, not a completion or new approval gate. Invoke
+`/drive-speckit` after clearing context to resume this same branch/draft PR.
+The [implementation checkpoint](../../specs/005-authentication-bootstrap/implementation.md#context-clear-checkpoint-resume-implement)
+records the remaining work, actual results and required unchanged budgets.
+Fresh checkpoint quality/unit gates pass, including all 24 browser helper
+cases and 143 Python tests. Actual existing callback/confirmed-cleanup facts
+pass both providers, but the complete SQLite guide selection still fails at
+Development line 23; PostgreSQL's full guide selection is unrun. The new
+Development browser regression compiles but has not executed.
+Actual locked/paused-store and before/after-login-commit refusal cases now pass
+ten cases per real provider. An actual binary built from accepted pre-005
+`3e41681` refuses format-2 serving and upgrade on both providers while exact
+security/module state stays unchanged. Forty-one strict consumer/transport-capture
+negatives and the complete 50-case SQLite/42-case PostgreSQL host recovery
+selections now pass, including actual key/preparation classes. These are
+dirty-worktree focused results, not complete-gate or
+assessed-head CI completion. Full PostgreSQL storage still timed out at its
+unchanged 900-second limit after initial server reuse; the optimized
+owned Unix-engine inventory rerun now passes all 212 cases, zero skipped and
+eleven required identity classes in 832.601 seconds. The complete serial
+host/storage/composition baseline within its inherited 900-second budget is
+still unproved; this focused result is not that aggregate baseline.
+A newer complete 119-case PostgreSQL host selection passes in 339.057 seconds
+with bounded independent fixture scheduling and verified owned administration
+cleanup. The same cases, product deadlines and within-test contention remain;
+this is not yet a passing serial/nested aggregate gate.
+The [runtime guide](../../specs/005-authentication-bootstrap/quickstart.md)
+separates delivered interfaces from exact results. The ledger remains
+005/implement at the requested pause; converge/review/acceptance have not run.
+
+**Earlier implementation increments (historical):** The
 `a0c1fb0` Ubuntu browser job passes all eight HTTPS recipes, including both
 stores' enrollment/lost-acknowledgement and twenty-way race journeys; its
 complete PostgreSQL integration also passes. Real development-session and
@@ -163,7 +196,7 @@ and complete invalid/foreign state remain refused. Partial initial owner/key
 writes and owned-image PostgreSQL execution of the new recovery negatives remain
 open. The published `ec01770` both-provider recovery job passes, but integration,
 contract and failure propagation still fail; initial-login HTTP 503 is observed
-without an established cause. Progress remains **80/100**, not feature acceptance.
+without an established cause. Those earlier results did not establish feature acceptance.
 The next T086 increment passes four actual failure cases on SQLite and isolated
 native PostgreSQL: lost host authority/corrupt session tickets refuse warmed
 identity/actor requests, and real database rejection of required session or

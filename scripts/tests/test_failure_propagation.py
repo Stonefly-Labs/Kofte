@@ -132,6 +132,23 @@ class FailurePropagationTests(unittest.TestCase):
         with self.assertRaisesRegex(verify.VerificationError, "failure_baseline_not_green"):
             exercises.checked_evidence(self.evidence(), "quality", None, None, None, 1, verify)
 
+    def test_native_success_counts_are_revalidated_without_impossible_class_or_skip_claims(self):
+        evidence = self.evidence()
+        evidence["steps"][0]["nativeEvidence"] = {"passed": 2, "skipped": 0, "requiredClasses": 1}
+        self.assertEqual(evidence["steps"][0]["nativeEvidence"],
+                         self.checked(evidence)["steps"][0]["nativeEvidence"])
+        for invalid in (
+            {"passed": 0, "skipped": 0}, {"passed": True, "skipped": 0},
+            {"passed": 2, "skipped": 1}, {"passed": 2, "skipped": False},
+            {"passed": 1, "skipped": 0, "requiredClasses": 2},
+            {"passed": 2, "skipped": 0, "requiredClasses": True},
+            {"passed": 2, "skipped": 0, "extra": "credential-canary"},
+        ):
+            with self.subTest(evidence=invalid):
+                evidence["steps"][0]["nativeEvidence"] = invalid
+                with self.assertRaisesRegex(verify.VerificationError, "failure_child_report_unsafe"):
+                    self.checked(evidence)
+
     def test_native_failure_evidence_is_allowlisted_again_inside_isolated_baselines(self):
         evidence = self.evidence()
         command = ["dotnet", "test", "--project", verify.STORAGE_INTEGRATION]
@@ -204,6 +221,47 @@ class FailurePropagationTests(unittest.TestCase):
                 ]
                 with self.assertRaisesRegex(verify.VerificationError, "failure_did_not_reach_expected_command"):
                     checked()
+
+    def test_unavailable_postgres_requires_all_three_exact_serial_phase_failures(self):
+        commands = verify.integration_commands("postgres")
+        evidence = self.evidence()
+        evidence.update(suite="integration", provider="postgres")
+        evidence["steps"] = [
+            dict(self.evidence()["steps"][0], name=name, command=command)
+            for name, command in commands
+        ]
+
+        def checked(report):
+            return exercises.checked_evidence(
+                report, "integration", "postgres", commands[0][0], commands[0][1], 1, verify,
+                expected_followups=commands[1:],
+            )
+
+        self.assertEqual(3, len(checked(evidence)["steps"]))
+        reported = copy.deepcopy(evidence)
+        for step in reported["steps"]:
+            step["command"] = verify.safe_command([
+                *step["command"], "--report-xunit-xml", "--report-xunit-xml-filename", "storage.xml",
+                "--results-directory", "<private-results>",
+            ])
+        self.assertEqual(3, len(checked(reported)["steps"]))
+        for mutation in ("missing", "extra", "reordered", "wrong-command", "missing-tool", "timeout"):
+            with self.subTest(mutation=mutation):
+                invalid = copy.deepcopy(evidence)
+                if mutation == "missing":
+                    invalid["steps"].pop()
+                elif mutation == "extra":
+                    invalid["steps"].append(copy.deepcopy(invalid["steps"][-1]))
+                elif mutation == "reordered":
+                    invalid["steps"].reverse()
+                elif mutation == "wrong-command":
+                    invalid["steps"][1]["command"] = verify.integration_command("sqlite")
+                elif mutation == "missing-tool":
+                    invalid["steps"][1]["failureCode"] = "tool_or_input_missing"
+                else:
+                    invalid["steps"][2]["failureCode"] = "command_timeout"
+                with self.assertRaisesRegex(verify.VerificationError, "failure_did_not_reach_expected_command"):
+                    checked(invalid)
 
     def test_host_failure_evidence_is_revalidated_inside_isolated_reports(self):
         evidence = self.evidence()

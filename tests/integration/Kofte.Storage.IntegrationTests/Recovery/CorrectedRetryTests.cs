@@ -18,7 +18,7 @@ public sealed class CorrectedRetryTests
     public async Task RealProviderOutageIsBoundedAndCorrectedRetryPreservesBothOwnersRowsAndHistory()
     {
         var token = TestContext.Current.CancellationToken;
-        await using var fixture = await ModuleFixture.CreateAsync("postgres", token);
+        await using var fixture = await ModuleFixture.CreateAsync("postgres", token, sharePostgres: false);
         await using (var scope = await fixture.Maintenance.AcquireAsync(token))
         {
             Assert.IsType<StorageResult.Ready>(await fixture.Alpha.MigrateAsync(

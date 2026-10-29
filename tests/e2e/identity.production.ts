@@ -4,6 +4,8 @@ import { lstat, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import type { BrowserContext, Page } from "@playwright/test";
 import { withIdentityBrowser } from "./identityBrowser.ts";
+import { identityAccessibility } from "./identityAccessibility.ts";
+import { IdentityPrivacyCapture } from "./identityPrivacyCapture.ts";
 
 async function verifyLogin() {
   const origin = process.env.KOFTE_IDENTITY_WEB_URL;
@@ -21,9 +23,10 @@ async function verifyLogin() {
     throw new Error("identity_browser_owned_fixture_required");
   }
   await withIdentityBrowser(root, origin, authority, async (context) => {
+    const page = context.pages()[0];
+    const privacy = new IdentityPrivacyCapture(page);
     try {
       console.log("identity_browser_stage_trust_ready");
-      const page = context.pages()[0];
       await page.bringToFront();
       console.log("identity_browser_stage_page_active");
       const paths: string[] = [];
@@ -106,13 +109,16 @@ async function verifyLogin() {
         "/authorize",
         "/auth/oidc/callback",
       ]);
+      await privacy.snapshot(context);
       if (process.env.KOFTE_IDENTITY_SESSION_BOUNDARY === "1") {
-        await verifySession(page, context, root, user);
+        await verifySession(page, context, root, user, privacy);
+        await privacy.proveCapture(context);
         return;
       }
       const enrollmentFile = process.env.KOFTE_IDENTITY_ENROLLMENT_FILE;
       if (enrollmentFile) {
-        await verifyEnrollment(page, root, enrollmentFile);
+        await verifyEnrollment(page, context, root, enrollmentFile, privacy);
+        await privacy.proveCapture(context);
         return;
       }
 
@@ -152,9 +158,12 @@ async function verifyLogin() {
         await expect(page.locator("form")).toHaveCount(0);
       }
       console.log("identity_browser_stage_safe_returns_verified");
+      await privacy.proveCapture(context);
     } catch (error) {
       reportFailure(error);
       throw error;
+    } finally {
+      await privacy.close();
     }
   });
   console.log("identity_browser_stage_owned_browser_closed");
@@ -196,6 +205,7 @@ async function verifySession(
   context: BrowserContext,
   root: string,
   user: string,
+  privacy: IdentityPrivacyCapture,
 ) {
   const panel = page.getByRole("region", {
     name: "Your identity",
@@ -360,7 +370,13 @@ async function verifySession(
     { timeout: 5000 },
   );
   await expect(page.getByText(user, { exact: true })).toHaveCount(0);
+  await identityAccessibility(
+    page,
+    panel.getByText("Your session has expired", { exact: true }),
+    panel.getByRole("button", { name: "Sign in", exact: true }),
+  );
   await denied();
+  await privacy.snapshot(context);
   await enter(user);
   for (let index = 1; index <= 16; index++) {
     await browserControl(root, `activity-${String(index).padStart(2, "0")}`);
@@ -384,6 +400,7 @@ async function verifySession(
   );
   await expect(page.getByText(user, { exact: true })).toHaveCount(0);
   await denied();
+  await privacy.snapshot(context);
   await enter(user);
 
   const oldCookie = (await context.cookies()).find(
@@ -400,8 +417,10 @@ async function verifySession(
   await expect(page.getByText(user, { exact: true })).toHaveCount(0);
   await expect(heading).toBeFocused();
   expect(submissions).toBe(2);
+  await privacy.snapshot(context);
   await context.addCookies([oldCookie!]);
   await denied();
+  await privacy.snapshot(context);
   const shell = await page.reload();
   expect(shell?.headers()["cache-control"]).toContain("no-store");
   expect(await shell!.text()).not.toContain(user);
@@ -437,6 +456,11 @@ async function verifySession(
   );
   expect(performance.now() - uncertain).toBeLessThan(5000);
   await expect(page.getByText(other, { exact: true })).toHaveCount(0);
+  await identityAccessibility(
+    page,
+    panel.getByRole("alert"),
+    panel.getByRole("button", { name: "Retry identity check" }),
+  );
   await denied();
   await page.addInitScript(watchPreviousIdentity, other);
   await page.evaluate(watchPreviousIdentity, other);
@@ -475,7 +499,13 @@ async function verifySession(
   console.log("identity_browser_stage_session_boundaries_verified");
 }
 
-async function verifyEnrollment(page: Page, root: string, file: string) {
+async function verifyEnrollment(
+  page: Page,
+  context: BrowserContext,
+  root: string,
+  file: string,
+  privacy: IdentityPrivacyCapture,
+) {
   const metadata = await lstat(file);
   if (
     dirname(file) !== root ||
@@ -489,6 +519,7 @@ async function verifyEnrollment(page: Page, root: string, file: string) {
   const authorization = await readFile(file, "ascii");
   if (!/^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$/.test(authorization))
     throw new Error("identity_browser_owned_fixture_required");
+  privacy.protect(authorization);
   const panel = page.getByRole("region", {
     name: "Your identity",
     exact: true,
@@ -546,6 +577,7 @@ async function verifyEnrollment(page: Page, root: string, file: string) {
   });
   const wrong =
     authorization.slice(0, -1) + (authorization.endsWith("A") ? "Q" : "A");
+  privacy.protect(wrong);
   await entry.fill(wrong);
   const [refused] = await Promise.all([
     page.waitForResponse(
@@ -562,6 +594,12 @@ async function verifyEnrollment(page: Page, root: string, file: string) {
   );
   await expect(entry).toHaveValue("");
   await expect(entry).toBeFocused();
+  await expect(entry).toHaveAttribute("aria-invalid", "true");
+  await expect(panel.getByRole("alert")).toContainText(
+    "Ask your operator to check the nomination",
+  );
+  await identityAccessibility(page, panel.getByRole("alert"), entry);
+  await privacy.snapshot(context);
   const queriesBefore = identityQueries;
   await entry.fill(authorization);
   const began = performance.now();
@@ -579,6 +617,12 @@ async function verifyEnrollment(page: Page, root: string, file: string) {
   expect(performance.now() - began).toBeLessThan(5000);
   await expect(heading).toBeFocused();
   await expect(entry).toHaveCount(0);
+  await identityAccessibility(
+    page,
+    panel.getByRole("alert"),
+    panel.getByRole("button", { name: "Sign out", exact: true }),
+  );
+  await privacy.snapshot(context);
   expect(submissions).toBe(2);
   expect(identityQueries).toBeGreaterThan(queriesBefore);
   expect(await page.content()).not.toContain(authorization);

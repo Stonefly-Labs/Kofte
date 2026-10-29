@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
@@ -13,7 +14,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Kofte.TestSupport.Identity;
 
-internal sealed class IdentityBrowserIngress : IAsyncDisposable
+internal sealed partial class IdentityBrowserIngress : IAsyncDisposable
 {
     private readonly HttpClient client = new(new SocketsHttpHandler
     {
@@ -28,6 +29,15 @@ internal sealed class IdentityBrowserIngress : IAsyncDisposable
     private int loseSignOutAcknowledgement;
     private int signOutAcknowledgementLost;
     private readonly ConcurrentDictionary<string, int> responseStatuses = new(StringComparer.Ordinal);
+    private readonly ConcurrentQueue<string> accessRecords = new();
+    private int accessRecordCount;
+    internal IReadOnlyList<string> TakeAccessRecords()
+    {
+        if (application is not null) throw new InvalidOperationException("identity_ingress_capture_not_stopped");
+        var records = accessRecords.ToArray();
+        accessRecords.Clear();
+        return records;
+    }
     internal Uri Origin { get; private set; } = null!;
     internal Uri Web { get; }
     internal Uri? DirectIdentityBackend { get; set; }
@@ -73,7 +83,12 @@ internal sealed class IdentityBrowserIngress : IAsyncDisposable
     {
         if (context.Request.Path == "/auth/login" && context.Request.Method == "POST")
             OpaqueLoginOriginObserved |= context.Request.Headers.Origin == "null";
-        using var budget = CancellationTokenSource.CreateLinkedTokenSource(context.RequestAborted);
+        var captureAction = ActionCaptureEnabled && context.Request.Method == "POST" &&
+            context.Request.Path == "/identity" &&
+            context.Request.Headers.TryGetValue("Next-Action", out var action) &&
+            action.Count == 1 && action[0] is { Length: > 0 and <= 256 };
+        using var budget = CancellationTokenSource.CreateLinkedTokenSource(captureAction
+            ? application!.Lifetime.ApplicationStopping : context.RequestAborted);
         budget.CancelAfter(TimeSpan.FromSeconds(5));
         var directPath = context.Request.Path.Value switch
         {
@@ -95,6 +110,8 @@ internal sealed class IdentityBrowserIngress : IAsyncDisposable
                 request.Content?.Headers.TryAddWithoutValidation(header.Key, header.Value.ToArray());
         }
         using var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, budget.Token);
+        var actionCaptureId = captureAction
+            ? await CaptureActionResponseAsync(response, budget.Token) : null;
         var operation = context.Request.Path.Value switch
         {
             "/identity" => "identity_page",
@@ -105,7 +122,30 @@ internal sealed class IdentityBrowserIngress : IAsyncDisposable
             "/api/identity/v1/sign-out" => "sign_out",
             _ => null
         };
-        if (operation is not null) responseStatuses[operation] = (int)response.StatusCode;
+        if (operation is not null)
+        {
+            responseStatuses[operation] = (int)response.StatusCode;
+            if (Interlocked.Increment(ref accessRecordCount) > 1024)
+                throw new InvalidOperationException("identity_ingress_capture_limit");
+            accessRecords.Enqueue(JsonSerializer.Serialize(new
+            {
+                eventCode = "identity_ingress_access",
+                operation,
+                method = context.Request.Method is "GET" or "POST" ? context.Request.Method : "other",
+                status = (int)response.StatusCode,
+                outcome = (int)response.StatusCode switch
+                {
+                    >= 500 => "unavailable",
+                    401 => "unauthenticated",
+                    403 => "forbidden",
+                    429 => "admission_exceeded",
+                    >= 400 => "request_refused",
+                    _ => "ready"
+                },
+                correlation = Guid.NewGuid().ToString("N"),
+                durability = "unknown"
+            }));
+        }
         if (operation == "enrollment" && context.Request.Method == "POST" &&
             response.StatusCode == HttpStatusCode.OK &&
             Interlocked.Exchange(ref loseEnrollmentAcknowledgement, 0) == 1)
@@ -126,7 +166,9 @@ internal sealed class IdentityBrowserIngress : IAsyncDisposable
         }
         context.Response.StatusCode = (int)response.StatusCode;
         foreach (var header in response.Headers.Concat(response.Content.Headers))
-            if (!HopByHop(header.Key)) context.Response.Headers[header.Key] = header.Value.ToArray();
+            if (!HopByHop(header.Key) && !header.Key.Equals(ActionCaptureHeader, StringComparison.OrdinalIgnoreCase))
+                context.Response.Headers[header.Key] = header.Value.ToArray();
+        if (actionCaptureId is not null) context.Response.Headers[ActionCaptureHeader] = actionCaptureId;
         await response.Content.CopyToAsync(context.Response.Body, budget.Token);
     }
 
@@ -147,7 +189,9 @@ internal sealed class IdentityBrowserIngress : IAsyncDisposable
             using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
             await application.StopAsync(timeout.Token);
             await application.DisposeAsync();
+            application = null;
         }
         client.Dispose();
+        CleanupActionCaptures();
     }
 }

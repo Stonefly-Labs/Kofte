@@ -29,9 +29,9 @@
     "spec": "005",
     "step": "implement",
     "directory": "specs/005-authentication-bootstrap",
-    "status": "running",
+    "status": "blocked",
     "branch": "feature/005-authentication-bootstrap",
-    "reason": "",
+    "reason": "User-requested context checkpoint; no new approval needed. Resume spec 005 implement on feature/005-authentication-bootstrap and draft PR #8. Read specs/005-authentication-bootstrap/implementation.md (Context-clear checkpoint). 88/100 tasks evidenced. Finish T089-T100 browser/privacy, nine-plus-all public recipes, unchanged PostgreSQL aggregate/propagation budgets, full all-suite, assessed CI and traceability. Do not start converge or replace this branch/PR.",
     "started_at": "2026-10-26T21:30:18+00:00"
   },
   "history": [

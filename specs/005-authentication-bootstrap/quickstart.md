@@ -1,10 +1,12 @@
-# Future Validation Guide: 005 Authentication and Bootstrap
+# Runtime and Validation Guide: 005 Authentication and Bootstrap
 
-**Status:** Plan-stage recipe, not working authentication instructions today.
-No command below is evidence of execution by planning. Implement must deliver
-the indicated interfaces, owned fixtures and required scenario inventory before
-claiming these recipes pass. [ADR 0007](../../docs/adr/0007-authentication-bootstrap-boundary.md)
-requires explicit human approval before that work.
+**Status:** Implementation in progress, not accepted or production-ready.
+The host, identity page, stopped commands and test-owned consumer are delivered
+source, not proposed interfaces. The [implementation record](implementation.md)
+identifies exact executed commands, assessed sources and remaining failures;
+the command inventory below is not itself a passing complete gate.
+[ADR 0007](../../docs/adr/0007-authentication-bootstrap-boundary.md) has explicit
+human design approval, separate from feature acceptance.
 
 ## Prerequisites and safety
 
@@ -15,21 +17,21 @@ SQLite uses native owned private roots. PostgreSQL evidence requires the
 existing pinned disposable fixture and Docker; it must never use an operator's
 database. Keep PostgreSQL ownership/credential/CREATE-denial checks intact.
 
-Do not install an IdP, product package or toolchain merely to read this plan.
-Implementation first reviews the exact OIDC/transitive closure, updates central
-pins/locks/inventory/notices and restores through the existing mechanisms.
+Do not install an IdP, product package or toolchain merely to read this guide.
+Use the reviewed OIDC/transitive closure, central pins, locks and notices;
+restore through the existing mechanisms rather than introducing new versions.
 The test-owned issuer binds an owned loopback HTTPS port with an isolated test
 CA, real signed protocol messages and no production certificate-validation
 bypass. Browser tests use actual host/web/issuer processes. Synthetic identity/
 secret/correlation fixtures are generated per run, never committed credentials.
 
-The future operator setup is:
+The explicit operator setup is:
 
 1. Generate a private explicit v1 config with either development mode or exact
    production OIDC trust; use the [operator contract](contracts/operator-v1.md).
 2. Stop the owned host. Initialize a genuinely empty store using the existing
    provider workflow, explicitly upgrade registry v0 to v1 where needed, then
-   execute the proposed `--identity prepare`. Observe verified format 2 and
+   execute `--identity prepare`. Observe verified format 2 and
    private key readiness, not just a zero exit code.
 3. Start the native host/web with `KOFTE_AUTH_CONFIG_FILE` set on both required
    processes/forwarded workers. Health stays anonymous; `/me` is 401 until
@@ -43,15 +45,14 @@ The future operator setup is:
    exercise documented correction. No anonymous admin endpoint or second
    initial administrator is created.
 
-These steps become executable public recipes through the delivered test-owned
+These steps are exercised through the delivered test-owned
 consumer and fixture-owning verifier; do not substitute a mocked principal or
 an unexplained private database patch.
 
 ## Required local and CI verification
 
-Planning itself requires only repository/Python/whitespace plus semantic
-artifact review. The following existing commands must include the new identity
-projects/cases when implementation lands; do not add an optional skip or let
+The following existing commands include the identity
+projects/cases; do not add an optional skip or let
 missing fixture source silently disappear from the required suite inventory.
 
 ```bash
@@ -64,7 +65,7 @@ python3 scripts/verify.py --suite integration --provider sqlite
 python3 scripts/verify.py --suite integration --provider postgres --disposable-postgres
 python3 scripts/verify.py --suite recovery --provider both --disposable-postgres
 python3 scripts/verify.py --suite contract --provider both --disposable-postgres
-python3 scripts/verify.py --suite browser
+python3 scripts/verify.py --suite browser --disposable-postgres
 python3 scripts/verify.py --suite privacy --provider both --disposable-postgres
 python3 scripts/verify.py --suite startup --warm-starts 10
 python3 scripts/verify.py --suite failure-propagation --disposable-postgres
@@ -129,8 +130,8 @@ pruning never deletes installation-retained events.
 
 ## Delivered guide consumer
 
-Plan a separately compiled executable `tests/contract/Kofte.Identity.Consumer`
-with an explicit scenario catalog. It owns private host/web/issuer/provider
+The separately compiled executable `tests/contract/Kofte.Identity.Consumer`
+has an explicit scenario catalog. It owns private host/web/issuer/provider
 fixtures and exits nonzero if expected observations are missing, source is
 absent, cleanup unverified or a scanner fails. Required scenarios:
 
@@ -145,6 +146,23 @@ absent, cleanup unverified or a scanner fails. Required scenarios:
 | `upgrade-preservation` | Clean/v1/v2 preparation plus exact unrelated module sentinel/history ownership. |
 | `interrupted-recovery` | Actual commit/prepare barriers, uncertain reply and stopped complete-set restore/reconciliation. |
 | `private-evidence` | Useful correlated safe outcomes plus canary scans of all channels and recording failures. |
+
+After locked restore, the Release solution build, the production Next build
+and pinned Chromium installation, invoke a specific recipe or `all`:
+
+```bash
+dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario oidc-login --provider sqlite
+dotnet run --project tests/contract/Kofte.Identity.Consumer -c Release --no-build -- --scenario all --provider sqlite
+KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario all --provider postgres
+```
+
+The owning native guide harness executes all nine individually and `all` for
+each provider, requiring every exact ordered observation. PostgreSQL uses only
+the pinned owned disposable server, with independent databases and roles;
+whole-server failure cases use a dedicated server. Ordinary local development
+still needs neither Docker nor a real IdP.
+
+### Earlier implementation evidence (historical)
 
 `development-isolation` is now delivered for execution after the existing
 Release/Next builds and pinned Chromium setup:
@@ -194,28 +212,29 @@ Hosted `20d751c` PostgreSQL host/storage and both-provider recovery also pass
 the new cases, closing T087. This does not deliver
 the recovery/operations consumer recipes above.
 
-Proposed invocation, after implementation/build, with provider-owned fixture
-admission (PostgreSQL remains the wrapper's responsibility):
-
-```bash
-dotnet run --project tests/contract/Kofte.Identity.Consumer -c Release --no-build -- --scenario all --provider sqlite
-```
-
 The contract suite must also execute each scenario individually for both real
 providers through its owning harness and validate named observations, not
 trust a summary count. The new project/source is test-only; no product reference,
 auth bypass flag or fixture endpoint is deployed. Browser/a11y timing remains
 actual Playwright evidence, not replaced by the consumer's JSON assertions.
 
-## Limits and next gate
+## Limits and completion gates
 
-This stage changes no authentication source, dependency lock, database, public
-runtime route, product test, task list or reviewed checklist. Package adoption,
-actual platform/protocol/browser evidence and final feature acceptance remain
-future gates. Kubernetes/remote shared PostgreSQL/reference-module/MCP/team
-authorization/full audit proof are later numbered features, not implicitly
-passed or waived.
+Only prepared configuration and custody permit serving. Production OIDC
+requires exact HTTPS trust and a protected client secret; ingress must preserve
+the admitted public origin without trusting arbitrary proxy headers. Session
+revocation is local, not provider-wide logout. No administrator reassignment,
+IdP-loss reset, arbitrary OS-copy detection or old-instance fencing is supplied.
+Complete-set backups do not contain private key custody; restored identity is
+quarantined until a manifest-bound stopped decision and fresh protected ring
+are committed. Unknown consumed history stays locked. See the
+[operator contract](contracts/operator-v1.md) and
+[local guide](../../docs/development/local-development.md) for private files,
+capacities, retention, key/certificate overlap and explicit correction.
 
-Next is **checklist** on the same branch/draft PR. Generation leaves its
-reviewer-owned markers unchecked. ADR approval and later explicit human
-acceptance are separate decisions; no intermediate merge is requested.
+Specs 006–009 and 022–024 remain future work; authentication/designation is not
+a permission engine, team model, MCP deployment or full audit subsystem.
+The current stage remains **implement** on the same branch/draft PR until the
+complete local gate, assessed-head CI and traceability genuinely pass.
+Converge, final review and explicit human acceptance are separate later stages.
+Reviewer-owned checklists are unchanged; no intermediate merge is requested.

@@ -168,6 +168,64 @@ STORAGE_REQUIRED_FILES = (
         "RegistrationScenarios", "CollisionScenario", "ModuleScenarios", "RecoveryScenarios", "CorrectedRetryScenario",
     )),
 )
+IDENTITY_SCENARIOS = (
+    "oidc-login", "trust-refusal", "nominated-enrollment", "enrollment-race",
+    "session-boundary", "development-isolation", "upgrade-preservation",
+    "interrupted-recovery", "private-evidence",
+)
+IDENTITY_HOST_CASES = (
+    "IdentityStartupTests", "IdentityPreparationTests", "IdentityKeyTests",
+    "EnrollmentTests", "EnrollmentConcurrencyTests", "OidcBudgetTests", "DevelopmentBoundaryTests",
+    "IdentityFailureTests",
+)
+IDENTITY_STORAGE_CASES = (
+    "IdentityFormatTests", "IdentityMappingTests", "IdentityAdmissionTests", "IdentityAttemptTests",
+    "IdentityEventTests", "IdentityCapacityTests", "IdentityDeadlineTests", "IdentityNominationTests",
+    "EnrollmentCrashTests", "EnrollmentRestartTests", "IdentityRecoveryTests",
+)
+IDENTITY_PUBLIC_CASES = (
+    "CurrentIdentityContractTests", "SignOutContractTests", "IdentityParityTests",
+    "SessionPersistenceContractTests", "DevelopmentIdentityTests", "LoginEndpointContractTests",
+    "LoginCommitContractTests", "SessionScopeContractTests",
+)
+IDENTITY_UNIT_CASES = (
+    "IdentityConfigurationTests", "IdentityDiagnosticsTests", "IdentityKeysTests",
+    "LoginAttemptBindingTests", "NominationDeliveryTests", "IdentityBrowserFailureDiagnosticsTests",
+)
+IDENTITY_REQUIRED_FILES = (
+    "src/Kofte.Platform/Identity/ActorContracts.cs",
+    "tests/contract/Kofte.Identity.Consumer/Kofte.Identity.Consumer.csproj",
+    "tests/contract/Kofte.Identity.Consumer/Program.cs",
+    *(f"tests/contract/Kofte.Identity.Consumer/Scenarios/{name}.cs" for name in (
+        "OperationsScenarios",
+    )),
+    *(f"tests/integration/Kofte.TestSupport/Identity/{name}.cs" for name in (
+        "OidcIssuer", "IdentityFixture", "IdentityProcess", "IdentityCommitBarrier",
+        "IdentityStartupHook", "IdentityScenarioCatalog", "IdentityConsumerHarness", "IdentityConsumerFailureCodes",
+        "IdentityBrowserIngress", "IdentityBrowserIngress.ActionCapture",
+        "IdentityBrowserFailureDiagnostics", "IdentityDiagnosticOutput", "LoginCommitFixture",
+        "LoginCommitFixture.Operations", "LoginCommitFixture.Failures", "LoginCommitFixture.Privacy",
+        "IdentityLegacyHostFixture", "ServingIdentity",
+    )),
+    *(f"{INTEGRATION}/Identity/{name}.cs" for name in (
+        *IDENTITY_HOST_CASES, "OidcBackchannelTests", "OidcProtocolTests",
+        "OidcIssuerTests", "IdentityFixtureTests", "IdentityPolicyTests", "IdentityBrowserFailureTests",
+    )),
+    *(f"{STORAGE_INTEGRATION}/Identity/{name}.cs" for name in IDENTITY_STORAGE_CASES),
+    *(f"tests/unit/Kofte.Host.Tests/Features/Identity/{name}.cs" for name in IDENTITY_UNIT_CASES),
+    *(f"tests/contract/Kofte.Platform.ContractTests/Identity/{name}.cs" for name in (
+        *IDENTITY_PUBLIC_CASES, "ActorContractTests", "IdentityCorpus",
+        "IdentityConsumerHarnessTests", "IdentityGuideTests",
+    )),
+    *(f"tests/e2e/{name}.ts" for name in (
+        "identity.spec", "identity.production", "identity.failures", "identityBrowser",
+        "identityAccessibility", "identityPrivacyCapture", "identityPrivacyCapture.unit",
+        "identityCanaryExport", "identityCanaryExport.unit",
+        "identityActionCapture", "identityActionCapture.unit",
+        "identityBrowserOwnership", "identityBrowserOwnership.unit",
+    )),
+    "tests/contract/identity.test.ts",
+)
 FIXTURE = f"{INTEGRATION}/bin/Release/net10.0/Kofte.Host.IntegrationTests.dll"
 QUALITY_COMMANDS = (
     ("repository", ("python3", "scripts/check_repository.py")),
@@ -229,6 +287,92 @@ def composition_inventory(root):
     solution = (root / "Kofte.slnx").read_text()
     if any(path not in solution for path in COMPOSITION_REQUIRED_FILES[:4] if path.endswith(".csproj")):
         raise VerificationError("composition_build_target_missing")
+
+def identity_inventory(root):
+    if any(not (root / path).is_file() for path in IDENTITY_REQUIRED_FILES):
+        raise VerificationError("identity_target_missing")
+    catalog = (root / "tests/integration/Kofte.TestSupport/Identity/IdentityScenarioCatalog.cs").read_text()
+    scenario_declaration = catalog.split("public static string RequireScenario", 1)[0]
+    if tuple(re.findall(r'"([a-z-]+)"', scenario_declaration)) != IDENTITY_SCENARIOS:
+        raise VerificationError("identity_scenario_missing")
+    if "tests/contract/Kofte.Identity.Consumer/Kofte.Identity.Consumer.csproj" not in (
+            root / "Kofte.slnx").read_text():
+        raise VerificationError("identity_build_target_missing")
+
+
+def required_native_classes(name, command):
+    def prefixed(provider, cases):
+        return tuple(("Sqlite" if provider == "sqlite" else "Postgres") + case for case in cases)
+
+    if name == "host-unit":
+        return IDENTITY_UNIT_CASES
+    for provider in ("sqlite", "postgres"):
+        if name == f"integration-{provider}":
+            return (*prefixed(provider, IDENTITY_HOST_CASES), *(
+                ("OidcIssuerTests", "OidcProtocolTests", "OidcBackchannelTests",
+                 "IdentityFixtureTests", "IdentityPolicyTests") if provider == "sqlite" else ()))
+        if name == f"storage-integration-{provider}":
+            return prefixed(provider, IDENTITY_STORAGE_CASES)
+        if name == f"recovery-{provider}-native":
+            return prefixed(provider, ("IdentityPreparationTests", "IdentityKeyTests"))
+        if name == f"storage-recovery-{provider}":
+            return prefixed(provider, ("IdentityRecoveryTests",))
+        if name in (f"identity-browser-native-{provider}", f"identity-privacy-browser-native-{provider}"):
+            return prefixed(provider, ("IdentityBrowserFailureTests",))
+        if name == f"storage-public-privacy-{provider}":
+            return prefixed(provider, ("IdentityPrivacyGuideTests",))
+        if name == f"identity-public-guides-{provider}":
+            return prefixed(provider, ("IdentityGuideTests",))
+    if name == "platform-public-contracts":
+        excluded = (command[command.index("--filter-not-trait") + 1]
+                    if "--filter-not-trait" in command else None)
+        return ("ActorContractTests", "IdentityConsumerHarnessTests", *(
+            case for provider in ("sqlite", "postgres") if excluded != f"Provider={provider}"
+            for case in prefixed(provider, IDENTITY_PUBLIC_CASES)
+        ))
+    return ()
+
+
+def identity_constructed_failure_codes(root):
+    source = (root / "tests/integration/Kofte.TestSupport/Identity/IdentityConsumerFailureCodes.cs").read_text()
+
+    def body(pattern, text):
+        match = re.search(pattern, text, re.DOTALL)
+        if match is None:
+            raise VerificationError("identity_failure_inventory_invalid")
+        return match[1]
+
+    def array(name):
+        return re.findall(r'"([a-z][a-z0-9_]*)"', body(
+            rf"string\[\] {name}\s*=\s*\[(.*?)\];", source))
+
+    failures, commands = array("StorageFailures"), array("Commands")
+    codes = {"identity_recipe_storage_" + failure for failure in failures}
+    codes.update("identity_recipe_storage_capture_" + field for field in array("CaptureFields"))
+    for prefix, relative in re.findall(r'\("(identity_[a-z0-9_]+)", "([^"]+\.cs)"\)', source):
+        path = root / relative
+        if not path.resolve().is_relative_to(root.resolve()) or not path.is_file():
+            raise VerificationError("identity_failure_inventory_invalid")
+        codes.update(prefix + str(line) for line in range(1, min(len(path.read_text().splitlines()), 999_999) + 1))
+    identity = (root / "src/Kofte.Infrastructure/Identity/IdentityDiagnostics.cs").read_text()
+    actions = re.findall(r'IdentityAction\.[A-Za-z]+\s*=>\s*"([a-z_]+)"', identity)
+    outcomes = re.findall(r'IdentityDiagnosticOutcome\.(?!Ready\b)[A-Za-z]+\s*=>\s*\("(identity_[a-z_]+)"', identity)
+    storage = (root / "src/Kofte.Platform/Modules/Storage/StorageContracts.cs").read_text()
+    operations = re.findall(r"[A-Za-z]+", body(r"enum StorageOperation\s*\{([^}]+)\}", storage))
+    bootstrap = (root / "src/Kofte.Host/Bootstrap/BootstrapDiagnostics.cs").read_text()
+    startup = re.findall(r'"([a-z_]+)"', body(r"string Code\(BootstrapError code\).*?\{(.*?)\};", bootstrap))
+    if not all((failures, commands, actions, outcomes, operations, startup)):
+        raise VerificationError("identity_failure_inventory_invalid")
+    for command in commands:
+        prefix = "identity_fixture_operator_" + command + "_"
+        codes.update(prefix + action + "_" + outcome for action in actions for outcome in outcomes)
+        codes.update(prefix + operation.lower() + "_storage_" + failure
+                     for operation in operations for failure in failures)
+        codes.update(prefix + "startup_" + code for code in startup)
+    catalog = (root / "tests/integration/Kofte.TestSupport/Identity/IdentityScenarioCatalog.cs").read_text()
+    for declaration in re.findall(r'\[\s*((?:"[a-z0-9_-]+"\s*,?\s*)+)\]', catalog):
+        codes.update("identity_scenario_" + value for value in re.findall(r'"([a-z0-9_]+)"', declaration))
+    return codes
 
 
 def composition_result(stdout, stderr, provider, scenario):
@@ -322,7 +466,7 @@ def safe_command(command):
     result = []
     for item in map(str, command):
         query = re.fullmatch(
-            r"/\[\(Suite=(recovery|privacy)\)&\(Provider=(sqlite|postgres)\)(?:&\(Feature=composition\))?\]", item)
+            r"/\[\(Suite=(recovery|privacy|browser)\)&\(Provider=(sqlite|postgres)\)(?:&\(Feature=(composition|identity)\))?\]", item)
         if (item.startswith("/") and not query or ".." in Path(item).parts or len(item) > 180
                 or not re.fullmatch(r"[-a-zA-Z0-9_./:=*]+", item)
                 and not query
@@ -365,7 +509,19 @@ def command_diagnostics(command):
         ["npm", "run", "dependencies:check"], ["python3", "scripts/check_dependencies.py"],
     ):
         return runtime_support.CommandDiagnostics("dependency", check_dependencies.FAILURE_CODES)
+    if list(command[:4]) == [
+        "dotnet", "run", "--project", "tests/contract/Kofte.Composition.Consumer",
+    ]:
+        codes = set()
+        for path in (ROOT / command[3]).rglob("*.cs"):
+            if not {"bin", "obj"}.intersection(path.relative_to(ROOT).parts):
+                codes.update(re.findall(r'"(composition_[a-z0-9_]{1,160})"', path.read_text()))
+        return runtime_support.CommandDiagnostics(
+            "consumer", codes, scenarios=(*COMPOSITION_OBSERVATIONS, "all"),
+        )
     native_projects = {
+        "tests/unit/Kofte.Host.Tests": ("host", "Kofte.Host.Tests"),
+        "tests/unit/Kofte.Platform.Tests": ("contract", "Kofte.Platform.Tests"),
         "tests/integration/Kofte.Host.IntegrationTests": ("host", "Kofte.Host.IntegrationTests"),
         STORAGE_INTEGRATION: ("storage", "Kofte.Storage.IntegrationTests"),
         "tests/contract/Kofte.Platform.ContractTests": ("contract", "Kofte.Platform.ContractTests"),
@@ -386,7 +542,7 @@ def command_diagnostics(command):
             if namespace:
                 classes = re.findall(r"public (?:(?:abstract|sealed|partial|static) )*class ([A-Za-z0-9_]+)", source)
                 owners = (*classes, *(f"{outer}+{inner}" for outer in classes for inner in classes if outer != inner))
-                methods = re.findall(r"public (?:async )?(?:Task(?:<[^<>]+>)?|void) ([A-Za-z0-9_]+)\(", source)
+                methods = re.findall(r"public (?:async )?(?:(?:Task|ValueTask)(?:<[^<>]+>)?|void) ([A-Za-z0-9_]+)\(", source)
                 tests.update(f"{namespace[1]}.{owner}.{method}" for owner in owners for method in methods)
         codes = (
             "Busy", "Conflict", "TargetReserved", "PathRejected", "OwnerMismatch", "Missing", "Corrupt",
@@ -398,11 +554,16 @@ def command_diagnostics(command):
             if not {"bin", "obj"}.intersection(path.relative_to(ROOT).parts):
                 composition_codes.update(re.findall(r'"(composition_[a-z0-9_]{1,160})"', path.read_text()))
         identity_codes = set()
-        if kind == "host":
-            for path in (ROOT / "tests/integration/Kofte.TestSupport/Identity").glob("*.cs"):
-                source = path.read_text()
-                source_lines[path.relative_to(ROOT).as_posix()] = len(source.splitlines())
-                identity_codes.update(re.findall(r'"(identity_[a-z0-9_]{1,110})"', source))
+        if kind in ("host", "storage", "contract"):
+            for directory in ("tests/integration/Kofte.TestSupport/Identity",
+                              "tests/contract/Kofte.Identity.Consumer"):
+                for path in (ROOT / directory).rglob("*.cs"):
+                    if {"bin", "obj"}.intersection(path.relative_to(ROOT).parts):
+                        continue
+                    source = path.read_text()
+                    source_lines[path.relative_to(ROOT).as_posix()] = len(source.splitlines())
+                    identity_codes.update(re.findall(r'"(identity_[a-z0-9_]{1,110})"', source))
+            identity_codes.update(identity_constructed_failure_codes(ROOT))
             for observed in ("no_response", *(f"http_{value}" for value in
                     runtime_support.CommandDiagnostics.http_statuses.values()),
                     *(f"transport_{value}" for value in (
@@ -619,12 +780,19 @@ class Runner:
                     raise VerificationError("command_timeout") from error
                 if step["exitCode"]:
                     raise VerificationError("command_failed")
+                if diagnostic and storage_report is not None:
+                    minimum = (
+                        int(command[command.index("--minimum-expected-tests") + 1])
+                        if "--minimum-expected-tests" in command else 1
+                    )
+                    step["nativeEvidence"] = diagnostic.native_success(
+                        storage_report, minimum, required_native_classes(name, command))
             finally:
                 try:
                     processes.stop()
                 finally:
                     if diagnostic:
-                        if step["exitCode"] not in (None, 0):
+                        if step["exitCode"] != 0:
                             if storage_report is not None:
                                 diagnostic.read_storage_report(storage_report)
                             step.update(diagnostic.safe_fields())
@@ -1088,18 +1256,37 @@ def provider_environment(runner, arguments, provider):
 
 def integration_command(provider, suite=None, project=INTEGRATION, feature=None):
     feature_query = f"&(Feature={feature})" if feature else ""
+    fixture_threads = str(min(4, os.cpu_count() or 1))
     selector = (
         ["--filter-query", f"/[(Suite={suite})&(Provider={provider}){feature_query}]"] if suite
         else ["--filter-trait", f"Provider={provider}"]
     )
     return [
         "dotnet", "test", "--project", project, "--no-restore", "-c", "Release",
-        *selector, "--minimum-expected-tests", "1",
+        *selector,
+        *(["--filter-not-trait", "Suite=browser"] if suite is None and project == INTEGRATION else []),
+        "--max-threads", fixture_threads,
+        "--minimum-expected-tests", "1",
     ]
+
+
+def integration_commands(provider):
+    return (
+        (f"integration-{provider}", integration_command(provider)),
+        (f"storage-integration-{provider}", [
+            *integration_command(provider, project=STORAGE_INTEGRATION)[:-2],
+            "--filter-not-class", "*Composition*", "--minimum-expected-tests", "1",
+        ]),
+        (f"composition-integration-{provider}", [
+            *integration_command(provider, project=STORAGE_INTEGRATION)[:-2],
+            "--filter-class", "*Composition*", "--minimum-expected-tests", "50",
+        ]),
+    )
 
 
 def execute_suite(runner, suite, provider, arguments):
     runner.operation("workspace-inventory", lambda _: workspace_inventory(runner.root))
+    runner.operation("identity-inventory", lambda _: identity_inventory(runner.root))
     if suite in ("quality", "unit", "integration", "recovery", "contract", "privacy"):
         runner.operation("storage-inventory", lambda _: storage_inventory(runner.root))
         runner.operation("composition-inventory", lambda _: composition_inventory(runner.root))
@@ -1140,24 +1327,18 @@ def execute_suite(runner, suite, provider, arguments):
         ])
         for workspace in ("apps/web", "packages/bootstrap-contract"):
             runner.command(f"{workspace}-unit", ["npm", "run", "test:unit", "--workspace", workspace])
+        runner.command("identity-browser-capture-unit", [
+            "node", "--test", "tests/e2e/identityPrivacyCapture.unit.ts",
+            "tests/e2e/identityCanaryExport.unit.ts", "tests/e2e/identityActionCapture.unit.ts",
+            "tests/e2e/identityBrowserOwnership.unit.ts",
+        ])
         runner.command("python-tests", [
             "python3", "-m", "unittest", "discover", "-s", "scripts/tests", "-v",
         ])
     elif suite == "integration":
         environment = provider_environment(runner, arguments, provider)
-        commands = (
-            (f"integration-{provider}", integration_command(provider)),
-            (f"storage-integration-{provider}", [
-                *integration_command(provider, project=STORAGE_INTEGRATION)[:-2],
-                "--filter-not-class", "*Composition*", "--minimum-expected-tests", "1",
-            ]),
-            (f"composition-integration-{provider}", [
-                *integration_command(provider, project=STORAGE_INTEGRATION)[:-2],
-                "--filter-class", "*Composition*", "--minimum-expected-tests", "50",
-            ]),
-        )
         first_failure = None
-        for name, command in commands:
+        for name, command in integration_commands(provider):
             try:
                 runner.command(name, command, environment=environment)
             except VerificationError as error:
@@ -1191,6 +1372,8 @@ def execute_suite(runner, suite, provider, arguments):
             runner.command("platform-public-contracts", [
                 "dotnet", "test", "--project", "tests/contract/Kofte.Platform.ContractTests",
                 "--no-restore", "-c", "Release", *public_selector, "--filter-not-class", "*Composition*",
+                "--filter-not-class", "*IdentityGuideTests",
+                "--filter-not-class", "*IdentityPrivacyGuideTests",
                 "--minimum-expected-tests", "1",
             ], environment=public_environment)
             runner.command("composition-public-contracts", [
@@ -1206,6 +1389,12 @@ def execute_suite(runner, suite, provider, arguments):
             provider_environment(runner, arguments, "postgres")
         for selected in providers:
             if suite == "contract":
+                runner.command(f"identity-public-guides-{selected}", [
+                    "dotnet", "test", "--project", "tests/contract/Kofte.Platform.ContractTests",
+                    "--no-restore", "-c", "Release", "--filter-class",
+                    f"*{'Sqlite' if selected == 'sqlite' else 'Postgres'}IdentityGuideTests",
+                    "--minimum-expected-tests", str(len(IDENTITY_SCENARIOS) + 1),
+                ], environment=provider_environment(runner, arguments, selected))
                 runner.command(f"native-openapi-policy-{selected}", [
                     "dotnet", "test", "--project", INTEGRATION, "--no-restore", "-c", "Release",
                     "--filter-class", "*OpenApiTests", "--filter-trait", f"Provider={selected}",
@@ -1237,6 +1426,9 @@ def execute_suite(runner, suite, provider, arguments):
                                          feature="composition")[:-2],
                     "--minimum-expected-tests", "4" if suite == "recovery" else "1",
                 ], environment=environment)
+                if suite == "privacy":
+                    runner.command(f"identity-privacy-browser-native-{selected}",
+                        integration_command(selected, "browser"), environment=environment)
             if suite == "contract":
                 for scenario in (*COMPOSITION_OBSERVATIONS, "all"):
                     runner.composition_guide(selected, scenario, provider_environment(runner, arguments, selected))
@@ -1267,6 +1459,7 @@ def execute_suite(runner, suite, provider, arguments):
                 runner.environment, BOOTSTRAP_PRIVACY_CANARY=f"bootstrap-privacy-canary-{uuid.uuid4().hex}",
             ))
     elif suite == "browser":
+        provider_environment(runner, arguments, "postgres")
         specs = browser_specs(runner.root)
         if not specs:
             runner.operation("browser-tests", lambda _: fail("browser_tests_unimplemented"))
@@ -1274,6 +1467,11 @@ def execute_suite(runner, suite, provider, arguments):
             runner.command("browser-tests", [
                 "npm", "run", "test", "--workspace", "tests/e2e", "--", *specs,
             ], environment=session.environment, health_check=session.check)
+        for selected in ("sqlite", "postgres"):
+            runner.command(
+                f"identity-browser-native-{selected}", integration_command(selected, "browser"),
+                environment=provider_environment(runner, arguments, selected),
+            )
     elif suite == "startup":
         runner.build_runtime()
         runner.command("startup-storage-fixture-build", [

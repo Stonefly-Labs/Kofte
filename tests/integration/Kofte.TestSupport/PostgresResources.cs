@@ -16,7 +16,9 @@ public sealed partial class PostgresResources : IAsyncDisposable
     private readonly string provisioningPassword = Convert.ToHexStringLower(RandomNumberGenerator.GetBytes(32));
     private readonly string ownership;
     private string adminConnection = "";
+    private NpgsqlDataSource? administration;
     private PostgresService? service;
+    private PostgresAssemblyFixture? sharedOwner;
     private uint databaseOid, roleOid, provisionerOid;
     private bool unconfirmedCreation;
     private bool disposed;
@@ -32,12 +34,21 @@ public sealed partial class PostgresResources : IAsyncDisposable
         ownership = "kofte-bootstrap:" + RunId;
     }
 
-    public static Task<PostgresResources> CreateFromEnvironmentAsync(CancellationToken token) =>
-        CreateAsync(Environment.GetEnvironmentVariable("KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE") == "true",
-            Environment.GetEnvironmentVariable("KOFTE_POSTGRES_CONNECTION"), token: token);
+    public static Task<PostgresResources> CreateFromEnvironmentAsync(CancellationToken token,
+        bool shareOwnedService = false)
+    {
+        var external = Environment.GetEnvironmentVariable("KOFTE_POSTGRES_CONNECTION");
+        return CreateCoreAsync(Environment.GetEnvironmentVariable("KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE") == "true",
+            external, null, token, external is null && shareOwnedService ? PostgresAssemblyFixture.Current : null);
+    }
 
-    public static async Task<PostgresResources> CreateAsync(bool disposable,
-        string? externalService = null, string? requestedDatabase = null, CancellationToken token = default)
+    public static Task<PostgresResources> CreateAsync(bool disposable,
+        string? externalService = null, string? requestedDatabase = null, CancellationToken token = default) =>
+        CreateCoreAsync(disposable, externalService, requestedDatabase, token, null);
+
+    private static async Task<PostgresResources> CreateCoreAsync(bool disposable,
+        string? externalService, string? requestedDatabase, CancellationToken token,
+        PostgresAssemblyFixture? sharedOwner)
     {
         if (OperatingSystem.IsWindows() || !disposable || requestedDatabase is not null)
             throw new InvalidOperationException("postgres_disposable_new_target_required");
@@ -57,23 +68,40 @@ public sealed partial class PostgresResources : IAsyncDisposable
         {
             if (supplied is null)
             {
-                fixture.service = new PostgresService(fixture.RunId, fixture.password);
-                await fixture.service.StartAsync(token);
-                supplied = new NpgsqlConnectionStringBuilder
+                if (sharedOwner is not null)
                 {
-                    Host = "127.0.0.1",
-                    Port = fixture.service.Port,
-                    Database = "postgres",
-                    Username = "kofte_admin",
-                    Password = fixture.password,
-                    SslMode = SslMode.Disable
-                };
+                    var borrowed = await sharedOwner.BorrowAsync(token);
+                    fixture.sharedOwner = sharedOwner;
+                    fixture.service = borrowed.Service;
+                    supplied = new(borrowed.Connection);
+                }
+                else
+                {
+                    fixture.service = new PostgresService(fixture.RunId, fixture.password);
+                    await fixture.service.StartAsync(token);
+                    supplied = new NpgsqlConnectionStringBuilder
+                    {
+                        Host = "127.0.0.1",
+                        Port = fixture.service.Port,
+                        Database = "postgres",
+                        Username = "kofte_admin",
+                        Password = fixture.password,
+                        SslMode = SslMode.Disable
+                    };
+                }
             }
             supplied.Pooling = false;
             supplied.Timeout = (int)AdministrationBudget.TotalSeconds;
             supplied.CommandTimeout = (int)AdministrationBudget.TotalSeconds;
             supplied.IncludeErrorDetail = false;
             fixture.adminConnection = supplied.ConnectionString;
+            var pooledAdministration = new NpgsqlConnectionStringBuilder(fixture.adminConnection)
+            {
+                Pooling = true,
+                MaxPoolSize = 1,
+                ApplicationName = "kofte_fixture_admin_" + fixture.RunId
+            };
+            fixture.administration = NpgsqlDataSource.Create(pooledAdministration.ConnectionString);
             await fixture.ProvisionAsync(token);
             return fixture;
         }
@@ -91,7 +119,9 @@ public sealed partial class PostgresResources : IAsyncDisposable
         budget.Token.ThrowIfCancellationRequested();
         var builder = new NpgsqlConnectionStringBuilder(adminConnection);
         if (target) builder.Database = database;
-        await using var connection = new NpgsqlConnection(builder.ConnectionString);
+        await using var connection = !target && administration is not null
+            ? administration.CreateConnection()
+            : new NpgsqlConnection(builder.ConnectionString);
         await connection.OpenAsync(budget.Token);
         await using var command = new NpgsqlCommand(sql, connection);
         return await command.ExecuteScalarAsync(budget.Token);
@@ -120,6 +150,7 @@ public sealed partial class PostgresResources : IAsyncDisposable
             roleOid,
             provisionerOid,
             unconfirmedCreation,
+            serverRunId = service?.RunId,
             resources = service?.Resources
         }, cancellationToken: token);
     }
@@ -218,6 +249,7 @@ public sealed partial class PostgresResources : IAsyncDisposable
     public async Task SetAvailableAsync(bool available, CancellationToken token)
     {
         if (service is null) throw new InvalidOperationException("postgres_owned_image_required");
+        if (sharedOwner is not null) throw new InvalidOperationException("postgres_dedicated_outage_required");
         if (!available) await ValidateOwnershipAsync(token);
         await service.SetPausedAsync(!available, token);
         if (available) await ValidateOwnershipAsync(token);
@@ -244,10 +276,15 @@ public sealed partial class PostgresResources : IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         if (disposed) return;
-        if (unconfirmedCreation && service is null)
+        if (administration is not null)
+        {
+            await administration.DisposeAsync();
+            administration = null;
+        }
+        if (unconfirmedCreation && (service is null || sharedOwner is not null))
             throw new InvalidOperationException("postgres_unconfirmed_creation_preserved");
         using var cleanup = new CancellationTokenSource(TimeSpan.FromSeconds(60));
-        if (service is not null && service.Resources.Any(resource => resource.Kind == "container"))
+        if (sharedOwner is null && service is not null && service.Resources.Any(resource => resource.Kind == "container"))
             await service.SetPausedAsync(false, cleanup.Token);
         if (databaseOid != 0)
         {
@@ -269,14 +306,15 @@ public sealed partial class PostgresResources : IAsyncDisposable
             await AdminAsync($"DROP ROLE \"{provisioner}\"", cleanup.Token);
             provisionerOid = 0;
         }
-        if (service is not null) await service.CleanupAsync(cleanup.Token);
+        if (service is not null && sharedOwner is null) await service.CleanupAsync(cleanup.Token);
         root.Dispose();
+        sharedOwner?.Release();
         disposed = true;
     }
 
     public async Task<PostgresResources> CreateRecoveryTargetAsync(CancellationToken token)
     {
         await ValidateOwnershipAsync(token);
-        return await CreateAsync(true, service is null ? adminConnection : null, token: token);
+        return await CreateCoreAsync(true, service is null ? adminConnection : null, null, token, sharedOwner);
     }
 }

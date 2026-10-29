@@ -11,7 +11,10 @@ type BrowserContext = {
   identityMode: "oidc" | "development";
   csrfToken: string;
 };
-type LoginNotice = { cancelled: boolean; correlationId?: string };
+type LoginNotice = {
+  outcome: "cancelled" | "failed" | "unavailable";
+  correlationId?: string;
+};
 type SignOutNotice = {
   kind: "pending" | "confirmed" | "expired" | "uncertain";
   correlationId?: string;
@@ -79,12 +82,14 @@ function loginNotice(): LoginNotice | undefined {
   const outcome = query.get("outcome");
   if (
     query.getAll("outcome").length !== 1 ||
-    !["cancelled", "failed", "unavailable"].includes(outcome ?? "")
+    (outcome !== "cancelled" &&
+      outcome !== "failed" &&
+      outcome !== "unavailable")
   )
     return undefined;
   const correlation = query.get("correlationId");
   return {
-    cancelled: outcome === "cancelled",
+    outcome,
     ...(correlation &&
     /^[a-f0-9]{32}$/.test(correlation) &&
     query.getAll("correlationId").length === 1
@@ -183,7 +188,7 @@ export function useIdentity() {
         }
         let next: IdentityView;
         if (!identityResponse || identityResponse.status === 401) {
-          await identityResponse?.body?.cancel();
+          if (identityResponse) await readIdentityJson(identityResponse);
           next = {
             kind: established.current ? "expired" : "signed-out",
             context,

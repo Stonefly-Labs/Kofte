@@ -656,13 +656,13 @@ public abstract class IdentityPreparationTests
     }
 }
 
-[Trait("Provider", "sqlite")]
+[Trait("Provider", "sqlite"), Trait("Suite", "recovery")]
 public sealed class SqliteIdentityPreparationTests : IdentityPreparationTests
 {
     protected override string Provider => "sqlite";
 }
 
-[Trait("Provider", "postgres")]
+[Trait("Provider", "postgres"), Trait("Suite", "recovery")]
 public sealed class PostgresIdentityPreparationTests : IdentityPreparationTests
 {
     protected override string Provider => "postgres";

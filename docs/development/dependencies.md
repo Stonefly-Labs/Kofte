@@ -58,6 +58,37 @@ solution builds with zero warnings/errors, 192 existing host unit tests pass
 with zero skips, and solution formatting passes. This is dependency
 compatibility evidence, not implemented authentication or feature acceptance.
 
+### Spec 005 operational fixture project edges
+
+**Review date:** 2026-10-28. The test-owned identity consumer now references the
+existing storage consumer for real preservation/recovery recipes. Only the
+identity-consumer and platform-contract lock files gain internal project edges;
+no external package or pin changes. Locked restore and warnings-as-errors
+solution builds pass. `npm run dependencies:check` and `npm run contract:check`
+also pass on the current worktree
+(`identity-final-dependencies-none-ae6f2690da1b41cfa5edcf6c90a5b411.json`).
+The adopted union, archives and retained notices remain unchanged; this is not
+a new signature audit or a passing full feature gate. The actual legacy-host
+compatibility test separately builds immutable accepted pre-005 source with its
+original locked graph in an owned private root; it does not add old packages
+to the current product graph.
+
+On the later 2026-10-28 worktree, `npm run dependencies:check` and
+`npm run contract:check` pass again
+(`identity-current-dependencies-contract-none-3d58bdf913d74be280568f0944f8ed9a.json`).
+`npm audit --json` reports zero vulnerabilities.
+`dotnet list Kofte.slnx package --vulnerable --include-transitive --format json --no-restore`
+also reports zero vulnerabilities across all **14 current solution projects**
+(`identity-current-nuget-advisories-none-3def18e170c24de88d486c9d0cdc014a.json`).
+The first audit wrapper incorrectly required framework entries in NuGet's
+vulnerable-only JSON even for projects without findings; that failed parser
+attempt remains recorded in
+`identity-current-advisories-none-13d3f7cca6714ae6a09488d3455ad82a.json`,
+whose npm audit step passed. The corrected check requires every distinct
+solution project, no findings, no CLI warnings and the expected report shape.
+These are current advisory results, not a renewed archive-signature audit,
+a complete verification gate or feature acceptance.
+
 ## Spec 002 project adoption
 
 The platform library and test-owned author console introduce no runtime package.

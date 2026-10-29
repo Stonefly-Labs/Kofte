@@ -60,7 +60,7 @@ public sealed record LoginCommitSnapshot(long Revision, Guid Epoch, long Registr
     IReadOnlyList<LoginEventObservation> Events);
 
 // This owned host exercises real native OIDC and cookie handlers.
-public sealed class LoginCommitFixture : IAsyncDisposable
+public sealed partial class LoginCommitFixture : IAsyncDisposable
 {
     private readonly CookieContainer cookies = new();
     private readonly IHttpContextAccessor accessor = new HttpContextAccessor();
@@ -106,7 +106,7 @@ public sealed class LoginCommitFixture : IAsyncDisposable
     public static async Task<LoginCommitFixture> CreateAsync(string provider, CancellationToken token,
         TimeProvider? localClock = null, bool productRoutes = false, bool withBrowser = false,
         Func<StorageProviderScope, CancellationToken, Task>? prepareStorage = null, bool development = false,
-        Func<ICurrentActorV1, AuthenticatedActorV1?>? actorProbe = null)
+        Func<ICurrentActorV1, AuthenticatedActorV1?>? actorProbe = null, bool sharePostgres = true)
     {
         var fixture = new LoginCommitFixture
         {
@@ -116,7 +116,7 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         };
         try
         {
-            fixture.scope = await StorageProviderScope.CreateAsync(provider, token);
+            fixture.scope = await StorageProviderScope.CreateAsync(provider, token, sharePostgres);
             fixture.issuer = await OidcIssuer.CreateAsync(token);
             if (withBrowser && !development)
             {
@@ -182,6 +182,7 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         if (authorization is not null && sessionControl is not null)
             throw new InvalidOperationException("identity_fixture_browser_scope_invalid");
         var root = Path.GetDirectoryName(serving!.ConfigurationPath)!;
+        BeginBrowserActionCapture(root);
         var authorityFile = Path.Combine(root, "browser-ca.pem");
         PrivateTestFiles.WriteNew(authorityFile, Encoding.ASCII.GetBytes(issuer.AuthorityCertificatePem));
         var start = NodeStart(Path.Combine("tests", "e2e", "identity.production.ts"));
@@ -278,6 +279,7 @@ public sealed class LoginCommitFixture : IAsyncDisposable
             throw new InvalidOperationException("identity_browser_enrollment_acknowledgement_not_lost");
         if (sessionControl is not null && (controls != 20 || !browserIngress.SignOutAcknowledgementLost))
             throw new InvalidOperationException("identity_browser_session_controls_incomplete");
+        RequireBrowserTransportPrivacy(root, authorization ?? "");
         browserCompleted = true;
     }
 
@@ -298,6 +300,8 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         start.Environment["KOFTE_HOST_URL"] = client.BaseAddress!.AbsoluteUri;
         start.Environment["KOFTE_WEB_URL"] = serving.WebUrl.AbsoluteUri;
         start.Environment["KOFTE_IDENTITY_EXPECTED_USER"] = expectedUser.ToString("D");
+        start.Environment["KOFTE_IDENTITY_PRIVATE_ROOT"] = root;
+        browserCompleted = false;
         var result = await OwnedProcesses.RunAsync(start, TimeSpan.FromSeconds(45), token);
         if (result.ExitCode != 0)
         {
@@ -315,10 +319,14 @@ public sealed class LoginCommitFixture : IAsyncDisposable
             stats.GetProperty("flaky").GetInt32() != 0 ||
             stats.GetProperty("skipped").GetInt32() != 0)
             throw new InvalidOperationException("identity_fixture_development_browser_incomplete");
+        RequireBrowserTransportPrivacy(root);
+        browserCompleted = true;
     }
 
     private async Task StartBrowserAsync(CancellationToken token)
     {
+        browserTransportEnabled = true;
+        ProtectBrowserTransportValues();
         if (!File.Exists(Path.Combine(OwnedProcesses.FindRepository(), "apps", "web", ".next", "BUILD_ID")))
             throw new InvalidOperationException("identity_fixture_web_build_required");
         var start = NodeStart(Path.Combine("node_modules", "next", "dist", "bin", "next"));
@@ -608,6 +616,7 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         builder.WebHost.ConfigureKestrel(server => server.Listen(IPAddress.Loopback, backendPort));
         builder.Services.AddSingleton(this);
         builder.Services.AddSingleton(configuration);
+        ConfigureOperationsOwner(builder.Services);
         builder.Services.AddSingleton(store);
         builder.Services.AddSingleton<IDataProtectionProvider>(keys!.Provider);
         builder.Services.AddSingleton(accessor);
@@ -1230,7 +1239,8 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         scope!.ConfigureChild(start, offlineMaintenance: true);
         serving!.ConfigureChild(start);
         var result = await OwnedProcesses.RunAsync(start, TimeSpan.FromSeconds(120), token);
-        if (result.ExitCode != 0) throw new InvalidOperationException("identity_fixture_operator_failed");
+        if (result.ExitCode != 0)
+            throw new InvalidOperationException(IdentityConsumerFailureCodes.StoppedOperation(arguments, result));
         return result;
     }
 
@@ -1247,6 +1257,7 @@ public sealed class LoginCommitFixture : IAsyncDisposable
         }
         if (worker is not null)
         {
+            await CaptureBrowserWorkerAsync();
             await worker.DisposeAsync();
             worker = null;
         }
@@ -1415,9 +1426,25 @@ public sealed class LoginCommitFixture : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        if (webWorker is not null) await webWorker.DisposeAsync();
-        if (browserIngress is not null) await browserIngress.DisposeAsync();
-        if (worker is not null) await worker.DisposeAsync();
+        var nextOutput = "";
+        IReadOnlyList<string> ingressRecords = [];
+        if (webWorker is not null)
+        {
+            await webWorker.StopAsync();
+            var result = await webWorker.ResultAsync();
+            nextOutput = result.Stdout + "\n" + result.Stderr;
+            await webWorker.DisposeAsync();
+        }
+        if (browserIngress is not null)
+        {
+            await browserIngress.DisposeAsync();
+            ingressRecords = browserIngress.TakeAccessRecords();
+        }
+        if (worker is not null)
+        {
+            await CaptureBrowserWorkerAsync();
+            await worker.DisposeAsync();
+        }
         client?.Dispose();
         providerClient?.Dispose();
         if (application is not null)
@@ -1438,6 +1465,7 @@ public sealed class LoginCommitFixture : IAsyncDisposable
             previous.Dispose();
         if (issuer is not null) await issuer.DisposeAsync();
         if (scope is not null) await scope.DisposeAsync();
+        VerifyBrowserTransportPrivacy(nextOutput, ingressRecords);
     }
 
     private sealed class CommitInterruption() : Exception("identity_fixture_commit_interrupted");
@@ -1487,7 +1515,11 @@ public sealed class LoginCommitFixture : IAsyncDisposable
             }
             if (owner.fault is not (LoginCommitFault.BeforeCommit or LoginCommitFault.AfterCommit)) return;
             if (phase == (owner.fault == LoginCommitFault.BeforeCommit ? "login_before_commit" : "login_committed"))
+            {
+                if (owner.productRoutes)
+                    throw new StorageException(Kofte.Platform.Modules.Storage.StorageCode.Unavailable);
                 throw new CommitInterruption();
+            }
         }
 
         public void OnCompleted() { }

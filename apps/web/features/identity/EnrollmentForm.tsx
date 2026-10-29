@@ -22,7 +22,10 @@ export function EnrollmentForm({
   const active = useRef<AbortController | null>(null);
   const entry = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
-  const [failure, setFailure] = useState<{ correlationId?: string }>();
+  const [failure, setFailure] = useState<{
+    guidance: "authorization" | "context" | "operator" | "later";
+    correlationId?: string;
+  }>();
 
   useEffect(() => {
     mounted.current = true;
@@ -44,7 +47,7 @@ export function EnrollmentForm({
       typeof authorization !== "string" ||
       !/^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$/.test(authorization)
     ) {
-      setFailure({});
+      setFailure({ guidance: "authorization" });
       return;
     }
     submitting.current = true;
@@ -106,7 +109,18 @@ export function EnrollmentForm({
       ) {
         if (response.status === 401)
           onRefresh({ kind: "expired", correlationId });
-        else setFailure({ correlationId });
+        else
+          setFailure({
+            guidance:
+              response.status === 403
+                ? "context"
+                : response.status === 409
+                  ? "operator"
+                  : response.status === 429
+                    ? "later"
+                    : "authorization",
+            correlationId,
+          });
       } else throw new TypeError("identity_enrollment_response_invalid");
     } catch (error) {
       if (!(
@@ -149,14 +163,26 @@ export function EnrollmentForm({
         minLength={43}
         maxLength={43}
         spellCheck={false}
-        aria-describedby={`${id}-help`}
+        aria-describedby={`${id}-help${failure ? ` ${id}-failure` : ""}`}
+        aria-invalid={failure !== undefined}
         disabled={busy}
         className="identity-authorization"
       />
       {failure && (
-        <p role="alert">
-          Enrollment was not completed. Check the operator-provided
-          authorization and retry explicitly.
+        <p id={`${id}-failure`} role="alert">
+          Enrollment was not completed.{" "}
+          {
+            {
+              authorization:
+                "Check the operator-provided authorization and retry explicitly.",
+              context:
+                "Retry the identity check before trying enrollment again. If access remains denied, contact your operator.",
+              operator:
+                "Ask your operator to check the nomination and privately provided authorization before retrying.",
+              later:
+                "Wait before trying enrollment again. No automatic retry was made.",
+            }[failure.guidance]
+          }
           {failure.correlationId && <> Reference: {failure.correlationId}</>}
         </p>
       )}

@@ -10,6 +10,7 @@ using Kofte.Storage.IntegrationTests.Modules.Alpha;
 using Kofte.Storage.IntegrationTests.Providers;
 using Kofte.Storage.IntegrationTests.Registry;
 using Kofte.TestSupport;
+using Kofte.TestSupport.Identity;
 using Microsoft.AspNetCore.DataProtection;
 
 namespace Kofte.Storage.IntegrationTests.Identity;
@@ -19,6 +20,43 @@ public abstract class IdentityRecoveryTests
     protected abstract string Provider { get; }
     private CancellationToken Token => TestContext.Current.CancellationToken;
     private static readonly Guid UserId = Guid.Parse("10000000-0000-4000-8000-000000000001");
+
+    [Fact]
+    public async Task ActualAcceptedPreIdentityBinaryRefusesFormatTwoServingAndUpgradeWithoutChangingAnyState()
+    {
+        var legacy = IdentityLegacyHostFixture.Current;
+        await legacy.PrepareAsync(Token);
+        await using var fixture = await StorageProviderScope.CreateAsync(Provider, Token);
+        var installation = await PrepareAsync(fixture);
+        await PopulateModuleAsync(installation, fixture.Token);
+        var before = await CaptureAsync();
+        foreach (var arguments in new string[][] { [], ["--registry", "upgrade"] })
+        {
+            var result = await legacy.RefuseAsync(fixture, arguments, fixture.Token);
+            Assert.Equal(1, result.ExitCode);
+            Assert.DoesNotContain("registry_upgraded", result.Stdout);
+            var observed = new List<string>();
+            foreach (var line in result.Stderr.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+            {
+                using var record = JsonDocument.Parse(line);
+                observed.Add(record.RootElement.GetProperty("eventCode").GetString()!);
+            }
+            Assert.Contains("storage_invalid", observed);
+            Assert.Equal(before, await CaptureAsync());
+        }
+
+        async Task<string> CaptureAsync()
+        {
+            await using var stopped = await new StorageMaintenance(installation).AcquireAsync(fixture.Token);
+            var identity = await IdentityRecoverySnapshot.CaptureStoppedAsync(installation, stopped, fixture.Token);
+            var inventory = await RecoverySetVerifier.InspectStoppedAsync(installation, stopped, fixture.Token);
+            await using var binding = await new StorageRegistry(installation).BindAsync(
+                RegistryFixture.Module("org.example.alpha").Id, fixture.Token);
+            await using var context = await binding.CreateContextAsync(ModuleFixture.AlphaFactory, fixture.Token);
+            var record = Assert.Single(context.Records);
+            return JsonSerializer.Serialize(new { identity, inventory, record.Id, record.Payload, record.Note });
+        }
+    }
 
     [Fact]
     public async Task CompleteFormatTwoBackupBindsActualConsumedIdentityAndPopulatedModuleState()

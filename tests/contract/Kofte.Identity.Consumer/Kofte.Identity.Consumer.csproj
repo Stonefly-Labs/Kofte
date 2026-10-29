@@ -6,5 +6,6 @@
     <ItemGroup>
         <ProjectReference Include="../../../src/Kofte.Platform/Kofte.Platform.csproj" />
         <ProjectReference Include="../../integration/Kofte.TestSupport/Kofte.TestSupport.csproj" />
+        <ProjectReference Include="../Kofte.Storage.Consumer/Kofte.Storage.Consumer.csproj" />
     </ItemGroup>
 </Project>

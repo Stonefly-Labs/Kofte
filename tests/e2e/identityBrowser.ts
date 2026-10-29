@@ -1,15 +1,20 @@
 import { createHash, X509Certificate } from "node:crypto";
-import { lstat, mkdtemp, readFile, rm } from "node:fs/promises";
+import { lstat, mkdtemp, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { chromium, expect, type BrowserContext } from "@playwright/test";
+import { IdentityBrowserOwnership } from "./identityBrowserOwnership.ts";
 
 export async function withIdentityBrowser(
   root: string,
   origin: string,
   authorityFile: string,
-  visit: (context: BrowserContext) => Promise<void>,
+  visit: (
+    context: BrowserContext,
+    progress: (phase: string) => void,
+  ) => Promise<void>,
 ) {
+  const began = performance.now();
   const directory = await lstat(root);
   const authority = await lstat(authorityFile);
   if (
@@ -30,77 +35,125 @@ export async function withIdentityBrowser(
   }
   const profile = await mkdtemp(join(root, "chromium-"));
   let context: BrowserContext | undefined;
-  const groups = new WeakMap<BrowserContext, number>();
+  const owners = new WeakMap<BrowserContext, IdentityBrowserOwnership>();
+  const observedOwners: IdentityBrowserOwnership[] = [];
+  const transports = new WeakMap<
+    BrowserContext,
+    { context: boolean; browser: boolean; launch: number }
+  >();
+  let lastOwner: IdentityBrowserOwnership | undefined;
+  let launchUnverified = false;
+  let launches = 0;
+  const phase = (name: string, launch = launches) =>
+    console.log(
+      JSON.stringify({
+        eventCode: "identity_browser_profile_phase",
+        phase: name,
+        launch,
+        elapsedMilliseconds: Math.round(performance.now() - began),
+      }),
+    );
   const launch = async () => {
+    launches++;
+    phase("launch_started");
+    launchUnverified = true;
     context = await chromium.launchPersistentContext(profile, {
       channel: "chromium",
       headless: true,
       ignoreHTTPSErrors: false,
       timeout: 15000,
     });
+    phase("context_created");
     const browser = context.browser();
     if (!browser) throw new Error("identity_browser_ownership_required");
+    const transport = { context: false, browser: false, launch: launches };
+    transports.set(context, transport);
+    context.once("close", () => {
+      transport.context = true;
+      phase("owned_context_closed_event", transport.launch);
+    });
+    browser.once("disconnected", () => {
+      transport.browser = true;
+      phase("owned_browser_disconnected_event", transport.launch);
+    });
     const diagnostics = await browser.newBrowserCDPSession();
+    phase("browser_cdp_opened");
     try {
       const { processInfo } = await diagnostics.send(
         "SystemInfo.getProcessInfo",
       );
-      const owners = processInfo.filter((entry) => entry.type === "browser");
-      const group = owners[0]?.id;
+      phase("browser_owner_observed");
+      const observed = processInfo.filter((entry) => entry.type === "browser");
+      const group = observed[0]?.id;
       if (
-        owners.length !== 1 ||
+        observed.length !== 1 ||
         !Number.isSafeInteger(group) ||
         group <= 1 ||
         group === process.pid ||
         group === process.ppid
       )
         throw new Error("identity_browser_ownership_required");
-      groups.set(context, group);
+      lastOwner = await IdentityBrowserOwnership.observe(
+        profile,
+        chromium.executablePath(),
+        group,
+      );
+      owners.set(context, lastOwner);
+      observedOwners.push(lastOwner);
+      launchUnverified = false;
     } finally {
       await diagnostics.detach();
     }
     return context;
   };
   const close = async (owned: BrowserContext) => {
-    const group = groups.get(owned);
-    if (!group) throw new Error("identity_browser_ownership_required");
-    await owned.close();
-    const expires = performance.now() + 1000;
-    while (true) {
-      try {
-        process.kill(-group, 0);
-      } catch (error) {
-        if (error instanceof Error && "code" in error && error.code === "ESRCH")
-          return;
-        throw new Error("identity_browser_cleanup_unverified", {
-          cause: error,
-        });
-      }
-      if (performance.now() >= expires)
-        throw new Error("identity_browser_cleanup_unverified");
-      await new Promise((resolve) => setTimeout(resolve, 10));
-    }
+    const owner = owners.get(owned);
+    if (!owner) throw new Error("identity_browser_ownership_required");
+    await owner.close(
+      () => owned.close(),
+      (name) => phase(name, transports.get(owned)!.launch),
+      () => {
+        const observed = transports.get(owned);
+        return observed?.context === true && observed.browser;
+      },
+    );
   };
+  let hadPrimaryFailure = false;
+  let primaryFailure: unknown;
   try {
     console.log("identity_browser_stage_initial_launch");
     context = await launch();
     console.log("identity_browser_stage_initial_browser_ready");
     const probe = context.pages()[0];
-    await expect(
-      probe.goto(origin, { timeout: 5000 }),
+    const target = new URL(origin).href;
+    const [refusal] = await Promise.all([
+      probe.waitForEvent("requestfailed", {
+        predicate: (request) => request.url() === target,
+        timeout: 5000,
+      }),
+      probe.evaluate((url) => {
+        const frame = document.createElement("iframe");
+        frame.src = url;
+        document.body.append(frame);
+      }, target),
+    ]);
+    expect(
+      refusal.failure()?.errorText,
       "identity_browser_rejects_untrusted_tls",
-    ).rejects.toThrow("net::ERR_CERT_AUTHORITY_INVALID");
+    ).toBe("net::ERR_CERT_AUTHORITY_INVALID");
     console.log("identity_browser_stage_untrusted_tls_refused");
-    const manager = await context.newPage();
-    await manager.goto("chrome://certificate-manager/", { timeout: 5000 });
-    console.log("identity_browser_stage_certificate_manager_ready");
+    phase("untrusted_refused");
+    await probe.locator("iframe").evaluate((frame) => frame.remove());
+    phase("initial_close_started");
     await close(context);
+    phase("initial_close_finished");
     console.log("identity_browser_stage_initial_browser_closed");
     context = undefined;
 
     const database = new DatabaseSync(
       join(profile, "Default", "ServerCertificate"),
     );
+    phase("trust_database_opened");
     try {
       const version = database
         .prepare("SELECT value FROM meta WHERE key='version'")
@@ -135,17 +188,41 @@ export async function withIdentityBrowser(
       if (result.changes !== 1) {
         throw new Error("identity_browser_authority_import_failed");
       }
+      phase("trust_database_written");
     } finally {
       database.close();
+      phase("trust_database_closed");
     }
     console.log("identity_browser_stage_private_authority_installed");
     context = await launch();
     context.setDefaultTimeout(5000);
     context.setDefaultNavigationTimeout(5000);
-    await visit(context);
-  } finally {
-    if (context) await close(context);
-    console.log("identity_browser_stage_process_closed");
-    await rm(profile, { recursive: true });
+    phase("trusted_journey_started");
+    await visit(context, phase);
+  } catch (error) {
+    hadPrimaryFailure = true;
+    primaryFailure = error;
   }
+  let hadCleanupFailure = false;
+  let cleanupFailure: unknown;
+  try {
+    if (context) await close(context);
+    if (launchUnverified || !lastOwner)
+      throw new Error("identity_browser_cleanup_unverified");
+    await Promise.all(
+      observedOwners.map((owner) => owner.requireProtocolComplete()),
+    );
+    await lastOwner.removeProfile();
+    console.log("identity_browser_stage_process_closed");
+  } catch (error) {
+    hadCleanupFailure = true;
+    cleanupFailure = error;
+  }
+  if (hadPrimaryFailure && hadCleanupFailure)
+    throw new AggregateError(
+      [primaryFailure, cleanupFailure],
+      "identity_browser_failure_boundaries_failed",
+    );
+  if (hadPrimaryFailure) throw primaryFailure;
+  if (hadCleanupFailure) throw cleanupFailure;
 }
