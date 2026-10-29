@@ -318,10 +318,10 @@ public sealed partial class LoginCommitFixture : IAsyncDisposable
 
     private async Task StartBrowserAsync(CancellationToken token)
     {
-        browserTransportEnabled = true;
-        ProtectBrowserTransportValues();
         if (!File.Exists(Path.Combine(OwnedProcesses.FindRepository(), "apps", "web", ".next", "BUILD_ID")))
             throw new InvalidOperationException("identity_fixture_web_build_required");
+        browserTransportEnabled = true;
+        ProtectBrowserTransportValues();
         var start = NodeStart(Path.Combine("node_modules", "next", "dist", "bin", "next"));
         start.ArgumentList.Insert(0, "--max-http-header-size=32768");
         start.WorkingDirectory = Path.Combine(OwnedProcesses.FindRepository(), "apps", "web");

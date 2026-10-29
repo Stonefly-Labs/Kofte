@@ -944,6 +944,9 @@ class VerifyTests(unittest.TestCase):
                     self.assertTrue(call.kwargs["environment"]["BOOTSTRAP_PRIVACY_CANARY"])
             if suite == "privacy":
                 guide.assert_not_called()
+                builds = [index for index, call in enumerate(command.call_args_list)
+                          if call.args[1] == ["npm", "run", "build", "--workspace", "apps/web"]]
+                self.assertEqual(1, len(builds))
                 for provider, prefix in (("sqlite", "Sqlite"), ("postgres", "Postgres")):
                     browser = next(call for call in command.call_args_list
                                    if call.args[0] == f"identity-privacy-browser-native-{provider}")
@@ -952,6 +955,8 @@ class VerifyTests(unittest.TestCase):
                                      verify.required_native_classes(browser.args[0], browser.args[1]))
                     recipes = next(call for call in command.call_args_list
                                    if call.args[0] == f"storage-public-privacy-{provider}")
+                    self.assertLess(builds[0], command.call_args_list.index(recipes))
+                    self.assertLess(builds[0], command.call_args_list.index(browser))
                     self.assertEqual((prefix + "IdentityPrivacyGuideTests",),
                                      verify.required_native_classes(recipes.args[0], recipes.args[1]))
                 capture = next(call for call in command.call_args_list

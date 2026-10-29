@@ -110,6 +110,12 @@ Safe failure reports now distinguish exact catalogued public scenarios within
 failed native theories, without retaining private arguments. The latest isolated
 propagation baseline fails an initial login 303/503 assertion, not its aggregate
 timeout; its storage/composition selections pass and injections remain unrun.
+The hosted privacy failures now have a concrete cause: a fresh privacy job
+started all four browser-backed public scenarios before building Next. The
+verifier now builds that dependency first; fresh hosted qualification remains
+required, without relaxing capture or product deadlines.
+Missing-build fixture setup also preserves its specific refusal instead of
+masking it as a transport-capture failure.
 
 ### Historical implementation increments
 

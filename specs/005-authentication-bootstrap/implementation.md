@@ -13,6 +13,58 @@ resolves that blocker and resumes the original implement stage. The later
 adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
 
+## Continued implementation: build the privacy browser dependency first
+
+The actual `8cacf8e` hosted privacy report
+`privacy-both-5bc0a5c5be18470896e7cfdf5f7cd484.json` now identifies four
+failed browser-backed scenarios: `oidc-login`, `nominated-enrollment`,
+`session-boundary` and `development-isolation`; `private-evidence` does not
+fail. Each reports transport capture missing. On a fresh privacy runner,
+`execute_suite` ran these public consumers before its first production Next
+build. `StartBrowserAsync` requires `.next/BUILD_ID`; its failed setup then
+enabled disposal's transport check, masking the missing-build exception.
+Browser jobs build Next first, and existing local builds explain the passing
+isolated reruns. This is a demonstrated missing producer dependency, not an
+assumed Chromium or product-deadline failure.
+
+The privacy suite now builds the actual production web workspace once, after
+the PostgreSQL opt-in guard and before either provider's browser-backed public
+or native selection. Existing cases, deadlines and strict captures are unchanged.
+The existing command-selection regression first fails for zero required builds,
+then passes while proving the build precedes both providers' consumers and
+native browser selections.
+Fixture setup also checks the build prerequisite before enabling browser
+transport capture. A missing build must fail with its specific setup error,
+not disposal's missing-capture error; successfully started browser fixtures
+retain the same strict capture requirements.
+
+At `8cacf8e` plus this verifier dependency correction:
+
+| Exact executed command | Actual result |
+| --- | --- |
+| `python3 -m unittest scripts.tests.test_verify.VerifyTests.test_contract_and_privacy_select_only_their_real_serial_test_files -v` | Expected initial missing-build failure; final pass. |
+| `python3 scripts/check_repository.py` | Passed. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed 151 cases, 5.787s. |
+| `git diff --check` | Passed. |
+| `python3 scripts/verify.py --suite quality` | Passed all 21 steps, 49.521s; `quality-none-8f0652e20fec43fba5e38996cbce0ec7.json`. Includes build, formatting, lint, types, generated contracts and dependency review. |
+| `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-build --no-restore -c Release --filter-query '/*/*/*/RealDevelopmentSelectionAndSignOutRequirePrivateBrowserAndTransportEvidence' --minimum-expected-tests 2 --max-threads 4` | Controlled missing-build negative: temporarily withheld only `.next/BUILD_ID`; both provider cases fail with exactly `identity_fixture_web_build_required`, neither with transport-capture missing. Transient harness requires those two failures and restores the original build ID in `finally`; probe passes. |
+
+Fresh hosted privacy qualification is still required. The local both-provider
+privacy diagnostic `privacy-both-152e6315ce2f48108ea0421ec3b4e0ef.json`
+fails after 526.007s: both public privacy selections pass, as does the complete
+SQLite profile, but PostgreSQL's native Development journey fails initial
+signed-out visibility with real client fetch aborts. The safe profile shows
+context headers at 1171ms and client aborts at 1172/1173ms; this does not prove a
+specific server failure or revive the repaired upstream EOF bug. Test-support
+sources were compiled during that diagnostic, so it is not clean assessed-head
+closeout evidence.
+
+Separate pending native login-budget diagnostics are not part of this
+checkpoint. Their broader three-class selection executes 106 cases:
+104 pass, zero skip, two fail (a PostgreSQL browser-context refusal and a
+PostgreSQL Development seed commit deadline), 242.445s. Those failures remain
+unresolved; no production budget or positive assertion is weakened.
+
 ## Continued implementation: identify the failing public scenario safely
 
 The published keyboard-audit repair is `4691c16`. Repeated hosted privacy

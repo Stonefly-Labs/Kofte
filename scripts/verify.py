@@ -1397,6 +1397,8 @@ def execute_suite(runner, suite, provider, arguments):
         providers = ("sqlite", "postgres") if provider == "both" else (provider,)
         if "postgres" in providers:
             provider_environment(runner, arguments, "postgres")
+        if suite == "privacy":
+            runner.command("identity-privacy-web-build", ["npm", "run", "build", "--workspace", "apps/web"])
         for selected in providers:
             if suite == "contract":
                 runner.command(f"identity-public-guides-{selected}", [

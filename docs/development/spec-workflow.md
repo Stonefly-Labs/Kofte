@@ -108,6 +108,12 @@ Native failure reports now retain only exact source-known/catalogued scenario
 arguments, independently revalidated in isolated reports. The latest isolated
 PostgreSQL propagation baseline fails an initial login 303/503 assertion rather
 than timing out; passing independent integrations do not diagnose that failure.
+The exact privacy scenario evidence exposes a missing producer dependency:
+fresh jobs attempted all four browser-backed public guides before the first
+Next build. Privacy now builds the production web workspace before those guides
+and native browser selections, after disposable-provider admission. Existing
+local builds had masked this orchestration defect; actual fresh CI is still
+required.
 
 For focused Linux browser diagnostics on a published task branch, run
 `gh workflow run product-checks.yml --ref feature/005-authentication-bootstrap -f suite=browser`.
