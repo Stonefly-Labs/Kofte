@@ -6,27 +6,25 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement blocked; 90/100 complete** (T001–T089 and T091), on
+**Current checkpoint: 005 / implement in progress; 91/100 complete** (T001–T091), on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. Implementation continues until the entire
 spec is ready for converge, not until an incremental subset passes.
 The human-requested context pause has been resumed on the same branch/draft PR;
 it was not completion or a new approval gate.
-The [implementation checkpoint](../../specs/005-authentication-bootstrap/implementation.md#continued-implementation-strict-bodyless-and-lost-ack-privacy-capture)
+The [implementation checkpoint](../../specs/005-authentication-bootstrap/implementation.md#continued-implementation-verifier-owned-browser-canaries)
 records the remaining work, actual results and required unchanged budgets.
-Fresh quality/unit gates pass, including all 35 browser helper cases and 143
-Python tests. Strict actual Development browser/transport facts now pass both
-providers. The complete contract and privacy suites now pass both providers,
-including all twenty public recipe rows and actual native identity failure/
-Development browser facts. The guide's literal SQLite `all` command also passes
-235 exact observations. This closes T089/T091; T090 and T092–T100 remain open.
-The exact complete local gate exits 1: direct PostgreSQL host/composition
-integration, native key recovery and retained accessibility/bootstrap/recovery
-browser checks fail. The isolated propagation PostgreSQL baseline now passes
-all 119/212/59 host/storage/composition cases in 619.530s, but its browser
-baseline fails before injected exercises. Neither pass replaces a failed
-result or establishes a failure cause. Later stages and acceptance remain
-separate.
+The complete browser gate now passes its root/Development selection and both
+native providers. Its real failure was the verifier's missing private
+canary-export directory; diagnostics had misleadingly retained passed-test
+declaration locations. The fix consumes the actual bounded private export and
+scans owned transport output, without weakening missing-capture or disclosure
+guards. This joins the earlier passing production login/enrollment/session
+journeys and private callback/accessibility evidence to close T090.
+T092–T100 remain open. The earlier failed complete local/hosted results remain
+historical failures; unexpected native 503s are not diagnosed by isolated passes.
+No approval is needed to continue this engineering work. Later stages and
+acceptance remain separate.
 Earlier focused locked/paused-store and before/after-login-commit refusal cases pass
 ten cases per real provider. An actual binary built from accepted pre-005
 `3e41681` refuses format-2 serving and upgrade on both providers while exact
@@ -47,7 +45,7 @@ cleanup. The same cases, product deadlines and within-test contention remain;
 that isolated result was not itself a passing serial/nested aggregate gate.
 The [runtime guide](../../specs/005-authentication-bootstrap/quickstart.md)
 separates delivered interfaces from exact results. The ledger records
-005/implement/blocked with the actual remaining verification work;
+005/implement/running while the remaining verification work is investigated;
 converge/review/acceptance have not run.
 
 **Earlier implementation increments (historical):** The

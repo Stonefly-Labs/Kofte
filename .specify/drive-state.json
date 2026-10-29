@@ -29,9 +29,9 @@
     "spec": "005",
     "step": "implement",
     "directory": "specs/005-authentication-bootstrap",
-    "status": "blocked",
+    "status": "running",
     "branch": "feature/005-authentication-bootstrap",
-    "reason": "90/100 tasks evidenced (T001-T089 and T091). Exact full local gate exits 1: direct PostgreSQL host/composition integration, native post-repair key recovery, retained accessibility/bootstrap/recovery browser checks and isolated browser baseline fail. Contract/privacy and both provider catalogs pass; isolated PostgreSQL baseline passes but does not erase direct failures. Resume 005 implement on this branch/draft PR #8, read the current implementation evidence, diagnose exact failures without relaxing limits, and finish T090/T092-T100. Do not start converge or replace the branch/PR.",
+    "reason": "",
     "started_at": "2026-10-26T21:30:18+00:00"
   },
   "history": [

@@ -37,30 +37,23 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 > [!IMPORTANT]
 > **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md) and [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) is now human-merged. Its accepted ledger and evidence were verified on updated main before 005 began. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) retains prior failures and unknown causes; the historical failed local gate remains failed, not waived by acceptance or merge. Spec 005 now has [authentication/bootstrap requirements](specs/005-authentication-bootstrap/spec.md) and US1 sign-in implemented, not the complete identity feature. Nothing here claims production readiness or MVP completion.
 
-**Current stage: 005 / implement blocked; 90/100 tasks complete.** T001–T089 and T091
-are evidenced. Login, nominated enrollment, shared session boundaries and
-explicit Development identity and operational recovery are implemented; complete
-accessibility/browser proof and final local/CI reconciliation remain unfinished.
+**Current stage: 005 / implement in progress; 91/100 tasks complete.** T001–T091
+are evidenced. Login, nominated enrollment, shared session boundaries,
+explicit Development identity and operational recovery are implemented.
+The owning browser gate now passes; native failures and final local/CI
+reconciliation remain implementation work, not a request for human approval.
 The same branch/draft PR continues from the
-[current evidence](specs/005-authentication-bootstrap/implementation.md#continued-implementation-strict-bodyless-and-lost-ack-privacy-capture);
-the earlier human-requested context pause is historical, not a new approval gate.
+[current evidence](specs/005-authentication-bootstrap/implementation.md#continued-implementation-verifier-owned-browser-canaries).
 The [runtime guide](specs/005-authentication-bootstrap/quickstart.md) distinguishes
-delivered commands from executed evidence. Actual locked/paused-store and
-before/after-login-commit refusals now pass ten cases on each real provider.
-The actual accepted pre-identity binary also refuses format-2 serving and
-upgrade on both stores without changing security/module state. These focused
-passes now include all three public upgrade/recovery/private-evidence recipes
-on both providers. They do not erase earlier failed full gates or complete 005.
-Fresh quality and unit suites pass, including all 35 browser helper cases and
-143 Python tests. Strict Development browser/transport facts now pass on both
-providers. The complete contract and privacy suites now pass both providers,
-including all twenty public recipe rows; the literal SQLite `all` command
-also passes its 235 observations. This closes T089/T091, not the entire stage.
-The exact full local gate exits 1: direct PostgreSQL host/composition integration,
-key recovery and retained browser checks fail. The nested PostgreSQL baseline
-now passes, but the nested browser baseline blocks failure propagation.
-Those passing subsets do not erase the failed complete gate or establish
-failure causes. T090 and T092–T100 remain open; no feature acceptance is claimed.
+delivered commands from executed evidence. The browser failure was a missing
+private canary-export directory in the verifier, not failed root-page assertions.
+The verifier now consumes the actual export and scans owned transport output;
+missing/invalid receipts and disclosures still fail. Diagnostics no longer blame
+passed-test declarations. The full browser selection and both native providers
+pass, joining the earlier production expiry/uncertain-state and public-recipe
+evidence to close T090. Historical failed full gates remain failed; the
+unexpected native 503s have not been diagnosed by passing reruns.
+T092–T100 remain open; no feature acceptance is claimed.
 
 ### Historical implementation increments
 

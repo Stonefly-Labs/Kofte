@@ -168,6 +168,74 @@ class RuntimeSupportTests(unittest.TestCase):
             capture.scan_and_clear()
         self.assertEqual([], capture.buffers)
 
+    def test_browser_canaries_are_consumed_once_and_scan_actual_prior_transport_output(self):
+        values = ["session-canary-123456", "csrf-canary-123456789", "browser-canary-+/=123456"]
+        path = self.root / "identity-browser-canaries.json"
+        for disclosed in (values[0].encode(), b"browser-canary-%2B%2F%3D123456"):
+            with self.subTest(disclosed=disclosed):
+                capture = support.OutputCapture(self.failures, [])
+                capture.read(io.BytesIO(disclosed))
+                path.write_text(json.dumps({"version": 1, "canaries": values}))
+                path.chmod(0o600)
+                self.assertEqual({"identityCanaries": 3}, capture.consume_identity_canaries(self.root))
+                self.assertFalse(path.exists())
+                with self.assertRaisesRegex(support.RuntimeFailure, "identity_browser_transport_canaries_invalid"):
+                    capture.consume_identity_canaries(self.root)
+                with self.assertRaisesRegex(support.RuntimeFailure, "runtime_output_disclosed"):
+                    capture.scan_and_clear()
+                self.assertEqual([], capture.forbidden)
+
+    def test_browser_canary_receipt_refuses_missing_malformed_duplicate_and_unbounded_input(self):
+        capture = support.OutputCapture(self.failures, [])
+        path = self.root / "identity-browser-canaries.json"
+        valid = {"version": 1, "canaries": ["a" * 16, "b" * 16, "c" * 16]}
+        cases = [
+            None, b"", b"x" * 65537, b"not-json", b"\xff",
+            json.dumps(valid).encode("utf-16"),
+            b"[" * 2000 + b"]" * 2000,
+            b'{"version":1,"version":1,"canaries":["aaaaaaaaaaaaaaaa","bbbbbbbbbbbbbbbb","cccccccccccccccc"]}',
+            json.dumps(valid | {"version": True}).encode(),
+            json.dumps(valid | {"canaries": ["a" * 16] * 3}).encode(),
+            json.dumps(valid | {"canaries": ["a" * 16, "b" * 16, "short"]}).encode(),
+            json.dumps(valid | {"canaries": ["a" * 16, "b" * 16, None]}).encode(),
+            json.dumps(valid | {"extra": "not-admitted"}).encode(),
+        ]
+        for content in cases:
+            with self.subTest(content=content), self.assertRaisesRegex(
+                    support.RuntimeFailure, "identity_browser_transport_canaries_invalid"):
+                if content is not None:
+                    path.write_bytes(content)
+                    path.chmod(0o600)
+                capture.consume_identity_canaries(self.root)
+            self.assertEqual([], capture.forbidden)
+
+    def test_browser_canary_receipt_refuses_public_permissions_links_and_special_files(self):
+        capture = support.OutputCapture(self.failures, [])
+        target = self.root / "private-canaries.json"
+        target.write_text(json.dumps({"version": 1, "canaries": ["a" * 16, "b" * 16, "c" * 16]}))
+        target.chmod(0o600)
+        path = self.root / "identity-browser-canaries.json"
+        for kind in ("symlink", "hardlink", "fifo", "public-file", "public-root"):
+            with self.subTest(kind=kind):
+                if kind == "symlink":
+                    path.symlink_to(target)
+                elif kind == "hardlink":
+                    os.link(target, path)
+                elif kind == "fifo":
+                    os.mkfifo(path, 0o600)
+                else:
+                    path.write_bytes(target.read_bytes())
+                    path.chmod(0o644 if kind == "public-file" else 0o600)
+                    if kind == "public-root":
+                        self.root.chmod(0o755)
+                try:
+                    with self.assertRaisesRegex(support.RuntimeFailure, "identity_browser_transport_canaries_invalid"):
+                        capture.consume_identity_canaries(self.root)
+                finally:
+                    self.root.chmod(0o700)
+                    path.unlink()
+                self.assertEqual([], capture.forbidden)
+
     def test_diagnostic_locations_split_across_chunks_are_complete_and_never_include_raw_text(self):
         diagnostic = support.CommandDiagnostics("browser")
 
@@ -175,8 +243,8 @@ class RuntimeSupportTests(unittest.TestCase):
             def __init__(self):
                 super().__init__()
                 self.parts = iter((
-                    b"credential-canary /private/tests/e2e/accessibility.spec.ts:7",
-                    b"6:1", b"5\n/private/tests/e2e/startup.spec.ts:10:2", b"",
+                    b" at /private/tests/e2e/accessibility.spec.ts:7",
+                    b"6:1", b"5 credential-canary\n at /private/tests/e2e/startup.spec.ts:10:2", b"",
                 ))
 
             def read(self, *_args):
@@ -189,6 +257,17 @@ class RuntimeSupportTests(unittest.TestCase):
         self.assertNotIn("credential", json.dumps(vars(diagnostic), default=str))
         diagnostic.clear()
         self.assertEqual({}, diagnostic.safe_fields())
+
+    def test_browser_diagnostics_do_not_blame_passed_test_declarations_for_identity_failure(self):
+        diagnostic = support.CommandDiagnostics("browser")
+        diagnostic.read(io.BytesIO(
+            b"  \xe2\x9c\x93 1 bootstrap.spec.ts:3:1 public test (1s)\n"
+            b"  \xe2\x9c\x93 2 recovery.spec.ts:4:1 public test (1s)\n"
+            b"  1) identity.spec.ts:99:1 failed test\n"
+            b"Error: credential-canary\n"
+        ))
+        self.assertEqual({"sourceLocations": ["identity.spec.ts:99:1"]}, diagnostic.safe_fields())
+        self.assertNotIn("credential", json.dumps(vars(diagnostic), default=str))
 
     def test_storage_diagnostics_keep_only_known_symbols_and_codes_not_arguments_or_exceptions(self):
         name = "Kofte.Storage.IntegrationTests.Registry.PostgresRegistrationConcurrencyTests.KnownCase"

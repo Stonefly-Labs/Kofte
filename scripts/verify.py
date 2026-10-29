@@ -1002,7 +1002,8 @@ class PostgresLease:
 
 
 @contextmanager
-def runtime(runner, provider, disposable, external_connection=None, privacy_canary=None):
+def runtime(runner, provider, disposable, external_connection=None, privacy_canary=None,
+            identity_browser=False):
     if provider == "postgres" and not disposable:
         raise VerificationError("disposable_postgres_opt_in_required")
     runner.build_runtime()
@@ -1030,6 +1031,7 @@ def runtime(runner, provider, disposable, external_connection=None, privacy_cana
         host_state = {"current": None}
         sqlite = runtime_support.SqliteAvailability(directory) if provider == "sqlite" else None
         pg_unavailable = [False]
+        identity_capture_root = None
         try:
             if lease:
                 connection = [None]
@@ -1124,6 +1126,10 @@ def runtime(runner, provider, disposable, external_connection=None, privacy_cana
             worker.start()
             test_environment = dict(environment, BOOTSTRAP_TEST_CONTROL=str(control),
                                     BOOTSTRAP_TEST_RUN_ID=run_id)
+            if identity_browser:
+                identity_capture_root = directory / "identity-browser"
+                identity_capture_root.mkdir(mode=0o700)
+                test_environment["KOFTE_IDENTITY_PRIVATE_ROOT"] = str(identity_capture_root)
             if privacy_canary:
                 test_environment["BOOTSTRAP_PRIVACY_CANARY"] = privacy_canary
             yield runtime_support.Session(test_environment, directory, worker)
@@ -1170,6 +1176,9 @@ def runtime(runner, provider, disposable, external_connection=None, privacy_cana
             if lease:
                 cleanup("postgres-fixture-stop", lambda _: lease.stop(), "postgres_cleanup_failed")
             if capture:
+                if identity_capture_root is not None:
+                    cleanup("identity-browser-canaries", lambda step: step.update(
+                        capture.consume_identity_canaries(identity_capture_root)))
                 def scan(step):
                     step.update(capture.scan_and_clear())
                 cleanup("runtime-output-scan", scan)
@@ -1463,7 +1472,7 @@ def execute_suite(runner, suite, provider, arguments):
         specs = browser_specs(runner.root)
         if not specs:
             runner.operation("browser-tests", lambda _: fail("browser_tests_unimplemented"))
-        with runtime(runner, "sqlite", False) as session:
+        with runtime(runner, "sqlite", False, identity_browser=True) as session:
             runner.command("browser-tests", [
                 "npm", "run", "test", "--workspace", "tests/e2e", "--", *specs,
             ], environment=session.environment, health_check=session.check)

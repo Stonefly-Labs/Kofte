@@ -1060,10 +1060,18 @@ class VerifyTests(unittest.TestCase):
 
         with patch.object(runner, "build_runtime"), patch.object(runner, "command", side_effect=initialize), \
                 patch.object(verify, "OwnedProcesses", Owned), patch.object(verify.dev, "wait_ready"):
-            with verify.runtime(runner, "sqlite", False, privacy_canary="current-canary") as session:
+            with verify.runtime(runner, "sqlite", False, privacy_canary="current-canary",
+                                identity_browser=True) as session:
                 directory = session.directory
                 self.assertEqual("current-canary", session.environment["BOOTSTRAP_PRIVACY_CANARY"])
                 self.assertEqual(0o700, Path(session.environment["BOOTSTRAP_TEST_CONTROL"]).stat().st_mode & 0o777)
+                canary_root = Path(session.environment["KOFTE_IDENTITY_PRIVATE_ROOT"])
+                self.assertEqual(0o700, canary_root.stat().st_mode & 0o777)
+                canaries = canary_root / "identity-browser-canaries.json"
+                canaries.write_text(json.dumps({
+                    "version": 1, "canaries": ["a" * 16, "b" * 16, "c" * 16],
+                }))
+                canaries.chmod(0o600)
                 self.assertRegex(session.environment["BOOTSTRAP_TEST_RUN_ID"], "^[a-f0-9]{32}$")
                 identity = Path(session.environment["KOFTE_AUTH_CONFIG_FILE"])
                 self.assertEqual(0o600, identity.stat().st_mode & 0o777)
@@ -1091,9 +1099,14 @@ class VerifyTests(unittest.TestCase):
                 self.assertEqual(hosts[0].environment, hosts[1].environment)
                 for group in groups:
                     self.assertFalse(any(key.startswith("BOOTSTRAP_") for key in group.environment))
+                    self.assertNotIn("KOFTE_IDENTITY_PRIVATE_ROOT", group.environment)
                     self.assertEqual("/pinned/sdk", group.environment["DOTNET_ROOT"])
         self.assertFalse(directory.exists())
         self.assertTrue(all(group.stopped for group in groups))
+        receipt_step = next(step for step in runner.report.data["steps"]
+                            if step["name"] == "identity-browser-canaries")
+        self.assertEqual(3, receipt_step["identityCanaries"])
+        self.assertEqual("passed", receipt_step["outcome"])
 
     def test_uncertain_process_cleanup_retains_only_the_private_runtime_root(self):
         runner = verify.Runner(self.root, self.report("privacy"), {})

@@ -14,18 +14,18 @@ The [technology-stack exploration](kofte-technology-stack-architecture.md) is hi
 
 ## Working in the repository
 
-**Current Spec Kit checkpoint: 005 / implement blocked, T001–T089 and T091 complete (90/100).**
+**Current Spec Kit checkpoint: 005 / implement in progress, T001–T091 complete (91/100).**
 The [runtime guide](../specs/005-authentication-bootstrap/quickstart.md) covers
 delivered sign-in, enrollment, session/Development and stopped operator commands.
-All three public operational recipes now pass on both providers; complete
-accessibility/browser and local/assessed-head CI gates remain
-in progress. Focused passes do not erase failed full gates.
-Strict Development browser/transport proof now passes on both providers, and
-the complete contract/privacy suites pass both providers, including all twenty
-public recipe rows. The exact full local gate exits 1 on direct PostgreSQL
-integration/key recovery, retained browser checks and the propagation browser
-baseline. Its passing nested PostgreSQL baseline does not replace direct
-failures or establish their cause. T090 and T092–T100 remain open.
+All three public operational recipes pass on both providers. The owning browser
+gate now also passes after wiring its required private canary export into the
+verifier's actual transport scan. The old diagnostic locations included passed
+root tests; they were not evidence that those assertions failed.
+The [current evidence](../specs/005-authentication-bootstrap/implementation.md#continued-implementation-verifier-owned-browser-canaries)
+closes T090 with actual state/accessibility coverage. Native 503s and complete
+local/assessed-head CI reconciliation remain engineering work; no human decision
+is blocking implementation. T092–T100 remain open. Passing subsets do not erase
+historical failed gates or establish their causes.
 The detailed US1 increments below are historical.
 The [implementation evidence](../specs/005-authentication-bootstrap/implementation.md)
 records reviewed OIDC adoption (403 npm / 87 NuGet), independent HTTPS/process

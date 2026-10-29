@@ -1,8 +1,8 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement blocked; 90/100 complete (T001-T089 and T091). Strict privacy proof and both-provider public catalogs pass. The exact complete local gate fails PostgreSQL integration/recovery, retained browser checks and the failure-propagation browser baseline; accessibility and final reconciliation remain unfinished.
+**Result:** implement in progress; 91/100 complete (T001-T091). The owning browser gate now passes. Unexpected native 503s and complete local/assessed-head CI reconciliation remain engineering work, not a human approval gate.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-29.
-**Assessed baseline:** `6f4e4a7e5f2246011fbe35928af759aa300317b3` plus this checkpoint's uncommitted-at-test-time capture/ingress changes; earlier assessments retain their original baselines below.
+**Assessed baseline:** `554017c88acb8e8be9e0f39677ce584826c2a366` plus this checkpoint's verifier/receipt changes; earlier assessments retain their original baselines below.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
 `specs/005-authentication-bootstrap`.
 **Checkpoint:** [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8).
@@ -12,6 +12,93 @@ The initial blocked assessment below is retained as history. The
 resolves that blocker and resumes the original implement stage. The later
 adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
+
+## Continued implementation: verifier-owned browser canaries
+
+The original branch/open draft PR and both completed checklists were verified
+again, and the same implement stage resumed. No new approval, stage, branch,
+product dependency or deadline was introduced.
+
+### Actual browser failure and correction
+
+The exact browser selection was reproduced before editing. A transient JSON
+reporter inspection identified **only `identity.spec.ts:99` as failed**:
+`identity_browser_private_canary_export_failed`. The root accessibility,
+bootstrap and recovery cases passed. The old location projector accepted their
+successful list-reporter declaration lines, so its retained locations were not
+evidence that those assertions failed. The earlier failed run outcomes remain
+failed, but the root-page attribution below is superseded by this reproduction.
+No focus/visibility change or relaxed assertion was needed.
+
+The root verifier runtime had not provided `KOFTE_IDENTITY_PRIVATE_ROOT` for the
+delivered Development journey's mandatory export. The browser suite now owns a
+separate 0700 export directory, supplies it only to the test process and requires
+the actual single-use export after all owned transport processes stop. The
+reader checks canonical ownership, regular single-link 0600 file, bounded strict
+UTF-8/JSON, duplicate/unknown fields, exact numeric version and unique bounded
+canaries. Missing/invalid exports fail; they never become optional capture.
+Raw and URI-encoded canaries are added to the existing actual transport-output
+scanner before its buffers are scanned and discarded. Only the count is
+reported. File content is zeroed and the admitted export is consumed, not
+published. Browser diagnostics now retain only failure headings/stack locations,
+including the known identity test file, not successful declarations.
+
+| Exact executed command                                                                | Actual result                                                                                                                                                                                                                                                                                                                                    |
+| ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `python3 -m unittest scripts.tests.test_runtime_support scripts.tests.test_verify -v` | Passed 84 cases, most recent 4.443s. Added regressions reject missing/malformed/duplicate/oversized/non-UTF-8/deep input, public permissions, symlink/hardlink/FIFO, replay and raw/encoded disclosure in actual prior transport buffers. The verifier regression proves test-only environment delivery and parent consumption.                  |
+| `python3 scripts/verify.py --suite browser --disposable-postgres`                     | **Passed**, 158.676s; safe report `browser-none-d7c974e5187f41ec952bf06591f2a84b.json`. The complete four-file root/Development selection passed in 47.589s, actual export supplied six canaries, and owned cleanup/output scan passed. Native SQLite and PostgreSQL browser selections each passed two cases, zero skipped, in 36.068s/66.681s. |
+
+`python3 scripts/verify.py --suite quality` subsequently passed all 21 steps in
+47.219s (`quality-none-ec694e92abf44af3a7f97f4217a5cfe7.json`), after removal of
+the temporary native diagnostics. This executes the exact required
+`python3 scripts/check_repository.py`,
+`python3 -m unittest discover -s scripts/tests -v` and `git diff --check`;
+all passed. It also passed locked restores, .NET format/warnings-as-errors
+solution build, Prettier/ESLint/TypeScript/workspace builds, generated-contract
+and dependency verification. No package or product source changed.
+
+This closes T090 using the actual state coverage below, not just test existence.
+The production consumer journeys are unchanged from the earlier **passing owning
+both-provider catalogs** in `contract-both-3b51b1b55111486a9e0e9d122664ae29.json`;
+their historical initially failed catalogs remain failed.
+
+| State/evidence                                                                                    | Actual assertion and execution                                                                                                                                                                                                                                                                                    |
+| ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Loading, signed-out, cancelled, refused, provider-unavailable and corrected signed-in             | `identity.failures.ts` exercises real HTTPS callbacks through owned issuer/host/Next/ingress; the new owning browser run passes both providers. Each state checks live/atomic announcements, keyboard/visible focus, 320px/200% reflow and no serious/critical axe IDs. Deliberate retry does not resubmit login. |
+| Development signed-in/signed-out and actual host-unavailable/retry                                | `identity.spec.ts` now passes in the complete root selection; the independent native Development facts pass each provider and scan actual transport/canary evidence.                                                                                                                                              |
+| Idle/absolute expiry, second-user clearing, confirmed sign-out and uncertain lost acknowledgement | The earlier owning `session-boundary` catalogs run `identity.production.ts` via actual session controls on both providers; all nineteen exact observations pass, including the 320px/200%/axe/keyboard assertions around expiry and uncertainty.                                                                  |
+| Enrollment refused/uncertain and fresh designation                                                | The earlier owning `nominated-enrollment` catalogs pass all seventeen observations on each provider, including actual lost acknowledgement, protected-input focus, fresh `/me` and no repeated enrollment.                                                                                                        |
+| Root loading/ready/unavailable and recovery                                                       | The complete root selection passes its 320/768/1440px axe, 200% fallback/reflow, keyboard, actual store/host loss and stale-attempt cases; no assertion was removed.                                                                                                                                              |
+
+Profile: Darwin 25.5.0 arm64, 18 logical CPUs, 68,719,476,736 memory bytes,
+Python 3.15.0, Node 24.22.0/npm 11.19.1, SDK 10.0.402/runtime 10.0.13 and the
+pinned Playwright Chromium with an isolated trusted test CA, never personal/OS
+trust. The native selection durations above include provider/setup/cleanup;
+they are **not** browser-only or human-interaction timings. SC-005's actual
+browser assertions measure **under five seconds after the trusted callback
+request**; provider exchange before that return and user decision time are not
+folded into that measurement. No independent provider-latency benchmark or human
+usability-study result is claimed.
+
+### Native investigation remains separate
+
+An initial direct PostgreSQL probe lacked disposable admission and correctly
+failed `postgres_disposable_new_target_required` before product execution. It
+is not evidence of a product 503 or a passing selection.
+With the required owned disposable admission, the complete 29-case
+`PostgresOidcBudgetTests` selection failed in 224.949s
+(`integration-postgres-c818465103964981a2e70adb79fe01b9.json`).
+Its known failures include invalid evidence, DNS readmission and provider
+refusals; finite status evidence is `expected_200_actual_503` and
+`expected_303_actual_503`. A later twelve-case invalid-evidence selection,
+29-case class and original 119-case host selection passed with temporary
+finite-category/source-method diagnostics. Those diagnostics were removed;
+they changed no deadline or assertion and established **no failure cause**.
+These diagnostic passes are not a fix or replacement for the failed selection.
+
+T092-T100 remain open. The next verification must use the unchanged required
+complete gate and actual assessed-head CI, preserve previous failed outcomes,
+and investigate any remaining failure rather than label it a human blocker.
 
 ## Continued implementation: strict bodyless and lost-ack privacy capture
 

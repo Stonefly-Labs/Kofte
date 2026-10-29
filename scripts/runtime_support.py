@@ -7,6 +7,7 @@ import re
 import stat
 import threading
 import time
+from urllib.parse import quote
 import xml.etree.ElementTree as ET
 
 
@@ -52,7 +53,7 @@ class CommandDiagnostics:
     locations = re.compile(
         rb"(?<![A-Za-z0-9_.-])("
         rb"accessibility\.spec\.ts|bootstrap\.spec\.ts|recovery\.spec\.ts|"
-        rb"privacy\.spec\.ts|startup\.spec\.ts):"
+        rb"privacy\.spec\.ts|startup\.spec\.ts|identity\.spec\.ts):"
         rb"([1-9][0-9]{0,8}):([1-9][0-9]{0,8})(?![0-9])",
     )
 
@@ -88,6 +89,8 @@ class CommandDiagnostics:
             except UnicodeError:
                 return
         elif self.kind == "browser":
+            if not re.match(rb"^\s*(?:[1-9][0-9]*\)|at\b)", line):
+                return
             found = [b":".join(match.groups()).decode("ascii")
                      for match in self.locations.finditer(line)]
             with self.lock:
@@ -290,6 +293,55 @@ class OutputCapture:
         self.size = 0
         self.lock = threading.Lock()
         self.streams = 0
+
+    def consume_identity_canaries(self, root):
+        def unique_fields(pairs):
+            fields = {}
+            for name, value in pairs:
+                if name in fields:
+                    raise ValueError
+                fields[name] = value
+            return fields
+
+        content = bytearray()
+        try:
+            root = Path(root)
+            directory = root.lstat()
+            if (root.resolve() != root.absolute() or not stat.S_ISDIR(directory.st_mode)
+                    or stat.S_IMODE(directory.st_mode) != 0o700 or directory.st_uid != os.getuid()):
+                raise ValueError
+            path = root / "identity-browser-canaries.json"
+            flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+            with os.fdopen(os.open(path, flags), "rb") as stream:
+                metadata = os.fstat(stream.fileno())
+                if (not stat.S_ISREG(metadata.st_mode) or stat.S_IMODE(metadata.st_mode) != 0o600
+                        or metadata.st_uid != directory.st_uid or metadata.st_nlink != 1
+                        or not 0 < metadata.st_size <= 65536):
+                    raise ValueError
+                content.extend(stream.read(65537))
+                if len(content) != metadata.st_size:
+                    raise ValueError
+            values = json.loads(content.decode("utf-8"), object_pairs_hook=unique_fields)
+            if (not isinstance(values, dict) or set(values) != {"version", "canaries"}
+                    or type(values["version"]) is not int or values["version"] != 1
+                    or not isinstance(values["canaries"], list)
+                    or not 3 <= len(values["canaries"]) <= 256
+                    or any(not isinstance(value, str) or not 16 <= len(value) <= 8192
+                           for value in values["canaries"])
+                    or len(set(values["canaries"])) != len(values["canaries"])):
+                raise ValueError
+            current = path.lstat()
+            if (current.st_dev, current.st_ino) != (metadata.st_dev, metadata.st_ino):
+                raise ValueError
+            with self.lock:
+                for value in values["canaries"]:
+                    self.forbidden.extend((value.encode(), quote(value, safe="-_.!~*'()").encode()))
+            path.unlink()
+            return {"identityCanaries": len(values["canaries"])}
+        except (OSError, ValueError, TypeError, RecursionError) as error:
+            raise RuntimeFailure("identity_browser_transport_canaries_invalid") from error
+        finally:
+            content[:] = b"\0" * len(content)
 
     def read(self, stream):
         try:
