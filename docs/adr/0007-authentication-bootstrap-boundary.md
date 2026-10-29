@@ -227,3 +227,36 @@ admission, retention, privacy and recovery checks. Earlier executed results
 remain historical, including failures. This explicitly supersedes the
 all-numeric-boundaries obligation for this one case in the plan, guide and
 T006/T088; it does not accept feature 005 or alter other delivery gates.
+
+## Implementation follow-up: pinned Chromium stream-completion repair
+
+On 2026-10-29 actual Linux capture records `net::ERR_ABORTED` without a client
+AbortSignal event, even though the UI finishes reading its no-store JSON.
+[Playwright issue 42742](https://github.com/microsoft/playwright/issues/42742)
+and the merged
+[Chromium repair](https://chromium-review.googlesource.com/c/chromium/src/+/8508456)
+identify the matching upstream defect: the loader reported cancellation before
+recording a completed streaming body, losing its DevTools response resource.
+The repair records terminal state before notifying the stream client.
+
+The latest stable Playwright remains 1.64.1 and reproduces this failure. Use
+the exact test-only `1.65.0-alpha-2026-10-29` release, not a floating canary tag,
+to obtain bundled Chromium 157.0.8103.15 (revision 1252). Its actual
+`Browser.getVersion` source revision is
+`1aa07b638799e59656559ae6c6649d4b197f555e`; the official Chromium source
+contains the repaired ordering. This is a documented exception to the
+constitution's stable-version preference, not permission to weaken capture
+or change production dependencies. It carries prerelease compatibility risk.
+Reassess the exact pin when a supported stable release contains this repair.
+
+Root overrides align Next's optional test peer and axe's test-core peer with
+the same exact reviewed release. Leaving the older core alongside the new
+runner produced incompatible Page types; the aligned graph type-checks
+without casts. Archive integrity, licenses, notices, graph reconciliation
+and advisory checks still apply. The checker accepts exact prerelease
+versions but continues rejecting ranges and moving tags.
+
+Production bounded readers, no-store responses, abort handling, deadlines,
+TLS and ownership/privacy checks remain unchanged. Actual Linux native and
+public browser execution must validate this candidate; an upstream report
+or a local pass alone is not feature completion.

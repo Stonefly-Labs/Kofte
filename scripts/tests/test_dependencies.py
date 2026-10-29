@@ -112,6 +112,42 @@ class DependencyTests(unittest.TestCase):
         self.check_npm()
         self.check_nuget()
 
+    def test_exact_reviewed_prerelease_reconciles_but_ranges_and_tags_are_rejected(self):
+        version = "1.2.3-alpha-2026-10-29"
+        self.npm_metadata["version"] = version
+        self.write_json("node_modules/example/package.json", self.npm_metadata)
+        archive = io.BytesIO()
+        with tarfile.open(fileobj=archive, mode="w:gz") as package:
+            for name, content in (
+                ("package/package.json", json.dumps(self.npm_metadata).encode()),
+                ("package/LICENSE", self.license),
+            ):
+                member = tarfile.TarInfo(name)
+                member.size = len(content)
+                package.addfile(member, io.BytesIO(content))
+        integrity = "sha512-" + base64.b64encode(hashlib.sha512(archive.getvalue()).digest()).decode()
+        cached = dependencies.npm_archive(self.npm_cache, integrity)
+        cached.parent.mkdir(parents=True, exist_ok=True)
+        cached.write_bytes(archive.getvalue())
+        reviewed = self.npm.pop("example@1.2.3")
+        reviewed.update(version=version, integrity=integrity,
+                        source=f"https://registry.npmjs.org/example/-/example-{version}.tgz")
+        self.npm[f"example@{version}"] = reviewed
+        self.lock["packages"]["node_modules/example"].update(
+            version=version, resolved=reviewed["source"], integrity=integrity)
+        manifest = json.loads((self.root / "package.json").read_text())
+        for selected in (version, "next", "latest", "^" + version, "~" + version, "1.2.3-alpha.*"):
+            with self.subTest(version=selected):
+                manifest["devDependencies"]["example"] = selected
+                self.lock["packages"][""]["devDependencies"]["example"] = selected
+                self.write_json("package.json", manifest)
+                self.write_json("package-lock.json", self.lock)
+                if selected == version:
+                    self.check_npm()
+                else:
+                    with self.assertRaisesRegex(dependencies.DependencyError, "npm_direct_dependency_not_pinned"):
+                        self.check_npm()
+
     def test_exact_npm_integrity_source_and_license_drift_are_rejected(self):
         original = dict(self.lock["packages"]["node_modules/example"])
         for field, value in (

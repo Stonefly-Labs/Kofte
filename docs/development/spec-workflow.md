@@ -85,6 +85,15 @@ Latest local quality and SQLite browser checks pass, but PostgreSQL production
 fails a text assertion after successful signed-out capture. Earlier passing
 local gates do not establish the cause or erase these failures.
 
+The actual abort-without-client-signal evidence matches
+[upstream Chromium issue 42742](https://github.com/microsoft/playwright/issues/42742):
+stream EOF could be misreported as cancellation, losing the captured body.
+The [reviewed exact test-tool pin](../adr/0007-authentication-bootstrap-boundary.md#implementation-follow-up-pinned-chromium-stream-completion-repair)
+uses the canary containing the upstream repair because stable 1.64.1 still
+fails. It is not a floating dependency or a capture exception; production
+readers and all existing guards remain unchanged. Actual Linux qualification
+and the remaining native/public gates are still required.
+
 For focused Linux browser diagnostics on a published task branch, run
 `gh workflow run product-checks.yml --ref feature/005-authentication-bootstrap -f suite=browser`.
 This manual selection still executes the real browser suite and its public

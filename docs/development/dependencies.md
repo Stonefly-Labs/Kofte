@@ -58,6 +58,36 @@ solution builds with zero warnings/errors, 192 existing host unit tests pass
 with zero skips, and solution formatting passes. This is dependency
 compatibility evidence, not implemented authentication or feature acceptance.
 
+### Spec 005 Chromium stream-completion repair
+
+**Review date:** 2026-10-29. The
+[ADR follow-up](../adr/0007-authentication-bootstrap-boundary.md#implementation-follow-up-pinned-chromium-stream-completion-repair)
+documents the test-only stable-version exception and its risk.
+`@playwright/test`, `playwright` and `playwright-core` are pinned together to
+**1.65.0-alpha-2026-10-29**, published from official source
+`880865ae68b140a4458ebf9253b7c337433be688`. Their matching Chromium is
+157.0.8103.15 / revision 1252; its observed immutable source contains the
+upstream no-store stream-completion fix. Stable 1.64.1 still fails actual Linux
+capture; stable 1.65.0 is not published. No floating `next` dependency is used.
+
+All three official npm archives match their SHA-512 lock/inventory integrity.
+Installed metadata and retained Apache-2.0 LICENSE/NOTICE/ThirdPartyNotices
+hashes match the archives; the notice hashes are unchanged from 1.64.1.
+Only these three npm identities change; the union remains **403 npm / 87
+NuGet identities**, with no production or NuGet dependency change.
+Root exact overrides prevent old optional/axe peers from leaving incompatible
+Page types; final e2e type-check and dependency reconciliation pass.
+The initial unaligned type-check failed rather than hiding the mismatch.
+
+The focused dependency regression initially rejected the exact reviewed
+prerelease, then passes with the corrected exact-version validation. All
+fifteen dependency checker cases pass, still refusing moving tags, ranges,
+unknown identities, changed archives, dependency edges and notices.
+`npm run dependencies:check` passes the complete actual graph.
+`npm audit --json` reports zero vulnerabilities after final peer alignment.
+This is package adoption evidence, not a new binary-signature audit, Linux
+browser pass or complete feature gate.
+
 ### Spec 005 operational fixture project edges
 
 **Review date:** 2026-10-28. The test-owned identity consumer now references the

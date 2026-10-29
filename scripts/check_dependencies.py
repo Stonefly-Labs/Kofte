@@ -253,7 +253,8 @@ def check_npm(root, inventory, cache):
             require(manifest.get(field, {}) == locked.get(field, {}), "npm_manifest_lock_drift")
         for field in ("dependencies", "devDependencies"):
             for name, version in manifest.get(field, {}).items():
-                require(re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", version) is not None,
+                require(re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+(?:-[A-Za-z0-9]+(?:[.-][A-Za-z0-9]+)*)?",
+                                     version) is not None,
                         "npm_direct_dependency_not_pinned")
 
 

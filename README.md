@@ -91,6 +91,13 @@ PostgreSQL production fails a journey text assertion after successful signed-out
 capture. See the [actual results](specs/005-authentication-bootstrap/implementation.md#continued-implementation-distinguish-network-failure-from-client-cancellation);
 no complete browser or implementation pass is claimed.
 
+The matching [upstream Chromium defect](https://github.com/microsoft/playwright/issues/42742)
+reports cancellation after a no-store stream reaches EOF. The test tools now
+use a reviewed, exact-pinned canary containing its upstream repair; see the
+[decision and prerelease risk](docs/adr/0007-authentication-bootstrap-boundary.md#implementation-follow-up-pinned-chromium-stream-completion-repair).
+Production bounded readers, no-store policy and strict capture remain unchanged.
+Local/hosted qualification of this candidate does not waive remaining failures.
+
 ### Historical implementation increments
 
 The expanded actual HTTPS TypeScript corpus now

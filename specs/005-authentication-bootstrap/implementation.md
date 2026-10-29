@@ -1,6 +1,6 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement incomplete; verification failed, 91/100 complete (T001-T091). Earlier local browser gates pass, but the latest local PostgreSQL journey assertion and Linux response-capture failures remain unresolved. The separate Linux Chromium temporary-path failure is reproduced and corrected. The ledger resumes this failed verification boundary as running; remaining native/contract/privacy/propagation work is engineering, not a human approval gate.
+**Result:** implement incomplete; verification failed, 91/100 complete (T001-T091). The latest local browser gate passes with an exact-pinned Chromium containing the matching upstream repair; Linux qualification and remaining native/contract/privacy/propagation failures remain open. The separate Linux Chromium temporary-path failure is reproduced and corrected. The ledger remains running; this is engineering, not a human approval gate.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-29.
 **Assessed baseline:** complete local/hosted assessment of published `c7f68a786ebc51c935d8df455d926d79d88a8725`; subsequent focused checks add this checkpoint's browser-helper/native-fixture changes. Earlier assessments retain their original baselines below.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
@@ -12,6 +12,67 @@ The initial blocked assessment below is retained as history. The
 resolves that blocker and resumes the original implement stage. The later
 adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
+
+## Continued implementation: use the upstream Chromium stream repair
+
+The network diagnostic checkpoint is published as
+`0cd054a5f27c7d260fd93096f3fd2a0ae1fb31ae`. Actual Linux
+[run 40915008183](https://github.com/Stonefly-Labs/Kofte/actions/runs/40915008183)
+fails only native SQLite Development capture in
+`browser-none-ae1a3032eb494bbe80d80face11c3b63.json`; its production
+retry fact passes. After sign-out, context headers arrive at 1047ms,
+`net::ERR_ABORTED` at 1049ms and the missing body resource at 1050ms,
+without a client AbortSignal event. The UI reaches signed-out. Earlier
+context/current-user bodies complete, and root browser checks pass.
+PostgreSQL/public recipes do not execute in this failed run.
+
+[Upstream issue 42742](https://github.com/microsoft/playwright/issues/42742)
+and the merged
+[Chromium change 8508456](https://chromium-review.googlesource.com/c/chromium/src/+/8508456)
+identify the same no-store streaming EOF/cancellation defect. The repaired
+loader records terminal state before notifying its stream client. Stable
+Playwright 1.64.1 still fails; 1.65.0 is not published. The exact test-only
+**1.65.0-alpha-2026-10-29** pin provides Chromium 157.0.8103.15 / revision
+1252. Its observed `Browser.getVersion` revision is
+`1aa07b638799e59656559ae6c6649d4b197f555e`. Official source at that
+revision confirms `HandleResult(result)` precedes the client notification;
+the file SHA-256 is
+`979ce76e70424734af0539e1858345b2e000a422fba5d34170d4748364143047`.
+Gitiles retrieval timed out; the official Chromium GitHub mirror provided
+that immutable source. Authenticated upstream GitHub reads were SAML-denied;
+public official issue/API pages supplied the cited evidence.
+
+The [ADR follow-up](../../docs/adr/0007-authentication-bootstrap-boundary.md#implementation-follow-up-pinned-chromium-stream-completion-repair)
+records the stable-version exception and prerelease compatibility risk.
+Only three reviewed npm identities change; all archive integrity,
+Apache-2.0 notice hashes and graph checks pass, retaining 403 npm / 87
+NuGet identities. Exact overrides align Next/axe test peers after the
+initial unaligned Page types failed compilation. No cast, production reader
+change, relaxed no-store/capture check, deadline extension or skipped case is
+used. The new dependency regression first fails for the rejected exact
+prerelease, then passes while moving tags/ranges remain forbidden.
+
+At `0cd054a` plus this repair/tooling increment, pinned SDK selected:
+
+| Exact executed command | Actual result |
+| --- | --- |
+| `python3 -m unittest scripts.tests.test_dependencies -v` | Passed 15 cases after the expected initial exact-prerelease rejection. |
+| `npm run typecheck --workspace tests/e2e` | Initially failed with mixed stable/canary Page types; passes after exact peer alignment, without casts. |
+| `npm run dependencies:check` | Passed actual installed/archive/lock/notices graph, 403 npm / 87 NuGet. |
+| `npm audit --json` | Passed, zero vulnerabilities after final peer alignment. |
+| `python3 scripts/verify.py --suite quality` | Passed 21 steps, 35.819s; `quality-none-812f3f3fb2f849a1881b35d28d81b0f3.json`. |
+| `python3 scripts/verify.py --suite browser --disposable-postgres` | Passed root/Development and both native providers, 92.565s; `browser-none-34a2cf023ef7411dbec5efeadbd3871a.json`. Each provider: two passed, zero skipped, one required class. |
+| `python3 scripts/check_repository.py` | Passed. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed 150 cases, 5.689s. |
+| `git diff --check` | Passed. |
+
+Two earlier isolated reruns also pass: the twelve SQLite provider-fault theory
+cases (31.779s) and the PostgreSQL production browser fact (42.856s).
+Those unchanged reruns do not diagnose their prior failures. The completed
+`092ce94` automatic matrix passes PostgreSQL integration, but SQLite still
+fails enrollment's initial expected303/actual503 and provider-request counts.
+No full-gate pass is inferred. Matching actual Linux qualification of the
+upstream repair and T092-T100 remain outstanding.
 
 ## Continued implementation: distinguish network failure from client cancellation
 
