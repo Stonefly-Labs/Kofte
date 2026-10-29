@@ -98,6 +98,13 @@ use a reviewed, exact-pinned canary containing its upstream repair; see the
 Production bounded readers, no-store policy and strict capture remain unchanged.
 Local/hosted qualification of this candidate does not waive remaining failures.
 
+Its actual Linux named browser verification now passes and has reached the
+separate public HTTPS recipes. The complete local unit gate also passes after
+correcting aborted-action request doubles missed by the earlier focused check.
+The parallel hosted public privacy recipe still fails transport-capture
+completeness; this is not a full-gate pass. See the
+[current evidence](specs/005-authentication-bootstrap/implementation.md#continued-implementation-complete-aborted-request-test-doubles).
+
 ### Historical implementation increments
 
 The expanded actual HTTPS TypeScript corpus now

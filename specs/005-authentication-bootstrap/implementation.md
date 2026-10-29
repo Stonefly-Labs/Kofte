@@ -13,6 +13,38 @@ resolves that blocker and resumes the original implement stage. The later
 adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
 
+## Continued implementation: complete aborted-request test doubles
+
+The published `ce2af5f` automatic unit job exposed seven failures in
+`identityActionCapture.unit.ts`: its intentionally aborted request doubles
+did not implement the real `Request.failure()` API used by the earlier finite
+network diagnostic. The exact four-file capture selection reproduced 31 passed /
+seven failed locally. Both shared action-request builders now supply
+`net::ERR_ABORTED`; receipt matching, real upstream scanning and fatal failure
+semantics are unchanged. The earlier focused sixteen-case check missed these
+dependent call sites.
+
+At `ce2af5f` plus this test-double correction, pinned SDK selected:
+
+| Exact executed command | Actual result |
+| --- | --- |
+| `npm exec -- prettier --check tests/e2e/identityActionCapture.unit.ts` | Passed. |
+| `python3 scripts/verify.py --suite unit` | Passed all 16 steps, including the complete 38-case browser capture selection; 54.617s, `unit-none-e1c2b37e467e4415a0e07eed425a38c1.json`. |
+| `npm run lint --workspace tests/e2e` | Passed. |
+| `npm run typecheck --workspace tests/e2e` | Passed. |
+| `python3 scripts/check_repository.py` | Passed. |
+| `python3 -m unittest discover -s scripts/tests -v` | Passed 150 cases, 5.969s. |
+| `git diff --check` | Passed. |
+
+The original repaired-head Linux
+[run 40917432573](https://github.com/Stonefly-Labs/Kofte/actions/runs/40917432573)
+has passed named browser verification and reached its separate public HTTPS
+recipes. This is not yet a complete public-recipe pass. The parallel automatic
+privacy job still fails the SQLite public consumer with
+`identity_browser_transport_capture_missing`; its safe report is
+`privacy-both-b17441ee103d46f09e7dc8a6423b53a1.json`.
+T092-T100 remain open, and implementation continues.
+
 ## Continued implementation: use the upstream Chromium stream repair
 
 The network diagnostic checkpoint is published as

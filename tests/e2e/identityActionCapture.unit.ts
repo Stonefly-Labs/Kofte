@@ -218,6 +218,7 @@ function lostAcknowledgement(
     method: () => "POST",
     url: () => "https://127.0.0.1:12345" + path,
     resourceType: () => "fetch",
+    failure: () => ({ errorText: "net::ERR_ABORTED" }),
     postDataBuffer: () => Buffer.from(body),
     headers: () => ({ [identityActionCaptureHeader]: record.id }),
   } as unknown as Request;
@@ -399,6 +400,7 @@ function actionResponse(id: string | undefined, encoding?: string): Response {
     method: () => "POST",
     url: () => "https://127.0.0.1:12345/identity",
     resourceType: () => "fetch",
+    failure: () => ({ errorText: "net::ERR_ABORTED" }),
     headers: () => ({ "next-action": "a".repeat(42) }),
   } as unknown as Request;
   return {
