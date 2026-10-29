@@ -765,6 +765,15 @@ pre-login browser timeouts remain historical failures, not successful runs.
 
 ### Identity key and certificate custody
 
+**Current qualification:** all nine public identity recipes individually plus
+`all` pass on each real provider, with exact ordered observations and owned
+cleanup; all 77 harness negatives pass. See
+[T094's actual commands/results](../../specs/005-authentication-bootstrap/implementation.md#t094-t095-complete-public-catalog-and-delivered-documentation).
+The following operator instructions describe delivered behavior. Historical
+SQLite-only/pending-PostgreSQL observations below retain their original scope;
+T092's later actual focused integration/recovery/privacy/browser/propagation
+join qualifies both providers, not the final complete local/CI gate.
+
 OIDC keys remain encrypted at rest using the configured
 `keyEncryptionCertificateFile` / `keyEncryptionPrivateKeyFile` pair.
 For certificate rotation, stop the installation, retain the original private
@@ -842,8 +851,9 @@ dotnet src/Kofte.Host/bin/Release/net10.0/Kofte.Host.dll --identity reconcile-re
 Set `PRIVATE_DECISION_FILE` to the absolute owner-only decision file and use
 the restored target's existing storage/authentication environment. This is
 not a backup/import command: first use a fresh stopped complete-set quarantine
-target. The current import helpers remain test-owned; the public operations
-consumer recipe is unfinished.
+target. The current import helpers remain test-owned; the public
+`interrupted-recovery` consumer demonstrates that supported workflow on both
+providers. It is not a general production backup/import administration CLI.
 
 The command verifies actual ownership/inventory/security state, freezes the
 exact decision/configuration plus new epoch/ring IDs, prepares fresh protected
@@ -929,8 +939,8 @@ sent `Origin: null` for the native POST under required `no-referrer`. The
 action preserves actual Origin/credential evidence and explicit CSRF through
 the same bounded fixed-backend adapter; null Origin is still refused.
 It publishes separately validated cookies before the framework redirect and
-does not retry mutations. Local HTTPS login/callback/current-user executes,
-but browser lifecycle/cleanup remains failing. The existing Ubuntu browser
+does not retry mutations. Local HTTPS login/callback/current-user and Linux Chromium lifecycle/cleanup
+are now qualified. Historically the existing Ubuntu browser
 job passed public `oidc-login` and `trust-refusal` on each real store at
 `6be0ee8`; this does not waive the local macOS failure. The private fixture admits only its CA in a
 fresh owned profile, retains ordinary TLS checks, verifies the exact browser
@@ -942,8 +952,9 @@ The corrected local protocol matrix passes 123/123 and mapping/restart passes
 later isolated/serial pass does not establish its cause. Readiness now
 projects only a bounded HTTP status/transport category and last fixed
 configured/owner-opened/built/mapped/serving phase on timeout without changing the existing
-budget. PostgreSQL host CI remains failed with no
-established cause. This is not a complete or operator-ready identity profile.
+budget. The PostgreSQL host CI failure at that checkpoint had no established cause.
+Later focused qualification does not erase it or prove complete/operator-ready
+identity evidence.
 
 ### Operator-nominated enrollment increment
 
@@ -977,11 +988,11 @@ for private delivery/custody and explicit correction.
 
 The [implementation record](../../specs/005-authentication-bootstrap/implementation.md#us2-nominated-enrollment-and-real-interruption-evidence)
 distinguishes passing both-store core/interruption evidence from incomplete
-acceptance. The complete new PostgreSQL HTTP/browser matrix is not verified
-locally: Docker default networks are exhausted and HTTPS browser login stalls.
+acceptance. At that checkpoint the complete new PostgreSQL HTTP/browser matrix was not
+verified locally: Docker default networks were exhausted and HTTPS browser login stalled.
 Only independently proven task-owned Docker resources may be cleaned up.
-Use fresh owned CI for remaining evidence; do not lower contention, extend
-deadlines or treat partial checks as acceptance.
+The later T092/T094 evidence qualifies both providers with owned fixtures;
+do not lower contention, extend deadlines or treat focused checks as acceptance.
 
 The existing status browser uses only `/backend/health/ready`. This server-only fixed adapter
 forwards no caller credentials/headers and validates status, content type and

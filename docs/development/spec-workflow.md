@@ -6,14 +6,29 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement in progress; 93/100 complete** (T001–T093), on
+**Current checkpoint: 005 / implement in progress; 96/100 complete** (T001–T096), on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. Implementation continues until the entire
 spec is ready for converge, not until an incremental subset passes.
 T092's focused operations join now has actual Linux qualification. T093 also
 requires exact private Playwright discovery/execution completeness, not just
 zero exit: no missing case, skip, retry or flaky result. Its complete local
-browser and quality gates pass; public catalog and final full-gate/CI work remain.
+browser and quality gates pass. T094 now proves all nine public recipes and
+`all` on each provider, exact ordered observations and all 77 harness negatives.
+T095 reconciles delivered setup/API/operator documentation, private custody,
+session/capacity/retention and recovery limits. T096 reconciles the actual
+reviewed graph/archives/notices, generated contracts and zero-finding npm/NuGet
+audits. T097–T100 retain complete local/assessed-head CI and traceability/
+publication gates. This is not
+acceptance or permission to advance to converge.
+The [current evidence](../../specs/005-authentication-bootstrap/implementation.md#t094-t095-complete-public-catalog-and-delivered-documentation)
+preserves actual sources/results and historical failures. The ledger remains
+`running` on the same draft PR, with no pending approval request.
+
+### Historical implementation verification
+
+The following checkpoints preserve earlier failures and repairs; their pending
+task/capture statements do not override the current checkpoint above.
 The human-requested context pause has been resumed on the same branch/draft PR;
 it was not completion or a new approval gate.
 The [implementation checkpoint](../../specs/005-authentication-bootstrap/implementation.md#continued-implementation-short-private-chromium-temporaries)

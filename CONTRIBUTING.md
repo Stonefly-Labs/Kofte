@@ -329,12 +329,24 @@ That checkpoint required human merge before 005. PR #7 is now human-merged;
 004's accepted ledger and all five acceptance artifact hashes were verified
 on updated main before beginning the new feature.
 
-**005 / implement is incomplete, with T001–T091 complete (91/100)**, on
+**005 / implement is incomplete, with T001–T096 complete (96/100)**, on
 `feature/005-authentication-bootstrap` and the same draft PR #8.
 Use the [current runtime guide](specs/005-authentication-bootstrap/quickstart.md)
 for delivered commands and the implementation record for exact results.
-Operations/privacy/accessibility and complete local/assessed-head CI evidence
-remain in progress; the earlier increments below are historical, not acceptance.
+The nine named public recipes and `all` pass on both real providers with exact
+ordered observations and verified cleanup; 77 harness negatives also pass.
+Use explicit stopped preparation, private configuration/key custody and the
+documented HTTPS/ingress/network trust. Nomination replaces only pending
+authority; consumed designation never reopens. Complete-set recovery requires
+quarantine and a manifest-bound stopped decision; fence the old instance.
+The [operator contract](specs/005-authentication-bootstrap/contracts/operator-v1.md)
+defines session/revocation/key overlap, retention/capacity and IdP-loss/OS-copy/
+rollback limits. Granular permissions, teams, MCP, full UI/audit and deployment/
+release work remain 006–009/022–024. Final dependency/contract checks and fresh
+npm/NuGet audits pass with no findings. T097–T100 still require complete local/
+assessed-head CI and traceability evidence, not human approval.
+Converge/review/acceptance are later stages. The following increments are
+historical, not current unimplemented-capability statements or acceptance.
 The [implementation record](specs/005-authentication-bootstrap/implementation.md)
 preserves the provenance investigation and records actual reviewed OIDC
 adoption (403 npm / 87 NuGet), independent HTTPS/owned-process fixtures and

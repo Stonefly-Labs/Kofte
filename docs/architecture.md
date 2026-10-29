@@ -473,15 +473,30 @@ not one passing provider job. PR #7 is now human-merged; its accepted ledger
 and all five acceptance artifact hashes were verified on updated main before
 005 began. Historical failed checks and undiagnosed causes remain unchanged.
 
-**005 / implement is incomplete after T001–T091 (91/100), not a completed feature**, on
+**005 / implement is incomplete after T001–T096 (96/100), not a completed feature**, on
 `feature/005-authentication-bootstrap`. The
 [implementation checkpoint](../specs/005-authentication-bootstrap/implementation.md)
 retains exact results and historical failures. The
 [runtime guide](../specs/005-authentication-bootstrap/quickstart.md) now describes
 delivered OIDC/Development sessions, nomination and stopped recovery commands.
 Designation does not grant module permissions; 006–009/022–024 remain future
-work. The three public operational recipes now pass on both providers; complete
-privacy/accessibility, public-catalog and final evidence are unfinished.
+work. All nine public recipes individually and `all` now pass on each provider,
+with exact observations and owned cleanup. Local/Linux Chromium, focused
+privacy/accessibility and strict browser completeness are qualified. Final
+dependency/contract reconciliation and fresh zero-finding audits pass;
+complete local/CI/traceability evidence remains T097–T100.
+Identity remains host-owned in platform format 2, never module tables or a
+second authentication authority in Next. Only the immutable actor-v1 crosses
+the module boundary. OIDC requires exact HTTPS ingress/provider/network trust;
+forwarded headers do not establish trust. Private keys remain outside ordinary
+complete-set artifacts. Restore quarantines the copy until explicit stopped
+manifest-bound reconciliation and fresh keys; no OS-copy fencing, rollback-proof
+administrator history or cross-module atomicity is promised. See the delivered
+[operator contract](../specs/005-authentication-bootstrap/contracts/operator-v1.md)
+and [local guide](development/local-development.md) for session/key overlap,
+retention/capacity, nomination and IdP-loss limits. Approval of ADR 0007 is not
+feature acceptance; converge/review/acceptance remain later stages.
+
 The earlier implementation increments below retain the source/signature
 investigation and record the adopted maintained
 OIDC dependency, independent test issuer/ownership/corpora, strict static

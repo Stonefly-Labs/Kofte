@@ -1,6 +1,8 @@
 # Identity v1: Browser, HTTP and Trusted Actor Contract
 
-**Status:** Proposed for 005; not implemented or a token-issuance contract.
+**Status:** Delivered by 005 implement; not a token-issuance contract.
+See [executed evidence](../implementation.md#t094-t095-complete-public-catalog-and-delivered-documentation);
+final complete gates and human feature acceptance remain incomplete.
 **Version:** HTTP `/api/identity/v1`; JSON `version: "1"`; actor-v1.
 **Owner:** Host identity; browser adapters are transports, not authenticators.
 
@@ -145,7 +147,7 @@ independently exercised.
 
 ## Trusted actor-v1
 
-Planned Platform types: immutable `AuthenticatedActorV1` with `UserId` (nonempty
+Delivered Platform types: immutable `AuthenticatedActorV1` with `UserId` (nonempty
 Guid), `IdentityMode` (`Oidc` or `Development`) and
 `IsInitialAdministrator` (bool); request-scoped read-only `ICurrentActorV1.Actor`.
 Null denotes no established actor. Verification failure/unavailability aborts

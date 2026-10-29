@@ -1,12 +1,14 @@
 # Identity Operator v1: Configuration, Preparation and Recovery
 
-**Status:** Proposed; commands below must be delivered/validated by implement.
+**Status:** Delivered by 005 implement; both-provider public recipes are qualified
+in [T094 evidence](../implementation.md#t094-t095-complete-public-catalog-and-delivered-documentation).
+Final complete gates and feature acceptance remain separate.
 **Authority:** Existing admitted stopped-installation maintenance, not browser
 administrator status, a web endpoint or an arbitrary worker invocation.
 
 ## Strict configuration and production trust
 
-Add one documented environment key, `KOFTE_AUTH_CONFIG_FILE`, to the accepted
+The environment key `KOFTE_AUTH_CONFIG_FILE` is admitted by the
 bootstrap/worker allowlists. It names an absolute private regular no-symlink
 file, at most 32 KiB, strict UTF-8 JSON object with no duplicate/unknown fields.
 Serving requires an explicit mode/configuration; there is no implicit
@@ -66,10 +68,9 @@ instance/key ring, not HA or a shared remote database profile. Existing
 `test-postgres` disposable ownership/credential restrictions remain unchanged.
 Broader deployment/remote database/HA configuration belongs to 022.
 
-## Proposed stopped command grammar
+## Stopped command grammar
 
-These commands are additions to the host CLI, not executable capabilities
-already supplied by this plan. Use the built host DLL path from the local
+These commands are delivered host CLI capabilities. Use the built host DLL path from the local
 guide. Secret values never appear in command output/arguments.
 
 ```text
@@ -192,7 +193,7 @@ again, mappings/designation stay stable. Do not delete identity data.
 
 ## Recovery and compatibility
 
-Add recovery format `kofte-storage-recovery-v2` for platform format 2; retain
+Recovery format `kofte-storage-recovery-v2` serves platform format 2; retain
 v1 handling only for actual format 1. Preserve exact all-module artifact
 inventory/hashes and full platform DB/PG dump. V2 adds the private
 [identity security summary](../data-model.md#key-material-and-recovery-model);

@@ -119,6 +119,25 @@ solution project, no findings, no CLI warnings and the expected report shape.
 These are current advisory results, not a renewed archive-signature audit,
 a complete verification gate or feature acceptance.
 
+### Spec 005 final implementation reconciliation
+
+**Review date:** 2026-10-29. T096's actual final adopted source passes
+`npm run dependencies:check` and `npm run contract:check`, with the exact
+reviewed **403 npm / 87 NuGet** union, source/archive integrity, central pins,
+locks, project edges, licenses and retained notice hashes unchanged.
+No new package, copied dependency source or notice drift requires an inventory/
+third-party-notice edit. The reviewed test-only Playwright prerelease exception
+above remains exact-pinned; no stable-version or renewed signature claim is made.
+
+Fresh `npm audit --json` reports zero vulnerabilities.
+`dotnet list Kofte.slnx package --vulnerable --include-transitive --format json --no-restore`
+also reports zero vulnerabilities across all fourteen distinct solution
+projects, with no warning or missing project accepted as success.
+Safe report `identity-final-dependencies-none-482394f9a62d4a5ca04c23464a3e753c.json`
+passes in 10.193s with actual .NET/Node/npm versions verified. Private raw audit
+JSON is not retained in repository evidence. This closes dependency reconciliation,
+not the complete local/CI gate or feature acceptance.
+
 ## Spec 002 project adoption
 
 The platform library and test-owned author console introduce no runtime package.

@@ -14,22 +14,23 @@ The [technology-stack exploration](kofte-technology-stack-architecture.md) is hi
 
 ## Working in the repository
 
-**Current Spec Kit checkpoint: 005 / implement in progress, T001–T091 complete (91/100).**
+**Current Spec Kit checkpoint: 005 / implement in progress, T001–T096 complete (96/100).**
 The [runtime guide](../specs/005-authentication-bootstrap/quickstart.md) covers
 delivered sign-in, enrollment, session/Development and stopped operator commands.
-All three public operational recipes pass on both providers. The owning browser
-gate now also passes after wiring its required private canary export into the
-verifier's actual transport scan. The old diagnostic locations included passed
-root tests; they were not evidence that those assertions failed.
-The [current evidence](../specs/005-authentication-bootstrap/implementation.md#continued-implementation-short-private-chromium-temporaries)
-also reproduces the separate Linux Chromium singleton-socket path overflow.
-Short fresh private profile-owned temporaries pass actual Linux TLS/ownership/
-cleanup proof and the local both-provider browser gate, without relaxed guards.
-The complete local gate still fails contract/PostgreSQL privacy/propagation;
-assessed-head CI also remains non-green. These are engineering failures; no human decision
-is blocking implementation. T092–T100 remain open. Passing subsets do not erase
-historical failed gates or establish their causes.
-The ledger's `blocked` status records failed verification, not a pending approval.
+All nine public recipes individually and `all` pass on each provider, with
+exact ordered observations and 77 passing harness negatives. Local and Linux
+Chromium qualification is recorded; private browser reports must prove complete
+first-attempt success without skips/retries. See the
+[current evidence](../specs/005-authentication-bootstrap/implementation.md#t094-t095-complete-public-catalog-and-delivered-documentation).
+Final dependency/contract checks and zero-finding npm/NuGet audits pass.
+T097–T100 retain complete local/actual CI and traceability gates.
+Earlier failures are not waived or diagnosed by subsets. The ledger is
+`running`; no human approval blocks this engineering work.
+Use the [operator contract](../specs/005-authentication-bootstrap/contracts/operator-v1.md)
+and [local guide](development/local-development.md) for private setup/trust,
+nomination, session/key custody, bounded maintenance and quarantined recovery.
+Permissions/teams/MCP/full UI/audit and deployment/release remain future
+006–009/022–024. Converge/review/explicit human acceptance are separate stages.
 The detailed US1 increments below are historical.
 The [implementation evidence](../specs/005-authentication-bootstrap/implementation.md)
 records reviewed OIDC adoption (403 npm / 87 NuGet), independent HTTPS/process

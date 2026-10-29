@@ -157,7 +157,7 @@ and pinned Chromium installation, invoke a specific recipe or `all`:
 
 ```bash
 dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario oidc-login --provider sqlite
-dotnet run --project tests/contract/Kofte.Identity.Consumer -c Release --no-build -- --scenario all --provider sqlite
+dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario all --provider sqlite
 KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario all --provider postgres
 ```
 
@@ -167,7 +167,22 @@ the pinned owned disposable server, with independent databases and roles;
 whole-server failure cases use a dedicated server. Ordinary local development
 still needs neither Docker nor a real IdP.
 
+**Executed catalog qualification (T094):** the 77-case
+`*IdentityConsumerHarnessTests` selection passes in 4.541s; the ten-case
+`*SqliteIdentityGuideTests` and `*PostgresIdentityGuideTests` selections pass
+in 492.959s/654.153s with zero skipped and each required class present.
+Each covers the nine rows above individually plus `all`, invoking the DLL
+through `IdentityConsumerHarness` and comparing every exact ordered observation
+against `IdentityScenarioCatalog`, not trusting a zero exit or aggregate count.
+The [implementation evidence](implementation.md#t094-t095-complete-public-catalog-and-delivered-documentation)
+records exact commands, unchanged bounds, source/profile and safe report.
+Browser/a11y qualification is independent; this catalog is not the final gate.
+
 ### Earlier implementation evidence (historical)
+
+The pending-task/provider statements below describe those earlier checkpoints.
+T092/T094 now qualify both-provider operations and the entire catalog; historical
+failures stay failed. Use the delivered recipes above for current execution.
 
 `development-isolation` is now delivered for execution after the existing
 Release/Next builds and pinned Chromium setup:

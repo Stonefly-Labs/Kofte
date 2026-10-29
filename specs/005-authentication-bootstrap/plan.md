@@ -3,7 +3,12 @@
 **Branch**: `feature/005-authentication-bootstrap` | **Date**: 2026-10-26 | **Spec**: [spec.md](spec.md)
 **Input**: `specs/005-authentication-bootstrap/spec.md`
 **Constitution**: Adopted v2.0.1
-**Status**: Proposed design; no authentication implementation or feature acceptance.
+**Status**: Historical planning-stage design. ADR 0007 subsequently received
+explicit human approval, and T001–T095 now implement the delivered interfaces;
+see [current evidence](implementation.md#t094-t095-complete-public-catalog-and-delivered-documentation)
+and the [runtime guide](quickstart.md). Final gates and feature acceptance are
+incomplete. Proposed/unbuilt/next-stage statements below retain the original
+planning assessment, not current approval or runtime status.
 
 ## Summary
 

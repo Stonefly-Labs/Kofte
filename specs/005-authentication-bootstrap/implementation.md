@@ -1,6 +1,6 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement incomplete; verification failed, 93/100 complete (T001-T093). The exact-pinned upstream Chromium repair passes local and Linux named browser gates and all twelve focused Linux public HTTPS recipes. Fresh Linux both-provider integration, recovery, privacy and complete failure propagation pass at `d1c2f50`; newer native positives and retained composition closeout remain unresolved. The ledger remains running; this is engineering, not a human approval gate.
+**Result:** implement incomplete; 96/100 complete (T001-T096). Chromium, the complete both-provider public catalog and final dependency reconciliation are qualified. Complete local/assessed-head CI and traceability gates remain T097-T100; historical failed native/composition/propagation results are not waived or diagnosed by focused passes. The ledger remains running; this is engineering, not a human approval gate.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-29.
 **Assessed baseline:** complete local/hosted assessment of published `c7f68a786ebc51c935d8df455d926d79d88a8725`; subsequent focused checks add this checkpoint's browser-helper/native-fixture changes. Earlier assessments retain their original baselines below.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
@@ -12,6 +12,79 @@ The initial blocked assessment below is retained as history. The
 resolves that blocker and resumes the original implement stage. The later
 adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
+
+## T096: final dependency, contract and advisory reconciliation
+
+Actual final-source `npm run dependencies:check` and `npm run contract:check`
+pass. The complete reviewed 403 npm / 87 NuGet graph, pins/locks/project edges,
+source/archive integrity, license and retained-notice hashes have no drift.
+No new product/test dependency, copied source or notice change is introduced;
+the existing exact test-only Playwright prerelease exception remains explicit.
+No inventory regeneration or package install is necessary.
+
+Fresh `npm audit --json` passes with zero vulnerabilities.
+`dotnet list Kofte.slnx package --vulnerable --include-transitive --format json --no-restore`
+passes with zero vulnerabilities and all fourteen distinct current solution
+projects present. The private parser requires actual successful CLI exit,
+no stderr/warnings, exact report shape and no reported packages/findings;
+it does not treat an omitted project as a clean audit.
+`identity-final-dependencies-none-482394f9a62d4a5ca04c23464a3e753c.json`
+passes in 10.193s with .NET 10.0.402, Node 24.22.0 and npm 11.19.1 verified.
+This is not a renewed archive-signature audit or passing complete gate.
+
+T094-T095's independent `python3 scripts/check_repository.py`,
+`python3 -m unittest discover -s scripts/tests -v` (159 tests, 6.807s) and
+`git diff --check` pass. T097-T100 remain open.
+
+The older diagnostic head `5647893` now has an actual failed Linux isolated
+propagation baseline: `failure-propagation-none-9a3c093ceb3541d7a508512d44200c6d.json`
+at run 40936387880. Quality passes 130.190s; the PostgreSQL aggregate reaches its
+unchanged 900-second bound (900.367s) and fails `failure_exercise_timeout`.
+No browser baseline or injection is reached. Assessed merge
+`0423cab738905c17c6ab4205b1efe9b1f96a9aad` has verified main
+`3e416813233c9d291eb20cf72d5882dbddf3e1b6` and feature `5647893` parents.
+This does not diagnose the timeout or replace required final-source evidence.
+
+## T094-T095: complete public catalog and delivered documentation
+
+Actual final C# source at `012ab8a` passes the complete strict public catalog:
+`contract-both-bfd6ca1c503d4a32a5150642c3d2d64e.json`, macOS arm64/18 logical
+CPUs/64 GiB, .NET 10.0.402 with disposable PostgreSQL enabled. The report's
+recorded Git revision is `5647893`: it began before the T093 commit, with those
+verifier changes present. C# source/binaries were unchanged by T093 or during
+execution; no rebuilding interfered with active consumers.
+
+Each command uses `dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-build --no-restore -c Release`,
+followed by the exact selectors below and `--show-stdout None --show-stderr None`.
+The verifier adds its private xUnit XML options, validates native counts and
+required classes and discards private XML. Original 900-second command bounds,
+120-second single recipes and 600-second `all` remain unchanged.
+
+| Exact selector / minimum | Actual result |
+| --- | --- |
+| `--filter-class '*IdentityConsumerHarnessTests' --minimum-expected-tests 77` | Passed 77, zero skipped; 4.541s. |
+| `--filter-class '*SqliteIdentityGuideTests' --minimum-expected-tests 10` | Passed 10, zero skipped, one required class; 492.959s. |
+| `--filter-class '*PostgresIdentityGuideTests' --minimum-expected-tests 10` | Passed 10, zero skipped, one required class; 654.153s. |
+
+`IdentityGuideTests` runs the nine quickstart scenarios individually and `all`
+per provider. `IdentityConsumerHarness.RequireSuccess` independently compares
+every exact ordered observation and total against `IdentityScenarioCatalog`;
+zero exit alone is insufficient. Real negative children prove timeout termination,
+source/cleanup/capture refusal; malformed/absent/truncated/duplicate/reordered
+observations and nonzero/stderr envelopes cannot pass. Browser/a11y evidence
+remains independent. The focused run passes in 1151.664s, not a complete gate.
+
+T095 reconciles the quickstart's actually exercised DLL grammar, runtime/HTTP/
+actor and stopped operator contract status, README/contributor/docs index,
+architecture, local guide and workflow. Strict private config and secret files,
+exact HTTPS/ingress/endpoint/network trust, pending-only nomination replacement,
+session/revocation/key overlap, explicit format upgrade, complete-set quarantine/
+decision reconciliation, retention/capacity and IdP-loss/OS-copy/old-instance/
+rollback limits remain explicit. Planning and earlier evidence retain their
+historical claims under clear historical labels; approved behavior and
+reviewer-owned checklist markers do not change. Permissions/teams/MCP/full UI/
+audit/deployment/release remain future 006-009/022-024. No acceptance or later
+Spec Kit stage is executed.
 
 ## T093: require actual complete browser evidence, not exit status
 
