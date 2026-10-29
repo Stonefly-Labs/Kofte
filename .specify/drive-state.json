@@ -29,9 +29,9 @@
     "spec": "005",
     "step": "implement",
     "directory": "specs/005-authentication-bootstrap",
-    "status": "running",
+    "status": "blocked",
     "branch": "feature/005-authentication-bootstrap",
-    "reason": "",
+    "reason": "Verification failure, not a human approval gate: exact c7f68a7 complete local gate exits 1 in PostgreSQL mode-transition contract, public privacy recipe and isolated storage propagation baseline; assessed-head CI 40882687269 also fails PostgreSQL positives (303/503), retained contract timeout and other suites. Missing canary handoff and Linux Chromium socket-path overflow are corrected; focused browser and real Linux ownership/TLS/cleanup proof pass. Keep T092-T100 open and resume engineering on this same branch/draft PR.",
     "started_at": "2026-10-26T21:30:18+00:00"
   },
   "history": [

@@ -1,5 +1,5 @@
 import { createHash, X509Certificate } from "node:crypto";
-import { lstat, mkdtemp, readFile } from "node:fs/promises";
+import { lstat, mkdtemp, readFile, realpath, rmdir } from "node:fs/promises";
 import { join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { chromium, expect, type BrowserContext } from "@playwright/test";
@@ -33,7 +33,11 @@ export async function withIdentityBrowser(
   if (!certificate.ca || !certificate.verify(certificate.publicKey)) {
     throw new Error("identity_browser_authority_invalid");
   }
-  const profile = await mkdtemp(join(root, "chromium-"));
+  // Chromium's singleton socket must fit Linux's Unix-socket path limit.
+  const temporary = await mkdtemp(
+    join(await realpath("/tmp"), "kofte-browser-"),
+  );
+  const profile = await mkdtemp(join(temporary, "profile-"));
   let context: BrowserContext | undefined;
   const owners = new WeakMap<BrowserContext, IdentityBrowserOwnership>();
   const observedOwners: IdentityBrowserOwnership[] = [];
@@ -62,6 +66,12 @@ export async function withIdentityBrowser(
       headless: true,
       ignoreHTTPSErrors: false,
       timeout: 15000,
+      env: {
+        ...process.env,
+        TMPDIR: profile,
+        TMP: profile,
+        TEMP: profile,
+      },
     });
     phase("context_created");
     const browser = context.browser();
@@ -213,6 +223,9 @@ export async function withIdentityBrowser(
       observedOwners.map((owner) => owner.requireProtocolComplete()),
     );
     await lastOwner.removeProfile();
+    await rmdir(temporary).catch((error: unknown) => {
+      throw new Error("identity_browser_cleanup_unverified", { cause: error });
+    });
     console.log("identity_browser_stage_process_closed");
   } catch (error) {
     hadCleanupFailure = true;

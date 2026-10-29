@@ -473,7 +473,7 @@ not one passing provider job. PR #7 is now human-merged; its accepted ledger
 and all five acceptance artifact hashes were verified on updated main before
 005 began. Historical failed checks and undiagnosed causes remain unchanged.
 
-**005 / implement is running after T001–T088 (88/100), not a completed feature**, on
+**005 / implement is incomplete after T001–T091 (91/100), not a completed feature**, on
 `feature/005-authentication-bootstrap`. The
 [implementation checkpoint](../specs/005-authentication-bootstrap/implementation.md)
 retains exact results and historical failures. The

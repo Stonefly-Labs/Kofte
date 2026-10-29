@@ -40,19 +40,26 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 **Current stage: 005 / implement in progress; 91/100 tasks complete.** T001–T091
 are evidenced. Login, nominated enrollment, shared session boundaries,
 explicit Development identity and operational recovery are implemented.
-The owning browser gate now passes; native failures and final local/CI
-reconciliation remain implementation work, not a request for human approval.
+The owning browser gate passes locally, and a separate Linux Chromium launch
+failure is reproduced and corrected; complete local/CI verification still fails.
+These are engineering failures, not a request for human approval.
+The ledger records failed verification (`blocked`), not feature completion.
 The same branch/draft PR continues from the
-[current evidence](specs/005-authentication-bootstrap/implementation.md#continued-implementation-verifier-owned-browser-canaries).
+[current evidence](specs/005-authentication-bootstrap/implementation.md#continued-implementation-short-private-chromium-temporaries).
 The [runtime guide](specs/005-authentication-bootstrap/quickstart.md) distinguishes
 delivered commands from executed evidence. The browser failure was a missing
 private canary-export directory in the verifier, not failed root-page assertions.
 The verifier now consumes the actual export and scans owned transport output;
 missing/invalid receipts and disclosures still fail. Diagnostics no longer blame
 passed-test declarations. The full browser selection and both native providers
-pass, joining the earlier production expiry/uncertain-state and public-recipe
+pass locally, joining the earlier production expiry/uncertain-state and public-recipe
 evidence to close T090. Historical failed full gates remain failed; the
 unexpected native 503s have not been diagnosed by passing reruns.
+An isolated Linux reproduction proved that inherited long temporary paths
+overflow Chromium's singleton socket address. The browser now uses a short
+fresh private profile-owned temporary root, retaining TLS/ownership/cleanup
+checks. The new local complete gate passes seven suites but fails contract,
+PostgreSQL privacy and isolated propagation baseline; no full pass is claimed.
 T092–T100 remain open; no feature acceptance is claimed.
 
 ### Historical implementation increments

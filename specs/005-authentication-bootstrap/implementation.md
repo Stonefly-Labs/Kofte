@@ -1,8 +1,8 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement in progress; 91/100 complete (T001-T091). The owning browser gate now passes. Unexpected native 503s and complete local/assessed-head CI reconciliation remain engineering work, not a human approval gate.
+**Result:** implement incomplete; verification failed, 91/100 complete (T001-T091). The owning browser gate passes locally, and the separate Linux Chromium temporary-path failure is reproduced and corrected. The ledger records this failed verification boundary as blocked; remaining native/contract/privacy/propagation work is engineering, not a human approval gate.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-29.
-**Assessed baseline:** `554017c88acb8e8be9e0f39677ce584826c2a366` plus this checkpoint's verifier/receipt changes; earlier assessments retain their original baselines below.
+**Assessed baseline:** complete local/hosted assessment of published `c7f68a786ebc51c935d8df455d926d79d88a8725`; subsequent focused checks add this checkpoint's browser-helper/native-fixture changes. Earlier assessments retain their original baselines below.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
 `specs/005-authentication-bootstrap`.
 **Checkpoint:** [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8).
@@ -12,6 +12,134 @@ The initial blocked assessment below is retained as history. The
 resolves that blocker and resumes the original implement stage. The later
 adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
+
+## Continued implementation: short private Chromium temporaries
+
+The verifier-owned canary repair was committed and immediately pushed as
+`c7f68a786ebc51c935d8df455d926d79d88a8725` on the same branch/draft PR.
+Its complete local gate and all actual hosted contexts were assessed with
+unchanged source, rather than treating an isolated pass as completion.
+
+### Reproduced Linux launch failure and correction
+
+Hosted root/Development browser tests now pass in 50.969s, with six actual
+canaries consumed and fourteen owned transport streams scanned. The hosted
+browser job instead fails later: the native SQLite cancellation/refusal/retry
+fact reaches only initial Chromium launch, then reports unclassified launch,
+unverified cleanup and absent transport capture. This is a different failure
+from the repaired export handoff; the job did not reach PostgreSQL browser
+selection or its subsequent public recipes.
+
+The full Chromium process creates a singleton Unix socket under inherited
+`TMPDIR`. The actual CI scratch-root layout is 74 bytes before Chromium adds its
+directory/socket components, exceeding Linux's 108-byte socket address field.
+Two isolated, network-disabled, non-root Linux arm64 probes using the pinned
+Playwright 1.64.1 image
+`mcr.microsoft.com/playwright@sha256:47b510dd9230bf0b9bfc9b20102241e577ea7a99334ab4c3ca19f19770e9b8ea`
+reproduce the difference: a 74-byte temporary root refuses launch with the
+finite `unix_socket_path_limit` category; a fresh 40-byte private profile-owned
+temporary root launches and closes successfully. Each container was restricted
+to one CPU/1 GiB and removed after exit. No protocol capture or personal profile
+was mounted or published.
+
+`identityBrowser.ts` now creates a fresh canonical short private parent under
+the system `/tmp`, then its private profile. Only Chromium inherits that profile
+as `TMPDIR`/`TMP`/`TEMP`; the caller's environment is unchanged. The existing
+process/session/birth/profile ownership checks and both close protocols still
+precede profile removal. The private parent is removed only after verified
+profile removal, using non-recursive removal so unexpected contents fail.
+Unverified launch/termination still preserves private partial state and fails.
+The existing native regression explicitly gives its Node child a long owned
+temporary root, rather than relying on a particular checkout length.
+
+A separate isolated Linux run of the **actual changed helper and unchanged
+ownership implementation**, with generated test CA/leaf and a loopback HTTPS
+server, passed initial untrusted-certificate refusal, stopped private CA import,
+fresh trusted navigation, both observed process lifecycles and complete private
+profile/parent removal. It retained zero owned profiles and left the long Node
+environment unchanged. An initial probe had an unwritable image-default HOME
+and failed before that proof; after supplying the same private writable HOME
+as the paired probes, it passed. That setup failure is not a product result.
+This arm64 container proof does not substitute for the pending x86_64 hosted
+assessment of the changed source. No TLS bypass, sandbox/owner relaxation,
+deadline increase, package or production source change was introduced.
+
+| Exact executed command | Actual result |
+| --- | --- |
+| `npm exec -- prettier --write tests/e2e/identityBrowser.ts` | Passed; formatting unchanged. |
+| `npm run lint --workspace tests/e2e` | Passed. |
+| `npm run typecheck --workspace tests/e2e` | Passed. |
+| `dotnet build tests/integration/Kofte.Host.IntegrationTests --no-restore -c Release -warnaserror` | Passed, zero warnings/errors. |
+| `node --test tests/e2e/identityBrowserOwnership.unit.ts` | Passed seven cases, zero skipped, including PID reuse/substituted profile/foreign group refusal, verified termination and deferred-close protocol failure. |
+| `python3 scripts/verify.py --suite browser --disposable-postgres` | **Passed**, 190.257s; `browser-none-3af0129a5b804fe49513eb7e566f8a72.json`. Six actual canaries consumed; native SQLite and PostgreSQL each passed two cases, zero skipped, including the long-temp regression. |
+
+`python3 scripts/verify.py --suite quality` then passed all 21 steps in
+37.802s (`quality-none-75a9e169f1d04a2eade4e303703c471d.json`), including
+repository checks, all 147 Python cases, whitespace, locked restores, .NET
+format/build, frontend format/lint/types/build, generated contracts and
+dependency review. The exact final `python3 scripts/check_repository.py`,
+`python3 -m unittest discover -s scripts/tests -v` and `git diff --check`
+also pass after documentation-only reconciliation (147 Python cases).
+
+### Complete local gate at published c7f68a7
+
+`python3 scripts/verify.py --suite all --disposable-postgres --warm-starts 10`
+completed with **exit 1**. All ten suites executed at the exact published head
+with fixed source. Every report has `scope: all` and `completeGate: false`.
+Profile remains Darwin 25.5.0 arm64, eighteen logical CPUs, 68,719,476,736 memory
+bytes, Python 3.15.0 and the pinned product tools; no timing cause is inferred.
+
+| Suite | Actual result / safe report |
+| --- | --- |
+| Quality | Passed all 21 steps, 48.949s; `quality-none-835e774fde0f48768e5aa02d8bdfd432.json`. |
+| Unit | Passed all 16 steps, 52.160s; `unit-none-ec6e55524b424dbaba3ab199e6174b84.json`. |
+| SQLite integration | Passed host209/storage237/composition57, zero skipped, 564.641s; `integration-sqlite-90d776898d0142a0bd37d734014b9cce.json`. |
+| PostgreSQL integration | Passed host119/storage212/composition59, zero skipped, 774.041s; `integration-postgres-8b76cc9f185e462ca16433feb5acec25.json`. |
+| Recovery | Passed both providers' native/storage/public/composition/browser selections, zero skipped, 1039.965s; `recovery-both-242377fcd32a492fa13630ca766937b6.json`. |
+| Contract | **Failed** `platform-public-contracts`, 532.288s, in PostgreSQL `ActualStoppedModeTransitionsPreserveEqualProfileNamespacesAndConsumedProductionAuthority`; known `DevelopmentIdentityTests.cs:129,157,178`. No finer status/cause was projected. Composition and identity catalogs did not execute. `contract-both-0413c555b62a4836aad7a62fc3eab72f.json`. |
+| Browser | Passed complete root plus both native providers, zero skipped, 141.435s; `browser-none-0a7c5b589aa24e678e742d381aca4f2a.json`. |
+| Privacy | **Failed** PostgreSQL public `ActualIdentityJourneysRequireTheirPrivateCapturedEvidence`, 324.204s, at `IdentityGuideTests.cs:51` / `IdentityConsumerHarness.cs:90,99`; no finer cause projected. Earlier SQLite channels/native browser and PostgreSQL storage capture passed; later PostgreSQL selections did not execute. `privacy-both-a065a65e568f47b8829a58503cde73bc.json`. |
+| Startup | Passed, including ten empty warm starts, 16.426s; `startup-none-a063553f400a4ec09eedf490c6663780.json`. |
+| Failure propagation | **Failed** isolated PostgreSQL baseline, 759.446s, before browser baseline/injections. Storage failed nineteen mapping/maintenance/privacy/recovery facts, including shared fixture/registration locations; host and composition passed. `failure-propagation-none-21dde7cd8ef442da947badd9ade3adba.json`. |
+
+The isolated failure facts are nine `PostgresIdentityMappingTests` methods,
+five `PostgresStorageMaintenanceDiagnosticsTests` methods,
+`PostgresStoragePrivacyTests.AllSevenResultsConsoleSpansEventsMetricsAndWorkerOutputsExcludeSeededSecrets`
+and four `PostgresRecoveryDiagnosticsTests` methods. The safe report retains
+their exact names/source locations, including `ModuleFixture.cs:33`,
+`RegistrationTests.cs:248,263`, `IdentityAdmissionTests.cs:246` and
+`LoginCommitFixture.cs:119,147`. No private arguments, raw exception values or
+causal diagnosis are inferred from this broad failure. The passing direct
+PostgreSQL selection does not replace the failed isolated baseline.
+
+### Actual c7f68a7 hosted assessment
+
+[Repository checks 40882687236](https://github.com/Stonefly-Labs/Kofte/actions/runs/40882687236)
+**passed**;
+[Product checks 40882687269](https://github.com/Stonefly-Labs/Kofte/actions/runs/40882687269)
+**failed**. All ten safe reports were inspected; no raw protocol logs were
+downloaded. Reports assess merge-test revision
+`067a30e80491d9ee069e322296f793f04429b6cc`, whose verified parents are main
+`3e416813233c9d291eb20cf72d5882dbddf3e1b6` and the published feature head.
+Profile: Linux 7.0.0-1017-azure x86_64, four logical CPUs, about 16.76 GB memory,
+Python 3.12.3, SDK10.0.402, Node24.22.0/npm11.19.1.
+
+Quality/unit/SQLite integration/recovery/startup passed. Browser failed the
+separate native launch described above after its corrected root selection.
+PostgreSQL host failed enrollment login with expected303/actual503; storage
+failed the 50,000-session capacity fact. Contract timed out in retained
+`composition-public-contracts` at 900.057s before identity catalogs. Privacy
+failed SQLite public private evidence with `identity_browser_transport_capture_missing`
+in 84.979s. Failure propagation failed the isolated storage
+`OriginalModuleDataAndConsumedDesignationSurviveRestartsPreparationAndUnavailableAdministrator`
+fact; its host119/composition59 passed, zero skipped, but injections did not
+execute. These outcomes do not diagnose the remaining native failures.
+
+T092-T100 remain open, and the driver records the failed verification boundary
+without completing implement. The Chromium correction must receive its own hosted
+assessment; the complete local failures, recurring native 503s, hosted contract
+timeout and incomplete propagation baseline are still engineering work. Neither
+passing probes nor this documentation advances converge/review/acceptance.
 
 ## Continued implementation: verifier-owned browser canaries
 

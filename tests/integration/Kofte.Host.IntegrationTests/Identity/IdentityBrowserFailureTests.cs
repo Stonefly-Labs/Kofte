@@ -92,6 +92,9 @@ public abstract class IdentityBrowserFailureTests
             startInfo.Environment["NODE_EXTRA_CA_CERTS"] = authorityFile;
             startInfo.Environment["KOFTE_IDENTITY_EXPECTED_USER"] = user.ToString("D");
             startInfo.Environment["KOFTE_IDENTITY_PRIVACY_CANARY"] = providerCanary;
+            startInfo.Environment["TMPDIR"] = root.Path;
+            startInfo.Environment["TMP"] = root.Path;
+            startInfo.Environment["TEMP"] = root.Path;
             await using var child = OwnedProcesses.Start(startInfo);
             using var deadline = CancellationTokenSource.CreateLinkedTokenSource(Token);
             deadline.CancelAfter(TimeSpan.FromSeconds(45));

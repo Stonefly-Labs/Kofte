@@ -329,7 +329,7 @@ That checkpoint required human merge before 005. PR #7 is now human-merged;
 004's accepted ledger and all five acceptance artifact hashes were verified
 on updated main before beginning the new feature.
 
-**005 / implement is running, with T001–T088 complete (88/100)**, on
+**005 / implement is incomplete, with T001–T091 complete (91/100)**, on
 `feature/005-authentication-bootstrap` and the same draft PR #8.
 Use the [current runtime guide](specs/005-authentication-bootstrap/quickstart.md)
 for delivered commands and the implementation record for exact results.

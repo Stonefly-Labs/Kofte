@@ -12,7 +12,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 spec is ready for converge, not until an incremental subset passes.
 The human-requested context pause has been resumed on the same branch/draft PR;
 it was not completion or a new approval gate.
-The [implementation checkpoint](../../specs/005-authentication-bootstrap/implementation.md#continued-implementation-verifier-owned-browser-canaries)
+The [implementation checkpoint](../../specs/005-authentication-bootstrap/implementation.md#continued-implementation-short-private-chromium-temporaries)
 records the remaining work, actual results and required unchanged budgets.
 The complete browser gate now passes its root/Development selection and both
 native providers. Its real failure was the verifier's missing private
@@ -21,6 +21,18 @@ declaration locations. The fix consumes the actual bounded private export and
 scans owned transport output, without weakening missing-capture or disclosure
 guards. This joins the earlier passing production login/enrollment/session
 journeys and private callback/accessibility evidence to close T090.
+The published-head assessment then found a separate native Linux launch failure:
+Chromium's inherited long temporary-root path overflows its singleton Unix
+socket. A pinned isolated Linux reproduction and the changed helper's actual
+untrusted/trusted TLS, ownership and complete cleanup proof pass with a short
+fresh private profile-owned temporary root; the local both-provider browser gate
+also passes its explicit long-temp regression. No request/deadline/ownership/TLS
+guard was relaxed. Its new hosted assessment is pending.
+The exact complete local gate at `c7f68a7` passes seven suites but fails native
+contract, PostgreSQL public privacy and the isolated propagation baseline.
+That head's actual CI passes repository checks and five product contexts, but
+fails PostgreSQL integration/contract/browser/privacy/propagation. Root browser
+tests pass in that hosted run; the later native launch is the separate failure.
 T092–T100 remain open. The earlier failed complete local/hosted results remain
 historical failures; unexpected native 503s are not diagnosed by isolated passes.
 No approval is needed to continue this engineering work. Later stages and
@@ -45,8 +57,10 @@ cleanup. The same cases, product deadlines and within-test contention remain;
 that isolated result was not itself a passing serial/nested aggregate gate.
 The [runtime guide](../../specs/005-authentication-bootstrap/quickstart.md)
 separates delivered interfaces from exact results. The ledger records
-005/implement/running while the remaining verification work is investigated;
-converge/review/acceptance have not run.
+005/implement/blocked at the failed verification boundary, with exact local/CI
+reasons, not a pending human approval. Resume the same feature branch/draft PR
+to continue the remaining engineering work; converge/review/acceptance have
+not run.
 
 **Earlier implementation increments (historical):** The
 `a0c1fb0` Ubuntu browser job passes all eight HTTPS recipes, including both

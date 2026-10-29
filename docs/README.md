@@ -21,11 +21,15 @@ All three public operational recipes pass on both providers. The owning browser
 gate now also passes after wiring its required private canary export into the
 verifier's actual transport scan. The old diagnostic locations included passed
 root tests; they were not evidence that those assertions failed.
-The [current evidence](../specs/005-authentication-bootstrap/implementation.md#continued-implementation-verifier-owned-browser-canaries)
-closes T090 with actual state/accessibility coverage. Native 503s and complete
-local/assessed-head CI reconciliation remain engineering work; no human decision
+The [current evidence](../specs/005-authentication-bootstrap/implementation.md#continued-implementation-short-private-chromium-temporaries)
+also reproduces the separate Linux Chromium singleton-socket path overflow.
+Short fresh private profile-owned temporaries pass actual Linux TLS/ownership/
+cleanup proof and the local both-provider browser gate, without relaxed guards.
+The complete local gate still fails contract/PostgreSQL privacy/propagation;
+assessed-head CI also remains non-green. These are engineering failures; no human decision
 is blocking implementation. T092–T100 remain open. Passing subsets do not erase
 historical failed gates or establish their causes.
+The ledger's `blocked` status records failed verification, not a pending approval.
 The detailed US1 increments below are historical.
 The [implementation evidence](../specs/005-authentication-bootstrap/implementation.md)
 records reviewed OIDC adoption (403 npm / 87 NuGet), independent HTTPS/process
@@ -92,7 +96,7 @@ passes with concrete coverage of all 29 requirements/outcomes and 22 scenarios,
 100 mapped unchecked tasks, 242 acyclic dependency edges and no actionable or
 constitutional finding at the historical analysis checkpoint.
 Specification, planning artifacts, approved ADR and both reviewed checklists
-remain unchanged; the current implementation markers are T001–T088.
+remain unchanged; the current implementation markers are T001–T091.
 The historical design checkpoint did not introduce runtime proof or acceptance;
 no intermediate merge is requested.
 See the [current workflow record](development/spec-workflow.md#invocation-and-current-progress).
