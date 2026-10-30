@@ -12,7 +12,7 @@ public sealed class PostgresFixture : IAsyncDisposable
     public string ProvisioningConnectionString => resources.ProvisioningConnectionString;
 
     public static async Task<PostgresFixture> CreateFromEnvironmentAsync(CancellationToken token) =>
-        new(await PostgresResources.CreateFromEnvironmentAsync(token));
+        new(await PostgresResources.CreateFromEnvironmentAsync(token, shareOwnedService: true));
 
     public static async Task<PostgresFixture> CreateAsync(bool disposable,
         string? externalService = null, string? requestedDatabase = null, CancellationToken token = default) =>

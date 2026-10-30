@@ -14,7 +14,7 @@ The [technology-stack exploration](kofte-technology-stack-architecture.md) is hi
 
 ## Working in the repository
 
-**Current Spec Kit checkpoint: 005 / implement blocked, T001–T096 complete (96/100).**
+**Current Spec Kit checkpoint: 005 / implement running, T001–T096 complete (96/100).**
 The [runtime guide](../specs/005-authentication-bootstrap/quickstart.md) covers
 delivered sign-in, enrollment, session/Development and stopped operator commands.
 All nine public recipes individually and `all` pass on each provider, with
@@ -32,8 +32,16 @@ product contexts and repository checks but times out in retained composition
 contracts and the isolated PostgreSQL propagation baseline. The local all-suite
 attempt fails two SQLite storage methods; isolated two-case and complete
 236-case storage probes pass without diagnosing that failure. Local PostgreSQL
-was interrupted for diagnosis, with later suites unexecuted. The ledger is
-blocked on these remaining engineering gates, not human approval; no failed
+was interrupted for diagnosis, with later suites unexecuted. The original
+implementation has resumed. A full composition profile identifies repeated
+PostgreSQL service setup; process-owned reuse now preserves per-fixture
+databases/roles and verified cleanup, with qualification in progress.
+The complete 84-case composition selection improves from 823.858s to 551.735s;
+eleven uninstrumented ownership/isolation/outage checks pass. Later Linux CI at
+unchanged-source `b15f2f3` passes nine contexts, including propagation, but still
+times out in composition. It predates the service-reuse repair and does not
+replace its required full local/actual CI qualification.
+The remaining gates are engineering work, not human approval; no failed
 result is replaced by a subset or attributed universally to issuer keys.
 Use the [operator contract](../specs/005-authentication-bootstrap/contracts/operator-v1.md)
 and [local guide](development/local-development.md) for private setup/trust,

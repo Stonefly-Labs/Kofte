@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement blocked; 96/100 complete** (T001–T096), on
+**Current checkpoint: 005 / implement running; 96/100 complete** (T001–T096), on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. Implementation continues until the entire
 spec is ready for converge, not until an incremental subset passes.
@@ -34,8 +34,16 @@ SQLite native/composition, but two SQLite storage methods fail. Unchanged
 isolated two-case and full 236-case storage probes pass without diagnosing
 or replacing that failure. Local PostgreSQL was interrupted for diagnosis;
 later suites did not execute. Temporary request probes are removed.
-The ledger is blocked on these remaining engineering failures on the same
-draft PR, not awaiting human approval. The preserved earlier fixture remains
+The original implementation has resumed on the same draft PR, not awaiting
+human approval. A complete composition profile identifies repeated PostgreSQL
+service setup inside the public consumer; the continuation uses the existing
+process-owned service while preserving per-fixture databases/roles and verified
+cleanup. The complete composition selection improves from 823.858s to 551.735s
+(84 cases, zero skipped), and eleven uninstrumented ownership/isolation/outage
+checks pass. The later unchanged-source `b15f2f3` Linux assessment passes nine
+product contexts, including propagation, but still times out in composition;
+it predates this service-reuse repair. Full local/repaired-source CI qualification
+remains in progress. The preserved earlier fixture remains
 stopped, not deleted or claimed cleaned up. Do not advance stages, waive the
 failed gates or attribute every historical failure to lazy key generation.
 

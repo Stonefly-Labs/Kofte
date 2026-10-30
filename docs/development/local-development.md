@@ -1055,6 +1055,15 @@ Target-database and exported connections remain unpooled. The real two-scope
 regression verifies that disposing one removes its administration backend,
 database and roles without closing the other's backend.
 
+Ordinary host fixtures use that same owner. Fixtures requiring an actual
+service outage still create a dedicated service. The composition public
+consumer also owns one lazy service for its complete invocation, including
+`all`; each scenario retains its own database, application/provisioning roles,
+ownership evidence and cleanup. The service owner verifies no residual
+databases, roles or sessions and disposes before any successful consumer result
+is emitted. This avoids repeated engine startup without sharing installation
+state, bypassing ownership checks or changing serial verification commands.
+
 The verifier limits independently scheduled provider fixture collections to
 at most four, or the reported logical CPU count when smaller. This bounds
 competing native fixture processes; it does not reduce contenders within a

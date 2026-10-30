@@ -13,7 +13,7 @@ public sealed class PostgresStorageCompatibilityTests
     public async Task ModuleFreeOwnedPostgresRequiresIdentityPreparationBeforeStartupWithoutProvisioner()
     {
         var token = TestContext.Current.CancellationToken;
-        await using var database = await PostgresResources.CreateFromEnvironmentAsync(token);
+        await using var database = await PostgresResources.CreateFromEnvironmentAsync(token, shareOwnedService: true);
         using var unusedRoot = new TempRoot();
         var refused = await StartupFixture.RunExitAsync(unusedRoot.Path, [], token, postgres: database.ConnectionString);
         Assert.Equal(1, refused.ExitCode);
@@ -43,7 +43,7 @@ public sealed class PostgresStorageCompatibilityTests
     public async Task RefusedOwnedPostgresUpgradeProjectsSafeCauseAndPreservesMetadata(bool unsupported)
     {
         var token = TestContext.Current.CancellationToken;
-        await using var database = await PostgresResources.CreateFromEnvironmentAsync(token);
+        await using var database = await PostgresResources.CreateFromEnvironmentAsync(token, shareOwnedService: true);
         using var unusedRoot = new TempRoot();
         var installation = StorageInstallation.PostgreSql(database.ConnectionString);
         var maintenance = new StorageMaintenance(installation);

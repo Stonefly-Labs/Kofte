@@ -29,9 +29,9 @@
     "spec": "005",
     "step": "implement",
     "directory": "specs/005-authentication-bootstrap",
-    "status": "blocked",
+    "status": "running",
     "branch": "feature/005-authentication-bootstrap",
-    "reason": "Repaired deferred issuer RSA preparation at 32d0d91 with deterministic red/green regression. Both complete provider CI jobs and 265 public identity/platform contracts pass; eight product contexts and repository checks pass at verified merge 5b41205. T097-T100 remain incomplete: repaired-head local all-suite fails two SQLite storage methods (isolated two-case and full 236-case probes pass without diagnosis); PostgreSQL was interrupted for diagnosis. Actual CI composition-public-contracts times out at 900.055s and isolated whole PostgreSQL propagation baseline at 900.367s. Preserve exact failures; no deadline, durability, coverage, contender or installation-session proof changes. Remaining engineering gates, not human approval; no later stage or acceptance.",
+    "reason": "",
     "started_at": "2026-10-26T21:30:18+00:00"
   },
   "history": [

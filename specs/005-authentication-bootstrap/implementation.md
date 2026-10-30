@@ -1,6 +1,6 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement incomplete; 96/100 complete (T001-T096). The deferred issuer-key defect is repaired and both complete provider CI jobs plus 265 public identity/platform contract cases pass. The complete feature gate remains blocked by local storage failures and CI composition/propagation timeouts; T097-T100 remain unchecked. Passing diagnostic reruns do not establish the remaining failures' causes. No human approval is requested.
+**Result:** implement running; 96/100 complete (T001-T096). The deferred issuer-key defect is repaired and both complete provider CI jobs plus 265 public identity/platform contract cases pass. The original implementation has resumed to resolve remaining local/CI gates; T097-T100 remain unchecked. Passing diagnostic reruns do not establish the remaining failures' causes. No human approval is requested.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-30.
 **Assessed baseline:** published repair `32d0d91e263cd206037748bf9b997959618cd950`; actual Linux merge `5b41205a76ab85a76c01d1e35b3e3bd844212658`. Earlier assessments retain their original baselines.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
@@ -14,6 +14,93 @@ adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
 
 ## T097 in progress: current full-gate and assessed-head failures
+
+### Continued repair: reuse owned PostgreSQL services, 2026-10-30
+
+The original branch/draft PR, clean worktree and passing 16/16 and 36/36
+checklists were verified before resuming the active implementation through
+the driver. No extension hooks are configured.
+
+A complete, unchanged `composition-public-contracts` diagnostic execution
+passes all 84 selected cases, zero skipped, in 823.858s within its original
+900-second command envelope.
+Its safe report is
+`composition-duration-probe-both-3f0e6666357f44e38fab02c50ad75d45.json`;
+private XML is projected only into source-allowlisted method names and numeric
+durations, then discarded. The PostgreSQL consumer's `all` case takes
+351.171s versus SQLite's 100.822s. This is diagnostic performance evidence,
+not the complete local gate or a replacement for the failed Linux command.
+
+The independently executed composition consumer lacked the assembly-owned
+service used by its parent test process. Its scenarios therefore repeatedly
+started/removed owned servers even during `all`. The consumer now owns one
+lazy `PostgresAssemblyFixture` for the whole valid PostgreSQL invocation.
+Every scenario still owns a unique database, application/provisioning roles,
+ownership records and verified disposal. The owner checks for residual
+databases/roles/client sessions and disposes **before** the success envelope.
+Ordinary host fixtures and compatibility cases now opt into the existing
+assembly-owned service too. Actual service-outage cases continue using
+dedicated `CreateAsync` services, not a shared server.
+
+No product source, strength, deadline, retry, contender count, required
+selection or serial runner is changed. The new host regression requires a
+common service but distinct databases/roles, verifies their removal through
+the surviving sibling's catalog connection and proves that sibling remains
+healthy. Restoring the original non-sharing helper makes this regression fail
+(`native-fixture-sharing-red-postgres-18e115dfaf9c49f281956dfd7b8dff2d.json`);
+the repaired helper passes its rebuilt one-case execution in 5.903s.
+
+The complete repaired composition selection passes **84/zero skipped in
+551.735s**, with PostgreSQL `all` reduced from 351.171s to **148.248s**
+(`fixture-reuse-proof-both-bd8f4f373e784c8b9226dfe86ce8f970.json`).
+That combined diagnostic attempt still fails its native PostgreSQL selection:
+five methods receive actual 503s instead of expected 200/303/409 responses,
+in 368.247s. They are the missing-context/designation enrollment cases,
+warmed-store-authority/corrupt-ticket case, recovery-key-custody case and
+invalid-delivered-OIDC-evidence case. A subsequent private local-owner phase
+trace passes all **121 native cases/zero skipped/eight required classes in
+204.650s**. It does not reproduce an unexpected healthy failure and does not
+establish the cause of the preceding five failures. The source instrumentation
+and hardcoded private output path are removed before qualification/publication.
+
+`dotnet build Kofte.slnx --no-restore -c Release -warnaserror` passes with zero
+warnings/errors. Focused `dotnet format Kofte.slnx --verify-no-changes
+--no-restore --include` for the four changed C# files passes. After removing all
+temporary instrumentation, the rebuilt ordinary-store/ownership/compatibility/
+actual-outage selection passes **11/zero skipped in 13.579s**:
+`dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-build
+--no-restore -c Release --filter-class '*PostgresStoreTests' --filter-class
+'*PostgresOwnershipTests' --filter-class '*PostgresStorageCompatibilityTests'
+--filter-class '*PostgresFailureTests' --max-threads 4
+--minimum-expected-tests 11`.
+Its safe report is
+`native-fixture-sharing-final-postgres-ae2a67c63edf4d86a8c36aa817038377.json`.
+No product source, runner, selector, scheduling or budget change is retained.
+
+The subsequent unchanged-source Linux
+[run 40988500306](https://github.com/Stonefly-Labs/Kofte/actions/runs/40988500306)
+at `b15f2f3749d376ba3cfa1f7b345c4f2cb3c55ed6` passes **nine of ten** product
+contexts, including failure-propagation; repository
+[run 40988500274](https://github.com/Stonefly-Labs/Kofte/actions/runs/40988500274)
+also passes. The propagation report
+`failure-propagation-none-5a9d54cf3d34427a9d951d6545f0f63c.json` passes in
+1254.993s: its entire serial PostgreSQL baseline passes in 760.136s
+(native 120/zero skipped, 285.013s; storage 211/zero skipped, 315.198s;
+composition 59/zero skipped, 159.566s), followed by browser baseline and all
+five real failure injections. This disproves an assumption that the earlier
+baseline timeout necessarily requires changing serial scheduling or its budget.
+Contract still fails: 265 platform/identity cases pass in 535.552s, then the
+separate retained composition selection times out at 900.061s
+(`contract-both-98e0210b812a4bceac4abb51f73cc0b8.json`).
+These runs predate the current service-reuse repair and cannot qualify it.
+The exact complete local gate and actual repaired-source CI remain required;
+historical storage/native failures are not erased by diagnostic reruns.
+
+Pre-publication `python3 scripts/check_repository.py`,
+`python3 -m unittest discover -s scripts/tests -v` (all 159 tests) and
+`git diff --check` pass. The original implementation remains running,
+T097–T100 remain unchecked, and complete-gate qualification continues rather
+than ending at this repair checkpoint.
 
 ### Repaired-head qualification and remaining gates, 2026-10-30
 

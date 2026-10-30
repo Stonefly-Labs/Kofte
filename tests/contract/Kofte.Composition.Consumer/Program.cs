@@ -38,25 +38,28 @@ if (provider is not null && scenario is not null)
     try
     {
         var completed = new List<ScenarioEvidence>();
-        foreach (var name in scenario == "all" ? CompositionScenarioCatalog.Scenarios : [scenario])
+        await using (var postgres = provider == "postgres" ? new PostgresAssemblyFixture() : null)
         {
-            var evidence = name switch
+            foreach (var name in scenario == "all" ? CompositionScenarioCatalog.Scenarios : [scenario])
             {
-                "invalid-composition" => await ValidationScenarios.InvalidAsync(provider, deadline.Token),
-                "deterministic-corpus" => await ValidationScenarios.DeterministicAsync(deadline.Token),
-                "empty-boot" => await BootScenarios.EmptyAsync(provider, deadline.Token),
-                "valid-dependency" => await BootScenarios.DependencyAsync(provider, deadline.Token),
-                "disabled-missing" => await BootScenarios.DisabledMissingAsync(provider, deadline.Token),
-                "ordered-migration" => await MigrationScenarios.OrderedAsync(provider, deadline.Token),
-                "disable-reenable" => await PreservationScenarios.CyclesAsync(provider, deadline.Token),
-                "health-impact" => await HealthScenarios.ImpactAsync(provider, deadline.Token),
-                "bounded-stop" => await StopScenarios.BoundedAsync(provider, deadline.Token),
-                "failure-correction" => await CorrectionScenarios.CorrectAsync(provider, deadline.Token),
-                "private-diagnostics" => await DiagnosticScenarios.PrivateAsync(provider, deadline.Token),
-                _ => throw new ScenarioFailure("composition_scenario_required")
-            };
-            evidence.Complete();
-            completed.Add(evidence);
+                var evidence = name switch
+                {
+                    "invalid-composition" => await ValidationScenarios.InvalidAsync(provider, deadline.Token),
+                    "deterministic-corpus" => await ValidationScenarios.DeterministicAsync(deadline.Token),
+                    "empty-boot" => await BootScenarios.EmptyAsync(provider, deadline.Token),
+                    "valid-dependency" => await BootScenarios.DependencyAsync(provider, deadline.Token),
+                    "disabled-missing" => await BootScenarios.DisabledMissingAsync(provider, deadline.Token),
+                    "ordered-migration" => await MigrationScenarios.OrderedAsync(provider, deadline.Token),
+                    "disable-reenable" => await PreservationScenarios.CyclesAsync(provider, deadline.Token),
+                    "health-impact" => await HealthScenarios.ImpactAsync(provider, deadline.Token),
+                    "bounded-stop" => await StopScenarios.BoundedAsync(provider, deadline.Token),
+                    "failure-correction" => await CorrectionScenarios.CorrectAsync(provider, deadline.Token),
+                    "private-diagnostics" => await DiagnosticScenarios.PrivateAsync(provider, deadline.Token),
+                    _ => throw new ScenarioFailure("composition_scenario_required")
+                };
+                evidence.Complete();
+                completed.Add(evidence);
+            }
         }
         Console.WriteLine(JsonSerializer.Serialize(new
         {
