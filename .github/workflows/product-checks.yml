@@ -78,6 +78,44 @@ jobs:
         env:
           VERIFICATION_ARGUMENTS: ${{ matrix.arguments }}
         run: python3 scripts/verify.py $VERIFICATION_ARGUMENTS
+      - name: Capture bounded composition recipe timings after contract failure
+        if: failure() && matrix.name == 'contract'
+        run: |
+          python3 - <<'PY'
+          import os
+          import time
+          from scripts import verify
+
+          report = verify.Report(verify.ROOT, "composition-diagnostic", "both", "diagnostic")
+          environment = verify.child_environment(os.environ)
+          environment["KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE"] = "true"
+          runner = verify.Runner(verify.ROOT, report, environment)
+          deadline = time.monotonic() + 1800
+
+          def collect(_step):
+              failed = False
+              for provider in ("sqlite", "postgres"):
+                  for scenario in (*verify.COMPOSITION_OBSERVATIONS, "all"):
+                      if time.monotonic() + 600 > deadline:
+                          raise verify.VerificationError("composition_diagnostic_budget_exhausted")
+                      try:
+                          runner.composition_guide(provider, scenario, environment)
+                      except verify.VerificationError:
+                          failed = True
+              if failed:
+                  raise verify.VerificationError("composition_diagnostic_cases_failed")
+
+          passed = False
+          try:
+              runner.versions()
+              runner.operation("composition-diagnostic-recipes", collect)
+              passed = True
+          except verify.VerificationError:
+              pass
+          finally:
+              report.finish(passed)
+          raise SystemExit(0 if passed else 1)
+          PY
       - name: Verify configured HTTPS identity through public browser recipes
         if: matrix.name == 'browser'
         env:

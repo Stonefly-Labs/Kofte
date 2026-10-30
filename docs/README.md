@@ -41,6 +41,13 @@ eleven uninstrumented ownership/isolation/outage checks pass. Later Linux CI at
 unchanged-source `b15f2f3` passes nine contexts, including propagation, but still
 times out in composition. It predates the service-reuse repair and does not
 replace its required full local/actual CI qualification.
+The subsequent exact local gate at `0c79825` finishes with nine passing suite
+groups, but the unavailable-PostgreSQL injection times out: no complete pass.
+That head's actual Linux assessment passes seven product contexts and repository
+checks; PostgreSQL composition and both retained timing gates still fail.
+A real socket regression identifies and repairs the local reserved-port
+blackhole with an owned protocol-refusing listener, without increasing budgets.
+The remaining Linux failures require actual diagnosis, not an isolated local pass.
 The remaining gates are engineering work, not human approval; no failed
 result is replaced by a subset or attributed universally to issuer keys.
 Use the [operator contract](../specs/005-authentication-bootstrap/contracts/operator-v1.md)

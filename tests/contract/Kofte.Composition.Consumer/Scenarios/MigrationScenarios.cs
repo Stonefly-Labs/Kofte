@@ -266,7 +266,9 @@ internal static class MigrationScenarios
             }
         }
         return code is "composition_deadline_exceeded" or "composition_output_failed" or "composition_cancelled" or
-            "composition_cleanup_incomplete" or "composition_observation_invalid" or "composition_storage_rejected"
+            "composition_cleanup_incomplete" or "composition_observation_invalid" or "composition_storage_rejected" or
+            "composition_configuration_invalid" or "composition_admission_invalid" or "composition_prepare_required" or
+            "composition_manifest_rejected" or "composition_dependency_disabled"
             ? code : "other";
     }
 }

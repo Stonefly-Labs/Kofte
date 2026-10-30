@@ -1,8 +1,8 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement running; 96/100 complete (T001-T096). The deferred issuer-key defect is repaired and both complete provider CI jobs plus 265 public identity/platform contract cases pass. The original implementation has resumed to resolve remaining local/CI gates; T097-T100 remain unchecked. Passing diagnostic reruns do not establish the remaining failures' causes. No human approval is requested.
+**Result:** implement running; 96/100 complete (T001-T096). The exact full local run at `0c79825` passes nine suite groups but fails unavailable-PostgreSQL failure propagation. Actual assessed-head CI passes seven product contexts and repository checks, not the complete matrix. The portable refusal fixture has a demonstrated transport defect and focused repair; the remaining Linux failures are still under investigation. T097-T100 remain unchecked. No human approval is requested.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-30.
-**Assessed baseline:** published repair `32d0d91e263cd206037748bf9b997959618cd950`; actual Linux merge `5b41205a76ab85a76c01d1e35b3e3bd844212658`. Earlier assessments retain their original baselines.
+**Assessed baseline:** published service-reuse repair `0c7982541f5ab1f617e8a9facb278118602abc2d`; actual Linux merge `a0a260dbab502a15e65d584c3a50c228d988fdcf`. The subsequent working-tree refusal/diagnostic repair is distinguished below; earlier assessments retain their original baselines.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
 `specs/005-authentication-bootstrap`.
 **Checkpoint:** [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8).
@@ -14,6 +14,115 @@ adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
 
 ## T097 in progress: current full-gate and assessed-head failures
+
+### Full local qualification and portable refusal repair, 2026-10-30
+
+The exact `python3 scripts/verify.py --suite all --disposable-postgres
+--warm-starts 10` runs to completion on clean, published `0c79825`, without
+source changes, competing tests or interruption. It **fails**, exit 1:
+nine suite groups pass, but failure-propagation does not. Every report has
+`scope: all` and `completeGate: false`; no diagnostic pass replaces this result.
+
+| Actual local safe report | Result |
+| --- | --- |
+| `quality-none-b70c36752265494388bfcaf47e744ddf.json` | Passed, 35.144s: repository/Python/whitespace, locked restores, complete .NET format/build, Prettier/ESLint/TypeScript, generated contracts, workspace builds and dependency review. |
+| `unit-none-4044da6c5bc74458b145172bce344da9.json` | Passed, 48.994s: host 309, platform 223, retained composition host 149/platform 94, web/package/capture/Python; zero native skips. |
+| `integration-sqlite-4899d64052f84bf2956128ad656c82c9.json` | Passed, 488.147s: native 211/13 required classes, storage 236/11 classes and composition 57; zero skipped. This includes both historically failed storage methods. |
+| `integration-postgres-ccc517c17b594f439c5662630f52be61.json` | Passed, 480.688s: native 121/eight required classes, storage 211/11 classes and composition 59; zero skipped. |
+| `recovery-both-ee26a1a49e364c29a9efd90982ba47e1.json` | Passed, 985.489s: both complete native/storage/public/composition/browser recovery selections and owned cleanup/output scans. |
+| `contract-both-1ac6d69da28a4536bce6b05aed43fd13.json` | Passed, 1856.512s: public identity/platform 265/18 classes in 295.449s; retained composition 84 in 479.664s; all individual composition recipes plus `all`, identity guides, native OpenAPI and HTTP contracts on both providers; zero native skips. |
+| `browser-none-b976311569574fc6b3b66d24c22188f4.json` | Passed, 72.717s: root/Development browser discovery/execution, actual native identity browser facts on both providers, canaries and verified cleanup. |
+| `privacy-both-949e10c68f874b8b883ac50e9c01b236.json` | Passed, 443.937s: both-provider native/public/storage/composition/browser captures and strict supervisor scan. |
+| `startup-none-378f55c214ca41a0a001d7ffdbb6e333.json` | Passed, 15.542s: ten empty warm starts, composition restarts and actual timing observations. |
+| `failure-propagation-none-ea955e2cdad44b628da0b3aefa1b1484.json` | Failed, 1556.013s. Isolated quality baseline 39.308s, entire PostgreSQL baseline 477.687s, browser baseline 78.444s and test/formatter/build injections pass. The unavailable-PostgreSQL injection reaches the unchanged parent 900-second bound at 900.296s. Missing-Chromium injection is not executed. |
+
+The actual Linux product
+[run 40992754318](https://github.com/Stonefly-Labs/Kofte/actions/runs/40992754318)
+passes **seven of ten** contexts: quality, unit, integration-sqlite, recovery,
+browser, privacy and startup. Repository
+[run 40992754152](https://github.com/Stonefly-Labs/Kofte/actions/runs/40992754152)
+passes. The contract checkout log and fetched merge object verify merge
+`a0a260dbab502a15e65d584c3a50c228d988fdcf` with main
+`3e416813233c9d291eb20cf72d5882dbddf3e1b6` and feature
+`0c7982541f5ab1f617e8a9facb278118602abc2d` parents.
+
+| Actual failed Linux report | Exact failure |
+| --- | --- |
+| `integration-postgres-dd6cfe01075e4617a72b81867c3b49bb.json` | Native 121/eight classes and storage 211/11 classes pass without skips. Composition fails `PostgresCompositionPreservationTests.ThreeStoppedSelectionCyclesPreserveExactOriginalStoresAndUseFreshProcesses`, scenario `disable-reenable`, with `composition_test_invalid_disable_cascaded_or_executed`; total 679.052s. The old combined assertion does not identify a missing dependency code versus a forbidden activation stage. |
+| `contract-both-690b1c33453d40cbb6919fe79b5285e0.json` | Public identity/platform 265/18 classes passes in 541.890s, zero skipped; retained composition reaches 900.063s without completed XML or retained method names; total 1478.896s. |
+| `failure-propagation-none-9634a526e45641dfbc4bdc0140724cfd.json` | Isolated quality passes in 131.584s, then the whole PostgreSQL baseline reaches 900.366s; total 1035.305s. This is a different phase from the local unavailable-service injection. |
+
+The local propagation failure now has a concrete transport reproduction.
+The old fixture reserves a TCP port by binding without listening. On this
+macOS profile, connecting to that owned non-listening socket **times out**
+rather than promptly refusing. A one-second real socket regression fails
+before the repair. The exact old unavailable child also exceeds its unchanged
+900-second parent budget: native fails after 426.330s; storage is interrupted
+after another 473.741s
+(`integration-postgres-fdbae0dd281345dda67386aa0201a157.json`).
+The fixture's separately bounded administration legitimately allows up to
+30 seconds; repeated transport blackholes consume the aggregate budget.
+
+The injection now owns a listening socket and a supervised thread that
+immediately closes every accepted connection, without reading data or speaking
+PostgreSQL. It deterministically refuses the database protocol while retaining
+exclusive port ownership; it cannot race with a real service taking a released
+port. Teardown closes the listener, joins the worker and explicitly fails on
+unverified cleanup or listener failure. No runtime, administration, test,
+contender, retry or outer deadline is increased. The real port regression
+now passes three consecutive refused connections.
+
+The corrected real child completes in **86.374s**, with all three original
+serial commands failing as required: native 15.850s, storage 4.258s and
+composition 66.093s
+(`integration-postgres-3d072695806942d1b2b8c2ddcfcfb16b.json`).
+`checked_evidence` validates the exact ordered commands, nonzero exits and
+`command_failed` outcomes against every expected follow-up. This is a passing
+**focused negative proof**, not a passing integration suite or complete
+propagation gate; the child report correctly remains failed.
+
+Parent timeout handling also stops the child **before** reading its report
+and reuses the existing strict evidence validator. A validated failed child
+snapshot is retained alongside `failure_exercise_timeout`, never accepted as
+a green baseline. A controlled regression first fails for missing evidence,
+then passes; private canary fields are still discarded.
+
+The preservation assertion is split into the same two mandatory conditions:
+the exact disabled-dependency reason and zero registration/initialization/
+migration/start/publication. Missing-reason failures now retain a closed
+root-code category separately from forbidden activation. This does not claim
+the Linux rejection is repaired. An initial local probe correctly refuses
+PostgreSQL because its wrapper stripped the disposable-admission flag
+(`composition-preservation-diagnostic-both-bb525f00fa184e0c8744305ea9ebaba7.json`);
+that is not a product regression. The corrected explicitly admitted probe
+passes both cases, zero skipped
+in 14.263s
+(`composition-preservation-diagnostic-both-425d49f14c5a4214be466fb8848e74df.json`).
+The exact command is `dotnet test --project
+tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore
+-c Release --filter-method
+'*ThreeStoppedSelectionCyclesPreserveExactOriginalStoresAndUseFreshProcesses'
+--max-threads 4 --minimum-expected-tests 2`, with disposable PostgreSQL
+explicitly admitted.
+
+After a future failed Linux contract job, CI additionally profiles each
+existing public composition recipe and `all` through the same strict
+600-second helper, within a separate bounded diagnostic window. Only ordinary
+safe verifier JSON is uploaded. The original failed context, 900-second
+required command and incomplete qualification remain failed; diagnostic
+timings do not substitute for the gate.
+
+Post-repair `dotnet build Kofte.slnx --no-restore -c Release -warnaserror`
+passes, zero warnings/errors. `dotnet format Kofte.slnx --verify-no-changes
+--no-restore --include
+tests/contract/Kofte.Composition.Consumer/Scenarios/PreservationScenarios.cs
+tests/contract/Kofte.Composition.Consumer/Scenarios/MigrationScenarios.cs`
+passes. `python3 scripts/check_repository.py`,
+`python3 -m unittest discover -s scripts/tests -v` (**161 tests**, 7.892s),
+`git diff --check` and `npx --no-install prettier --check
+.github/workflows/product-checks.yml` pass. The exact embedded diagnostic
+Python also compiles. Full qualification and actual repaired-source CI remain
+required; this repair checkpoint does not complete the implementation stage.
 
 ### Continued repair: reuse owned PostgreSQL services, 2026-10-30
 

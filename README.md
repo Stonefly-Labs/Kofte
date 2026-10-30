@@ -70,8 +70,16 @@ the complete 84-case composition selection improves from 823.858s to 551.735s
 and eleven uninstrumented isolation/ownership/outage cases pass. Later Linux
 CI at unchanged-source `b15f2f3` passes nine contexts, including propagation,
 but still times out in composition; it predates the service-reuse repair.
-Full local/repaired-source CI qualification is in progress. Historical failures remain failed;
-the issuer repair is not asserted to explain every prior failure.
+The exact complete local gate at service-reuse head `0c79825` now finishes:
+nine suite groups pass, including both full integrations, recovery, all
+contracts, browser/privacy and ten warm starts. Failure propagation fails its
+unavailable-PostgreSQL injection at 900 seconds, so the complete gate is **not**
+passing. Actual Linux CI passes seven product contexts and repository checks;
+PostgreSQL composition, retained composition timing and the isolated PostgreSQL
+baseline still fail. A real socket regression identifies the local injection's
+reserved-port transport blackhole; an owned protocol-refusing listener repairs
+that fixture without relaxing budgets. Qualification and Linux diagnosis continue.
+Historical failures remain failed; no universal issuer-key explanation is claimed.
 Continue on the same branch/draft PR #8. Converge, review and explicit feature
 acceptance are later stages; designation grants no module permissions.
 Specs 006–009/022–024 and production-readiness claims remain out of scope.

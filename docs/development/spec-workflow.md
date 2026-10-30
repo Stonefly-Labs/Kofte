@@ -43,7 +43,15 @@ cleanup. The complete composition selection improves from 823.858s to 551.735s
 checks pass. The later unchanged-source `b15f2f3` Linux assessment passes nine
 product contexts, including propagation, but still times out in composition;
 it predates this service-reuse repair. Full local/repaired-source CI qualification
-remains in progress. The preserved earlier fixture remains
+then completes at `0c79825` with nine passing local suite groups but a timed-out
+unavailable-PostgreSQL injection; the complete gate remains failed. Actual CI
+passes seven product contexts and repository checks, while PostgreSQL
+composition and both retained timing gates fail. The local injection has a
+reproduced reserved-port transport blackhole and a focused owned-listener
+repair, with unchanged budgets. Timeout reports now retain strictly validated
+failed child evidence; CI adds bounded safe recipe timings after contract
+failure, without replacing the failed required command.
+Qualification and Linux diagnosis continue. The preserved earlier fixture remains
 stopped, not deleted or claimed cleaned up. Do not advance stages, waive the
 failed gates or attribute every historical failure to lazy key generation.
 

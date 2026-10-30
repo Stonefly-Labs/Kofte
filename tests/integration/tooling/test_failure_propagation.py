@@ -12,6 +12,7 @@ import signal
 import socket
 import subprocess
 import sys
+import threading
 import time
 
 
@@ -38,6 +39,40 @@ PRIVATE_PARTS = {
 QUALITY = ["--suite", "quality"]
 POSTGRES = ["--suite", "integration", "--provider", "postgres", "--disposable-postgres"]
 BROWSER = ["--suite", "browser", "--disposable-postgres"]
+
+
+@contextmanager
+def unavailable_postgres_port(error):
+    with socket.socket() as unavailable:
+        unavailable.bind(("127.0.0.1", 0))
+        unavailable.listen()
+        unavailable.settimeout(0.1)
+        stopped, failed = threading.Event(), threading.Event()
+
+        def refuse():
+            while not stopped.is_set():
+                try:
+                    connection, _ = unavailable.accept()
+                    connection.close()
+                except TimeoutError:
+                    continue
+                except OSError:
+                    if not stopped.is_set():
+                        failed.set()
+                    return
+
+        worker = threading.Thread(target=refuse, name="unavailable-postgres")
+        worker.start()
+        try:
+            yield unavailable.getsockname()[1]
+        finally:
+            stopped.set()
+            unavailable.close()
+            worker.join(timeout=5)
+            if worker.is_alive():
+                raise error("failure_unavailable_listener_cleanup_failed")
+            if failed.is_set():
+                raise error("failure_unavailable_listener_failed")
 
 
 def source_allowed(relative):
@@ -358,16 +393,19 @@ def run(runner, api):
                 reports = checkout / "artifacts/verification"
                 before = set(reports.glob("*.json"))
                 processes = api.OwnedProcesses(checkout, environment | (extra or {}))
+                timed_out = False
                 try:
                     child = processes.start(
                         ["python3", "scripts/verify.py", *arguments], stdin=subprocess.DEVNULL,
                     )
                     try:
                         exit_code = child.wait(timeout=max(0.01, min(900, deadline - time.monotonic())))
-                    except subprocess.TimeoutExpired as failure:
-                        raise error("failure_exercise_timeout") from failure
+                    except subprocess.TimeoutExpired:
+                        timed_out = True
                 finally:
                     processes.stop()
+                if timed_out:
+                    exit_code = child.poll()
                 created = set(reports.glob("*.json")) - before
                 if len(created) != 1:
                     raise error("failure_child_report_missing")
@@ -384,7 +422,11 @@ def run(runner, api):
                 except error as failure:
                     if hasattr(failure, "evidence"):
                         step["verification"] = failure.evidence
-                    raise
+                    if not timed_out:
+                        raise
+                    step["verificationFailureCode"] = failure.code
+                if timed_out:
+                    raise error("failure_exercise_timeout")
             runner.operation(name, exercise, ["python3", "scripts/verify.py", *arguments])
 
         invoke("baseline-quality", QUALITY)
@@ -403,9 +445,7 @@ def run(runner, api):
                       'export default function ToolingBuildProbe() {\n'
                       '  throw new Error("tooling_fixture_build_failure");\n}\n', error):
             invoke("build-failure-propagates", QUALITY, "workspace-builds", quality_commands["workspace-builds"])
-        with socket.socket() as unavailable:
-            unavailable.bind(("127.0.0.1", 0))
-            port = unavailable.getsockname()[1]
+        with unavailable_postgres_port(error) as port:
             connection = (
                 f"Host=127.0.0.1;Port={port};Database=postgres;Username=kofte_unavailable;"
                 "Password=unavailable_fixture_only;Timeout=1;Command Timeout=1;SSL Mode=Disable"

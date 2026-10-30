@@ -1,9 +1,12 @@
+from contextlib import nullcontext
 import copy
 import importlib.util
 import json
 from pathlib import Path
+import socket
 import tempfile
 import unittest
+from unittest.mock import Mock, patch
 
 from scripts import verify
 
@@ -49,6 +52,17 @@ class FailurePropagationTests(unittest.TestCase):
             report, "quality", None, "python-tests", self.evidence()["steps"][0]["command"],
             exit_code, verify,
         )
+
+    def test_unavailable_postgres_owns_its_port_and_refuses_protocol_without_a_transport_blackhole(self):
+        with exercises.unavailable_postgres_port(verify.VerificationError) as port:
+            with socket.socket() as contender, self.assertRaises(OSError):
+                contender.bind(("127.0.0.1", port))
+            for _ in range(3):
+                with socket.create_connection(("127.0.0.1", port), timeout=1) as connection:
+                    try:
+                        self.assertEqual(b"", connection.recv(1))
+                    except ConnectionResetError:
+                        pass
 
     def test_overlay_is_a_separate_copy_and_never_copies_private_or_runtime_files(self):
         source = self.source / "scripts/probe.py"
@@ -131,6 +145,49 @@ class FailurePropagationTests(unittest.TestCase):
     def test_failing_baseline_is_not_accepted_as_failure_propagation_evidence(self):
         with self.assertRaisesRegex(verify.VerificationError, "failure_baseline_not_green"):
             exercises.checked_evidence(self.evidence(), "quality", None, None, None, 1, verify)
+
+    def test_parent_timeout_retains_validated_interrupted_child_evidence_without_accepting_baseline(self):
+        directory = self.root / "private"
+        directory.mkdir()
+        evidence = self.evidence()
+        evidence["steps"][0]["failureCode"] = "verification_interrupted"
+        process = Mock()
+        process.wait.side_effect = exercises.subprocess.TimeoutExpired(["python3"], 900)
+        process.poll.return_value = -15
+        processes = Mock()
+
+        def start(*_args, **_kwargs):
+            reports = directory / "checkout/artifacts/verification"
+            reports.mkdir(parents=True)
+            (reports / "quality.json").write_text(json.dumps(evidence))
+            return process
+
+        processes.start.side_effect = start
+        with patch.object(verify.subprocess, "run", return_value=exercises.subprocess.CompletedProcess(
+                [], 0, b"a" * 40 + b"\n", b"")):
+            report = verify.Report(self.source, "failure-propagation", None, "failure-propagation")
+        runner = verify.Runner(self.source, report, {})
+        runner.command = Mock(side_effect=lambda *_args, **_kwargs: (directory / "checkout").mkdir())
+
+        def capture(command, *_args, **_kwargs):
+            return b"unix:///owned-test-socket" if command[0] == "docker" else b""
+
+        with patch.object(verify, "private_root", return_value=nullcontext(directory)), \
+                patch.object(verify, "OwnedProcesses", return_value=processes), \
+                patch.object(exercises, "command_capture", side_effect=capture), \
+                patch.object(exercises.Path, "is_socket", return_value=True), \
+                self.assertRaisesRegex(verify.VerificationError, "failure_exercise_timeout"):
+            exercises.run(runner, verify)
+
+        step = report.data["steps"][-1]
+        self.assertEqual("baseline-quality", step["name"])
+        self.assertEqual("failed", step["outcome"])
+        self.assertEqual("failure_exercise_timeout", step["failureCode"])
+        self.assertEqual("failed", step["verification"]["outcome"])
+        self.assertEqual("verification_interrupted", step["verification"]["steps"][0]["failureCode"])
+        self.assertNotIn("credential-canary", json.dumps(step))
+        self.assertLessEqual(process.wait.call_args.kwargs["timeout"], 900)
+        processes.stop.assert_called_once()
 
     def test_missing_chromium_requires_the_real_browser_failure_and_exact_capture_refusal(self):
         evidence = self.evidence()

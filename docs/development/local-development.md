@@ -1071,6 +1071,16 @@ test, skip cases, reorder provider phases or extend application/test deadlines.
 The unavailable-PostgreSQL failure exercise reuses the same three serial
 phase commands. It requires all three exact ordered nonzero command failures;
 an omitted phase, substituted selector, missing tool or timeout is not proof.
+Its unavailable endpoint owns a listening socket and immediately closes each
+accepted connection without reading data or implementing PostgreSQL. Merely
+binding a non-listening port can blackhole TCP on macOS and consume every
+fixture's administration budget instead of promptly refusing. The supervised
+listener retains exclusive port ownership and must close/join successfully.
+An outer timeout retains only a strictly validated failed child report after
+owned-process cleanup; that evidence never turns the timeout into a pass.
+Failed Linux contract jobs also retain bounded per-recipe composition timings
+using the existing strict public helper. These targeted diagnostics do not
+replace the original required command or increase any product/gate deadline.
 
 The registry's twenty-round, ten-connection/process contention tests run in an
 exclusive xUnit collection. Their intended ten-way workload is unchanged, but
