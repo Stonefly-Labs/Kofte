@@ -2,7 +2,9 @@ using System.Net;
 using Kofte.Host.Bootstrap;
 using Kofte.Host.Features.Bootstrap;
 using Kofte.Host.Features.StorageMaintenance;
+using Kofte.Host.Features.Identity;
 using Kofte.Infrastructure.Composition;
+using Kofte.Infrastructure.Storage;
 using Kofte.Platform.Modules.Composition;
 using Kofte.Platform.Modules.Lifecycle;
 using Kofte.Platform.Modules.Storage;
@@ -23,6 +25,7 @@ internal static class CompositionWorker
         ModuleLifecycleCoordinator? coordinator = null;
         ServiceProvider? provider = null;
         WebApplication? app = null;
+        IdentityRuntime? identity = null;
         CompositionFailure? failure = null;
         Task? observing = null, watching = null;
         string? cleanupBoundary = null;
@@ -90,6 +93,16 @@ internal static class CompositionWorker
                 {
                     builder = Builder(configuration.Runtime, coordinator.Health);
                     services = builder.Services;
+                    identity = await callbacks.RunAsync(CompositionWork.ResolveStorage, async cancellation =>
+                    {
+                        using var budget = new OperationBudget(OperationBudget.Resolve, cancellation);
+                        return await IdentityRuntime.OpenAsync(configuration.Runtime, builder.Environment.EnvironmentName,
+                            installation, budget, record =>
+                                protocol.WriteIdentityAsync(admission.Events, record, CancellationToken.None)
+                                    .GetAwaiter().GetResult());
+                    }, lifetime.Token);
+                    var held = storage.RuntimeAuthority;
+                    identity.Register(services, held.FileLease, held.PostgresLease);
                 }
                 else services = new ServiceCollection();
                 await coordinator.RegisterAsync(services, lifetime.Token);
@@ -98,6 +111,8 @@ internal static class CompositionWorker
                     app = await callbacks.RunAsync(CompositionWork.Registrar,
                         _ => ValueTask.FromResult(builder.Build()), lifetime.Token);
                     app.MapBootstrapHealth();
+                    app.UseIdentityBoundary();
+                    app.MapIdentityEndpoints();
                     if (app.Environment.IsDevelopment())
                         app.MapOpenApi("/openapi/v1.json").WithName("bootstrapOpenApi").AllowAnonymous();
                     await coordinator.InitializeAsync(app.Services, lifetime.Token);
@@ -196,6 +211,15 @@ internal static class CompositionWorker
                 }
                 if (storage is not null)
                 {
+                    if (identity is not null)
+                    {
+                        cleanupBoundary = "composition_services_dispose_incomplete";
+                        await callbacks.RunAsync(CompositionWork.Cleanup, _ =>
+                        {
+                            identity.Dispose();
+                            return ValueTask.CompletedTask;
+                        });
+                    }
                     cleanupBoundary = "composition_storage_dispose_incomplete";
                     await callbacks.RunAsync(CompositionWork.Cleanup, _ => storage.DisposeAsync());
                 }

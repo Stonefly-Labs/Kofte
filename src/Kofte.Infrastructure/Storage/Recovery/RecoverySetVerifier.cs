@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
+using Kofte.Infrastructure.Identity;
 using Kofte.Infrastructure.Storage.Allocation;
 using Kofte.Infrastructure.Storage.Registry;
 using Kofte.Platform.Modules.Storage;
@@ -85,19 +86,7 @@ public static class RecoverySetVerifier
         OperationBudget budget, Action<string> setProvider)
     {
         UnixStorePaths.ValidateRoot(directory, allowMissing: false);
-        var metadata = Path.Combine(directory, RecoveryManifest.FileName);
-        UnixStorePaths.ValidateFile(metadata);
-        if (new FileInfo(metadata).Length > 1024 * 1024)
-            throw new StorageException(StorageCode.Corrupt);
-        RecoveryManifest manifest;
-        try
-        {
-            await using var json = File.OpenRead(metadata);
-            manifest = await JsonSerializer.DeserializeAsync<RecoveryManifest>(json, Options, budget.Token)
-                ?? throw new StorageException(StorageCode.Corrupt);
-        }
-        catch (JsonException) { throw new StorageException(StorageCode.Corrupt); }
-        ValidateManifest(manifest);
+        var (manifest, _) = await ReadManifestAsync(directory, budget);
         if (restoredPostgres is null) setProvider(manifest.Provider);
         foreach (var artifact in manifest.Artifacts)
         {
@@ -141,27 +130,72 @@ public static class RecoverySetVerifier
         }
         var inventory = await ReadInventoryAsync(installation, budget);
         if (!SameInventory(manifest, inventory)) throw new StorageException(StorageCode.ReconciliationRequired);
+        if (manifest.Identity is { } identity)
+        {
+            await using var platform = installation.Provider == "sqlite"
+                ? OpenReadOnly(installation.PlatformPath) : await installation.OpenPlatformAsync(budget);
+            if (await IdentityRecoverySnapshot.ReadAsync(installation, platform, budget) != identity)
+                throw new StorageException(StorageCode.ReconciliationRequired);
+        }
         if (scope is MaintenanceScope held) await held.VerifyAsync(installation, budget);
         return manifest;
     }
+
+    internal static async Task<(RecoveryManifest Manifest, byte[] Bytes)> ReadManifestAsync(
+        string directory, OperationBudget budget)
+    {
+        UnixStorePaths.ValidateRoot(directory, allowMissing: false);
+        var path = Path.Combine(directory, RecoveryManifest.FileName);
+        UnixStorePaths.ValidateFile(path);
+        await using var file = File.OpenRead(path);
+        if (file.Length is < 2 or > 1024 * 1024) throw new StorageException(StorageCode.Corrupt);
+        var bytes = new byte[checked((int)file.Length)];
+        await file.ReadExactlyAsync(bytes, budget.Token);
+        var extra = new byte[1];
+        if (await file.ReadAsync(extra, budget.Token) != 0) throw new StorageException(StorageCode.Corrupt);
+        return (ParseManifest(bytes), bytes);
+    }
+
+    internal static RecoveryManifest ParseManifest(ReadOnlyMemory<byte> bytes)
+    {
+        if (bytes.Length is < 2 or > 1024 * 1024) throw new StorageException(StorageCode.Corrupt);
+        try
+        {
+            using var document = JsonDocument.Parse(bytes, new() { AllowDuplicateProperties = false });
+            var manifest = document.RootElement.Deserialize<RecoveryManifest>(Options)
+                ?? throw new StorageException(StorageCode.Corrupt);
+            if (manifest.Format == RecoveryManifest.CurrentFormat &&
+                document.RootElement.TryGetProperty("identity", out _))
+                throw new StorageException(StorageCode.Corrupt);
+            ValidateManifest(manifest);
+            return manifest;
+        }
+        catch (JsonException) { throw new StorageException(StorageCode.Corrupt); }
+    }
+
+    internal static bool SameManifest(RecoveryManifest left, RecoveryManifest right) =>
+        JsonSerializer.Serialize(left, Options) == JsonSerializer.Serialize(right, Options);
 
     public static bool SameInventory(RecoveryManifest left, RecoveryInventory right) =>
         left.InstallationId == right.InstallationId && left.Provider == right.Provider &&
         left.RegistryVersion == right.RegistryVersion && left.RegistryRevision == right.RegistryRevision &&
         JsonSerializer.Serialize(left.Allocations, Options) == JsonSerializer.Serialize(right.Allocations, Options);
 
-    internal static async Task ValidateInventoryAsync(StorageInstallation installation, OperationBudget budget) =>
-        _ = await ReadInventoryAsync(installation, budget);
+    internal static async Task ValidateInventoryAsync(StorageInstallation installation, DbConnection platform,
+        OperationBudget budget) => _ = await ReadInventoryAsync(installation, platform, budget);
 
     private static void ValidateManifest(RecoveryManifest manifest)
     {
-        if (manifest.Format != RecoveryManifest.CurrentFormat || !manifest.Complete ||
+        if (!(manifest.Format == RecoveryManifest.CurrentFormat && manifest.RegistryVersion == 1 && manifest.Identity is null ||
+                manifest.Format == RecoveryManifest.IdentityFormat && manifest.RegistryVersion == 2 && manifest.Identity is not null) ||
+            !manifest.Complete ||
             manifest.RecoverySetId == Guid.Empty || manifest.InstallationId == Guid.Empty ||
             manifest.Provider is not ("sqlite" or "postgresql") ||
-            manifest.RegistryVersion != 1 || manifest.RegistryRevision < 0 ||
+            manifest.RegistryRevision < 0 ||
             manifest.Allocations is null || manifest.Artifacts is null ||
             manifest.Allocations.Count > 4096 || manifest.Artifacts.Count > 4097)
             throw new StorageException(StorageCode.Corrupt);
+        if (manifest.Identity is { } identity) IdentityRecoverySnapshot.Validate(identity);
         var owners = new HashSet<string>(StringComparer.Ordinal);
         var keys = new HashSet<string>(StringComparer.Ordinal);
         var tokens = new HashSet<Guid>();
@@ -279,6 +313,12 @@ public static class RecoverySetVerifier
     {
         await using var platform = installation.Provider == "sqlite"
             ? OpenReadOnly(installation.PlatformPath) : await installation.OpenPlatformAsync(budget);
+        return await ReadInventoryAsync(installation, platform, budget);
+    }
+
+    internal static async Task<RecoveryInventory> ReadInventoryAsync(StorageInstallation installation,
+        DbConnection platform, OperationBudget budget)
+    {
         var runner = new RegistryMigrationRunner(installation);
         var metadata = await runner.ReadInstallationAsync(platform, budget);
         var rows = new List<RegistrationRecord>();

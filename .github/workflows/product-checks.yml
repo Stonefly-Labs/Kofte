@@ -6,6 +6,12 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      suite:
+        description: Run the matrix, the single complete gate, or browser diagnostics
+        type: choice
+        options: [all, complete, browser]
+        default: all
 
 permissions:
   contents: read
@@ -14,51 +20,29 @@ jobs:
   verification:
     name: ${{ matrix.name }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: ${{ matrix.name == 'complete-gate' && 240 || 90 }}
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - name: quality
-            arguments: --suite quality
-            postgres: false
-            browser: false
-          - name: unit
-            arguments: --suite unit
-            postgres: false
-            browser: false
-          - name: integration-sqlite
-            arguments: --suite integration --provider sqlite
-            postgres: false
-            browser: false
-          - name: integration-postgres
-            arguments: --suite integration --provider postgres --disposable-postgres
-            postgres: true
-            browser: false
-          - name: recovery
-            arguments: --suite recovery --provider both --disposable-postgres
-            postgres: true
-            browser: true
-          - name: contract
-            arguments: --suite contract --provider both --disposable-postgres
-            postgres: true
-            browser: false
-          - name: browser
-            arguments: --suite browser
-            postgres: false
-            browser: true
-          - name: privacy
-            arguments: --suite privacy --provider both --disposable-postgres
-            postgres: true
-            browser: true
-          - name: startup
-            arguments: --suite startup --warm-starts 10
-            postgres: false
-            browser: true
-          - name: failure-propagation
-            arguments: --suite failure-propagation --disposable-postgres
-            postgres: true
-            browser: true
+        include: >-
+          ${{ fromJSON(
+            github.event_name == 'workflow_dispatch' && inputs.suite == 'complete' &&
+            '[{"name":"complete-gate","arguments":"--suite all --disposable-postgres --warm-starts 10","postgres":true,"browser":true}]' ||
+            github.event_name == 'workflow_dispatch' && inputs.suite == 'browser' &&
+            '[{"name":"browser","arguments":"--suite browser --disposable-postgres","postgres":true,"browser":true}]' ||
+            '[
+              {"name":"quality","arguments":"--suite quality","postgres":false,"browser":false},
+              {"name":"unit","arguments":"--suite unit","postgres":false,"browser":false},
+              {"name":"integration-sqlite","arguments":"--suite integration --provider sqlite","postgres":false,"browser":false},
+              {"name":"integration-postgres","arguments":"--suite integration --provider postgres --disposable-postgres","postgres":true,"browser":false},
+              {"name":"recovery","arguments":"--suite recovery --provider both --disposable-postgres","postgres":true,"browser":true},
+              {"name":"contract","arguments":"--suite contract --provider both --disposable-postgres","postgres":true,"browser":true},
+              {"name":"browser","arguments":"--suite browser --disposable-postgres","postgres":true,"browser":true},
+              {"name":"privacy","arguments":"--suite privacy --provider both --disposable-postgres","postgres":true,"browser":true},
+              {"name":"startup","arguments":"--suite startup --warm-starts 10","postgres":false,"browser":true},
+              {"name":"failure-propagation","arguments":"--suite failure-propagation --disposable-postgres","postgres":true,"browser":true}
+            ]'
+          ) }}
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: "1"
       NEXT_TELEMETRY_DISABLED: "1"
@@ -96,6 +80,61 @@ jobs:
         env:
           VERIFICATION_ARGUMENTS: ${{ matrix.arguments }}
         run: python3 scripts/verify.py $VERIFICATION_ARGUMENTS
+      - name: Capture bounded composition recipe timings after contract failure
+        if: failure() && matrix.name == 'contract'
+        run: |
+          python3 - <<'PY'
+          import os
+          import time
+          from scripts import verify
+
+          report = verify.Report(verify.ROOT, "composition-diagnostic", "both", "diagnostic")
+          environment = verify.child_environment(os.environ)
+          environment["KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE"] = "true"
+          runner = verify.Runner(verify.ROOT, report, environment)
+          deadline = time.monotonic() + 1800
+
+          def collect(_step):
+              failed = False
+              for provider in ("sqlite", "postgres"):
+                  for scenario in (*verify.COMPOSITION_OBSERVATIONS, "all"):
+                      if time.monotonic() + 600 > deadline:
+                          raise verify.VerificationError("composition_diagnostic_budget_exhausted")
+                      try:
+                          runner.composition_guide(provider, scenario, environment)
+                      except verify.VerificationError:
+                          failed = True
+              if failed:
+                  raise verify.VerificationError("composition_diagnostic_cases_failed")
+
+          passed = False
+          try:
+              runner.versions()
+              runner.operation("composition-diagnostic-recipes", collect)
+              passed = True
+          except verify.VerificationError:
+              pass
+          finally:
+              report.finish(passed)
+          raise SystemExit(0 if passed else 1)
+          PY
+      - name: Verify configured HTTPS identity through public browser recipes
+        if: matrix.name == 'browser'
+        env:
+          KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE: "true"
+        run: |
+          dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario oidc-login --provider sqlite
+          dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario trust-refusal --provider sqlite
+          dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario nominated-enrollment --provider sqlite
+          dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario enrollment-race --provider sqlite
+          dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario session-boundary --provider sqlite
+          dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario development-isolation --provider sqlite
+          dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario oidc-login --provider postgres
+          dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario trust-refusal --provider postgres
+          dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario nominated-enrollment --provider postgres
+          dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario enrollment-race --provider postgres
+          dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario session-boundary --provider postgres
+          dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario development-isolation --provider postgres
       - name: Retain safe verification reports only
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

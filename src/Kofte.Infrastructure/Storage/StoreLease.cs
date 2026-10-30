@@ -5,8 +5,11 @@ namespace Kofte.Infrastructure.Storage;
 public sealed class StoreLease : IDisposable
 {
     private readonly FileStream stream;
+    private readonly string root;
 
-    private StoreLease(FileStream stream) => this.stream = stream;
+    private StoreLease(FileStream stream, string root) => (this.stream, this.root) = (stream, root);
+
+    internal bool IsHeldFor(string candidate) => root == candidate && stream.CanRead && !stream.SafeFileHandle.IsClosed;
 
     public static StoreLease Acquire(string root)
     {
@@ -32,7 +35,7 @@ public sealed class StoreLease : IDisposable
             throw new StorePathException(StorePathError.StoreBusy);
         }
         if (Flock(stream.SafeFileHandle.DangerousGetHandle().ToInt32(), 2 | 4) == 0)
-            return new StoreLease(stream);
+            return new StoreLease(stream, root);
         var failure = Marshal.GetLastPInvokeError();
         stream.Dispose();
         throw new StorePathException(failure is 11 or 35

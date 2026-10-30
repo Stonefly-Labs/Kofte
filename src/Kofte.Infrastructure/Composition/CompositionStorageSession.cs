@@ -21,6 +21,16 @@ public sealed partial class CompositionStorageSession : IAsyncDisposable
     private bool operationStarted;
     private bool disposed;
 
+    internal (StoreLease? FileLease, NpgsqlConnection? PostgresLease) RuntimeAuthority
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(disposed, this);
+            if (maintenance is not null) throw new StorageException(StorageCode.RequestInvalid);
+            return (fileLease, leaseConnection);
+        }
+    }
+
     private CompositionStorageSession(StorageInstallation installation, MaintenanceScope? maintenance,
         StoreLease? fileLease, NpgsqlConnection? connection)
         => (this.installation, this.maintenance, this.fileLease, leaseConnection) =

@@ -12,17 +12,30 @@ namespace Kofte.Host.IntegrationTests;
 public sealed class StorageCompatibilityTests
 {
     [Fact]
-    public async Task ModuleFreeV0AndExplicitlyUpgradedV1KeepHealthWithoutAutomaticWrites()
+    public async Task BootstrapHeaderInspectionAdmitsAReaderBesideAnActualSqliteWriter()
+    {
+        var token = TestContext.Current.CancellationToken;
+        using var root = new TempRoot();
+        var store = new SqlitePlatformStore(root.Path);
+        await store.InitializeAsync();
+        await using var writer = store.Open();
+        await using var transaction = await writer.BeginTransactionAsync(token);
+        await using var reader = store.Open();
+        await using var command = reader.CreateCommand();
+        command.CommandText = "PRAGMA user_version";
+        Assert.Equal(0L, await command.ExecuteScalarAsync(token));
+    }
+
+    [Fact]
+    public async Task ModuleFreeV0AndExplicitV1RequireIdentityPreparationWithoutAutomaticWrites()
     {
         using var root = new TempRoot();
         var bootstrap = new SqlitePlatformStore(root.Path);
         await bootstrap.InitializeAsync();
         var before = await File.ReadAllBytesAsync(bootstrap.DatabasePath, TestContext.Current.CancellationToken);
-        await using (var host = await StartupFixture.StartAsync(root.Path, TestContext.Current.CancellationToken))
-        {
-            await AssertCoreSurfaceAsync(host, TestContext.Current.CancellationToken);
-        }
-
+        var refused = await StartupFixture.RunExitAsync(root.Path, [], TestContext.Current.CancellationToken);
+        Assert.Equal(1, refused.ExitCode);
+        Assert.Contains("identity_prepare_required", refused.Output);
         Assert.Equal(before, await File.ReadAllBytesAsync(bootstrap.DatabasePath, TestContext.Current.CancellationToken));
         var upgraded = await StartupFixture.RunExitAsync(root.Path, ["--registry", "upgrade"],
             TestContext.Current.CancellationToken);
@@ -32,11 +45,12 @@ public sealed class StorageCompatibilityTests
         var installation = StorageInstallation.Sqlite(root.Path);
         await StorageReconciliation.ValidateStartupAsync(installation, TestContext.Current.CancellationToken);
         before = await File.ReadAllBytesAsync(bootstrap.DatabasePath, TestContext.Current.CancellationToken);
-        await using (var host = await StartupFixture.StartAsync(root.Path, TestContext.Current.CancellationToken))
-        {
-            await AssertCoreSurfaceAsync(host, TestContext.Current.CancellationToken);
-        }
+        refused = await StartupFixture.RunExitAsync(root.Path, [], TestContext.Current.CancellationToken);
+        Assert.Equal(1, refused.ExitCode);
+        Assert.Contains("identity_prepare_required", refused.Output);
         Assert.Equal(before, await File.ReadAllBytesAsync(bootstrap.DatabasePath, TestContext.Current.CancellationToken));
+        await using (var host = await StartupFixture.StartAsync(root.Path, TestContext.Current.CancellationToken))
+            await AssertCoreSurfaceAsync(host, TestContext.Current.CancellationToken);
         Assert.Equal(0, (await StartupFixture.RunExitAsync(root.Path,
             ["--registry", "upgrade"], TestContext.Current.CancellationToken)).ExitCode);
     }

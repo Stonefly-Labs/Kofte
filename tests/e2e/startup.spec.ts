@@ -280,6 +280,7 @@ async function warmRestarts(
   const host = `http://127.0.0.1:${hostPort}`;
   const web = `http://127.0.0.1:${webPort}`;
   const root = mkdtempSync(join(realpathSync(tmpdir()), "kofte-startup-"));
+  const dataRoot = join(root, "data");
   const environment = Object.fromEntries(
     Object.entries(process.env).filter(
       ([key]) =>
@@ -293,8 +294,9 @@ async function warmRestarts(
     KOFTE_HOST_URL: host,
     KOFTE_WEB_URL: web,
     KOFTE_BACKEND_ORIGIN: host,
-    KOFTE_DATA_ROOT: root,
+    KOFTE_DATA_ROOT: dataRoot,
     ASPNETCORE_ENVIRONMENT: "Development",
+    DOTNET_ENVIRONMENT: "Development",
     NEXT_TELEMETRY_DISABLED: "1",
   });
   const assembly = join(
@@ -338,7 +340,32 @@ async function warmRestarts(
     );
     if (seeded.error || seeded.status !== 0 || seeded.stderr.length !== 0)
       throw new Error("startup_storage_fixture_failed");
-    const registry = new DatabaseSync(join(root, "platform/platform.db"), {
+    const identityPath = join(root, "identity.json");
+    writeFileSync(
+      identityPath,
+      JSON.stringify({
+        version: "1",
+        mode: "development",
+        publicOrigin: web,
+        keyRingDirectory: join(root, "identity-keys"),
+        development: { enabled: true, identities: [{ key: "synthetic" }] },
+      }),
+      { mode: 0o600, flag: "wx" },
+    );
+    environment.KOFTE_AUTH_CONFIG_FILE = identityPath;
+    for (const [command, operation, failure] of [
+      ["--registry", "upgrade", "startup_registry_upgrade_failed"],
+      ["--identity", "prepare", "startup_identity_preparation_failed"],
+    ]) {
+      const prepared = spawnSync("dotnet", [assembly, command, operation], {
+        cwd: repository,
+        env: environment,
+        timeout: 120000,
+        stdio: "pipe",
+      });
+      if (prepared.error || prepared.status !== 0) throw new Error(failure);
+    }
+    const registry = new DatabaseSync(join(dataRoot, "platform/platform.db"), {
       readOnly: true,
     });
     let allocationKey: string;
@@ -357,7 +384,7 @@ async function warmRestarts(
     } finally {
       registry.close();
     }
-    const databasePath = join(root, "modules", allocationKey, "module.db");
+    const databasePath = join(dataRoot, "modules", allocationKey, "module.db");
     const fixturePayload = JSON.stringify({ runId, fixtureKey, payload });
     const database = new DatabaseSync(databasePath);
     try {
@@ -441,6 +468,7 @@ async function warmRestarts(
           configured,
         );
         start("node", [
+          "--max-http-header-size=32768",
           join(repository, "node_modules/next/dist/bin/next"),
           "start",
           join(repository, "apps/web"),

@@ -49,6 +49,8 @@ public sealed class StorageMaintenanceConfiguration
             start.Environment.Remove(key);
         start.Environment["KOFTE_PROFILE"] = Runtime.Profile;
         start.Environment["KOFTE_DATA_ROOT"] = Runtime.DataRoot;
+        if (Runtime.AuthenticationConfigurationFile is { } identityFile)
+            start.Environment["KOFTE_AUTH_CONFIG_FILE"] = identityFile;
         if (Runtime.Profile == "test-postgres")
         {
             start.Environment["KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE"] = "true";

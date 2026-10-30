@@ -9,6 +9,32 @@ namespace Kofte.Host.IntegrationTests;
 public sealed class PostgresStoreTests
 {
     [Fact]
+    public async Task OrdinaryFixturesShareOnlyTheOwnedServiceAndDisposeTheirOwnDatabaseAndRoles()
+    {
+        var token = TestContext.Current.CancellationToken;
+        await using var first = await PostgresFixture.CreateFromEnvironmentAsync(token);
+        await using var second = await PostgresFixture.CreateFromEnvironmentAsync(token);
+        var firstConnection = new NpgsqlConnectionStringBuilder(first.ConnectionString);
+        var secondConnection = new NpgsqlConnectionStringBuilder(second.ConnectionString);
+        var firstProvisioner = new NpgsqlConnectionStringBuilder(first.ProvisioningConnectionString);
+        Assert.Equal(firstConnection.Port, secondConnection.Port);
+        Assert.True(firstConnection.Database != secondConnection.Database &&
+            firstConnection.Username != secondConnection.Username);
+        await first.DisposeAsync();
+        await new PostgresPlatformStore(second.ConnectionString).ProbeAsync(token);
+        await second.ValidateOwnershipAsync(token);
+        await using var connection = new NpgsqlConnection(second.ConnectionString);
+        await connection.OpenAsync(token);
+        await using var command = new NpgsqlCommand("""
+            SELECT NOT EXISTS (SELECT 1 FROM pg_catalog.pg_database WHERE datname=$1)
+              AND NOT EXISTS (SELECT 1 FROM pg_catalog.pg_roles WHERE rolname=ANY($2))
+            """, connection);
+        command.Parameters.AddWithValue(firstConnection.Database!);
+        command.Parameters.AddWithValue(new[] { firstConnection.Username!, firstProvisioner.Username! });
+        Assert.True(await command.ExecuteScalarAsync(token) is true);
+    }
+
+    [Fact]
     public async Task ActualHostReprobesSchemaPrivilegesWithoutSqliteFallback()
     {
         await using var database = await PostgresFixture.CreateFromEnvironmentAsync(TestContext.Current.CancellationToken);

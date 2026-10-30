@@ -16,14 +16,16 @@ export default function Page() {
         <h2 id="scope-heading">Nothing installed. Nothing invented.</h2>
         <p>
           This is the repository bootstrap, not a working developer portal. No
-          feature modules, teams, services, login or tools are available yet.
-          There is no account to create and no sample business data to confuse
-          with your own.
+          feature modules, teams, services or tools are available yet. There is
+          no sample business data to confuse with your own.
+        </p>
+        <p>
+          <a href="/identity">Sign in or verify your identity</a>
         </p>
       </section>
       <footer>
-        Local development only. Authentication, module isolation and production
-        deployment arrive in later specifications.
+        Local foundation preview. Identity grants no unrelated permissions. This
+        is not a production-readiness assessment.
       </footer>
     </main>
   );

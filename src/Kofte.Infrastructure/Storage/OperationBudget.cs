@@ -45,5 +45,11 @@ internal sealed class OperationBudget : IDisposable
         return Math.Min(sqlite ? 1 : 3, seconds);
     }
 
+    internal int AsyncCommandSeconds()
+    {
+        Check();
+        return Math.Clamp((int)Math.Ceiling(Remaining.TotalSeconds), 1, 3);
+    }
+
     public void Dispose() => cancellation.Dispose();
 }

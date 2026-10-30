@@ -12,6 +12,8 @@ public static class RegistrationWorker
 {
     public static async Task<int> Main(string[] args)
     {
+        if (args.FirstOrDefault() == "--identity-mapping-worker")
+            return await Identity.IdentityMappingWorker.RunAsync(args);
         if (args is ["--storage-crash-worker", _, "compose", _])
             return await Composition.CompositionPreparationCrashWorker.RunAsync(args);
         if (args.FirstOrDefault() == "--storage-crash-worker")
@@ -51,7 +53,12 @@ public static class RegistrationWorker
                 int.TryParse(roundText, out var round) && round is >= 0 and < 20 &&
                 int.TryParse(indexText, out var index) && index is >= 0 and < 10)
             {
-                // Complete cold provider initialization before the shared registration race starts.
+                using (var warmup = new OperationBudget(OperationBudget.Acquire, budget.Token))
+                await using (await installation.OpenPlatformAsync(warmup)) { }
+                Console.WriteLine("""{"eventCode":"storage_worker_started"}""");
+                if (await Console.In.ReadLineAsync(budget.Token) != "prepare")
+                    throw new InvalidOperationException("storage_worker_preparation_required");
+                // Warmup leases remain serial; only registration contends at the shared barrier.
                 operation = StorageOperation.Acquire;
                 await using (await new StorageMaintenance(installation).AcquireAsync(budget.Token)) { }
                 Console.WriteLine("""{"eventCode":"storage_worker_waiting"}""");

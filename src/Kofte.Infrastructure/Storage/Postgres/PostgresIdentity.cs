@@ -47,9 +47,9 @@ internal sealed class PostgresIdentity
             AND pg_catalog.current_setting('transaction_read_only')='off'
             """;
 
-    internal async Task VerifyAsync(NpgsqlConnection connection, OperationBudget budget)
+    internal async Task VerifyAsync(NpgsqlConnection connection, OperationBudget budget, bool preciseDeadline = false)
     {
-        if (await QueryAsync(connection, budget, acquire: false) is not true)
+        if (await QueryAsync(connection, budget, acquire: false, preciseDeadline: preciseDeadline) is not true)
             throw new StorageException(Platform.Modules.Storage.StorageCode.OwnerMismatch);
     }
 
@@ -59,13 +59,14 @@ internal sealed class PostgresIdentity
             throw new StorageException(Platform.Modules.Storage.StorageCode.OwnerMismatch);
 
     private async Task<bool?> QueryAsync(NpgsqlConnection connection, OperationBudget budget, bool acquire,
-        bool shared = false)
+        bool shared = false, bool preciseDeadline = false)
     {
         var acquireFunction = shared ? "pg_try_advisory_lock_shared" : "pg_try_advisory_lock";
         var sql = acquire
             ? $"SELECT CASE WHEN {OwnershipPredicate} THEN pg_catalog.{acquireFunction}($2) ELSE NULL END"
             : $"SELECT {OwnershipPredicate}";
-        await using var command = new NpgsqlCommand(sql, connection) { CommandTimeout = budget.CommandSeconds() };
+        await using var command = new NpgsqlCommand(sql, connection)
+        { CommandTimeout = preciseDeadline ? budget.AsyncCommandSeconds() : budget.CommandSeconds() };
         command.Parameters.AddWithValue(Ownership);
         if (acquire) command.Parameters.AddWithValue(LeaseKey);
         return await command.ExecuteScalarAsync(budget.Token) is bool result ? result : null;

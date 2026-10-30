@@ -26,7 +26,7 @@ STARTUP_BUDGET_SECONDS = 285
 KEYS = {
     "KOFTE_PROFILE", "KOFTE_HOST_URL", "KOFTE_WEB_URL", "KOFTE_BACKEND_ORIGIN",
     "KOFTE_DATA_ROOT", "KOFTE_POSTGRES_CONNECTION", "KOFTE_ALLOW_UNSAFE_EXPOSURE",
-    "KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE",
+    "KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE", "KOFTE_AUTH_CONFIG_FILE",
 }
 ENV_FILE_KEYS = KEYS | {"ASPNETCORE_ENVIRONMENT", "OTEL_EXPORTER_OTLP_ENDPOINT"}
 
@@ -109,20 +109,16 @@ def configuration(environment):
     for key in ("KOFTE_ALLOW_UNSAFE_EXPOSURE", "KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE"):
         if env.get(key, "false") not in ("true", "false"):
             raise DevError("configuration_invalid")
-    unsafe = env.get("KOFTE_ALLOW_UNSAFE_EXPOSURE") == "true"
     host = env.get("KOFTE_HOST_URL", "http://127.0.0.1:5080")
     web = env.get("KOFTE_WEB_URL", "http://127.0.0.1:3000")
-    host_address, web_address = address(host, unsafe), address(web, unsafe)
+    host_address, web_address = address(host), address(web)
     if host_address[1] == web_address[1]:
         raise DevError("configuration_invalid")
-    host_is_loopback = loopback(host_address[0])
-    backend = env.get("KOFTE_BACKEND_ORIGIN",
-                      host if host_is_loopback else f"http://127.0.0.1:{host_address[1]}")
+    backend = env.get("KOFTE_BACKEND_ORIGIN", host)
     backend_address = address(backend)
     if (backend_address[1] != host_address[1] or
-            (host_is_loopback and backend_address[0] != host_address[0] and not (
-                host_address[0] == "localhost" and backend_address[0] in ("127.0.0.1", "::1"))) or
-            (host_address[0] == "0.0.0.0" and ":" in backend_address[0])):
+            (backend_address[0] != host_address[0] and not (
+                host_address[0] == "localhost" and backend_address[0] in ("127.0.0.1", "::1")))):
         raise DevError("configuration_invalid")
     root = Path(env.get("KOFTE_DATA_ROOT", str(ROOT / "data")))
     if not root.is_absolute() or ".." in root.parts:
@@ -131,6 +127,7 @@ def configuration(environment):
         "KOFTE_PROFILE": "local-sqlite", "KOFTE_HOST_URL": host,
         "KOFTE_WEB_URL": web, "KOFTE_BACKEND_ORIGIN": backend,
         "KOFTE_DATA_ROOT": str(root), "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development",
         "NEXT_TELEMETRY_DISABLED": "1",
     })
     return Configuration(env, host, web, backend)

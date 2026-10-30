@@ -2,6 +2,7 @@ using Kofte.Infrastructure.Storage.Postgres;
 using Kofte.Platform.Modules.Storage;
 using Microsoft.Data.Sqlite;
 using Npgsql;
+using static SQLitePCL.raw;
 
 namespace Kofte.Infrastructure.Storage;
 
@@ -45,21 +46,22 @@ public sealed class StorageInstallation
         return new("postgresql", null, identity, provisioningConnection);
     }
 
-    internal async Task<System.Data.Common.DbConnection> OpenPlatformAsync(OperationBudget budget)
+    internal async Task<System.Data.Common.DbConnection> OpenPlatformAsync(OperationBudget budget,
+        bool preciseDeadline = false)
     {
         budget.Check();
         if (Postgres is { } identity)
         {
             var builder = new NpgsqlConnectionStringBuilder(identity.ConnectionString)
             {
-                Timeout = budget.CommandSeconds(),
-                CommandTimeout = budget.CommandSeconds()
+                Timeout = preciseDeadline ? budget.AsyncCommandSeconds() : budget.CommandSeconds(),
+                CommandTimeout = preciseDeadline ? budget.AsyncCommandSeconds() : budget.CommandSeconds()
             };
             var connection = new NpgsqlConnection(builder.ConnectionString);
             try
             {
                 await connection.OpenAsync(budget.Token);
-                await identity.VerifyAsync(connection, budget);
+                await identity.VerifyAsync(connection, budget, preciseDeadline);
                 return connection;
             }
             catch { await connection.DisposeAsync(); throw; }
@@ -69,24 +71,9 @@ public sealed class StorageInstallation
     }
 
     internal static SqliteConnection OpenSqlite(string path, OperationBudget budget, bool allowOwnedEmpty = false,
-        bool readOnly = false)
+        bool readOnly = false, StorageCode invalidHeaderCode = StorageCode.Corrupt)
     {
-        budget.Check();
-        UnixStorePaths.ValidateRoot(Path.GetDirectoryName(path)!, allowMissing: false);
-        UnixStorePaths.ValidateFile(path);
-        foreach (var suffix in new[] { "-journal", "-wal", "-shm" })
-            UnixStorePaths.ValidateFile(path + suffix, allowMissing: true);
-        try
-        {
-            using var file = File.OpenRead(path);
-            Span<byte> header = stackalloc byte[16];
-            if (!(allowOwnedEmpty && file.Length == 0) &&
-                (file.Length < 100 || file.Read(header) != header.Length ||
-                 !header.SequenceEqual("SQLite format 3\0"u8)))
-                throw new StorageException(StorageCode.Corrupt);
-        }
-        catch (IOException error) when (error.HResult is 11 or 35)
-        { throw new StorageException(StorageCode.Busy); }
+        ValidateSqlite(path, budget, allowOwnedEmpty, invalidHeaderCode);
         var connection = new SqliteConnection(new SqliteConnectionStringBuilder
         {
             DataSource = path,
@@ -95,7 +82,66 @@ public sealed class StorageInstallation
             ForeignKeys = true,
             DefaultTimeout = budget.CommandSeconds(sqlite: true)
         }.ToString());
+        try
+        {
+            connection.Open();
+            ValidateSqliteHeader(connection, budget, invalidHeaderCode);
+            return connection;
+        }
+        catch (SqliteException error) when (error.SqliteErrorCode == SQLITE_NOTADB)
+        {
+            connection.Dispose();
+            throw new StorageException(invalidHeaderCode);
+        }
+        catch { connection.Dispose(); throw; }
+    }
+
+    internal SqliteConnection OpenSqliteHandle(OperationBudget budget)
+    {
+        ValidateSqlite(PlatformPath, budget, allowOwnedEmpty: false);
+        var connection = new SqliteConnection(new SqliteConnectionStringBuilder
+        {
+            DataSource = PlatformPath,
+            Mode = SqliteOpenMode.ReadWrite,
+            Cache = SqliteCacheMode.Private,
+            Pooling = false,
+            DefaultTimeout = 1
+        }.ToString());
+        // DeadlineStore enables and verifies foreign keys through its bounded native executor.
         try { connection.Open(); budget.Check(); return connection; }
         catch { connection.Dispose(); throw; }
+    }
+
+    private static void ValidateSqlite(string path, OperationBudget budget, bool allowOwnedEmpty,
+        StorageCode invalidHeaderCode = StorageCode.Corrupt)
+    {
+        budget.Check();
+        UnixStorePaths.ValidateRoot(Path.GetDirectoryName(path)!, allowMissing: false);
+        UnixStorePaths.ValidateFile(path);
+        foreach (var suffix in new[] { "-journal", "-wal", "-shm" })
+            UnixStorePaths.ValidateFile(path + suffix, allowMissing: true);
+        var length = new FileInfo(path).Length;
+        if (!(allowOwnedEmpty && length == 0) && length < 100)
+            throw new StorageException(invalidHeaderCode);
+    }
+
+    private static void ValidateSqliteHeader(SqliteConnection connection, OperationBudget budget,
+        StorageCode invalidHeaderCode)
+    {
+        var handle = connection.Handle!;
+        SqliteException.ThrowExceptionForRC(sqlite3_busy_timeout(handle, 0), handle);
+        sqlite3_progress_handler(handle, 1000, _ =>
+            budget.Token.IsCancellationRequested || budget.Remaining <= TimeSpan.Zero ? 1 : 0, null);
+        try
+        {
+            budget.Check();
+            // SQLite must own header reads: managed sharing locks reject valid writers, and closing an
+            // independently opened descriptor can release this process's SQLite byte-range locks.
+            var result = sqlite3_exec(handle, "PRAGMA schema_version");
+            budget.Check();
+            if (result == SQLITE_NOTADB) throw new StorageException(invalidHeaderCode);
+            SqliteException.ThrowExceptionForRC(result, handle);
+        }
+        finally { sqlite3_progress_handler(handle, 0, null, null); }
     }
 }

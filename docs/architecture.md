@@ -62,7 +62,7 @@ The following is a **proposed stack** for implementation, not a claim that every
 | Jobs                | Custom minimal persisted job abstractions built on hosted workers; evaluate library later | Durable states/retries without forcing heavy orchestrator     |
 | Events              | In-process pub/sub abstraction, durable outbox when side effects require it               | Decoupled modules, future transport flexibility               |
 | MCP                 | .NET MCP server SDK (verify stable package/API)                                           | Tools and resource discovery for assistants                   |
-| AuthN               | ASP.NET Core authentication integration + pluggable OIDC                                  | No required identity vendor; optional local/dev auth          |
+| AuthN               | ASP.NET Core Identity account management + local/OIDC authentication                       | Approved scope rework; no required identity vendor; development remains separate |
 | AuthZ               | Central RBAC/permission service + resource/team scope                                     | Same policy for UI/API/jobs/MCP                               |
 | Validation          | FluentValidation or equivalent permissively licensed validation                           | Validation local to each vertical slice                       |
 | Telemetry           | OpenTelemetry, structured logging, health checks                                          | Vendor-neutral traces, logs, metrics                          |
@@ -468,9 +468,233 @@ preserves the unknown cause and unchanged local passes; only bounded verifier
 diagnostics change, not product architecture or behavior. The
 [full-matrix follow-up](../specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up)
 removes duplicate integration execution while retaining every case and deadline.
-Renewed merge readiness requires all eleven latest-head checks to pass,
-not one passing provider job. Spec 005 remains
-blocked on that human merge and accepted evidence reaching updated main.
+That historical handoff required all eleven latest-head checks to pass,
+not one passing provider job. PR #7 is now human-merged; its accepted ledger
+and all five acceptance artifact hashes were verified on updated main before
+005 began. Historical failed checks and undiagnosed causes remain unchanged.
+
+**005 / implement is complete after all 100 tasks, not an accepted feature**, on
+`feature/005-authentication-bootstrap`. The
+[implementation checkpoint](../specs/005-authentication-bootstrap/implementation.md)
+retains exact results and historical failures. The
+[runtime guide](../specs/005-authentication-bootstrap/quickstart.md) now describes
+delivered OIDC/Development sessions, nomination and stopped recovery commands.
+Designation does not grant module permissions; 006–009/022–024 remain future
+work. All nine public recipes individually and `all` now pass on each provider,
+with exact observations and owned cleanup. Local/Linux Chromium, focused
+privacy/accessibility and strict browser completeness are qualified. Final
+dependency/contract reconciliation and fresh zero-finding audits pass;
+T097–T100 join the actual passing full hosted command, all ten real PR product
+contexts/repository checks and complete requirement/assertion traceability.
+Final complete-command execution is hosted Ubuntu, separately from the ten-job
+matrix; interrupted Mac attempts are not a final macOS qualification. Placement
+does not change any product/test deadline or architectural boundary.
+Identity remains host-owned in platform format 2, never module tables or a
+second authentication authority in Next. Only the immutable actor-v1 crosses
+the module boundary. OIDC requires exact HTTPS ingress/provider/network trust;
+forwarded headers do not establish trust. Private keys remain outside ordinary
+complete-set artifacts. Restore quarantines the copy until explicit stopped
+manifest-bound reconciliation and fresh keys; no OS-copy fencing, rollback-proof
+administrator history or cross-module atomicity is promised. See the delivered
+[operator contract](../specs/005-authentication-bootstrap/contracts/operator-v1.md)
+and [local guide](development/local-development.md) for session/key overlap,
+retention/capacity, nomination and IdP-loss limits. Approval of ADR 0007 is not
+feature acceptance. The
+[convergence assessment](../specs/005-authentication-bootstrap/convergence.md)
+now passes across all 51 requirements/outcomes/scenarios, twelve plan decisions,
+100 tasks and twelve principles with zero actionable gaps. No task, product,
+test, dependency or architecture decision changes. Actual complete/current-head
+CI reports each pass the same 313 named steps at that historical checkpoint.
+The subsequent [final review](../specs/005-authentication-bootstrap/review.md)
+requires **changes**: the OIDC backchannel checks configured networks but
+omits the promised forbidden-address rule for resolved/connected destinations.
+A separate current SQLite recovery enrollment setup returns 503 before key
+damage; its cause is not diagnosed. Run `41098819181` is not green.
+Exactly T101-T103 are appended for the existing-policy correction, diagnosis
+and changed-source qualification. No architecture decision, product/test code,
+original task marker or historical report changes in this review stage.
+That review selected implement; the subsequent
+[scope amendment](adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
+now pauses continuation for ASP.NET Core Identity, production local/OIDC
+accounts and first-login ownership with owner-led onboarding/RBAC.
+One-time installation setup-token admission and the 005/006 delivery boundary
+are now human-approved. The rewritten spec covers 005 account/authentication/
+initial-Owner mechanics; existing 006 delivers invitations/user administration/
+teams/RBAC. Clarification finds all ten categories Clear, with zero questions,
+unchanged spec and 16/16 author criteria. The [revised plan](../specs/005-authentication-bootstrap/plan.md)
+now proposes native Identity store integration, versioned contracts and
+format-3 migration/recovery. Design/changed quality review, task reconciliation
+and analysis still block implementation. Existing reviewer/runtime evidence does
+not certify the amended semantics. The same PR remains draft,
+not accepted or ready to merge.
+
+The earlier implementation increments below retain the source/signature
+investigation and record the adopted maintained
+OIDC dependency, independent test issuer/ownership/corpora, strict static
+configuration and public actor-v1. Actor identity is immutable and carries
+no credential, database handle or permission grant. Parsing admits only the
+documented configuration modes and private bounded references, with a
+trust digest excluding display text and rotatable secret material.
+The stopped, caller-transaction-owned migration now evolves format-1 constraints
+and creates all eight identity tables without editing migration 1 or changing
+module assignments/revisions/history/data. Frozen OID-independent native-catalog
+fingerprints verify actual v1/v2 physical definitions, including constraints,
+collations, indexes, triggers, routines, defaults and generated objects.
+Existing reconciliation/composition inventory consumers share that verifier.
+Recovery-v1 is not broadened to accept format 2.
+The deadline integration issue is resolved for identity without changing
+legacy migration execution: an owned SQLite native-handle path avoids the
+provider's uncancellable integer-timeout retry loop, checks VM progress and
+retries only documented known-not-committed boundaries. PostgreSQL uses
+cancellable async work and unpooled connection closure. Both share the clipped
+original budget with 50 ms reserved for cleanup, not added to the deadline.
+Metadata/admission uses the normal host lease and an immediate SQLite write
+transaction or PostgreSQL metadata row lock. PostgreSQL verifies the held
+host backend's shared lock from the independent operation connection, never
+executing concurrent requests on the borrowed lease connection. Checked security
+revisions, UTC windows, hashed keys, exact rate/capacity refusal and 128-row
+pruning leave module revisions untouched. Real-provider regressions cover
+contention, rollback, overflow, foreign/lost authority and concurrent quotas.
+Transactional events share owner commits/revisions, immutable installation
+retention, bounded session-event pruning and exact capacity refusal.
+Persistent keys bind installation/mode/purpose, verify owner-only artifacts and
+require certificate encryption in OIDC mode; serving never creates lost rings.
+Admitted stopped prepare/reconcile/revoke commands reuse exclusive maintenance
+authority, initialize disabled bootstrap and preserve mappings/consumed
+designation while invalidating sessions/attempts/pending authority.
+Database and key-file preparation are explicitly not a distributed transaction.
+PostgreSQL constraint fingerprints now use the server's parenthesis-normalizing
+deparser, preserving full definitions across real dump/restore without dropping
+checks or changing frozen migration-1 bytes.
+Shared exact-route/default-deny/CSRF components and fixed private diagnostics
+now have component/operator evidence. Identity
+composition records remain an internal strict framed union, never new Platform
+identity/lifecycle payload. Operator projection waits for verified child exit
+and cleanup; a lost acknowledgement is uncertain, not success.
+T021 shares configuration and read-only prepared
+format/trust/key validation across empty and composed serving. It reuses their
+actual normal host authority and installs the same services, persistent key
+provider, request boundaries and private diagnostics. Valid older formats
+require explicit stopped preparation; startup never repairs keys or contacts
+discovery and refuses restored-copy quarantine. Foundation units and both-provider
+storage/startup/stop/privacy gates pass with preserved snapshots. The actual
+empty/composed stack also passes browser warm starts under unchanged envelopes.
+Recorded initial failures and the controlled deadline-test profile remain
+limitations of that evidence. Exact user mapping now runs inside the existing
+owner transaction with creation evidence, strict key/profile bounds, finite
+capacity and startup/maintenance correspondence validation. Real-store races,
+rollback and fresh owner processes preserve IDs/designation across acknowledged
+trust/mode changes; HTTP/session orchestration remains separate work.
+Maintained native OIDC configuration now enforces confidential code+PKCE,
+exact signed RS256 evidence, protected state/nonce and an explicitly bounded
+HTTPS/DNS/peer/response/cache backchannel. Sixty-six real protocol,
+transport and issuer cases pass. This is a pre-session validation seam:
+the product hosts do not yet register an OIDC login route, and the test host
+intercepts only after the native handler completes all protocol validation.
+It cannot establish a local session or trusted actor.
+Durable attempts now share the caller's existing owner mutation, including
+compare-and-consume and rollback; they never commit independently. Quotas are
+256 pending/installation and eight/browser, with five-minute expiry and
+at-most-128-row cleanup. Mode/trust/epoch and browser digest must still match.
+Native protected properties carry only the local binding; durable return paths
+remain authoritative. Both-provider races and protected-state roundtrips pass,
+but actual product login routes remain dependent work.
+The validated-login coordinator now maps the exact identity, consumes its
+attempt and persists the protected minimal session plus required events in one
+owner commit. A private request-local one-shot bridge returns only that known
+committed reference; framework storage never creates a second transaction.
+Every retrieval verifies current stored user/mode/epoch/designation and renews
+idle expiry only within the fixed absolute limit. Terminal revocation cannot
+be resurrected; per-user/global session overflow refuses without eviction.
+Native cookie sliding renewal stays disabled, and the session cookie manager
+withholds pre-login cookies on new-login paths so framework sign-in cannot
+renew/reuse an older reference.
+Thirty both-provider native-handler contracts cover commit/publication/crash
+boundaries, references, expiry/revocation and capacities. They use an owned
+test host. T031/T032 now register product browser-context, protected
+login/callback and self-only `/me` in both serving paths. Native authentication
+runs after the exact route/binding/budget boundary, not automatically before it;
+health suppresses session retrieval without relocating the authentication
+middleware. Only the validated durable view populates the read-only scoped actor.
+Exact Origin/framework CSRF, private browser binding, rate/cookie/target bounds,
+canonical returns and safe errors/headers apply before protected effects.
+Fresh profiles/designation, revocation and corrupt protection are tested;
+initial designation still grants no unrelated action. Additive generated
+identity contracts preserve every accepted bootstrap operation/component.
+The combined gate passes 52 both-provider native/session/route/API cases.
+Independent adapter/configuration tests pass 51 cases. T034 now passes all
+sixteen actual owned host/Next parity observations and verified cleanup:
+a post-exit `EPERM` requires a zero-signal kernel confirmation that the
+entire group is absent; present/unverifiable descendants still fail.
+T035/T036 deliver `/identity` as a non-personal, no-store shell with deliberate
+sign-in, fresh token pairs, bounded verification, escaped display and
+stale-state clearing. All 98 web units, lint/types/build pass. The UI's
+sign-in Server Action forwards actual Origin, credential evidence and the
+explicit CSRF pair through the same bounded fixed-backend adapter; validated
+cookies are published before the framework redirect. This is transport, not
+another authentication authority or a contract relaxation. A real native
+form under required `no-referrer` produced `Origin: null`, which remains
+refused. Actual Ubuntu login/trust browser recipes pass on both stores at
+`6be0ee8`, with ordinary TLS and exact-group cleanup verification. Local
+macOS browser lifecycle/cleanup still fails. The corrected local protocol
+matrix passes 123/123; mapping/restart passes 20/20, retaining the intervening
+SQLite readiness failure and unknown cause. Both complete provider integration
+jobs and the four actual browser recipes pass at `2f56f35`, completing US1.
+Broader composition-contract/recovery CI failures remain. Private source-known
+host diagnostics now survive isolated propagation; a reproduced comparison
+bug admits only the exact additional private XML-report flags, not arbitrary
+command changes. Enrollment, sign-out, development sessions and identity
+recovery remain (60 unchecked tasks). Published `f89c1ec` passed all eleven CI
+contexts; no feature acceptance or current complete gate is claimed.
+
+The completed specify-through-analyze history below is retained on
+`feature/005-authentication-bootstrap`. Its
+[draft requirements](../specs/005-authentication-bootstrap/spec.md) define
+host-owned production OIDC identity, explicit development limits, stable user
+mapping, one-time nominated first-admin enrollment and shared browser/API
+boundaries. The [author checklist](../specs/005-authentication-bootstrap/checklists/requirements.md)
+satisfies 16/16 criteria. Five stories, 22 scenarios, 22 requirements and seven
+outcomes require real-provider/protocol/browser/privacy evidence later.
+Clarification found all ten requirements categories clear, with zero questions
+and no spec/checklist changes; all 16 author criteria remain satisfied.
+The [coverage assessment](development/spec-workflow.md#invocation-and-current-progress)
+preserves the unchanged clarification evidence. The
+[plan](../specs/005-authentication-bootstrap/plan.md) and
+[ADR 0007](adr/0007-authentication-bootstrap-boundary.md) now define
+confidential OIDC code+PKCE, durable server-side cookie tickets, exact same-origin
+Next adapters/optional direct ingress, actor-v1 and nominated one-time enrollment.
+Host-owned format-2 SQL/history and recovery-v2 deliberately extend the strict
+accepted platform inventory; module allocation/EF ownership and offline
+privilege boundaries remain unchanged. Restore quarantines security state and
+invalidates sessions, never automatically reopens bootstrap.
+Finite trust/egress/state budgets, protected key persistence, minimal durable
+records, accessible UI and independent both-provider/protocol/consumer/browser/
+privacy evidence are specified, not implemented. Both constitutional design
+gates pass. ADR 0007 is now **human-approved for implementation** by the explicit
+decision **"ok, I approve it"**; historical planning artifacts/ledger are unchanged
+and no stage is executed by recording approval. The new OIDC dependency closure
+still needs actual adoption review. Granular authorization,
+MCP and general audit administration remain 006/007/009. No product code/package,
+tasks, runtime proof or feature acceptance is introduced by planning.
+The subsequent [requirements-quality checklist](../specs/005-authentication-bootstrap/checklists/quality.md)
+now satisfies 36/36 criteria after explicitly requested assisted review, with
+per-item evidence for identity/access, enrollment, host/module storage/recovery,
+UX and operability. No unresolved requirements gap, constitutional conflict
+or new human decision needs attention. The review changes no architecture
+decision or planning evidence and resolves the earlier checklist block.
+The [100 tasks](../specs/005-authentication-bootstrap/tasks.md)
+map every requirement/outcome/scenario and all twelve design decisions to
+path-specific implementation and independent evidence, with explicit acyclic
+dependencies and model constraints. They retain exact platform/recovery versions,
+module ownership, default denial, separate stopped initialization and truthful
+filesystem/database partial effects; no new architecture decision is made.
+The read-only [analysis](../specs/005-authentication-bootstrap/analysis.md)
+passes with concrete coverage of all 29 requirements/outcomes and 22 scenarios,
+100 mapped tasks and 242 acyclic dependency edges. No actionable or constitutional
+finding remains at that analysis checkpoint; assessed inputs/reviewer markers
+were unchanged. Only prerequisite-evidence T001 is now checked. The same draft
+PR #8 retains the blocked implementation, not an intermediate merge, runtime
+result, new architecture decision or feature acceptance.
 
 The following paragraphs
 preserve the earlier design-stage history; their Proposed/unstarted statements
@@ -621,6 +845,12 @@ Schema-per-module is an **ownership boundary**, not a security guarantee when al
 
 Each module MUST have its own SQLite database file managed under a restricted host data directory, e.g. `data/modules/<opaque-module-key>/module.db`. The platform system registry uses its own SQLite database file. File paths MUST come from the registry, not untrusted module-supplied relative paths; check canonical paths to prevent traversal.
 
+Live format validation uses SQLite-owned handles after private canonical-file,
+link, sidecar and length checks. A separate managed header reader can falsely
+conflict with admitted writers; opening and closing an independent raw descriptor
+can also disrupt SQLite's process-scoped locks. Native header reads retain the
+operation's existing deadline, and stopped recovery retains its offline checks.
+
 Enforce foreign keys and choose SQLite WAL/busy-timeout based on the deployment profile. Each module's DbContext, migrations, backups and recovery act on that **single module file**. Do not claim SQLite schemas, `ATTACH`, or a common shared database as the default module storage strategy. Cross-module joins are not a supported contract.
 
 ### 6.3 DbContext, migrations and transactions
@@ -682,7 +912,7 @@ Module providers own spec validation and state reconciliation; the host owns com
 ## 9. HTTP API and authentication/authorization
 
 - HTTP+JSON OpenAPI API is the authoritative application interface. Use consistent pagination, filtering, idempotency keys for mutations, Problem Details for failures, and optimistic concurrency for state changes.
-- Pluggable identity with OIDC integration as a first-class path; optional local development identity is a **development-only** default, not a production security assumption.
+- Approved account-model rework uses ASP.NET Core Identity for production local accounts and OIDC through maintained handlers, with stable internal users and shared application sessions/authorization. The revised 005 spec requires local-only, OIDC-only and explicit coexistence, protected first-login ownership and self-service account mechanics; existing 006 owns invitations/user administration/teams/RBAC. Production local accounts are not the development identity profile. Future SAML remains an extension seam, not an MVP dependency. The [technical proposal](adr/0007-authentication-bootstrap-boundary.md#revised-technical-design-proposal---2026-10-30) evaluates EF stores first and selects narrow adapters over the existing bounded executor, HTTP/actor-v2, deny-default account admission and format-3/recovery-v3. Exact-runtime/dependency proof and human design/quality review remain before implementation; this is not adopted runtime behavior.
 - Köfte owns a stable internal subject identity mapping, teams/roles, named permissions, policy checks, service principals and audit records independent of IdP specifics.
 - Every actionable endpoint and job invocation checks **principal + action + resource/team scope**. Frontend gating is UX, not security.
 - No arbitrary user-provided code execution, pipeline credentials or secrets included in API responses. Use secret references and provider-specific secure stores.

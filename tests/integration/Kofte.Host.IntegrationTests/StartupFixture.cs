@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using Kofte.TestSupport;
+using Kofte.TestSupport.Identity;
 
 namespace Kofte.Host.IntegrationTests;
 
@@ -10,24 +11,37 @@ public sealed class StartupFixture : IAsyncDisposable
     private readonly OwnedProcess process;
     private Task? stop;
     private bool disposed;
+    private readonly ServingIdentity identity;
+    private readonly bool ownsIdentity;
     public HttpClient Client { get; }
 
-    private StartupFixture(OwnedProcess process, Uri address)
+    private StartupFixture(OwnedProcess process, Uri address, ServingIdentity identity, bool ownsIdentity)
     {
         this.process = process;
+        this.identity = identity;
+        this.ownsIdentity = ownsIdentity;
         Client = new HttpClient { BaseAddress = address, Timeout = TimeSpan.FromSeconds(6) };
     }
 
     public static async Task<StartupFixture> StartAsync(string dataRoot, CancellationToken token,
-        string environment = "Development", string? postgres = null, string? modulesFile = null)
+        string environment = "Development", string? postgres = null, string? modulesFile = null,
+        ServingIdentity? preparedIdentity = null)
     {
         using var reservation = new TcpListener(IPAddress.Loopback, 0);
         reservation.Start();
         var port = ((IPEndPoint)reservation.LocalEndpoint).Port;
         reservation.Stop();
         var address = new Uri($"http://127.0.0.1:{port}");
-        var process = OwnedProcesses.Start(StartInfo(dataRoot, address, environment, postgres, modulesFile));
-        var fixture = new StartupFixture(process, address);
+        var identity = preparedIdentity ?? await PrepareIdentityAsync(dataRoot, token, environment, postgres);
+        OwnedProcess process;
+        try
+        {
+            var start = StartInfo(dataRoot, address, environment, postgres, modulesFile);
+            identity.ConfigureChild(start);
+            process = OwnedProcesses.Start(start);
+        }
+        catch { if (preparedIdentity is null) identity.Dispose(); throw; }
+        var fixture = new StartupFixture(process, address, identity, preparedIdentity is null);
         try
         {
             using var budget = CancellationTokenSource.CreateLinkedTokenSource(token);
@@ -49,6 +63,22 @@ public sealed class StartupFixture : IAsyncDisposable
             await fixture.DisposeAsync();
             throw;
         }
+    }
+
+    public static async Task<ServingIdentity> PrepareIdentityAsync(string dataRoot, CancellationToken token,
+        string environment = "Development", string? postgres = null)
+    {
+        var identity = new ServingIdentity(environment);
+        try
+        {
+            await identity.PrepareAsync(start =>
+            {
+                var configured = StartInfo(dataRoot, new("http://127.0.0.1:5080"), environment, postgres);
+                foreach (var (key, value) in configured.Environment) start.Environment[key] = value;
+            }, token);
+            return identity;
+        }
+        catch { identity.Dispose(); throw; }
     }
 
     private static ProcessStartInfo StartInfo(string dataRoot, Uri address, string environment, string? postgres,
@@ -85,17 +115,19 @@ public sealed class StartupFixture : IAsyncDisposable
         string[] args, CancellationToken token, string? postgres = null)
     {
         var start = StartInfo(dataRoot, new Uri("http://127.0.0.1:5080"), "Development", postgres);
+        using var identity = args.Length == 0 ? new ServingIdentity() : null;
+        identity?.ConfigureChild(start);
         foreach (var argument in args) start.ArgumentList.Add(argument);
         var result = await OwnedProcesses.RunAsync(start, TimeSpan.FromSeconds(10), token);
         return (result.ExitCode, result.Stdout + result.Stderr);
     }
 
-    public async Task<string> SafeOutputAsync()
+    public async Task<ProcessOutput> SafeOutputAsync()
     {
         if (stop?.IsCompletedSuccessfully is not true && !process.HasExited)
             throw new InvalidOperationException("test_host_still_running");
         var result = await process.ResultAsync();
-        return result.Stdout + result.Stderr;
+        return result;
     }
 
     public Task StopAsync() => stop ??= process.StopAsync(graceful: true);
@@ -106,6 +138,7 @@ public sealed class StartupFixture : IAsyncDisposable
         await StopAsync();
         Client.Dispose();
         await process.DisposeAsync();
+        if (ownsIdentity) identity.Dispose();
         disposed = true;
     }
 }

@@ -10,15 +10,14 @@ namespace Kofte.Host.IntegrationTests;
 public sealed class PostgresStorageCompatibilityTests
 {
     [Fact]
-    public async Task ModuleFreeOwnedPostgresKeepsV0AndExplicitV1StartupWithoutProvisioner()
+    public async Task ModuleFreeOwnedPostgresRequiresIdentityPreparationBeforeStartupWithoutProvisioner()
     {
         var token = TestContext.Current.CancellationToken;
-        await using var database = await PostgresResources.CreateFromEnvironmentAsync(token);
+        await using var database = await PostgresResources.CreateFromEnvironmentAsync(token, shareOwnedService: true);
         using var unusedRoot = new TempRoot();
-        await using (var host = await StartupFixture.StartAsync(unusedRoot.Path, token, postgres: database.ConnectionString))
-        {
-            await StorageCompatibilityTests.AssertCoreSurfaceAsync(host, token);
-        }
+        var refused = await StartupFixture.RunExitAsync(unusedRoot.Path, [], token, postgres: database.ConnectionString);
+        Assert.Equal(1, refused.ExitCode);
+        Assert.Contains("identity_prepare_required", refused.Output);
         var installation = StorageInstallation.PostgreSql(database.ConnectionString);
         await StorageReconciliation.ValidateStartupAsync(installation, token);
         var upgrade = await StartupFixture.RunExitAsync(unusedRoot.Path, ["--registry", "upgrade"], token,
@@ -26,6 +25,9 @@ public sealed class PostgresStorageCompatibilityTests
         Assert.Equal(0, upgrade.ExitCode);
         StorageCompatibilityTests.AssertUpgradeRecord(upgrade.Output, unusedRoot.Path,
             "storage_ready", "ready", "retry_same_request", "postgresql");
+        refused = await StartupFixture.RunExitAsync(unusedRoot.Path, [], token, postgres: database.ConnectionString);
+        Assert.Equal(1, refused.ExitCode);
+        Assert.Contains("identity_prepare_required", refused.Output);
         await using (var host = await StartupFixture.StartAsync(unusedRoot.Path, token, postgres: database.ConnectionString))
         {
             await StorageCompatibilityTests.AssertCoreSurfaceAsync(host, token);
@@ -41,7 +43,7 @@ public sealed class PostgresStorageCompatibilityTests
     public async Task RefusedOwnedPostgresUpgradeProjectsSafeCauseAndPreservesMetadata(bool unsupported)
     {
         var token = TestContext.Current.CancellationToken;
-        await using var database = await PostgresResources.CreateFromEnvironmentAsync(token);
+        await using var database = await PostgresResources.CreateFromEnvironmentAsync(token, shareOwnedService: true);
         using var unusedRoot = new TempRoot();
         var installation = StorageInstallation.PostgreSql(database.ConnectionString);
         var maintenance = new StorageMaintenance(installation);

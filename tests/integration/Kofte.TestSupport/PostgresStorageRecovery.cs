@@ -1,3 +1,4 @@
+using Kofte.Infrastructure.Identity;
 using Kofte.Infrastructure.Storage;
 using Kofte.Infrastructure.Storage.Recovery;
 using Npgsql;
@@ -14,6 +15,8 @@ public sealed partial class PostgresResources
         var maintenance = new StorageMaintenance(installation);
         await using var scope = await maintenance.AcquireAsync(token);
         var inventory = await RecoverySetVerifier.InspectStoppedAsync(installation, scope, token);
+        var identity = inventory.RegistryVersion == 2
+            ? await IdentityRecoverySnapshot.CaptureStoppedAsync(installation, scope, token) : null;
         var previous = (int)(await AdminAsync(
             $"SELECT datconnlimit FROM pg_catalog.pg_database WHERE oid={databaseOid}", token)
             ?? throw new InvalidOperationException("postgres_database_record_missing"));
@@ -36,11 +39,13 @@ public sealed partial class PostgresResources
             await AdminAsync($"ALTER DATABASE \"{database}\" CONNECTION LIMIT {previous}", cleanup.Token);
         }
         var artifact = await RecoverySetVerifier.DescribeArtifactAsync(directory, "installation.dump", token);
-        var manifest = new RecoveryManifest(RecoveryManifest.CurrentFormat, true, Guid.NewGuid(),
+        var manifest = new RecoveryManifest(identity is null ? RecoveryManifest.CurrentFormat : RecoveryManifest.IdentityFormat,
+            true, Guid.NewGuid(),
             inventory.InstallationId, inventory.Provider, inventory.RegistryVersion, inventory.RegistryRevision,
-            inventory.Allocations, [artifact]);
+            inventory.Allocations, [artifact], identity);
         var after = await RecoverySetVerifier.InspectStoppedAsync(installation, scope, token);
-        if (!RecoverySetVerifier.SameInventory(manifest, after))
+        if (!RecoverySetVerifier.SameInventory(manifest, after) ||
+            identity is not null && await IdentityRecoverySnapshot.CaptureStoppedAsync(installation, scope, token) != identity)
             throw new InvalidOperationException("recovery_source_changed");
         await RecoverySetVerifier.WriteManifestAsync(directory, manifest, token);
         await RecoverySetVerifier.VerifyAsync(directory, installation, scope, token);
@@ -90,8 +95,16 @@ public sealed partial class PostgresResources
         return manifest;
     }
 
-    public async Task<RecoveryManifest> RestoreStorageSetToFreshAsync(string directory,
-        PostgresResources freshTarget, CancellationToken token)
+    public Task<RecoveryManifest> RestoreStorageSetToFreshAsync(string directory,
+        PostgresResources freshTarget, CancellationToken token) =>
+        RestoreStorageSetToFreshCoreAsync(directory, freshTarget, null, token);
+
+    public Task<RecoveryManifest> RestoreStorageSetToFreshQuarantinedAsync(string directory,
+        PostgresResources freshTarget, string keyDirectory, CancellationToken token) =>
+        RestoreStorageSetToFreshCoreAsync(directory, freshTarget, keyDirectory, token);
+
+    private async Task<RecoveryManifest> RestoreStorageSetToFreshCoreAsync(string directory,
+        PostgresResources freshTarget, string? keyDirectory, CancellationToken token)
     {
         if (ReferenceEquals(this, freshTarget) || ConnectionString == freshTarget.ConnectionString)
             throw new InvalidOperationException("postgres_fresh_target_required");
@@ -100,7 +113,13 @@ public sealed partial class PostgresResources
         var installation = StorageInstallation.PostgreSql(ConnectionString);
         var maintenance = new StorageMaintenance(installation);
         await using var scope = await maintenance.AcquireAsync(token);
-        await RecoverySetVerifier.VerifyAsync(directory, installation, scope, token);
-        return await freshTarget.RestoreStorageSetAsync(directory, token);
+        var manifest = await RecoverySetVerifier.VerifyAsync(directory, installation, scope, token);
+        if (manifest.Identity is not null && keyDirectory is null)
+            throw new InvalidOperationException("identity_restore_reconciliation_required");
+        var quarantine = keyDirectory is null ? null : await IdentityRestoreQuarantine.CreateAsync(
+            directory, keyDirectory, manifest, token: token);
+        var restored = await freshTarget.RestoreStorageSetAsync(directory, token);
+        if (quarantine is not null) await quarantine.MarkRestoredAsync(restored, token);
+        return restored;
     }
 }

@@ -8,6 +8,7 @@ using System.Text.Json;
 using Kofte.Infrastructure.Storage;
 using Kofte.Infrastructure.Storage.Registry;
 using Kofte.Infrastructure.Storage.Recovery;
+using Kofte.TestSupport.Identity;
 using Kofte.Platform.Modules.Manifest;
 using Kofte.Platform.Modules.Storage;
 using Npgsql;
@@ -41,6 +42,7 @@ public sealed class CompositionFixture : IAsyncDisposable
     private CompositionAuthorTrace? authorTrace;
     private bool probeRunning;
     private bool disposed;
+    private ServingIdentity? identity;
 
     private CompositionFixture(StorageProviderScope storage)
     {
@@ -54,8 +56,22 @@ public sealed class CompositionFixture : IAsyncDisposable
     public string SelectionPath => Path.Combine(privateRoot.Path, "modules.json");
     public string Canary { get; } = "composition-private-" + Convert.ToHexStringLower(RandomNumberGenerator.GetBytes(16));
     public Uri HostUrl { get; private set; } = new("http://127.0.0.1:1");
+    public Uri? WebUrl => identity?.WebUrl;
     public CompositionAuthorTrace AuthorTrace => authorTrace ??
         throw new InvalidOperationException("composition_author_probe_not_started");
+
+    public async Task PrepareIdentityAsync(CancellationToken token)
+    {
+        RequireStopped();
+        if (identity is not null) return;
+        var prepared = new ServingIdentity();
+        try
+        {
+            await prepared.PrepareAsync(start => Storage.ConfigureChild(start, offlineMaintenance: true), token);
+            identity = prepared;
+        }
+        catch { prepared.Dispose(); throw; }
+    }
 
     public CompositionProcess StartBoot(CompositionTestCatalog catalog, bool explicitSelection = true,
         bool observeAuthor = false)
@@ -136,9 +152,9 @@ public sealed class CompositionFixture : IAsyncDisposable
     }
 
     public CompositionProcess Start(string mode, CompositionTestCatalog catalog = CompositionTestCatalog.Default,
-        bool observeAuthor = false)
+        bool observeAuthor = false, int preferredHostPort = 0)
     {
-        var start = CreateStart(mode, catalog);
+        var start = CreateStart(mode, catalog, preferredHostPort: preferredHostPort);
         if (observeAuthor) BeginAuthorTrace(start);
         var process = new CompositionProcess(OwnedProcesses.Start(start, captureOutput: !observeAuthor), Canary,
             observeOutput: observeAuthor);
@@ -167,7 +183,8 @@ public sealed class CompositionFixture : IAsyncDisposable
         }
 
         static bool DeploymentKey(string key) => key.StartsWith("KOFTE_", StringComparison.Ordinal) ||
-            key.StartsWith("OTEL_", StringComparison.Ordinal) || key.StartsWith("COMPOSITION_TEST_", StringComparison.Ordinal);
+            key.StartsWith("OTEL_", StringComparison.Ordinal) || key.StartsWith("COMPOSITION_TEST_", StringComparison.Ordinal) ||
+            key is "ASPNETCORE_ENVIRONMENT" or "DOTNET_ENVIRONMENT";
     }
 
     public void TrackIdleFixtureChild(CompositionProcess owner)
@@ -201,7 +218,8 @@ public sealed class CompositionFixture : IAsyncDisposable
         start.Environment["COMPOSITION_TEST_PROBE"] = authorTrace.Path;
     }
 
-    private ProcessStartInfo CreateStart(string mode, CompositionTestCatalog catalog, bool explicitSelection = true)
+    private ProcessStartInfo CreateStart(string mode, CompositionTestCatalog catalog, bool explicitSelection = true,
+        int preferredHostPort = 0)
     {
         ObjectDisposedException.ThrowIf(disposed, this);
         if (probeRunning || processes.Any(process => !process.HasExited))
@@ -236,10 +254,19 @@ public sealed class CompositionFixture : IAsyncDisposable
         }
         using (var port = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
         {
-            port.Bind(new IPEndPoint(IPAddress.Loopback, 0));
-            HostUrl = new("http://127.0.0.1:" + ((IPEndPoint)port.LocalEndPoint!).Port);
+            port.Bind(new IPEndPoint(IPAddress.Loopback, preferredHostPort));
+            var selected = (IPEndPoint)port.LocalEndPoint!;
+            if (selected.Port == identity?.WebUrl.Port)
+            {
+                // Keep the colliding candidate bound so the replacement cannot reuse it.
+                using var replacement = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                replacement.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+                selected = (IPEndPoint)replacement.LocalEndPoint!;
+            }
+            HostUrl = new("http://127.0.0.1:" + selected.Port);
         }
         start.Environment["KOFTE_HOST_URL"] = HostUrl.AbsoluteUri;
+        identity?.ConfigureChild(start);
         return start;
     }
 
@@ -425,6 +452,7 @@ public sealed class CompositionFixture : IAsyncDisposable
         finally
         {
             await Storage.DisposeAsync();
+            identity?.Dispose();
             privateRoot.Dispose();
             disposed = true;
         }

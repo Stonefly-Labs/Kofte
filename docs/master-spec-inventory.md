@@ -181,10 +181,28 @@ Dependencies / integration assumptions: 002,003. Identify any genuine ambiguity 
 
 ### 005 — Authentication and bootstrap administration [MVP]
 
-**Purpose / deliverable:** Add pluggable OIDC login for production, clearly limited development login, user identity mapping, safe first-admin bootstrap and session/API auth boundaries.
+**Human-approved scope rework (2026-10-30):** Use ASP.NET Core Identity for
+production local/OIDC accounts with stable users and shared sessions; the first
+successful local or OIDC login claims initial ownership. That Owner can
+invite/add/onboard users and assign RBAC through central authorization.
+The [ADR amendment](adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
+records approval, including one-time installation setup-token admission, and
+the [rewritten specification](../specs/005-authentication-bootstrap/spec.md).
+005 owns accounts/authentication/initial ownership and self-service credential
+mechanics; existing 006 owns invitations/user administration/teams/RBAC through
+central authorization. Clarification finds no critical ambiguities across all
+ten categories, with zero questions or spec changes. The [revised plan](../specs/005-authentication-bootstrap/plan.md)
+now proposes exact Identity/store, token/credential, versioned-contract and
+format-3 migration/recovery choices. Human design/changed quality review,
+task reconciliation and analysis remain before implementation, which stays blocked.
+SAML remains a future extension, not an MVP prerequisite. The original
+generation prompt below is historical; it does not override this amendment
+or authorize resuming the old OIDC-only/nominated-bootstrap plan.
+
+**Purpose / deliverable:** Add production local/OIDC authentication with canonical users/shared sessions, secure account mechanics, separate limited development identity and setup-token-protected first-login ownership; expose the account/Owner boundary consumed by existing 006.
 
 **Dependencies:** 001,004.  
-**Acceptance focus:** Anonymous denial, configured OIDC integration test, bootstrap non-repeatability, logged-in UI/API identity consistency.
+**Acceptance focus:** Local-only/OIDC-only/coexistence, protected mixed-method initial-Owner races/non-repeatability, credential/reset/association safety, logged-in UI/API consistency and preservation of delivered identity data/consumed ownership.
 
 **Paste into `/speckit.specify`:**
 
@@ -203,6 +221,16 @@ Dependencies / integration assumptions: 001,004. Identify any genuine ambiguity 
 ```
 
 ### 006 — Teams and centralized authorization [MVP]
+
+**005 integration amendment (2026-10-30):** This existing feature owns the initial
+Owner's invitations/onboarding, user-administration workflows, teams, memberships
+and RBAC through central registered authorization. It consumes 005's canonical
+account/session/initial-Owner and authorized account-admission boundary rather
+than creating another identity authority or bypassing credential protections.
+The complete Owner-led administration journey is delivered here, not in 005.
+005 now proposes the versioned [account-admission contract](../specs/005-authentication-bootstrap/contracts/account-admission-v1.md);
+006 must review/adopt it in its own planning. No 006 stage or unconditional
+administrator bypass is authorized by this note.
 
 **Purpose / deliverable:** Implement teams, memberships, baseline roles and module-registered granular permissions; resource/team scoped authorization shared across web/API/MCP/jobs.
 

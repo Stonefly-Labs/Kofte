@@ -62,9 +62,22 @@ p {
   color: #40554c;
 }
 button:focus-visible,
-a:focus-visible {
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
   outline: 3px solid #994700;
   outline-offset: 4px;
+}
+.identity-authorization,
+.identity-selector {
+  display: block;
+  width: 100%;
+  max-width: 32rem;
+  margin: 0.5rem 0 1rem;
+  padding: 0.65rem;
+  font: inherit;
+  border: 1px solid #c8d3ca;
+  border-radius: 0.35rem;
 }
 button:disabled {
   cursor: wait;

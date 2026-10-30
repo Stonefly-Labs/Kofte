@@ -19,9 +19,21 @@
     "004": {
       "directory": "specs/004-module-lifecycle",
       "next_step": "accepted"
+    },
+    "005": {
+      "directory": "specs/005-authentication-bootstrap",
+      "next_step": "implement"
     }
   },
-  "active": null,
+  "active": {
+    "spec": "005",
+    "step": "implement",
+    "directory": "specs/005-authentication-bootstrap",
+    "status": "blocked",
+    "branch": "feature/005-authentication-bootstrap",
+    "reason": "Explicitly authorized revised-scope requirements-quality review assesses CHK037-CHK064 at 55b0aeb8c400060224a5fd59e0be7b32d1fc4b84: 27/28 satisfied with per-item written-source evidence; CHK052 remains unchecked for RQ1. Signed fresh OIDC auth_time lacks an objective request-bound acceptance cutoff, bounded clock-skew allowance and future-timestamp rule; the subsequent five-minute proof lifetime does not define source-authentication recency. Clarify that technical policy consistently and explicitly reassess CHK052 before separately requested task reconciliation and analysis. Preserve CHK001-CHK036 and all historical evidence, design/spec/contracts, author checklist and all 103 tasks/markers. F1/F2/T101-T103 remain open. No task generation, implementation, dependency/runtime proof, feature acceptance or intermediate merge.",
+    "started_at": "2026-10-30T17:52:49+00:00"
+  },
   "history": [
     {
       "spec": null,
@@ -1068,6 +1080,154 @@
         "specs/004-module-lifecycle/checklists/requirements.md": "c2ae07e9c5d44409774e3942c21a80fa82965d4c6f6ed4f8b101761816aa0248"
       },
       "human_approval": "bro this human fugging accepts"
+    },
+    {
+      "spec": "005",
+      "step": "specify",
+      "directory": "specs/005-authentication-bootstrap",
+      "status": "complete",
+      "branch": "feature/005-authentication-bootstrap",
+      "reason": "",
+      "started_at": "2026-10-26T12:41:17+00:00",
+      "completed_at": "2026-10-26T12:46:58+00:00",
+      "outcome": "pass",
+      "note": "Executed speckit-specify with the exact inventory 005 fenced prompt and resolved project template after verifying human-merged PR #7, accepted 004 state and all five acceptance hashes on updated origin/main. Five independent stories, 22 Given/When/Then scenarios, 22 functional requirements and seven measurable outcomes define production OIDC, stable issuer/subject mapping, deliberately nominated one-time first-admin enrollment, browser/API access/session parity, explicit development-only identity and safe host-owned persistence/security evidence. All 16 built-in author checklist criteria satisfied; no material unresolved marker or configured before/after specification hook. Requirements-level defaults are explicit and distinct from later plan/ADR protocol/session/enrollment/budget choices; no human decision invented. Preserved historical failed/deferred 004 evidence and future 006/007/009 boundaries. No product code, dependencies, plan, tasks, reviewer-owned checklist, runtime proof or acceptance. Clarify is next on the same feature branch/draft PR; no intermediate merge.",
+      "evidence_sha256": {
+        "specs/005-authentication-bootstrap/spec.md": "321ed0ee2b04da4c060c5a6d498e6cc795bbe10d88e02f34affb113afc395d75",
+        "specs/005-authentication-bootstrap/checklists/requirements.md": "26bdb3c100317600de5c4be50934873933b0942bf23b7913e49571dd2ce65adb"
+      }
+    },
+    {
+      "spec": "005",
+      "step": "clarify",
+      "directory": "specs/005-authentication-bootstrap",
+      "status": "complete",
+      "branch": "feature/005-authentication-bootstrap",
+      "reason": "",
+      "started_at": "2026-10-26T14:02:01+00:00",
+      "completed_at": "2026-10-26T14:03:21+00:00",
+      "outcome": "pass",
+      "note": "Executed installed speckit-clarify with explicit recorded feature directory on the original feature branch/draft PR #8. No critical ambiguities detected worth formal clarification: 0 questions asked/answered, no invented human decision and no spec section touched. All ten categories Clear: functional scope/behavior (Scope, US1-5, FR-001-015/021); domain/data (Key Entities, FR-003/009-014/016/017); interaction/UX (US1/3/4/5, FR-020, Experience); nonfunctional quality (FR-008/009/015-020, SC-002/005-007); integration/dependencies (accepted001-004, FR-001/007/016/019/021, Interfaces); edge/failure handling (Edge Cases, US1-5, FR-002/009-019); constraints/tradeoffs (Scope, Requirements-level defaults); terminology (Key Entities, stable issuer/subject versus display profile); completion (Required Validation maps22scenarios/22FRs/7SCs); miscellaneous/placeholders (no unresolved marker/conflict, explicit Planning choices). No Outstanding/Deferred requirements categories. Revalidated every author criterion:16/16 to16/16, no newly passing items, regressions or unchecked criteria; spec/checklist remain byte-for-byte unchanged and match specification evidence hashes. Exact protocol/session/API credential/enrollment/storage mechanisms, fields/origins, secret rotation, retention and finite budgets remain planning/ADR choices. No extensions.yml or pre/post clarification hooks. Preserved known prior-head PostgreSQL CI failure as unresolved, not a new pass or diagnosed cause. No product/dependency change, plan/tasks, reviewer-owned quality checklist, runtime proof or human acceptance. Plan next on same feature branch/draft PR; no intermediate merge.",
+      "evidence_sha256": {
+        "specs/005-authentication-bootstrap/spec.md": "321ed0ee2b04da4c060c5a6d498e6cc795bbe10d88e02f34affb113afc395d75"
+      }
+    },
+    {
+      "spec": "005",
+      "step": "plan",
+      "directory": "specs/005-authentication-bootstrap",
+      "status": "complete",
+      "branch": "feature/005-authentication-bootstrap",
+      "reason": "",
+      "started_at": "2026-10-26T14:43:54+00:00",
+      "completed_at": "2026-10-26T19:59:40+00:00",
+      "outcome": "pass",
+      "note": "Executed installed speckit-plan using the resolved project override and explicit recorded feature directory on the original branch/draft PR #8. Produced plan, research, data model, identity-v1 and operator-v1 contracts, future validation guide and Proposed ADR 0007. Twelve traced choices resolve confidential OIDC code+PKCE with explicit trust and disabled PAR/UserInfo/token saving, durable opaque server tickets and next-request revocation, exact same-origin Next adapters/optional ingress, actor-v1/default denial, nominated atomic one-time enrollment, verified platform format 2 and recovery-v2 quarantine/reconciliation, isolated loopback development, finite egress/state/session budgets, protected private key persistence, bounded retained security evidence and accessible independent protocol/provider/consumer/browser validation. Source-reviewed blanket health route guard and exact format-1 inventories are explicit compatibility work, not relaxed checks; module allocator/markers/history/privileges and existing startup/maintenance bounds remain. All twelve constitutional principles pass before research and after design; no canonical conflict or amendment. Official Microsoft/OIDC/Next web references verified by one bounded research agent because Learn/Context7 MCP unavailable. Exact OIDC/transitive license/provenance/locks/advisory review and human ADR approval remain before implementation, not package adoption here. Spec and 16/16 author checklist byte-for-byte unchanged. All 22 acceptance scenario rows and 22 FR traces covered; no extension hooks or later-stage artifacts. Repository checks, 121 Python tests and whitespace passed; initial ad-hoc coverage assertion exposed a missing explicit FR-022 guide trace, corrected and rechecked. No product/test/dependency change, runtime proof, quality checklist marking, tasks or human acceptance. Prior head dac20c1 observed 11/11 CI green; earlier undiagnosed failed runs remain preserved, not diagnosed or erased. Checklist next in a separate invocation on the same draft PR, generated unchecked for reviewer evaluation; no intermediate merge.",
+      "evidence_sha256": {
+        "specs/005-authentication-bootstrap/plan.md": "28cd58fd796ada5d915e7a3ae74709f67a93cd19ca511287066ca9570e764696",
+        "specs/005-authentication-bootstrap/research.md": "8e3108b6b1c6018b4c662648bbaa19b787e21302723183ef19830db6cff19df9",
+        "specs/005-authentication-bootstrap/quickstart.md": "08c294fb444d459dfe1be43abd35cd59602e336cf6ca53701441a6fdbd9faeca"
+      }
+    },
+    {
+      "spec": "005",
+      "step": "checklist",
+      "directory": "specs/005-authentication-bootstrap",
+      "status": "complete",
+      "branch": "feature/005-authentication-bootstrap",
+      "reason": "",
+      "started_at": "2026-10-26T20:55:37+00:00",
+      "completed_at": "2026-10-26T21:03:53+00:00",
+      "outcome": "pass",
+      "note": "Explicit reviewer request: 'review the hecklist and highlight what needs me attention'. Resumed original blocked checklist stage and evaluated all 36 existing questions against spec, plan, twelve research decisions, eight-table model, identity/operator contracts, guide, approved ADR 0007 and constitution. 0/36 to 36/36 satisfied with per-item evidence; IDs/questions/references preserved. No unresolved requirements gap, constitutional conflict, scope amendment or new human decision. API/protocol redirect distinctions, mixed-credential adapter parity and restore-history quarantine are already specified, not new decisions. Spec/design/ADR and 16/16 author checklist unchanged; historical failed checks not diagnosed or cleared. No regenerated criteria, product/dependency/runtime proof, tasks or feature acceptance. Tasks next in a separate invocation on same draft PR #8; no intermediate merge.",
+      "evidence_sha256": {
+        "specs/005-authentication-bootstrap/checklists/quality.md": "c169329a32af64d429d94ad29597a0c8560497e2599269962a6b3db2f0b868ca",
+        "specs/005-authentication-bootstrap/checklists/requirements.md": "26bdb3c100317600de5c4be50934873933b0942bf23b7913e49571dd2ce65adb"
+      }
+    },
+    {
+      "spec": "005",
+      "step": "tasks",
+      "directory": "specs/005-authentication-bootstrap",
+      "status": "complete",
+      "branch": "feature/005-authentication-bootstrap",
+      "reason": "",
+      "started_at": "2026-10-26T21:07:55+00:00",
+      "completed_at": "2026-10-26T21:17:13+00:00",
+      "outcome": "pass",
+      "note": "Executed installed speckit-tasks with the explicit recorded directory and resolved project override on original branch/draft PR #8. Generated 100 sequential unchecked path-specific tasks: setup6/foundation16/US1=18/US2=15/US3=15/US4=8/US5=14/cross-cutting8. Verified 242 explicit earlier-only acyclic dependency edges, 22 conditional parallel candidates, every task's story/path/FR/principle trace, and full 22FR/7SC/22scenario/12R coverage with valid links/references. Shared secure foundations precede production OIDC, nominated atomic enrollment, cross-interface actor/session denial, isolated development and operations/recovery; required independent protocol/consumer/real-provider/browser/privacy evidence includes twenty HTTP contenders, three fresh restarts, real commit barriers and exact identity/module preservation. Explicit format2 call sites include RegistryRecords' installation-version guard without changing allocator/marker1; local initialization remains separate stopped commands, not supervisor migration. Approved intent, six planning artifacts, approved ADR, reviewed16/16 and36/36 checklists, prior ledger history and all prior005 evidence hashes unchanged. No before/after extension hooks. Required repository checks,121 Python tests, changed-file Prettier and whitespace passed; initial two-file Markdown format warnings corrected and rechecked. No product/test/dependency/CI source change, runtime proof, analysis report or feature acceptance; historical failures remain undiagnosed, not waived. Tasks only completes; analyze next separately on same draftPR8, no intermediate merge/readiness.",
+      "evidence_sha256": {
+        "specs/005-authentication-bootstrap/tasks.md": "1429ceea187b6fedc55b15aa1524418cf7b05919e76684814bd75059b57dd059"
+      }
+    },
+    {
+      "spec": "005",
+      "step": "analyze",
+      "directory": "specs/005-authentication-bootstrap",
+      "status": "complete",
+      "branch": "feature/005-authentication-bootstrap",
+      "reason": "",
+      "started_at": "2026-10-26T21:22:56+00:00",
+      "completed_at": "2026-10-26T21:27:13+00:00",
+      "outcome": "pass",
+      "note": "Executed installed speckit-analyze read-only with explicit recorded directory and prerequisite resolution against e6b136dc44be36f8b60f238c68c37110191a923f. analysis.md records pass: all 22 FRs, seven buildable SCs, 22 scenarios, twelve R decisions and twelve principles have concrete task/design coverage; all 100 tasks mapped and unchecked, 242 explicit edges acyclic with no invalid/forward reference, 22 conditional parallel candidates. No actionable duplication, ambiguity, underspecification, coverage, inconsistency or constitutional finding. Verified unchanged spec/plan/research/model/contracts/guide/tasks/approved ADR/constitution and both checklists against assessed HEAD; reviewer counts remain 16/16 and 36/36. ADR later approval resolves historical Proposed labels without approving packages; exact owner format/recovery/key boundaries, bounded protocol/access/privacy evidence and retained complete local/actual CI remain implementation obligations. No hooks configured. Driver persists report/progress docs only; no product/test/dependency change, runtime proof, remediation, acceptance, readiness or merge. Historical failed/undiagnosed checks remain explicit. Only analyze completes; implement next in separate invocation on original branch/draft PR #8.",
+      "evidence_sha256": {
+        "specs/005-authentication-bootstrap/analysis.md": "620110ddd83e66f61b28c829c8b073e9f01edfabb4d12749cb1cbcb4c22f8648",
+        "specs/005-authentication-bootstrap/checklists/quality.md": "c169329a32af64d429d94ad29597a0c8560497e2599269962a6b3db2f0b868ca",
+        "specs/005-authentication-bootstrap/checklists/requirements.md": "26bdb3c100317600de5c4be50934873933b0942bf23b7913e49571dd2ce65adb"
+      }
+    },
+    {
+      "spec": "005",
+      "step": "implement",
+      "directory": "specs/005-authentication-bootstrap",
+      "status": "complete",
+      "branch": "feature/005-authentication-bootstrap",
+      "reason": "",
+      "started_at": "2026-10-26T21:30:18+00:00",
+      "completed_at": "2026-10-30T16:35:58+00:00",
+      "outcome": "pass",
+      "note": "Completed implement T001-T100 only. Exact source4e16d36 hosted full command run41072051400 exits0:10 all-scope passed reports,all completeGate=true,313 passed named steps,ten empty warm starts,original budgets/cases/cleanup intact. Actual PR CI41076880183 and repository41076880293 pass; merge9521abda parents main3e41681/feature5ea6ec8 and identical feature tree verified; all313 named steps match exact full and feature matrix41072560598. Final publication changes docs/tasks/state only, preserving verified product/test/tooling. All22FR/7SC/22scenarios/12R/12principles mapped;52 trace files/9directories verified,296 tracked paths audited,16/16 and36/36 checklists unchanged,hooks absent. Required repository/170Python/whitespace checks pass. Final full profile is hosted Linux; Mac attempts remain incomplete,older Mac product-tree provenance is not final-source qualification. Human-prohibited50000-session proof not run/replaced/claimed; cap unchanged. Historical failures/unknown causes retained. Same branch/draftPR8; converge next only on later invocation,no review/acceptance/readiness/merge.",
+      "evidence_sha256": {
+        "specs/005-authentication-bootstrap/tasks.md": "c65bae2e49bf5b8e9fe86479dd59f338a8ed1ff0ebee895a3a16bc3a1d2d139f",
+        "specs/005-authentication-bootstrap/implementation.md": "4dffe2d06d928da368cebe64847a8a0730f450c87e4f6c01b1f91dfd691eb0a8",
+        "specs/005-authentication-bootstrap/checklists/quality.md": "c169329a32af64d429d94ad29597a0c8560497e2599269962a6b3db2f0b868ca",
+        "specs/005-authentication-bootstrap/checklists/requirements.md": "26bdb3c100317600de5c4be50934873933b0942bf23b7913e49571dd2ce65adb"
+      }
+    },
+    {
+      "spec": "005",
+      "step": "converge",
+      "directory": "specs/005-authentication-bootstrap",
+      "status": "complete",
+      "branch": "feature/005-authentication-bootstrap",
+      "reason": "",
+      "started_at": "2026-10-30T17:20:31+00:00",
+      "completed_at": "2026-10-30T17:25:27+00:00",
+      "outcome": "pass",
+      "note": "Convergence pass: all 22 FRs, 7 SCs, 22 scenarios, R1-R12, T001-T100 and twelve principles assessed against actual source/assertions; zero missing/partial/contradictory/unrequested findings. tasks.md remains byte-identical (c65bae2e...), with no new phase. Independently downloaded complete run 41072051400 and assessed-head matrix 41091559018: ten reports/313 passing named steps each with exact multiplicity parity, full versus targeted scope preserved. Product/test/tooling identical to qualified 4e16d36; no local heavy run or prohibited 50k-session proof. Repository validation, 170 tooling tests and diff --check pass. convergence.md records evidence and limitations. Review is next on the same draft PR; no feature acceptance or merge requested.",
+      "evidence_sha256": {
+        "specs/005-authentication-bootstrap/tasks.md": "c65bae2e49bf5b8e9fe86479dd59f338a8ed1ff0ebee895a3a16bc3a1d2d139f",
+        "specs/005-authentication-bootstrap/convergence.md": "a2ca0f4e4e04556e4b4d30548c2d972e7a3fc4e8160d373028952c91c5225df6"
+      }
+    },
+    {
+      "spec": "005",
+      "step": "review",
+      "directory": "specs/005-authentication-bootstrap",
+      "status": "complete",
+      "branch": "feature/005-authentication-bootstrap",
+      "reason": "",
+      "started_at": "2026-10-30T17:29:04+00:00",
+      "completed_at": "2026-10-30T17:39:40+00:00",
+      "outcome": "changes",
+      "note": "Final spec-review assessment records changes: F1 MEDIUM forbidden-but-allowlisted DNS/connected-peer address admission omits existing policy (FR019/R9/VI/XI); F2 actual current recovery setup fails expected200/actual503 before key damage, cause unverified. Append exactly T101-T103 unchecked; all original100task bytes, implementation/convergence reports and both reviewed checklists preserved. All22FR/7SC/22scenarios/12R/100originaltasks/12principles assessed against source/assertions. Independently downloaded full41072051400 and prior matrix41091559018:10reports/313passed steps each, exact names+multiset parity with full/targeted scope preserved; qualified/current product/test/tooling identical. Current41098819181 recovery job124211497414/artifact12998755111 fails at merge8b5c448f; partial passing reports do not replace failed or pending checks. Repository validator,170Python tests,whitespace and prefix-preservation checks pass. No heavy local/Docker suite or prohibited50000session proof. Next invocation implement only on same branch/draftPR8; no fixes,acceptance,readiness or merge in this review stage.",
+      "evidence_sha256": {
+        "specs/005-authentication-bootstrap/tasks.md": "11527b2eb5e205c80e822d2ab18febd87c389a0d55763a5242ec9cd3c9a6bd2c",
+        "specs/005-authentication-bootstrap/review.md": "62619769615a746eb7bbe2537e9306109a096ee0bba589f0304580cf3b3a3fcd",
+        "specs/005-authentication-bootstrap/checklists/quality.md": "c169329a32af64d429d94ad29597a0c8560497e2599269962a6b3db2f0b868ca",
+        "specs/005-authentication-bootstrap/checklists/requirements.md": "26bdb3c100317600de5c4be50934873933b0942bf23b7913e49571dd2ce65adb"
+      }
     }
   ]
 }

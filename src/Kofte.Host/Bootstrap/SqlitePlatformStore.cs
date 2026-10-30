@@ -1,4 +1,6 @@
 using Microsoft.Data.Sqlite;
+using Kofte.Infrastructure.Storage;
+using Kofte.Platform.Modules.Storage;
 
 namespace Kofte.Host.Bootstrap;
 
@@ -35,15 +37,6 @@ public sealed partial class SqlitePlatformStore(string root) : IPlatformStore
         await command.ExecuteNonQueryAsync();
     }
 
-    private static void ValidateSqliteHeader(string path)
-    {
-        using var file = File.OpenRead(path);
-        Span<byte> header = stackalloc byte[16];
-        if (file.Length < 100 || file.Read(header) != header.Length ||
-            !header.SequenceEqual("SQLite format 3\0"u8))
-            throw new BootstrapException(BootstrapError.StorageInvalid);
-    }
-
     public SqliteConnection Open() => OpenCore(allowEmpty: false);
 
     private SqliteConnection OpenCore(bool allowEmpty)
@@ -51,26 +44,17 @@ public sealed partial class SqlitePlatformStore(string root) : IPlatformStore
         UnixStorePaths.ValidateRoot(Root, allowMissing: false);
         UnixStorePaths.ValidateRoot(Path.GetDirectoryName(DatabasePath)!, allowMissing: false);
         UnixStorePaths.ValidateFile(DatabasePath);
-        if (!allowEmpty) ValidateSqliteHeader(DatabasePath);
         foreach (var suffix in new[] { "-journal", "-wal", "-shm" })
             UnixStorePaths.ValidateFile(DatabasePath + suffix, allowMissing: true);
-        var connection = new SqliteConnection(new SqliteConnectionStringBuilder
-        {
-            DataSource = DatabasePath,
-            Mode = SqliteOpenMode.ReadWrite,
-            Pooling = false,
-            ForeignKeys = true,
-            DefaultTimeout = 1
-        }.ToString());
+        using var budget = new OperationBudget(OperationBudget.Resolve, CancellationToken.None);
         try
         {
-            connection.Open();
-            return connection;
+            return StorageInstallation.OpenSqlite(DatabasePath, budget, allowOwnedEmpty: allowEmpty);
         }
-        catch
+        catch (StorePathException error) { throw UnixStorePaths.Translate(error); }
+        catch (StorageException error) when (error.Code == StorageCode.Corrupt)
         {
-            connection.Dispose();
-            throw;
+            throw new BootstrapException(BootstrapError.StorageInvalid);
         }
     }
 

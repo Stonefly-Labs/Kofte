@@ -1,9 +1,12 @@
+from contextlib import nullcontext
 import copy
 import importlib.util
 import json
 from pathlib import Path
+import socket
 import tempfile
 import unittest
+from unittest.mock import Mock, patch
 
 from scripts import verify
 
@@ -49,6 +52,17 @@ class FailurePropagationTests(unittest.TestCase):
             report, "quality", None, "python-tests", self.evidence()["steps"][0]["command"],
             exit_code, verify,
         )
+
+    def test_unavailable_postgres_owns_its_port_and_refuses_protocol_without_a_transport_blackhole(self):
+        with exercises.unavailable_postgres_port(verify.VerificationError) as port:
+            with socket.socket() as contender, self.assertRaises(OSError):
+                contender.bind(("127.0.0.1", port))
+            for _ in range(3):
+                with socket.create_connection(("127.0.0.1", port), timeout=1) as connection:
+                    try:
+                        self.assertEqual(b"", connection.recv(1))
+                    except ConnectionResetError:
+                        pass
 
     def test_overlay_is_a_separate_copy_and_never_copies_private_or_runtime_files(self):
         source = self.source / "scripts/probe.py"
@@ -132,15 +146,177 @@ class FailurePropagationTests(unittest.TestCase):
         with self.assertRaisesRegex(verify.VerificationError, "failure_baseline_not_green"):
             exercises.checked_evidence(self.evidence(), "quality", None, None, None, 1, verify)
 
+    def test_parent_timeout_retains_validated_interrupted_child_evidence_without_accepting_baseline(self):
+        directory = self.root / "private"
+        directory.mkdir()
+        evidence = self.evidence()
+        evidence["steps"][0]["failureCode"] = "verification_interrupted"
+        process = Mock()
+        process.wait.side_effect = exercises.subprocess.TimeoutExpired(["python3"], 900)
+        process.poll.return_value = -15
+        processes = Mock()
+
+        def start(*_args, **_kwargs):
+            reports = directory / "checkout/artifacts/verification"
+            reports.mkdir(parents=True)
+            (reports / "quality.json").write_text(json.dumps(evidence))
+            return process
+
+        processes.start.side_effect = start
+        with patch.object(verify.subprocess, "run", return_value=exercises.subprocess.CompletedProcess(
+                [], 0, b"a" * 40 + b"\n", b"")):
+            report = verify.Report(self.source, "failure-propagation", None, "failure-propagation")
+        runner = verify.Runner(self.source, report, {})
+        runner.command = Mock(side_effect=lambda *_args, **_kwargs: (directory / "checkout").mkdir())
+
+        def capture(command, *_args, **_kwargs):
+            return b"unix:///owned-test-socket" if command[0] == "docker" else b""
+
+        with patch.object(verify, "private_root", return_value=nullcontext(directory)), \
+                patch.object(verify, "OwnedProcesses", return_value=processes), \
+                patch.object(exercises, "command_capture", side_effect=capture), \
+                patch.object(exercises.Path, "is_socket", return_value=True), \
+                self.assertRaisesRegex(verify.VerificationError, "failure_exercise_timeout"):
+            exercises.run(runner, verify)
+
+        step = report.data["steps"][-1]
+        self.assertEqual("baseline-quality", step["name"])
+        self.assertEqual("failed", step["outcome"])
+        self.assertEqual("failure_exercise_timeout", step["failureCode"])
+        self.assertEqual("failed", step["verification"]["outcome"])
+        self.assertEqual("verification_interrupted", step["verification"]["steps"][0]["failureCode"])
+        self.assertNotIn("credential-canary", json.dumps(step))
+        self.assertLessEqual(process.wait.call_args.kwargs["timeout"], 900)
+        processes.stop.assert_called_once()
+
+    def test_missing_chromium_requires_the_real_browser_failure_and_exact_capture_refusal(self):
+        evidence = self.evidence()
+        evidence["suite"] = "browser"
+        command = ["npm", "run", "test", "--workspace", "tests/e2e", "--", "identity.spec.ts"]
+        primary = evidence["steps"][0]
+        primary.update(name="browser-tests", command=command)
+        cleanup = copy.deepcopy(primary)
+        cleanup.update(name="identity-browser-canaries", command=[], exitCode=None,
+                       failureCode="identity_browser_transport_canaries_invalid")
+        evidence["steps"].append(cleanup)
+
+        def checked(report, browser_unavailable=True):
+            return exercises.checked_evidence(
+                report, "browser", None, "browser-tests", command, 1, verify,
+                browser_unavailable=browser_unavailable,
+            )
+
+        result = checked(evidence)
+        self.assertEqual(["browser-tests", "identity-browser-canaries"],
+                         [step["name"] for step in result["steps"]])
+        self.assertNotIn("credential-canary", json.dumps(result))
+        evidence["steps"][0]["command"] = verify.safe_command(verify.playwright_command(command))
+        checked(evidence)
+        evidence["steps"][0]["command"] = command
+        with self.assertRaisesRegex(verify.VerificationError, "failure_did_not_reach_expected_command"):
+            checked(evidence, browser_unavailable=False)
+        for mutation in ("missing-capture-refusal", "capture-only", "wrong-order",
+                         "wrong-refusal", "extra-failure", "successful-browser"):
+            changed = copy.deepcopy(evidence)
+            if mutation == "missing-capture-refusal":
+                changed["steps"].pop()
+            elif mutation == "capture-only":
+                changed["steps"].pop(0)
+            elif mutation == "wrong-order":
+                changed["steps"].reverse()
+            elif mutation == "wrong-refusal":
+                changed["steps"][-1]["failureCode"] = "runtime_cleanup_process_failed"
+            elif mutation == "extra-failure":
+                changed["steps"].append(copy.deepcopy(cleanup))
+            else:
+                changed["steps"][0].update(outcome="passed", exitCode=0,
+                                          browserEvidence={"passed": 4, "skipped": 0, "requiredFiles": 1})
+            with self.subTest(mutation=mutation), self.assertRaisesRegex(
+                    verify.VerificationError, "failure_did_not_reach_expected_command"):
+                checked(changed)
+
+    def test_browser_baseline_requires_revalidated_structured_completeness(self):
+        evidence = self.evidence()
+        evidence.update(suite="browser", outcome="passed")
+        step = evidence["steps"][0]
+        step.update(name="browser-tests", outcome="passed", exitCode=0,
+                    command=["npm", "run", "test", "--workspace", "tests/e2e", "--", "identity.spec.ts"],
+                    browserEvidence={"passed": 4, "skipped": 0, "requiredFiles": 1})
+        checked = lambda: exercises.checked_evidence(evidence, "browser", None, None, None, 0, verify)
+        self.assertEqual(step["browserEvidence"], checked()["steps"][0]["browserEvidence"])
+        for invalid in (None, {"passed": 3, "skipped": 0, "requiredFiles": 1},
+                        {"passed": 4, "skipped": 1, "requiredFiles": 1},
+                        {"passed": 4, "skipped": 0, "requiredFiles": 2},
+                        {"passed": True, "skipped": 0, "requiredFiles": 1}):
+            step["browserEvidence"] = invalid
+            with self.subTest(evidence=invalid), self.assertRaisesRegex(
+                    verify.VerificationError, "failure_child_report_unsafe"):
+                checked()
+
+    def test_native_timing_is_revalidated_without_private_class_names_or_unbounded_values(self):
+        evidence = self.evidence()
+        step = evidence["steps"][0]
+        step["nativeEvidence"] = {"passed": 2, "skipped": 0}
+        timing = {
+            "status": "measured", "totalCaseSeconds": 2.5,
+            "requiredClassSeconds": {}, "otherCaseSeconds": 2.5,
+        }
+        step["nativeTiming"] = timing
+        self.assertEqual(timing, self.checked(evidence)["steps"][0]["nativeTiming"])
+        for invalid in (
+            timing | {"requiredClassSeconds": {"credential-canary": 2.5}},
+            timing | {"totalCaseSeconds": float("nan")},
+            timing | {"totalCaseSeconds": float("inf")},
+            timing | {"totalCaseSeconds": 10 ** 400},
+            timing | {"otherCaseSeconds": -1},
+            timing | {"otherCaseSeconds": True},
+            timing | {"totalCaseSeconds": 172801, "otherCaseSeconds": 172801},
+            timing | {"otherCaseSeconds": 1},
+            timing | {"rawOutput": "credential-canary"},
+            {"status": "unavailable", "code": "credential-canary"},
+        ):
+            step["nativeTiming"] = invalid
+            with self.subTest(invalid=invalid), self.assertRaisesRegex(
+                    verify.VerificationError, "failure_child_report_unsafe"):
+                self.checked(evidence)
+        step["nativeTiming"] = {"status": "unavailable", "code": "native_timing_missing"}
+        self.assertEqual(step["nativeTiming"], self.checked(evidence)["steps"][0]["nativeTiming"])
+        with patch.object(verify, "required_native_classes", return_value=("IdentityFailureTests",)):
+            step["nativeTiming"] = timing | {
+                "requiredClassSeconds": {"IdentityFailureTests": 1.25}, "otherCaseSeconds": 1.25,
+            }
+            self.assertEqual(step["nativeTiming"], self.checked(evidence)["steps"][0]["nativeTiming"])
+            step["nativeTiming"] = timing
+            with self.assertRaisesRegex(verify.VerificationError, "failure_child_report_unsafe"):
+                self.checked(evidence)
+
+    def test_native_success_counts_are_revalidated_without_impossible_class_or_skip_claims(self):
+        evidence = self.evidence()
+        evidence["steps"][0]["nativeEvidence"] = {"passed": 2, "skipped": 0, "requiredClasses": 1}
+        self.assertEqual(evidence["steps"][0]["nativeEvidence"],
+                         self.checked(evidence)["steps"][0]["nativeEvidence"])
+        for invalid in (
+            {"passed": 0, "skipped": 0}, {"passed": True, "skipped": 0},
+            {"passed": 2, "skipped": 1}, {"passed": 2, "skipped": False},
+            {"passed": 1, "skipped": 0, "requiredClasses": 2},
+            {"passed": 2, "skipped": 0, "requiredClasses": True},
+            {"passed": 2, "skipped": 0, "extra": "credential-canary"},
+        ):
+            with self.subTest(evidence=invalid):
+                evidence["steps"][0]["nativeEvidence"] = invalid
+                with self.assertRaisesRegex(verify.VerificationError, "failure_child_report_unsafe"):
+                    self.checked(evidence)
+
     def test_native_failure_evidence_is_allowlisted_again_inside_isolated_baselines(self):
         evidence = self.evidence()
         command = ["dotnet", "test", "--project", verify.STORAGE_INTEGRATION]
         name = sorted(verify.command_diagnostics(command).tests)[0]
         evidence["steps"][0].update(
             command=command, failedStorageTests=[name], storageFailureCodes=["Busy"],
+            storageFailureKinds=["db_update", "postgres_query_cancelled"],
             storageDiagnosticCode="unavailable",
             storageFailureOperations=["acquire"],
-            storageFailureScenarios=["valid-dependency"],
+            storageFailureScenarios=["valid-dependency", "session-boundary"],
         )
 
         def checked():
@@ -151,9 +327,11 @@ class FailurePropagationTests(unittest.TestCase):
         result = checked()
         self.assertEqual([name], result["steps"][0]["failedStorageTests"])
         self.assertEqual(["Busy"], result["steps"][0]["storageFailureCodes"])
+        self.assertEqual(["db_update", "postgres_query_cancelled"], result["steps"][0]["storageFailureKinds"])
         self.assertEqual("unavailable", result["steps"][0]["storageDiagnosticCode"])
         self.assertEqual(["acquire"], result["steps"][0]["storageFailureOperations"])
-        self.assertEqual(["valid-dependency"], result["steps"][0]["storageFailureScenarios"])
+        self.assertEqual(["valid-dependency", "session-boundary"],
+                         result["steps"][0]["storageFailureScenarios"])
         self.assertNotIn("credential-canary", json.dumps(result))
         for key, value in (
             ("failedStorageTests", ["credential-canary"]),
@@ -161,12 +339,144 @@ class FailurePropagationTests(unittest.TestCase):
             ("failedStorageTests", [name, name]),
             ("storageFailureCodes", ["credential-canary"]),
             ("storageFailureCodes", []),
+            ("storageFailureKinds", ["credential-canary"]),
+            ("storageFailureKinds", ["timeout", "timeout"]),
+            ("storageFailureKinds", []),
             ("storageDiagnosticCode", "credential-canary"),
             ("storageFailureOperations", ["credential-canary"]),
             ("storageFailureScenarios", ["credential-canary"]),
             ("storageFailureScenarios", ["valid-dependency", "valid-dependency"]),
         ):
             with self.subTest(key=key, value=value):
+                evidence["steps"][0][key] = value
+                with self.assertRaisesRegex(verify.VerificationError, "failure_child_report_unsafe"):
+                    checked()
+                evidence["steps"][0][key] = result["steps"][0][key]
+        evidence["steps"][0]["command"] = ["echo", "untrusted"]
+        with self.assertRaisesRegex(verify.VerificationError, "failure_child_report_unsafe"):
+            checked()
+
+    def test_private_native_reporting_preserves_exact_failure_command_verification(self):
+        evidence = self.evidence()
+        command = [
+            "dotnet", "test", "--project", verify.INTEGRATION, "--no-restore", "-c", "Release",
+            "--filter-trait", "Provider=postgres", "--minimum-expected-tests", "1",
+        ]
+        reported = verify.safe_command([
+            *command, "--report-xunit-xml", "--report-xunit-xml-filename", "storage.xml",
+            "--results-directory", "<private-results>",
+        ])
+        evidence["steps"][0]["command"] = reported
+
+        def checked():
+            return exercises.checked_evidence(
+                evidence, "quality", None, "python-tests", command, 1, verify,
+            )
+
+        self.assertEqual(reported, checked()["steps"][0]["command"])
+        for original, replacement in (
+            ("Provider=postgres", "Provider=sqlite"),
+            ("storage.xml", "foreign.xml"),
+            ("--report-xunit-xml", "--unrelated-option"),
+        ):
+            with self.subTest(original=original):
+                evidence["steps"][0]["command"] = [
+                    replacement if value == original else value for value in reported
+                ]
+                with self.assertRaisesRegex(verify.VerificationError, "failure_did_not_reach_expected_command"):
+                    checked()
+
+    def test_unavailable_postgres_requires_all_three_exact_serial_phase_failures(self):
+        commands = verify.integration_commands("postgres")
+        evidence = self.evidence()
+        evidence.update(suite="integration", provider="postgres")
+        evidence["steps"] = [
+            dict(self.evidence()["steps"][0], name=name, command=command)
+            for name, command in commands
+        ]
+
+        def checked(report):
+            return exercises.checked_evidence(
+                report, "integration", "postgres", commands[0][0], commands[0][1], 1, verify,
+                expected_followups=commands[1:],
+            )
+
+        self.assertEqual(3, len(checked(evidence)["steps"]))
+        reported = copy.deepcopy(evidence)
+        for step in reported["steps"]:
+            step["command"] = verify.safe_command([
+                *step["command"], "--report-xunit-xml", "--report-xunit-xml-filename", "storage.xml",
+                "--results-directory", "<private-results>",
+            ])
+        self.assertEqual(3, len(checked(reported)["steps"]))
+        for mutation in ("missing", "extra", "reordered", "wrong-command", "missing-tool", "timeout"):
+            with self.subTest(mutation=mutation):
+                invalid = copy.deepcopy(evidence)
+                if mutation == "missing":
+                    invalid["steps"].pop()
+                elif mutation == "extra":
+                    invalid["steps"].append(copy.deepcopy(invalid["steps"][-1]))
+                elif mutation == "reordered":
+                    invalid["steps"].reverse()
+                elif mutation == "wrong-command":
+                    invalid["steps"][1]["command"] = verify.integration_command("sqlite")
+                elif mutation == "missing-tool":
+                    invalid["steps"][1]["failureCode"] = "tool_or_input_missing"
+                else:
+                    invalid["steps"][2]["failureCode"] = "command_timeout"
+                with self.assertRaisesRegex(verify.VerificationError, "failure_did_not_reach_expected_command"):
+                    checked(invalid)
+
+    def test_host_failure_evidence_is_revalidated_inside_isolated_reports(self):
+        evidence = self.evidence()
+        command = ["dotnet", "test", "--project", verify.INTEGRATION]
+        name = sorted(verify.command_diagnostics(command).tests)[0]
+        location = "tests/integration/Kofte.Host.IntegrationTests/Identity/OidcBudgetTests.cs:133"
+        evidence["steps"][0].update(
+            command=command, failedHostTests=[name],
+            hostFailureCodes=["Busy"], hostDiagnosticCode="unavailable",
+            hostFailureLocations=[location],
+            hostFailureStatuses=["expected_303_actual_503"],
+            hostBrowserPhases=[{
+                "phase": "identity_browser_profile_capture_request_failed",
+                "launch": 2, "elapsedMilliseconds": 4300,
+            }],
+        )
+
+        def checked():
+            return exercises.checked_evidence(
+                evidence, "quality", None, "python-tests", command, 1, verify,
+            )
+
+        result = checked()
+        for key in ("failedHostTests", "hostFailureCodes", "hostDiagnosticCode",
+                    "hostFailureLocations", "hostFailureStatuses", "hostBrowserPhases"):
+            self.assertEqual(evidence["steps"][0][key], result["steps"][0][key])
+        self.assertNotIn("credential-canary", json.dumps(result))
+        for key, value in (
+            ("failedHostTests", [name + "(credential-canary)"]),
+            ("failedHostTests", [name, name]),
+            ("hostFailureCodes", ["credential-canary"]),
+            ("hostDiagnosticCode", "credential-canary"),
+            ("hostFailureLocations", ["/private/credential-canary/" + location]),
+            ("hostFailureLocations", [location, location]),
+            ("hostFailureLocations", [location.rsplit(":", 1)[0] + ":999999"]),
+            ("hostFailureLocations", ["tests/integration/Unknown.cs:1"]),
+            ("hostFailureStatuses", ["expected_303_actual_123"]),
+            ("hostFailureStatuses", ["expected_303_actual_credential_canary"]),
+            ("hostFailureStatuses", ["expected_303_actual_503", "expected_303_actual_503"]),
+            ("hostFailureStatuses", []),
+            ("hostBrowserPhases", []),
+            ("hostBrowserPhases", [{"phase": "credential-canary", "launch": 2, "elapsedMilliseconds": 1}]),
+            ("hostBrowserPhases", [{"phase": "identity_browser_profile_capture_request_failed",
+                                   "launch": True, "elapsedMilliseconds": 1}]),
+            ("hostBrowserPhases", [{"phase": "identity_browser_profile_capture_request_failed",
+                                   "launch": 2, "elapsedMilliseconds": 60001}]),
+            ("hostBrowserPhases", [{"phase": "identity_browser_profile_capture_request_failed",
+                                   "launch": 2, "elapsedMilliseconds": 1, "extra": "credential-canary"}]),
+            ("hostBrowserPhases", evidence["steps"][0]["hostBrowserPhases"] * 65),
+        ):
+            with self.subTest(key=key):
                 evidence["steps"][0][key] = value
                 with self.assertRaisesRegex(verify.VerificationError, "failure_child_report_unsafe"):
                     checked()

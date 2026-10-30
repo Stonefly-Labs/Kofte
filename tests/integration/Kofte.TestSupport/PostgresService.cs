@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using System.Net.Sockets;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace Kofte.TestSupport;
@@ -11,6 +13,9 @@ internal sealed class PostgresService(string runId, string password) : IAsyncDis
     private readonly string compose = Path.Combine(OwnedProcesses.FindRepository(), "deploy", "docker", "compose.test.yml");
     private bool creationStarted;
     private bool recorded;
+    private string? endpoint;
+    private HttpClient? engine;
+    internal string RunId => runId;
     public IReadOnlyList<OwnedDockerResource> Resources { get; private set; } = [];
     public int Port { get; private set; }
 
@@ -25,6 +30,11 @@ internal sealed class PostgresService(string runId, string password) : IAsyncDis
         };
         foreach (var arg in args) start.ArgumentList.Add(arg);
         OwnedProcesses.ClearSensitiveEnvironment(start);
+        if (endpoint is not null)
+        {
+            start.Environment.Remove("DOCKER_CONTEXT");
+            start.Environment["DOCKER_HOST"] = endpoint;
+        }
         start.Environment["KOFTE_PG_RUN"] = runId;
         start.Environment["KOFTE_PG_PASSWORD"] = password;
         return start;
@@ -108,46 +118,99 @@ internal sealed class PostgresService(string runId, string password) : IAsyncDis
 
     private async Task<List<OwnedDockerResource>> DiscoverAsync(CancellationToken token)
     {
+        if (engine is null) throw new InvalidOperationException("postgres_local_engine_required");
+        using var budget = CancellationTokenSource.CreateLinkedTokenSource(token);
+        budget.CancelAfter(TimeSpan.FromSeconds(90));
+        token = budget.Token;
         var resources = new List<OwnedDockerResource>();
+        var filters = Uri.EscapeDataString(JsonSerializer.Serialize(new
+        { label = new[] { "com.docker.compose.project=" + project } }));
         foreach (var kind in new[] { "container", "volume", "network" })
         {
-            var args = kind switch
+            var path = kind switch
             {
-                "container" => new[] { "container", "ls", "--all", "--quiet", "--no-trunc" },
-                "network" => ["network", "ls", "--quiet", "--no-trunc"],
-                _ => ["volume", "ls", "--quiet"]
+                "container" => "/containers/json?all=true&filters=" + filters,
+                "network" => "/networks?filters=" + filters,
+                _ => "/volumes?filters=" + filters
             };
-            var output = await DockerAsync([.. args, "--filter", "label=com.docker.compose.project=" + project], token);
-            resources.AddRange(output.Split('\n', StringSplitOptions.RemoveEmptyEntries)
-                .Select(id => new OwnedDockerResource(kind, id)));
+            using var response = await engine.GetAsync(path, HttpCompletionOption.ResponseHeadersRead, token);
+            if (!response.IsSuccessStatusCode)
+                throw new InvalidOperationException("postgres_engine_inventory_failed");
+            await using var stream = await response.Content.ReadAsStreamAsync(token);
+            using var buffer = new MemoryStream();
+            var chunk = new byte[4096];
+            int count;
+            while ((count = await stream.ReadAsync(chunk, token)) != 0)
+            {
+                if (buffer.Length + count > 65_536)
+                    throw new InvalidOperationException("postgres_resource_inventory_invalid");
+                buffer.Write(chunk, 0, count);
+            }
+            try
+            {
+                using var document = JsonDocument.Parse(buffer.ToArray(), new()
+                { AllowDuplicateProperties = false, MaxDepth = 32 });
+                var values = kind == "volume" ? document.RootElement.GetProperty("Volumes") : document.RootElement;
+                if (values.ValueKind == JsonValueKind.Null && kind == "volume") continue;
+                foreach (var value in values.EnumerateArray())
+                {
+                    var labels = value.GetProperty("Labels");
+                    if (labels.GetProperty("com.docker.compose.project").GetString() != project ||
+                        labels.GetProperty("io.kofte.bootstrap.run").GetString() != runId)
+                        throw new InvalidOperationException("postgres_container_ownership_refused");
+                    var id = value.GetProperty(kind == "volume" ? "Name" : "Id").GetString();
+                    if (id is null || !Regex.IsMatch(id, @"\A[a-z0-9_-]{1,128}\z"))
+                        throw new InvalidOperationException("postgres_resource_inventory_invalid");
+                    resources.Add(new(kind, id));
+                }
+            }
+            catch (Exception error) when (error is JsonException or KeyNotFoundException or
+                InvalidOperationException && error.Message is not
+                    ("postgres_container_ownership_refused" or "postgres_resource_inventory_invalid"))
+            {
+                throw new InvalidOperationException("postgres_resource_inventory_invalid", error);
+            }
         }
         return resources;
     }
 
-    private async Task VerifyLabelsAsync(IReadOnlyList<OwnedDockerResource> resources, CancellationToken token)
+    private void ConnectEngine()
     {
-        foreach (var resource in resources)
+        if (endpoint is null) throw new InvalidOperationException("postgres_local_engine_required");
+        var socketPath = endpoint["unix://".Length..];
+        if (!Path.IsPathFullyQualified(socketPath))
+            throw new InvalidOperationException("postgres_local_engine_required");
+        var handler = new SocketsHttpHandler
         {
-            var field = resource.Kind == "container" ? ".Config.Labels" : ".Labels";
-            var label = await DockerAsync([resource.Kind, "inspect", "--format",
-                "{{index " + field + " \"io.kofte.bootstrap.run\"}}", resource.Id], token);
-            if (label != runId) throw new InvalidOperationException("postgres_container_ownership_refused");
-        }
+            AllowAutoRedirect = false,
+            UseProxy = false,
+            ConnectCallback = async (_, token) =>
+            {
+                var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
+                try
+                {
+                    await socket.ConnectAsync(new UnixDomainSocketEndPoint(socketPath), token);
+                    return new NetworkStream(socket, ownsSocket: true);
+                }
+                catch { socket.Dispose(); throw; }
+            }
+        };
+        engine = new(handler) { BaseAddress = new("http://docker"), Timeout = TimeSpan.FromSeconds(90) };
     }
 
     public async Task StartAsync(CancellationToken token)
     {
-        var endpoint = await DockerAsync(["context", "inspect", "--format", "{{.Endpoints.docker.Host}}"], token);
+        endpoint = await DockerAsync(["context", "inspect", "--format", "{{.Endpoints.docker.Host}}"], token);
         if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DOCKER_CONTEXT")))
             endpoint = Environment.GetEnvironmentVariable("DOCKER_HOST") ?? endpoint;
         if (!endpoint.StartsWith("unix://", StringComparison.Ordinal))
             throw new InvalidOperationException("postgres_local_engine_required");
+        ConnectEngine();
         if ((await DiscoverAsync(token)).Count != 0)
             throw new InvalidOperationException("postgres_project_preexists");
         creationStarted = true;
         await ComposeAsync(["up", "--detach", "--wait", "--wait-timeout", "60", "--pull", "never"], token);
         Resources = await DiscoverAsync(token);
-        await VerifyLabelsAsync(Resources, token);
         if (Resources.Count(resource => resource.Kind == "container") != 1 ||
             Resources.Count(resource => resource.Kind == "volume") != 1 ||
             Resources.Count(resource => resource.Kind == "network") != 1)
@@ -171,7 +234,6 @@ internal sealed class PostgresService(string runId, string password) : IAsyncDis
     {
         if (!creationStarted) throw new InvalidOperationException("postgres_container_ownership_refused");
         var actual = await DiscoverAsync(token);
-        await VerifyLabelsAsync(actual, token);
         if (recorded && !actual.OrderBy(item => item.Kind).ThenBy(item => item.Id)
             .SequenceEqual(Resources.OrderBy(item => item.Kind).ThenBy(item => item.Id)))
             throw new InvalidOperationException("postgres_container_ownership_refused");
@@ -192,7 +254,11 @@ internal sealed class PostgresService(string runId, string password) : IAsyncDis
 
     internal async Task CleanupAsync(CancellationToken token)
     {
-        if (!creationStarted) return;
+        if (!creationStarted)
+        {
+            engine?.Dispose();
+            return;
+        }
         using var cleanup = CancellationTokenSource.CreateLinkedTokenSource(token);
         cleanup.CancelAfter(TimeSpan.FromSeconds(30));
         await ValidateOwnershipAsync(cleanup.Token);
@@ -200,5 +266,6 @@ internal sealed class PostgresService(string runId, string password) : IAsyncDis
         if ((await DiscoverAsync(cleanup.Token)).Count != 0)
             throw new InvalidOperationException("postgres_container_cleanup_incomplete");
         creationStarted = false;
+        engine?.Dispose();
     }
 }

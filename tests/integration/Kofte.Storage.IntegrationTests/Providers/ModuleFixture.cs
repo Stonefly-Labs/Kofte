@@ -27,9 +27,10 @@ internal sealed class ModuleFixture(StorageProviderScope resources) : IAsyncDisp
         (options, binding) => binding.Provider == "postgresql"
             ? new PostgresBetaContext(options, binding) : new SqliteBetaContext(options, binding);
 
-    internal static async Task<ModuleFixture> CreateAsync(string provider, CancellationToken token)
+    internal static async Task<ModuleFixture> CreateAsync(string provider, CancellationToken token,
+        bool sharePostgres = true)
     {
-        var fixture = new ModuleFixture(await StorageProviderScope.CreateAsync(provider, token));
+        var fixture = new ModuleFixture(await StorageProviderScope.CreateAsync(provider, token, sharePostgres));
         try
         {
             fixture.Installation = fixture.Postgres

@@ -13,6 +13,7 @@
         <ProjectReference Include="../Kofte.Manifest.Consumer/Kofte.Manifest.Consumer.csproj" ReferenceOutputAssembly="false" />
         <ProjectReference Include="../Kofte.Storage.Consumer/Kofte.Storage.Consumer.csproj" ReferenceOutputAssembly="false" />
         <ProjectReference Include="../Kofte.Composition.Consumer/Kofte.Composition.Consumer.csproj" ReferenceOutputAssembly="false" />
+        <ProjectReference Include="../Kofte.Identity.Consumer/Kofte.Identity.Consumer.csproj" />
         <ProjectReference Include="../Kofte.Composition.TestModule/Kofte.Composition.TestModule.csproj" />
         <ProjectReference Include="../../integration/Kofte.TestSupport/Kofte.TestSupport.csproj" />
         <None Include="../../../specs/002-platform-contracts/contracts/**/*" CopyToOutputDirectory="PreserveNewest" Link="Fixtures/%(RecursiveDir)%(Filename)%(Extension)" />

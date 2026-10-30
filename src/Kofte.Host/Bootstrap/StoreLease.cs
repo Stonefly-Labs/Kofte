@@ -6,6 +6,7 @@ namespace Kofte.Host.Bootstrap;
 public sealed class StoreLease : IDisposable
 {
     private readonly Lease lease;
+    internal Lease Authority => lease;
     private StoreLease(Lease lease) => this.lease = lease;
 
     public static StoreLease Acquire(string root)

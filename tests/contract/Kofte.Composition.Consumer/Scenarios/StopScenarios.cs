@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Kofte.Composition.TestModule;
 using Kofte.Infrastructure.Composition;
 using Kofte.TestSupport;
+using Kofte.TestSupport.Identity;
 
 namespace Kofte.Composition.Consumer.Scenarios;
 
@@ -28,6 +29,7 @@ internal static class StopScenarios
         await fixture.WriteSelectionAsync(MigrationScenarios.Selection(), token);
         await MigrationScenarios.PrepareAsync(evidence, fixture, StorageRelease.Current, token);
         await MigrationScenarios.WriteOriginalsAsync(fixture, StorageRelease.Current, token);
+        await fixture.PrepareIdentityAsync(token);
         var original = await CompositionStoreSnapshot.CaptureAsync(fixture.Storage, token);
         var attempts = new HashSet<string>(StringComparer.Ordinal);
         foreach (var fault in faults)
@@ -53,7 +55,8 @@ internal static class StopScenarios
             var output = await process.WaitAsync(token);
             evidence.Require(output.ExitCode == 1 && process.ExitVerified && process.DescendantExitsVerified,
                 "composition_test_" + fault.Stage + "_exit_unverified");
-            evidence.Require(output.Stderr.Length == 0, "composition_test_" + fault.Stage + "_stderr_not_private");
+            evidence.Require(IdentityDiagnosticOutput.IsSafeServingOutput(output.Stderr),
+                "composition_test_" + fault.Stage + "_stderr_not_private");
             evidence.Require(Stopwatch.GetElapsedTime(started) < TimeSpan.FromSeconds(fault.TotalSeconds),
                 "composition_test_fault_exceeded_shared_total");
             var records = BootScenarios.HostRecords(output.Stdout);
@@ -188,7 +191,8 @@ internal static class StopScenarios
             }
             var result = await process.WaitAsync(token);
             evidence.Require(result.ExitCode == 1 && process.ExitVerified && process.DescendantExitsVerified &&
-                result.Stderr.Length == 0, "composition_test_cleanup_" + overflow + "_exit_" + result.ExitCode);
+                (overflow ? result.Stderr.Length == 0 : IdentityDiagnosticOutput.IsSafeServingOutput(result.Stderr)),
+                "composition_test_cleanup_" + overflow + "_exit_" + result.ExitCode);
             await fixture.AuthorTrace.EndAsync(token);
             var records = BootScenarios.HostRecords(result.Stdout);
             evidence.Require(records[^1].GetProperty("code").GetString() ==

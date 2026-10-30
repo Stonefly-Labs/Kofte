@@ -245,7 +245,8 @@ internal sealed class RegistryFixture : IAsyncDisposable
         try
         {
             if (provider == "postgres")
-                fixture.postgres = await PostgresResources.CreateFromEnvironmentAsync(token);
+                fixture.postgres = await PostgresResources.CreateFromEnvironmentAsync(token,
+                    shareOwnedService: true);
             else if (provider == "sqlite")
                 await new SqlitePlatformStore(fixture.root.Path).InitializeAsync();
             else throw new InvalidOperationException("storage_test_provider_required");

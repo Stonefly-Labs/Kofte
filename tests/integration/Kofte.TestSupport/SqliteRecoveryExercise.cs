@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using Kofte.Infrastructure.Identity;
 using Kofte.Infrastructure.Storage;
 using Kofte.Infrastructure.Storage.Recovery;
 using Microsoft.Data.Sqlite;
@@ -14,6 +15,8 @@ public static class SqliteRecoveryExercise
         var maintenance = new StorageMaintenance(installation);
         await using var scope = await maintenance.AcquireAsync(token);
         var inventory = await RecoverySetVerifier.InspectStoppedAsync(installation, scope, token);
+        var identity = inventory.RegistryVersion == 2
+            ? await IdentityRecoverySnapshot.CaptureStoppedAsync(installation, scope, token) : null;
         CreateFreshDirectory(recoveryRoot);
         var artifacts = new List<RecoveryArtifact>();
         foreach (var name in inventory.Allocations.Where(row => row.Relational)
@@ -26,22 +29,35 @@ public static class SqliteRecoveryExercise
             if (Digest(source) != before) throw new InvalidOperationException("recovery_source_changed");
             artifacts.Add(await RecoverySetVerifier.DescribeArtifactAsync(recoveryRoot, name, token));
         }
-        var manifest = new RecoveryManifest(RecoveryManifest.CurrentFormat, true, Guid.NewGuid(),
+        var manifest = new RecoveryManifest(identity is null ? RecoveryManifest.CurrentFormat : RecoveryManifest.IdentityFormat,
+            true, Guid.NewGuid(),
             inventory.InstallationId, inventory.Provider, inventory.RegistryVersion,
-            inventory.RegistryRevision, inventory.Allocations, artifacts);
+            inventory.RegistryRevision, inventory.Allocations, artifacts, identity);
         await RecoverySetVerifier.WriteManifestAsync(recoveryRoot, manifest, token);
         await RecoverySetVerifier.VerifyAsync(recoveryRoot, cancellationToken: token);
         var after = await RecoverySetVerifier.InspectStoppedAsync(installation, scope, token);
-        if (!RecoverySetVerifier.SameInventory(manifest, after))
+        if (!RecoverySetVerifier.SameInventory(manifest, after) ||
+            identity is not null && await IdentityRecoverySnapshot.CaptureStoppedAsync(installation, scope, token) != identity)
             throw new InvalidOperationException("recovery_source_changed");
         return manifest;
     }
 
-    public static async Task<RecoveryManifest> RestoreFreshAsync(string recoveryRoot, string targetRoot,
-        CancellationToken token = default)
+    public static Task<RecoveryManifest> RestoreFreshAsync(string recoveryRoot, string targetRoot,
+        CancellationToken token = default) => RestoreCoreAsync(recoveryRoot, targetRoot, null, token);
+
+    public static Task<RecoveryManifest> RestoreFreshQuarantinedAsync(string recoveryRoot, string targetRoot,
+        string keyDirectory, CancellationToken token = default) =>
+        RestoreCoreAsync(recoveryRoot, targetRoot, keyDirectory, token);
+
+    private static async Task<RecoveryManifest> RestoreCoreAsync(string recoveryRoot, string targetRoot,
+        string? keyDirectory, CancellationToken token)
     {
         var manifest = await RecoverySetVerifier.VerifyAsync(recoveryRoot, cancellationToken: token);
         if (manifest.Provider != "sqlite") throw new InvalidOperationException("recovery_provider_invalid");
+        if (manifest.Identity is not null && keyDirectory is null)
+            throw new InvalidOperationException("identity_restore_reconciliation_required");
+        var quarantine = keyDirectory is null ? null : await IdentityRestoreQuarantine.CreateAsync(
+            recoveryRoot, keyDirectory, manifest, targetRoot, token);
         CreateFreshDirectory(targetRoot);
         using var lease = StoreLease.Acquire(targetRoot);
         foreach (var artifact in manifest.Artifacts)
@@ -56,6 +72,7 @@ public static class SqliteRecoveryExercise
         var restored = manifest with { Artifacts = restoredArtifacts };
         await RecoverySetVerifier.WriteManifestAsync(targetRoot, restored, token);
         await RecoverySetVerifier.VerifyAsync(targetRoot, cancellationToken: token);
+        if (quarantine is not null) await quarantine.MarkRestoredAsync(restored, token);
         return restored;
     }
 

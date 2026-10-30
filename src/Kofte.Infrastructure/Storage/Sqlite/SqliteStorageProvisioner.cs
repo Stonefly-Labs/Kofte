@@ -35,14 +35,8 @@ internal sealed class SqliteStorageProvisioner(StorageInstallation installation)
     {
         var paths = new ModuleStorePaths(installation, record.Key!);
         if (!paths.Exists()) throw new StorageException(StorageCode.Missing);
-        using (var file = File.OpenRead(paths.DatabasePath))
-        {
-            var header = new byte[16];
-            if (file.Length < 100 || file.Read(header) != header.Length ||
-                !header.AsSpan().SequenceEqual("SQLite format 3\0"u8))
-                throw new StorageException(StorageCode.ReconciliationRequired);
-        }
-        using var connection = StorageInstallation.OpenSqlite(paths.DatabasePath, budget, readOnly: true);
+        using var connection = StorageInstallation.OpenSqlite(paths.DatabasePath, budget, readOnly: true,
+            invalidHeaderCode: StorageCode.ReconciliationRequired);
         if (await RegistryMigrationRunner.ScalarAsync(connection, "PRAGMA integrity_check", budget) is not "ok" ||
             await RegistryMigrationRunner.ScalarAsync(connection, "PRAGMA journal_mode", budget) is not "delete" ||
             await RegistryMigrationRunner.ScalarAsync(connection, "PRAGMA synchronous", budget) is not 2L ||

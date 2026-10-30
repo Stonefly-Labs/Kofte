@@ -185,6 +185,7 @@ public sealed class PostgresCompositionAuthorityTests : CompositionAuthorityTest
         await using var fixture = await CompositionFixture.CreateAsync(Provider, token);
         await fixture.SeedUnrelatedNoStorageAsync(token);
         await fixture.WriteSelectionAsync("""{"schemaVersion":"1","modules":[]}"""u8.ToArray(), token);
+        await fixture.PrepareIdentityAsync(token);
         var before = await CompositionStoreSnapshot.CaptureAsync(fixture.Storage, token);
         string firstAttempt;
         await using (var serving = fixture.StartBoot(CompositionTestCatalog.EmptyBoot))

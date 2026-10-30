@@ -42,7 +42,7 @@ export function backendReadinessUrl(
   return new URL("/health/ready", url);
 }
 
-function isLoopback(hostname: string): boolean {
+export function isLoopback(hostname: string): boolean {
   return (
     hostname === "localhost" ||
     hostname === "::1" ||

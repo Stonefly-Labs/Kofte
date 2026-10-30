@@ -7,6 +7,137 @@ and NuGet identity, archive source/integrity, declared license, available notice
 hashes, source commits where published, image digest and action SHAs.
 No floating direct dependency is approved.
 
+## Spec 005 source-provenance follow-up, before adoption
+
+**Review date:** 2026-10-26. The
+[implementation evidence](../../specs/005-authentication-bootstrap/implementation.md#t002-follow-up-source-provenance-resolved)
+resolves the original IdentityModel 8.19.2 source/license blocker without
+changing versions or waiving a check. The missing advertised commit belongs
+to a security-advisory-fork SourceLink, not the public repository named in the
+nuspec. The fork remains unavailable; SSO reauthorization was not required.
+
+All seven net10.0 PDBs are cryptographically bound to their package assemblies.
+Their 275 source-document entries match exact public source or bound embedded
+generated source: 259 match official 8.19.2 source, one unchanged input matches
+official 8.19.1 source, and fifteen are generated. Both immutable public
+revisions have the same original Microsoft MIT license. This is compiled-input
+source correspondence, not a claim that the unavailable fork's whole tree is
+identical to either public tag or a reproducible-build attestation.
+
+All nine candidate archives also passed `dotnet nuget verify --all` in the
+previously reviewed immutable Linux SDK image, with zero warnings/errors and
+normal online trust/revocation checks. Exact artifacts, source pins, hashes,
+checkout-byte handling and scope are recorded in the implementation report.
+That investigation approved source/license evidence, not package adoption.
+The subsequent actual adoption below completes the remaining T002 gates.
+
+## Spec 005 OIDC dependency adoption
+
+**Review date:** 2026-10-26. The host now references
+`Microsoft.AspNetCore.Authentication.OpenIdConnect` 10.0.13, with all seven
+IdentityModel identities pinned to 8.19.2 and Bcl.Cryptography to 10.0.2.
+The actual restored union is **403 npm / 87 NuGet identities**: exactly the
+nine reviewed candidates above are added to the previous 78 NuGet identities.
+No minimum transitive version or unreviewed identity slipped into the graph.
+
+All nine restored signed archives are byte-identical to the candidates whose
+source/license and Linux signatures were verified. Original OIDC and
+Bcl.Cryptography notices remain in their restored archives and inventory,
+with the previously recorded hashes; the seven IdentityModel archives do not
+ship a separate notice file. Original Microsoft MIT source licenses and the
+source correspondence remain linked in the implementation report.
+No dependency source is copied into the repository, so the existing
+source-copy third-party notice file/checker remains unchanged.
+
+`dotnet restore Kofte.slnx --force-evaluate` and subsequent
+`dotnet restore Kofte.slnx --locked-mode` passed. The dependency checker
+reconciles all project locks, central pins, installed/archive provenance,
+integrity and notices. The actual direct/transitive vulnerability audit
+reports zero vulnerable packages across thirteen projects. The Release
+solution builds with zero warnings/errors, 192 existing host unit tests pass
+with zero skips, and solution formatting passes. This is dependency
+compatibility evidence, not implemented authentication or feature acceptance.
+
+### Spec 005 Chromium stream-completion repair
+
+**Review date:** 2026-10-29. The
+[ADR follow-up](../adr/0007-authentication-bootstrap-boundary.md#implementation-follow-up-pinned-chromium-stream-completion-repair)
+documents the test-only stable-version exception and its risk.
+`@playwright/test`, `playwright` and `playwright-core` are pinned together to
+**1.65.0-alpha-2026-10-29**, published from official source
+`880865ae68b140a4458ebf9253b7c337433be688`. Their matching Chromium is
+157.0.8103.15 / revision 1252; its observed immutable source contains the
+upstream no-store stream-completion fix. Stable 1.64.1 still fails actual Linux
+capture; stable 1.65.0 is not published. No floating `next` dependency is used.
+
+All three official npm archives match their SHA-512 lock/inventory integrity.
+Installed metadata and retained Apache-2.0 LICENSE/NOTICE/ThirdPartyNotices
+hashes match the archives; the notice hashes are unchanged from 1.64.1.
+Only these three npm identities change; the union remains **403 npm / 87
+NuGet identities**, with no production or NuGet dependency change.
+Root exact overrides prevent old optional/axe peers from leaving incompatible
+Page types; final e2e type-check and dependency reconciliation pass.
+The initial unaligned type-check failed rather than hiding the mismatch.
+
+The focused dependency regression initially rejected the exact reviewed
+prerelease, then passes with the corrected exact-version validation. All
+fifteen dependency checker cases pass, still refusing moving tags, ranges,
+unknown identities, changed archives, dependency edges and notices.
+`npm run dependencies:check` passes the complete actual graph.
+`npm audit --json` reports zero vulnerabilities after final peer alignment.
+This is package adoption evidence, not a new binary-signature audit, Linux
+browser pass or complete feature gate.
+
+### Spec 005 operational fixture project edges
+
+**Review date:** 2026-10-28. The test-owned identity consumer now references the
+existing storage consumer for real preservation/recovery recipes. Only the
+identity-consumer and platform-contract lock files gain internal project edges;
+no external package or pin changes. Locked restore and warnings-as-errors
+solution builds pass. `npm run dependencies:check` and `npm run contract:check`
+also pass on the current worktree
+(`identity-final-dependencies-none-ae6f2690da1b41cfa5edcf6c90a5b411.json`).
+The adopted union, archives and retained notices remain unchanged; this is not
+a new signature audit or a passing full feature gate. The actual legacy-host
+compatibility test separately builds immutable accepted pre-005 source with its
+original locked graph in an owned private root; it does not add old packages
+to the current product graph.
+
+On the later 2026-10-28 worktree, `npm run dependencies:check` and
+`npm run contract:check` pass again
+(`identity-current-dependencies-contract-none-3d58bdf913d74be280568f0944f8ed9a.json`).
+`npm audit --json` reports zero vulnerabilities.
+`dotnet list Kofte.slnx package --vulnerable --include-transitive --format json --no-restore`
+also reports zero vulnerabilities across all **14 current solution projects**
+(`identity-current-nuget-advisories-none-3def18e170c24de88d486c9d0cdc014a.json`).
+The first audit wrapper incorrectly required framework entries in NuGet's
+vulnerable-only JSON even for projects without findings; that failed parser
+attempt remains recorded in
+`identity-current-advisories-none-13d3f7cca6714ae6a09488d3455ad82a.json`,
+whose npm audit step passed. The corrected check requires every distinct
+solution project, no findings, no CLI warnings and the expected report shape.
+These are current advisory results, not a renewed archive-signature audit,
+a complete verification gate or feature acceptance.
+
+### Spec 005 final implementation reconciliation
+
+**Review date:** 2026-10-29. T096's actual final adopted source passes
+`npm run dependencies:check` and `npm run contract:check`, with the exact
+reviewed **403 npm / 87 NuGet** union, source/archive integrity, central pins,
+locks, project edges, licenses and retained notice hashes unchanged.
+No new package, copied dependency source or notice drift requires an inventory/
+third-party-notice edit. The reviewed test-only Playwright prerelease exception
+above remains exact-pinned; no stable-version or renewed signature claim is made.
+
+Fresh `npm audit --json` reports zero vulnerabilities.
+`dotnet list Kofte.slnx package --vulnerable --include-transitive --format json --no-restore`
+also reports zero vulnerabilities across all fourteen distinct solution
+projects, with no warning or missing project accepted as success.
+Safe report `identity-final-dependencies-none-482394f9a62d4a5ca04c23464a3e753c.json`
+passes in 10.193s with actual .NET/Node/npm versions verified. Private raw audit
+JSON is not retained in repository evidence. This closes dependency reconciliation,
+not the complete local/CI gate or feature acceptance.
+
 ## Spec 002 project adoption
 
 The platform library and test-owned author console introduce no runtime package.

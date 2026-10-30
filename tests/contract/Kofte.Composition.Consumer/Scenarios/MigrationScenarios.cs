@@ -4,6 +4,7 @@ using Kofte.Infrastructure.Storage;
 using Kofte.Infrastructure.Storage.Registry;
 using Kofte.Platform.Modules.Storage;
 using Kofte.TestSupport;
+using Kofte.TestSupport.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kofte.Composition.Consumer.Scenarios;
@@ -132,6 +133,7 @@ internal static class MigrationScenarios
                 record.GetProperty("owner").GetString() == owner).GetProperty("storageCorrelation").GetString()
                 is { Length: 32 }, "composition_test_original_storage_correlation_missing");
         BootScenarios.RequireCleanup(evidence, trace, Owners);
+        await fixture.PrepareIdentityAsync(token);
     }
 
     internal static async Task<ServingAttempt> ServeAsync(ScenarioEvidence evidence, CompositionFixture fixture,
@@ -241,7 +243,7 @@ internal static class MigrationScenarios
     internal static void RequireExit(ScenarioEvidence evidence, CompositionProcess process, ProcessOutput result, int exit)
     {
         evidence.Require(result.ExitCode == exit && process.ExitVerified && process.DescendantExitsVerified &&
-            result.Stderr.Length == 0, "composition_test_command_exit_expected_" + exit + "_actual_" + result.ExitCode +
+            IdentityDiagnosticOutput.IsSafeServingOutput(result.Stderr), "composition_test_command_exit_expected_" + exit + "_actual_" + result.ExitCode +
                 "_" + ExitReason(result.Stdout));
     }
 
@@ -264,7 +266,9 @@ internal static class MigrationScenarios
             }
         }
         return code is "composition_deadline_exceeded" or "composition_output_failed" or "composition_cancelled" or
-            "composition_cleanup_incomplete" or "composition_observation_invalid" or "composition_storage_rejected"
+            "composition_cleanup_incomplete" or "composition_observation_invalid" or "composition_storage_rejected" or
+            "composition_configuration_invalid" or "composition_admission_invalid" or "composition_prepare_required" or
+            "composition_manifest_rejected" or "composition_dependency_disabled"
             ? code : "other";
     }
 }

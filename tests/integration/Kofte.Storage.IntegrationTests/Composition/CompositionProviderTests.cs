@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text.Json;
 using Kofte.TestSupport;
+using Kofte.TestSupport.Identity;
 
 namespace Kofte.Storage.IntegrationTests.Composition;
 
@@ -22,6 +23,7 @@ public abstract class CompositionProviderTests(ITestOutputHelper output)
         var token = TestContext.Current.CancellationToken;
         await using var fixture = await CompositionFixture.CreateAsync(Provider, token);
         await fixture.SeedUnrelatedNoStorageAsync(token);
+        await fixture.PrepareIdentityAsync(token);
         var before = await CompositionStoreSnapshot.CaptureAsync(fixture.Storage, token);
         var owners = Enumerable.Range(0, disabled).Select(index => $"org.example.disabled{index}").ToArray();
         foreach (var explicitFalse in new[] { false, true })
@@ -69,7 +71,7 @@ public abstract class CompositionProviderTests(ITestOutputHelper output)
             output.WriteLine(stopped.Stdout);
             Assert.Equal(0, stopped.ExitCode);
             Assert.True(process.ExitVerified && process.DescendantExitsVerified);
-            Assert.Empty(stopped.Stderr);
+            Assert.True(IdentityDiagnosticOutput.IsSafeServingOutput(stopped.Stderr));
             var host = Records(stopped.Stdout);
             Assert.Contains(host, record => record.GetProperty("stage").GetString() == "published" &&
                 record.GetProperty("code").GetString() == "composition_ready");
@@ -107,6 +109,7 @@ public abstract class CompositionProviderTests(ITestOutputHelper output)
         var token = TestContext.Current.CancellationToken;
         await using var fixture = await CompositionFixture.CreateAsync(Provider, token);
         await fixture.WriteSelectionAsync("""{"schemaVersion":"1","modules":[]}"""u8.ToArray(), token);
+        await fixture.PrepareIdentityAsync(token);
         var before = await CompositionStoreSnapshot.CaptureAsync(fixture.Storage, token);
         await using var process = fixture.StartBoot(CompositionTestCatalog.EmptyBoot);
         using var http = new HttpClient { BaseAddress = fixture.HostUrl };
@@ -134,7 +137,7 @@ public abstract class CompositionProviderTests(ITestOutputHelper output)
         Assert.Equal(0, result.ExitCode);
         Assert.True(process.ExitVerified && process.DescendantExitsVerified);
         Assert.True(Stopwatch.GetElapsedTime(started) < TimeSpan.FromSeconds(15));
-        Assert.Empty(result.Stderr);
+        Assert.True(IdentityDiagnosticOutput.IsSafeServingOutput(result.Stderr));
         Assert.Equal(before, await CompositionStoreSnapshot.CaptureAsync(fixture.Storage, token));
     }
 

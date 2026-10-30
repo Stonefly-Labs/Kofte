@@ -9,6 +9,7 @@
   <Project Path="tests/contract/Kofte.Composition.Consumer/Kofte.Composition.Consumer.csproj" />
   <Project Path="tests/unit/Kofte.Platform.Tests/Kofte.Platform.Tests.csproj" />
   <Project Path="tests/contract/Kofte.Platform.ContractTests/Kofte.Platform.ContractTests.csproj" />
+  <Project Path="tests/contract/Kofte.Identity.Consumer/Kofte.Identity.Consumer.csproj" />
   <Project Path="tests/contract/Kofte.Manifest.Consumer/Kofte.Manifest.Consumer.csproj" />
   <Project Path="tests/unit/Kofte.Host.Tests/Kofte.Host.Tests.csproj" />
   <Project Path="tests/integration/Kofte.Host.IntegrationTests/Kofte.Host.IntegrationTests.csproj" />

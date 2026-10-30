@@ -168,6 +168,74 @@ class RuntimeSupportTests(unittest.TestCase):
             capture.scan_and_clear()
         self.assertEqual([], capture.buffers)
 
+    def test_browser_canaries_are_consumed_once_and_scan_actual_prior_transport_output(self):
+        values = ["session-canary-123456", "csrf-canary-123456789", "browser-canary-+/=123456"]
+        path = self.root / "identity-browser-canaries.json"
+        for disclosed in (values[0].encode(), b"browser-canary-%2B%2F%3D123456"):
+            with self.subTest(disclosed=disclosed):
+                capture = support.OutputCapture(self.failures, [])
+                capture.read(io.BytesIO(disclosed))
+                path.write_text(json.dumps({"version": 1, "canaries": values}))
+                path.chmod(0o600)
+                self.assertEqual({"identityCanaries": 3}, capture.consume_identity_canaries(self.root))
+                self.assertFalse(path.exists())
+                with self.assertRaisesRegex(support.RuntimeFailure, "identity_browser_transport_canaries_invalid"):
+                    capture.consume_identity_canaries(self.root)
+                with self.assertRaisesRegex(support.RuntimeFailure, "runtime_output_disclosed"):
+                    capture.scan_and_clear()
+                self.assertEqual([], capture.forbidden)
+
+    def test_browser_canary_receipt_refuses_missing_malformed_duplicate_and_unbounded_input(self):
+        capture = support.OutputCapture(self.failures, [])
+        path = self.root / "identity-browser-canaries.json"
+        valid = {"version": 1, "canaries": ["a" * 16, "b" * 16, "c" * 16]}
+        cases = [
+            None, b"", b"x" * 65537, b"not-json", b"\xff",
+            json.dumps(valid).encode("utf-16"),
+            b"[" * 2000 + b"]" * 2000,
+            b'{"version":1,"version":1,"canaries":["aaaaaaaaaaaaaaaa","bbbbbbbbbbbbbbbb","cccccccccccccccc"]}',
+            json.dumps(valid | {"version": True}).encode(),
+            json.dumps(valid | {"canaries": ["a" * 16] * 3}).encode(),
+            json.dumps(valid | {"canaries": ["a" * 16, "b" * 16, "short"]}).encode(),
+            json.dumps(valid | {"canaries": ["a" * 16, "b" * 16, None]}).encode(),
+            json.dumps(valid | {"extra": "not-admitted"}).encode(),
+        ]
+        for content in cases:
+            with self.subTest(content=content), self.assertRaisesRegex(
+                    support.RuntimeFailure, "identity_browser_transport_canaries_invalid"):
+                if content is not None:
+                    path.write_bytes(content)
+                    path.chmod(0o600)
+                capture.consume_identity_canaries(self.root)
+            self.assertEqual([], capture.forbidden)
+
+    def test_browser_canary_receipt_refuses_public_permissions_links_and_special_files(self):
+        capture = support.OutputCapture(self.failures, [])
+        target = self.root / "private-canaries.json"
+        target.write_text(json.dumps({"version": 1, "canaries": ["a" * 16, "b" * 16, "c" * 16]}))
+        target.chmod(0o600)
+        path = self.root / "identity-browser-canaries.json"
+        for kind in ("symlink", "hardlink", "fifo", "public-file", "public-root"):
+            with self.subTest(kind=kind):
+                if kind == "symlink":
+                    path.symlink_to(target)
+                elif kind == "hardlink":
+                    os.link(target, path)
+                elif kind == "fifo":
+                    os.mkfifo(path, 0o600)
+                else:
+                    path.write_bytes(target.read_bytes())
+                    path.chmod(0o644 if kind == "public-file" else 0o600)
+                    if kind == "public-root":
+                        self.root.chmod(0o755)
+                try:
+                    with self.assertRaisesRegex(support.RuntimeFailure, "identity_browser_transport_canaries_invalid"):
+                        capture.consume_identity_canaries(self.root)
+                finally:
+                    self.root.chmod(0o700)
+                    path.unlink()
+                self.assertEqual([], capture.forbidden)
+
     def test_diagnostic_locations_split_across_chunks_are_complete_and_never_include_raw_text(self):
         diagnostic = support.CommandDiagnostics("browser")
 
@@ -175,8 +243,8 @@ class RuntimeSupportTests(unittest.TestCase):
             def __init__(self):
                 super().__init__()
                 self.parts = iter((
-                    b"credential-canary /private/tests/e2e/accessibility.spec.ts:7",
-                    b"6:1", b"5\n/private/tests/e2e/startup.spec.ts:10:2", b"",
+                    b" at /private/tests/e2e/accessibility.spec.ts:7",
+                    b"6:1", b"5 credential-canary\n at /private/tests/e2e/startup.spec.ts:10:2", b"",
                 ))
 
             def read(self, *_args):
@@ -189,6 +257,17 @@ class RuntimeSupportTests(unittest.TestCase):
         self.assertNotIn("credential", json.dumps(vars(diagnostic), default=str))
         diagnostic.clear()
         self.assertEqual({}, diagnostic.safe_fields())
+
+    def test_browser_diagnostics_do_not_blame_passed_test_declarations_for_identity_failure(self):
+        diagnostic = support.CommandDiagnostics("browser")
+        diagnostic.read(io.BytesIO(
+            b"  \xe2\x9c\x93 1 bootstrap.spec.ts:3:1 public test (1s)\n"
+            b"  \xe2\x9c\x93 2 recovery.spec.ts:4:1 public test (1s)\n"
+            b"  1) identity.spec.ts:99:1 failed test\n"
+            b"Error: credential-canary\n"
+        ))
+        self.assertEqual({"sourceLocations": ["identity.spec.ts:99:1"]}, diagnostic.safe_fields())
+        self.assertNotIn("credential", json.dumps(vars(diagnostic), default=str))
 
     def test_storage_diagnostics_keep_only_known_symbols_and_codes_not_arguments_or_exceptions(self):
         name = "Kofte.Storage.IntegrationTests.Registry.PostgresRegistrationConcurrencyTests.KnownCase"
@@ -220,6 +299,158 @@ class RuntimeSupportTests(unittest.TestCase):
                 self.assertNotIn("credential", json.dumps(vars(diagnostic), default=str))
                 diagnostic.clear()
                 self.assertEqual({}, diagnostic.safe_fields())
+
+    def test_native_exception_kinds_keep_only_fixed_metadata_for_known_failed_cases(self):
+        name = "Kofte.Storage.IntegrationTests.Composition.PostgresKnownTests.KnownCase"
+        owner, method = name.rsplit(".", 1)
+        path = self.root / "storage.xml"
+        failure = (
+            '<failure exception-type="Microsoft.EntityFrameworkCore.DbUpdateException">'
+            '<message>Microsoft.EntityFrameworkCore.DbUpdateException : credential-canary\n'
+            '---- Npgsql.PostgresException (0x80004005): 57014: credential-canary\n'
+            '---- System.TimeoutException : credential-canary\n'
+            '---- Unknown.CredentialException : credential-canary</message></failure>'
+        )
+        path.write_text(
+            f'<assemblies><test type="{owner}" method="{method}" result="Pass">'
+            '<failure exception-type="System.ArgumentException"/></test>'
+            '<test type="unknown" method="unknown" result="Fail">'
+            '<failure exception-type="System.InvalidOperationException"/></test>'
+            f'<test type="{owner}" method="{method}" result="Fail">'
+            + failure + '</test></assemblies>'
+        )
+        diagnostic = support.CommandDiagnostics("storage", tests=[name])
+        diagnostic.read_storage_report(path)
+        self.assertEqual({
+            "failedStorageTests": [name],
+            "storageFailureKinds": ["db_update", "postgres", "postgres_query_cancelled", "timeout"],
+        }, diagnostic.safe_fields())
+        self.assertNotIn("credential", json.dumps(vars(diagnostic), default=str))
+        diagnostic.clear()
+        self.assertEqual({}, diagnostic.safe_fields())
+
+    def test_completed_contract_methods_exclude_theory_arguments_unknown_names_and_late_output(self):
+        name = "Kofte.Platform.ContractTests.Composition.KnownTests.KnownCase"
+        diagnostic = support.CommandDiagnostics("contract", tests=[name])
+        for line in (
+            f" passed {name}(secret: credential-canary) (10ms)",
+            f" passed {name} (10ms)",
+            " passed Kofte.Platform.ContractTests.Unknown.CredentialCanary (10ms)",
+            f" failed {name}(secret: credential-canary)",
+            f" arbitrary passed {name} (10ms)",
+        ):
+            diagnostic.inspect(line.encode())
+        self.assertEqual({
+            "contractCompletedMethods": [name], "failedContractTests": [name],
+        }, diagnostic.safe_fields())
+        self.assertNotIn("credential", json.dumps(vars(diagnostic), default=str))
+        diagnostic.clear()
+        diagnostic.inspect(f" passed {name} (10ms)".encode())
+        self.assertEqual({}, diagnostic.safe_fields())
+
+    def test_native_failure_locations_require_known_failed_tests_and_bounded_source_lines(self):
+        name = "Kofte.Host.IntegrationTests.Identity.SqliteKnownTests.KnownCase"
+        owner, method = name.rsplit(".", 1)
+        source = "tests/integration/Kofte.Host.IntegrationTests/Identity/KnownTests.cs"
+        diagnostic = support.CommandDiagnostics("host", tests=[name], source_lines={source: 100})
+        path = self.root / "storage.xml"
+        locations = "\n".join(f"/private/credential-canary/{source}:line {line}" for line in range(1, 41))
+        invalid = "\n".join((
+            f"/private/credential-canary/{source}:line 0",
+            f"/private/credential-canary/{source}:line 101",
+            f"/private/credential-canary/{source}:line 000042",
+            "/private/credential-canary/Unknown.cs:line 42",
+        ))
+        path.write_text(
+            f'<assemblies><test type="{owner}" method="{method}" result="Pass">'
+            f'<failure><stack-trace>{source}:line 99</stack-trace></failure></test>'
+            f'<test type="unknown" method="unknown" result="Fail">'
+            f'<failure><stack-trace>{source}:line 98</stack-trace></failure></test>'
+            f'<test type="{owner}" method="{method}" result="Fail">'
+            '<failure><message>credential-canary</message><stack-trace>'
+            + invalid + "\n" + locations + '</stack-trace></failure></test></assemblies>'
+        )
+        diagnostic.read_storage_report(path)
+        self.assertEqual({
+            "failedHostTests": [name],
+            "hostFailureLocations": sorted(f"{source}:{line}" for line in range(1, 33)),
+        }, diagnostic.safe_fields())
+        self.assertNotIn("credential", json.dumps(vars(diagnostic), default=str))
+        diagnostic.clear()
+        self.assertEqual({}, diagnostic.safe_fields())
+
+    def test_host_status_assertions_retain_only_finite_values_from_known_failed_tests(self):
+        name = "Kofte.Host.IntegrationTests.Identity.SqliteKnownTests.KnownCase"
+        owner, method = name.rsplit(".", 1)
+        path = self.root / "storage.xml"
+        message = "Assert.Equal() Failure: Values differ\nExpected: 303\nActual:   503"
+        symbolic = "Assert.Equal() Failure: Values differ\nExpected: Unauthorized\nActual:   ServiceUnavailable"
+        headers = symbolic.replace("Unauthorized", "RequestHeaderFieldsTooLarge")
+        def case(result, text, selected_owner=owner):
+            return (f'<test type="{selected_owner}" method="{method}" result="{result}">'
+                    '<failure><message><![CDATA[' + text + ']]></message></failure></test>')
+        path.write_text("<assemblies>" + "".join((
+            case("Fail", message), case("Fail", symbolic), case("Fail", headers),
+            case("Pass", message.replace("503", "400")),
+            case("Fail", message.replace("503", "409"), "unknown"),
+            case("Fail", message.replace("503", "123")),
+            case("Fail", message.replace("503", "credential-canary")),
+            case("Fail", "credential-canary\n" + message),
+            case("Fail", message + "\n/private/credential-canary"),
+        )) + "</assemblies>")
+        diagnostic = support.CommandDiagnostics("host", tests=[name])
+        diagnostic.read_storage_report(path)
+        self.assertEqual({
+            "failedHostTests": [name],
+            "hostFailureStatuses": [
+                "expected_303_actual_503", "expected_401_actual_503", "expected_431_actual_503",
+            ],
+        }, diagnostic.safe_fields())
+        self.assertNotIn("credential", json.dumps(vars(diagnostic), default=str))
+        diagnostic.clear()
+        self.assertEqual({}, diagnostic.safe_fields())
+
+    def test_host_browser_timing_retains_only_known_failed_test_phases_and_bounds(self):
+        name = "Kofte.Host.IntegrationTests.Identity.SqliteKnownTests.KnownCase"
+        owner, method = name.rsplit(".", 1)
+        phase = "identity_browser_profile_capture_request_failed"
+        path = self.root / "storage.xml"
+        valid = f"{phase}:2:4300"
+        def case(result, text, selected_owner=owner):
+            return (f'<test type="{selected_owner}" method="{method}" result="{result}">'
+                    '<failure><message><![CDATA[' + text + ']]></message></failure></test>')
+        path.write_text("<assemblies>" + "".join((
+            case("Fail", "\n".join((
+                valid, "identity_browser_profile_credential_canary:2:1",
+                f"{phase}:3:1", f"{phase}:2:60001", f"{phase}:2:-1",
+                f"{phase}:2:0001", f"/private/credential-canary/{phase}:2:42",
+                f"{phase}:2:42 credential-canary",
+            ))),
+            case("Pass", f"{phase}:1:100"), case("Fail", f"{phase}:1:101", "unknown"),
+        )) + "</assemblies>")
+        diagnostic = support.CommandDiagnostics("host", codes=[phase], tests=[name])
+        diagnostic.read_storage_report(path)
+        self.assertEqual([{"phase": phase, "launch": 2, "elapsedMilliseconds": 4300}],
+                         diagnostic.safe_fields()["hostBrowserPhases"])
+        self.assertNotIn("credential", json.dumps(vars(diagnostic), default=str))
+        diagnostic.clear()
+        self.assertEqual({}, diagnostic.safe_fields())
+
+    def test_host_browser_timing_keeps_early_and_final_evidence_with_a_fixed_limit(self):
+        name = "Kofte.Host.IntegrationTests.Identity.SqliteKnownTests.KnownCase"
+        owner, method = name.rsplit(".", 1)
+        phase = "identity_browser_profile_capture_request_failed"
+        path = self.root / "storage.xml"
+        path.write_text(f'<assemblies><test type="{owner}" method="{method}" result="Fail">'
+                        '<failure><message><![CDATA[' +
+                        "\n".join(f"{phase}:2:{index}" for index in range(65)) +
+                        ']]></message></failure></test></assemblies>')
+        diagnostic = support.CommandDiagnostics("host", codes=[phase], tests=[name])
+        diagnostic.read_storage_report(path)
+        timeline = diagnostic.safe_fields()["hostBrowserPhases"]
+        self.assertEqual(64, len(timeline))
+        self.assertEqual(list(range(16)), [item["elapsedMilliseconds"] for item in timeline[:16]])
+        self.assertEqual(64, timeline[-1]["elapsedMilliseconds"])
 
     def test_failed_composition_output_retains_only_known_scenario_and_assertion_symbols(self):
         name = "Kofte.Storage.IntegrationTests.Composition.SqliteCompositionProviderTests.KnownCase"

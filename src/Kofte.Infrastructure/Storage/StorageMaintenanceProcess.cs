@@ -29,12 +29,12 @@ public static class StorageMaintenanceProcess
     }
 
     public static Task RunAsync(ProcessStartInfo start, CancellationToken cancellationToken = default,
-        Func<StreamReader, CancellationToken, Task>? observeOutput = null)
+        Func<StreamReader, CancellationToken, Task>? observeOutput = null, Action<int>? observeExit = null)
     {
         var admission = Convert.ToHexStringLower(RandomNumberGenerator.GetBytes(32));
         start.Environment[AdmissionKey] = admission;
         return RunOwnedAsync(start, admission, OperationBudget.Migration, TimeSpan.FromSeconds(2),
-            cancellationToken, observeOutput);
+            cancellationToken, observeOutput, observeExit);
     }
 
     public static async Task AdmitAsync(CancellationToken cancellationToken = default)
@@ -53,7 +53,7 @@ public static class StorageMaintenanceProcess
 
     internal static async Task RunOwnedAsync(ProcessStartInfo start, string admission,
         TimeSpan totalBudget, TimeSpan cleanupReserve, CancellationToken cancellationToken,
-        Func<StreamReader, CancellationToken, Task>? observeOutput = null)
+        Func<StreamReader, CancellationToken, Task>? observeOutput = null, Action<int>? observeExit = null)
     {
         if (totalBudget <= cleanupReserve || totalBudget > OperationBudget.Migration ||
             cleanupReserve <= TimeSpan.Zero || start.UseShellExecute ||
@@ -82,6 +82,7 @@ public static class StorageMaintenanceProcess
         var drained = Task.WhenAll(stdout, stderr);
         using var budget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         budget.CancelAfter(TimeSpan.FromTicks(Math.Max(0, (Remaining() - cleanupReserve).Ticks)));
+        int? observedExit = null;
         try
         {
             await process.StandardInput.WriteLineAsync(admission.AsMemory(), budget.Token);
@@ -94,8 +95,9 @@ public static class StorageMaintenanceProcess
                 await completed;
                 observing.Remove(completed);
             }
-            if (process.ExitCode != 0)
-                throw new StorageException(FailureCode(process.ExitCode));
+            observedExit = process.ExitCode;
+            if (observedExit != 0)
+                throw new StorageException(FailureCode(observedExit.Value));
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         { throw new StorageException(StorageCode.DeadlineExceeded); }
@@ -114,6 +116,7 @@ public static class StorageMaintenanceProcess
                 await process.WaitForExitAsync(cleanup.Token);
                 await drained.WaitAsync(cleanup.Token);
                 if (Remaining() <= TimeSpan.Zero) throw new StorageException(StorageCode.Unavailable);
+                if (observedExit is { } exit) observeExit?.Invoke(exit);
             }
             catch (Exception)
             {

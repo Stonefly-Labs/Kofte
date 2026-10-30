@@ -58,10 +58,11 @@ internal static class PreservationScenarios
             MigrationScenarios.RequireExit(evidence, rejected, result, 2);
             var records = BootScenarios.HostRecords(result.Stdout);
             evidence.Require(records.Any(record =>
-                    record.GetProperty("code").GetString() == "composition_dependency_disabled") &&
-                records.All(record => record.GetProperty("stage").GetString() is not
+                    record.GetProperty("code").GetString() == "composition_dependency_disabled"),
+                "composition_test_invalid_disable_reason_" + MigrationScenarios.ExitReason(result.Stdout));
+            evidence.Require(records.All(record => record.GetProperty("stage").GetString() is not
                     ("registered" or "initialized" or "migrated" or "started" or "published")),
-                "composition_test_invalid_disable_cascaded_or_executed");
+                "composition_test_invalid_disable_activation_executed");
         }
         evidence.Require(installation == await CompositionStoreSnapshot.CaptureAsync(fixture.Storage, token),
             "composition_test_invalid_disable_mutated_complete_inventory");

@@ -3,6 +3,7 @@ using System.IO.Pipes;
 using System.Reflection;
 using System.Security.Cryptography;
 using Kofte.Host.Features.StorageMaintenance;
+using Kofte.Infrastructure.Identity;
 using Kofte.Platform.Modules.Composition;
 using Kofte.Platform.Modules.Manifest;
 using Kofte.Platform.Modules.Lifecycle;
@@ -160,9 +161,19 @@ public static class CompositionSupervisor
 
         async Task ObserveAsync()
         {
-            while (await protocol.ReadAsync(events, io.Token) is { } record)
+            while (await protocol.ReadObservationAsync(events, io.Token) is { } frame)
             {
                 if (terminal) throw new CompositionBoundaryException("composition_observation_invalid");
+                if (frame.Identity is { } identity)
+                {
+                    if (!ownedGroup || diagnostics.Mode != CompositionMode.Serve ||
+                        identity.Provider != diagnostics.Provider)
+                        throw new CompositionBoundaryException("composition_observation_invalid");
+                    IdentityDiagnostics.Write(identity);
+                    continue;
+                }
+                var record = frame.Record ??
+                    throw new CompositionBoundaryException("composition_observation_invalid");
                 var stage = Enum.GetValues<CompositionStage>().Single(v => CompositionDiagnostics.StageName(v) == record.Stage);
                 var outcome = Enum.GetValues<CompositionOutcome>().Single(v => CompositionDiagnostics.OutcomeName(v) == record.Outcome);
                 if (stage == CompositionStage.Admission)

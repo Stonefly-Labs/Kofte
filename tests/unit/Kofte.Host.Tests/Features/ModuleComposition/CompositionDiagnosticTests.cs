@@ -4,6 +4,7 @@ using System.Diagnostics.Metrics;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Kofte.Host.Features.ModuleComposition;
+using Kofte.Infrastructure.Identity;
 using Kofte.Platform.Modules.Lifecycle;
 using Kofte.Platform.Modules.Manifest;
 using Xunit;
@@ -16,6 +17,81 @@ public sealed class CompositionDiagnosticsCollection { }
 [Collection("Composition diagnostics")]
 public sealed class CompositionDiagnosticTests
 {
+    [Fact]
+    public async Task ConcurrentIdentityAndCompositionWritesRemainWholeValidatedPrivateFrames()
+    {
+        var diagnostics = new CompositionDiagnostics(CompositionMode.Serve, "sqlite", _ => { });
+        var protocol = new CompositionProtocol(diagnostics.Attempt, new string('b', 32), [], CompositionMode.Serve);
+        var record = diagnostics.Emit(CompositionStage.Health, CompositionOutcome.Passed, "composition_progress");
+        var identity = Enumerable.Range(0, 20).Select(_ => new IdentityDiagnosticRecord(1, "identity_completed",
+            "identity", "current", "development", "sqlite", "ready", Guid.NewGuid().ToString("N"),
+            "none", "unchanged")).ToArray();
+        using var stream = new YieldingStream();
+        await Task.WhenAll(identity.Select(value => protocol.WriteIdentityAsync(stream, value,
+            TestContext.Current.CancellationToken)).Concat(Enumerable.Range(0, 20).Select(_ =>
+                protocol.WriteAsync(stream, record, TestContext.Current.CancellationToken))));
+        stream.Position = 0;
+        var compositionCount = 0;
+        var projected = new List<IdentityDiagnosticRecord>();
+        while (await protocol.ReadObservationAsync(stream, TestContext.Current.CancellationToken) is { } frame)
+        {
+            if (frame.Identity is { } value) projected.Add(value);
+            else compositionCount++;
+        }
+        Assert.Equal(20, compositionCount);
+        Assert.Equal(identity.OrderBy(value => value.CorrelationId), projected.OrderBy(value => value.CorrelationId));
+        using var invalid = new MemoryStream();
+        await protocol.WriteIdentityAsync(invalid, identity[0], TestContext.Current.CancellationToken);
+        invalid.Position = 0;
+        await Assert.ThrowsAsync<CompositionBoundaryException>(() =>
+            protocol.ReadAsync(invalid, TestContext.Current.CancellationToken));
+        var nonServing = new CompositionProtocol(diagnostics.Attempt, new string('b', 32), [], CompositionMode.Validate);
+        await Assert.ThrowsAsync<CompositionBoundaryException>(() =>
+            nonServing.WriteIdentityAsync(new MemoryStream(), identity[0], TestContext.Current.CancellationToken));
+    }
+
+    private sealed class YieldingStream : MemoryStream
+    {
+        public override async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer,
+            CancellationToken cancellationToken = default)
+        {
+            await Task.Yield();
+            await base.WriteAsync(buffer, cancellationToken);
+        }
+    }
+
+    [Fact]
+    public async Task PrivateIdentityFramesRejectMixedPayloadsMissingFieldsAndRawEventsOverOneKibibyte()
+    {
+        var diagnostics = new CompositionDiagnostics(CompositionMode.Serve, "sqlite", _ => { });
+        var protocol = new CompositionProtocol(diagnostics.Attempt, new string('b', 32), [], CompositionMode.Serve);
+        var identity = new IdentityDiagnosticRecord(1, "identity_completed", "identity", "current",
+            "development", "sqlite", "ready", Guid.NewGuid().ToString("N"), "none", "unchanged");
+        using var valid = new MemoryStream();
+        await protocol.WriteIdentityAsync(valid, identity, TestContext.Current.CancellationToken);
+        var frame = JsonNode.Parse(valid.ToArray().AsSpan(4))!;
+        var mixed = frame.DeepClone();
+        mixed["record"] = JsonSerializer.SerializeToNode(diagnostics.Emit(CompositionStage.Health,
+            CompositionOutcome.Passed, "composition_progress"), CompositionDiagnostics.JsonOptions);
+        var missing = frame.DeepClone();
+        missing["identity"]!.AsObject().Remove("operation");
+        var unknown = frame.DeepClone();
+        unknown["identity"]!["private"] = "private-canary";
+        var wrongSnapshot = frame.DeepClone();
+        wrongSnapshot["snapshot"] = new string('c', 32);
+        foreach (var text in new[]
+        {
+            mixed.ToJsonString(), missing.ToJsonString(), unknown.ToJsonString(), wrongSnapshot.ToJsonString(),
+            frame.ToJsonString().Replace("\"identity\":{", "\"identity\":{" + new string(' ', 1024),
+                StringComparison.Ordinal)
+        })
+        {
+            using var source = Encode(text);
+            await Assert.ThrowsAsync<CompositionBoundaryException>(() =>
+                protocol.ReadObservationAsync(source, TestContext.Current.CancellationToken));
+        }
+    }
+
     [Fact]
     public void PrerequisiteMetadataRejectsTheFirstEntryBeyondTheCatalogBoundWithoutOverEnumeration()
     {

@@ -12,6 +12,7 @@ import signal
 import socket
 import subprocess
 import sys
+import threading
 import time
 
 
@@ -37,7 +38,41 @@ PRIVATE_PARTS = {
 }
 QUALITY = ["--suite", "quality"]
 POSTGRES = ["--suite", "integration", "--provider", "postgres", "--disposable-postgres"]
-BROWSER = ["--suite", "browser"]
+BROWSER = ["--suite", "browser", "--disposable-postgres"]
+
+
+@contextmanager
+def unavailable_postgres_port(error):
+    with socket.socket() as unavailable:
+        unavailable.bind(("127.0.0.1", 0))
+        unavailable.listen()
+        unavailable.settimeout(0.1)
+        stopped, failed = threading.Event(), threading.Event()
+
+        def refuse():
+            while not stopped.is_set():
+                try:
+                    connection, _ = unavailable.accept()
+                    connection.close()
+                except TimeoutError:
+                    continue
+                except OSError:
+                    if not stopped.is_set():
+                        failed.set()
+                    return
+
+        worker = threading.Thread(target=refuse, name="unavailable-postgres")
+        worker.start()
+        try:
+            yield unavailable.getsockname()[1]
+        finally:
+            stopped.set()
+            unavailable.close()
+            worker.join(timeout=5)
+            if worker.is_alive():
+                raise error("failure_unavailable_listener_cleanup_failed")
+            if failed.is_set():
+                raise error("failure_unavailable_listener_failed")
 
 
 def source_allowed(relative):
@@ -157,7 +192,8 @@ def isolated_environment(original, directory, api):
     return environment
 
 
-def checked_evidence(report, suite, provider, expected_step, expected_command, exit_code, api):
+def checked_evidence(report, suite, provider, expected_step, expected_command, exit_code, api,
+                     *, expected_followups=(), browser_unavailable=False):
     error = api.VerificationError
     if (report.get("suite") != suite or report.get("provider") != provider
             or report.get("scope") != "targeted" or report.get("completeGate") is not False
@@ -177,6 +213,37 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
         )}
         if selected["command"] != api.safe_command(selected["command"]):
             raise error("failure_child_report_unsafe")
+        if "nativeEvidence" in step:
+            evidence = step["nativeEvidence"]
+            if (not isinstance(evidence, dict) or set(evidence) not in (
+                    {"passed", "skipped"}, {"passed", "skipped", "requiredClasses"})
+                    or type(evidence.get("passed")) is not int or evidence["passed"] < 1
+                    or type(evidence.get("skipped")) is not int or evidence["skipped"] != 0
+                    or "requiredClasses" in evidence and (
+                        type(evidence["requiredClasses"]) is not int or
+                        not 1 <= evidence["requiredClasses"] <= evidence["passed"])):
+                raise error("failure_child_report_unsafe")
+            selected["nativeEvidence"] = evidence
+        if "nativeTiming" in step:
+            if ("nativeEvidence" not in selected or
+                    not api.runtime_support.CommandDiagnostics.valid_native_timing(
+                        step["nativeTiming"], selected["nativeEvidence"]["passed"],
+                        api.required_native_classes(step["name"], step["command"]))):
+                raise error("failure_child_report_unsafe")
+            selected["nativeTiming"] = step["nativeTiming"]
+        if "browserEvidence" in step or (
+                step["outcome"] == "passed" and
+                step["command"][:5] == ["npm", "run", "test", "--workspace", "tests/e2e"]):
+            evidence = step.get("browserEvidence")
+            required = api.required_browser_cases(step["command"])
+            if (not isinstance(evidence, dict) or set(evidence) != {"passed", "skipped", "requiredFiles"}
+                    or type(evidence.get("passed")) is not int
+                    or not sum(required.values()) <= evidence["passed"] <= 4096
+                    or type(evidence.get("skipped")) is not int or evidence["skipped"] != 0
+                    or type(evidence.get("requiredFiles")) is not int
+                    or evidence["requiredFiles"] != len(required)):
+                raise error("failure_child_report_unsafe")
+            selected["browserEvidence"] = evidence
         if step["outcome"] == "failed":
             selected["failureCode"] = step["failureCode"]
             selected["failureCorrelation"] = step["failureCorrelation"]
@@ -194,21 +261,33 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
                 if not isinstance(code, str) or code not in api.check_dependencies.FAILURE_CODES:
                     raise error("failure_child_report_unsafe")
                 selected["dependencyFailureCode"] = code
-            for kind in ("storage", "contract"):
+            for kind in ("host", "storage", "contract", "consumer"):
                 test_key = f"failed{kind.title()}Tests"
                 code_key = f"{kind}FailureCodes"
+                kind_key = f"{kind}FailureKinds"
                 operation_key = f"{kind}FailureOperations"
                 scenario_key = f"{kind}FailureScenarios"
+                location_key = f"{kind}FailureLocations"
+                status_key = f"{kind}FailureStatuses"
                 report_key = f"{kind}DiagnosticCode"
-                if not any(key in step for key in (test_key, code_key, operation_key, scenario_key, report_key)):
+                phase_key = f"{kind}BrowserPhases"
+                if not any(key in step for key in (
+                    test_key, code_key, kind_key, operation_key, scenario_key, location_key, status_key, report_key, phase_key,
+                )):
                     continue
                 diagnostic = api.command_diagnostics(step["command"])
                 if diagnostic is None or diagnostic.kind != kind:
                     raise error("failure_child_report_unsafe")
                 for key, allowed in (
                     (test_key, diagnostic.tests), (code_key, diagnostic.codes),
+                    (kind_key, diagnostic.native_failure_kinds if kind != "consumer" else ()),
                     (operation_key, diagnostic.storage_operations),
                     (scenario_key, diagnostic.scenarios),
+                    (status_key, {
+                        f"expected_{expected}_actual_{actual}"
+                        for expected in diagnostic.http_statuses.values()
+                        for actual in diagnostic.http_statuses.values()
+                    } if kind == "host" else ()),
                 ):
                     if key not in step:
                         continue
@@ -218,6 +297,19 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
                             or len(set(values)) != len(values)):
                         raise error("failure_child_report_unsafe")
                     selected[key] = values
+                if phase_key in step:
+                    values = step[phase_key]
+                    if (kind != "host" or not isinstance(values, list) or not 1 <= len(values) <= 64
+                            or any(not diagnostic.valid_browser_phase(value) for value in values)):
+                        raise error("failure_child_report_unsafe")
+                    selected[phase_key] = values
+                if location_key in step:
+                    values = step[location_key]
+                    if (not isinstance(values, list) or not 1 <= len(values) <= 32
+                            or any(not diagnostic.valid_native_location(value) for value in values)
+                            or len(set(values)) != len(values)):
+                        raise error("failure_child_report_unsafe")
+                    selected[location_key] = values
                 if report_key in step:
                     code = step[report_key]
                     if not isinstance(code, str) or code not in diagnostic.storage_report_codes:
@@ -225,16 +317,40 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
                     selected[report_key] = code
         result["steps"].append(selected)
     failed = [step for step in steps if step["outcome"] == "failed"]
+    capture_refused = not browser_unavailable or (
+        expected_step == "browser-tests" and len(failed) >= 2
+        and failed[-1].get("name") == "identity-browser-canaries"
+        and failed[-1].get("command") == [] and failed[-1].get("exitCode") is None
+        and failed[-1].get("failureCode") == "identity_browser_transport_canaries_invalid"
+        and re.fullmatch(r"[a-f0-9]{32}", failed[-1].get("failureCorrelation", "")) is not None
+    )
+    if browser_unavailable and capture_refused:
+        failed = failed[:-1]
+    expected_failures = []
+    for name, command in ((expected_step, expected_command), *expected_followups):
+        commands = [command]
+        diagnostic = api.command_diagnostics(command) if command else None
+        if diagnostic and diagnostic.kind in ("host", "storage", "contract"):
+            commands.append(api.safe_command([
+                *command, "--report-xunit-xml",
+                "--report-xunit-xml-filename", "storage.xml",
+                "--results-directory", "<private-results>",
+            ]))
+        elif diagnostic and diagnostic.kind == "browser":
+            commands.append(api.safe_command(api.playwright_command(command)))
+        expected_failures.append((name, commands))
     code = None
     if expected_step is None:
         if exit_code or report.get("outcome") != "passed" or failed:
             code = "failure_baseline_not_green"
-    elif (exit_code == 0 or report.get("outcome") != "failed" or len(failed) != 1
-          or failed[0].get("name") != expected_step
-          or failed[0].get("command") != expected_command
-          or failed[0].get("failureCode") != "command_failed"
-          or not isinstance(failed[0].get("exitCode"), int) or failed[0]["exitCode"] == 0
-          or not re.fullmatch(r"[a-f0-9]{32}", failed[0].get("failureCorrelation", ""))):
+    elif (exit_code == 0 or report.get("outcome") != "failed"
+          or not capture_refused or len(failed) != len(expected_failures) or any(
+              step.get("name") != name or step.get("command") not in commands
+              or step.get("failureCode") != "command_failed"
+              or not isinstance(step.get("exitCode"), int) or step["exitCode"] == 0
+              or not re.fullmatch(r"[a-f0-9]{32}", step.get("failureCorrelation", ""))
+              for step, (name, commands) in zip(failed, expected_failures)
+          )):
         code = "failure_did_not_reach_expected_command"
     if code:
         failure = error(code)
@@ -280,21 +396,25 @@ def run(runner, api):
             environment["DOCKER_HOST"] = endpoint
         runner.operation("failure-docker-prerequisite", docker_endpoint)
 
-        def invoke(name, arguments, expected_step=None, expected_command=None, extra=None):
+        def invoke(name, arguments, expected_step=None, expected_command=None, extra=None,
+                   *, expected_followups=(), browser_unavailable=False):
             def exercise(step):
                 reports = checkout / "artifacts/verification"
                 before = set(reports.glob("*.json"))
                 processes = api.OwnedProcesses(checkout, environment | (extra or {}))
+                timed_out = False
                 try:
                     child = processes.start(
                         ["python3", "scripts/verify.py", *arguments], stdin=subprocess.DEVNULL,
                     )
                     try:
                         exit_code = child.wait(timeout=max(0.01, min(900, deadline - time.monotonic())))
-                    except subprocess.TimeoutExpired as failure:
-                        raise error("failure_exercise_timeout") from failure
+                    except subprocess.TimeoutExpired:
+                        timed_out = True
                 finally:
                     processes.stop()
+                if timed_out:
+                    exit_code = child.poll()
                 created = set(reports.glob("*.json")) - before
                 if len(created) != 1:
                     raise error("failure_child_report_missing")
@@ -306,11 +426,16 @@ def run(runner, api):
                 try:
                     step["verification"] = checked_evidence(
                         report, suite, provider, expected_step, expected_command, exit_code, api,
+                        expected_followups=expected_followups, browser_unavailable=browser_unavailable,
                     )
                 except error as failure:
                     if hasattr(failure, "evidence"):
                         step["verification"] = failure.evidence
-                    raise
+                    if not timed_out:
+                        raise
+                    step["verificationFailureCode"] = failure.code
+                if timed_out:
+                    raise error("failure_exercise_timeout")
             runner.operation(name, exercise, ["python3", "scripts/verify.py", *arguments])
 
         invoke("baseline-quality", QUALITY)
@@ -329,23 +454,20 @@ def run(runner, api):
                       'export default function ToolingBuildProbe() {\n'
                       '  throw new Error("tooling_fixture_build_failure");\n}\n', error):
             invoke("build-failure-propagates", QUALITY, "workspace-builds", quality_commands["workspace-builds"])
-        with socket.socket() as unavailable:
-            unavailable.bind(("127.0.0.1", 0))
-            port = unavailable.getsockname()[1]
+        with unavailable_postgres_port(error) as port:
             connection = (
                 f"Host=127.0.0.1;Port={port};Database=postgres;Username=kofte_unavailable;"
                 "Password=unavailable_fixture_only;Timeout=1;Command Timeout=1;SSL Mode=Disable"
             )
-            invoke("postgres-unavailable-propagates", POSTGRES, "integration-postgres", [
-                "dotnet", "test", "--project", api.INTEGRATION, "--no-restore", "-c", "Release",
-                "--filter-trait", "Provider=postgres", "--minimum-expected-tests", "1",
-            ], {"KOFTE_POSTGRES_CONNECTION": connection})
+            postgres_commands = api.integration_commands("postgres")
+            invoke("postgres-unavailable-propagates", POSTGRES, *postgres_commands[0],
+                   {"KOFTE_POSTGRES_CONNECTION": connection}, expected_followups=postgres_commands[1:])
         missing_browser = directory / "unavailable-browser"
         missing_browser.mkdir(mode=0o700)
         specs = api.browser_specs(checkout)
         invoke("chromium-unavailable-propagates", BROWSER, "browser-tests", [
             "npm", "run", "test", "--workspace", "tests/e2e", "--", *specs,
-        ], {"PLAYWRIGHT_BROWSERS_PATH": str(missing_browser)})
+        ], {"PLAYWRIGHT_BROWSERS_PATH": str(missing_browser)}, browser_unavailable=True)
 
 
 if __name__ == "__main__":

@@ -8,6 +8,12 @@ public static class StorageReconciliation
         CancellationToken cancellationToken = default)
     {
         using var budget = new OperationBudget(OperationBudget.Resolve, cancellationToken);
+        _ = await ReadStartupAsync(installation, budget);
+    }
+
+    internal static async Task<InstallationRecord?> ReadStartupAsync(StorageInstallation installation,
+        OperationBudget budget)
+    {
         await using var connection = await installation.OpenPlatformAsync(budget);
         var query = installation.Provider == "sqlite"
             ? "SELECT count(*) FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
@@ -16,10 +22,12 @@ public static class StorageReconciliation
             System.Globalization.CultureInfo.InvariantCulture);
         if (count != 0)
         {
-            await new RegistryMigrationRunner(installation).ReadInstallationAsync(connection, budget);
-            await RecoverySetVerifier.ValidateInventoryAsync(installation, budget);
-            return;
+            var owner = await new RegistryMigrationRunner(installation).ReadInstallationAsync(connection, budget);
+            // Startup may encounter SQLite's inactive crash journal; clean backup readers still reject sidecars.
+            await RecoverySetVerifier.ValidateInventoryAsync(installation, connection, budget);
+            return owner;
         }
         await new RegistryMigrationRunner(installation).ValidateV0Async(connection, budget);
+        return null;
     }
 }

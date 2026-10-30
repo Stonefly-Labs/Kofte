@@ -6,7 +6,968 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint:** **004 / human acceptance recorded; renewed handoff requires a fully green latest-head PR matrix** after specify, clarify,
+**Current checkpoint: 005 / implement is blocked for approved scope rework**, on
+`feature/005-authentication-bootstrap`, with recorded directory
+`specs/005-authentication-bootstrap`. The
+[ADR amendment](../adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
+records human approval of ASP.NET Core Identity, production local/OIDC accounts,
+first-login ownership and owner-led onboarding/RBAC. The human subsequently
+approved a one-time installation setup token for initial-claim admission;
+that decision is no longer a blocker. The
+[specification rewrite](../../specs/005-authentication-bootstrap/spec.md) now
+records the approved boundary: 005 account/credential/session/initial-Owner
+mechanics; existing 006 invitations/user administration/teams/RBAC. Six stories,
+34 scenarios, 29 requirements and nine outcomes have 16/16 built-in author
+validation. This is a controlled scope revision under the blocked feature,
+not a ledger rewind or a newly completed historical specify stage.
+The separate clarification pass now finds all ten categories Clear, with zero
+questions, unchanged spec and author checklist, and 16/16 to 16/16 author
+criteria. The separate [revised plan](../../specs/005-authentication-bootstrap/plan.md)
+now proposes framework/store integration, credential/setup policy, v2 contracts,
+format-3 migration/recovery and future validation. The explicitly authorized
+review of CHK037-CHK064 now satisfies 27/28 criteria, preserving all 36 original
+items and their historical review verbatim. CHK052 remains unchecked for RQ1:
+the source OIDC authentication-time freshness/clock-skew rule is not objectively
+defined by the later proof's five-minute lifetime.
+Clarify/reassess that rule before task reconciliation and analysis; see the
+clarification, replan, checklist-generation and assisted-review records below.
+Do not reset prior history or treat the old passing gates as proof of new
+semantics. No implementation skill or product
+command ran; begin/block records only the pause, not a completed stage.
+
+### Reworked 005 clarification assessment - 2026-10-30
+
+**Result:** No critical ambiguities detected worth formal clarification.
+**Scope:** The explicit `specs/005-authentication-bootstrap` directory on the
+original feature branch/draft PR #8, revised source `46f662b`. This assesses the
+new local/OIDC/account/ownership requirements, not the original clarification
+entry's old scope, and does not reset or complete a historical ledger stage.
+
+The prerequisites script ran once with `--json --paths-only` and the explicit
+feature-directory environment. Its absolute feature/spec paths matched this
+checkout. No before/after clarification hooks are configured.
+Zero questions were asked or answered; no answer or fresh human decision is
+invented. No empty Clarifications section is added to the unchanged spec.
+
+| Category | Status | Revised-spec coverage and assessment |
+| -------- | ------ | ------------------------------------ |
+| Functional Scope & Behavior | Clear | Scope/005-006 table, US1-6 and FR-001/007/010-012/023-027 define local/OIDC/coexistence, protected initial ownership, self-service account mechanics and existing 006 administration/RBAC, including denied post-setup self-admission. |
+| Domain & Data Model | Clear | Key Entities and FR-003/010-012/016/024-028 distinguish canonical users, credentials, exact external associations, setup/admission/session state and immutable initial designation; uniqueness, consumption, migration and preservation have observable outcomes. Physical model/capacity policies remain explicit planning obligations within retained limits. |
+| Interaction & UX Flow | Clear | US1-6, FR-004/006/008/020 and SC-005 define method selection, setup, self-service credential/reset/association, shared current identity, sign-out, safe retry/errors and measured accessible states. |
+| Non-Functional Quality Attributes | Clear | FR-008/009/013-020/024-029, SC-002-008 and Required Validation cover fresh next-request invalidation, privacy, bounded work/lockout/trust, race/restart/recovery, evidence and accessibility/timing; retained one-second local budget and prohibited capacity test remain explicit. No additional regulatory certification is claimed or inferred. |
+| Integration & External Dependencies | Clear | FR-001/002/021/023/027 and interfaces distinguish enabled local/OIDC connections, trusted actor/account admission, deliberate independent-method choice, no automatic fallback and no mandatory mail/identity vendor; future 006/007 and versioned contract design are explicit. |
+| Edge Cases & Failure Handling | Clear | Edge Cases, US2/3/6 and FR-010-019/024-029 cover local/OIDC contention, token/reset replay and foreign binding, association conflicts, lockout, last-method removal, uncertain commits, corrupt stores and stale restore without reopening consumed ownership. |
+| Constraints & Tradeoffs | Clear | Scope, ownership, assumptions and constitutional review retain approved framework direction, dedicated test ownership, host/module storage and honest transactions. Standard-store versus narrow adapter, finite policy values and transport choices are technical planning decisions, not missing product intent. |
+| Terminology & Consistency | Clear | Canonical internal user, local credential, external association, authentication connection, setup admission and initial-Owner designation have distinct meanings. Production local is not development identity; initial designation is not a universal permission or an Identity-role replacement for central RBAC. |
+| Completion Signals | Clear | Six stories/34 scenarios, FR-001-029, SC-001-009 and Required Validation map positive/negative, real-provider, browser, privacy and migration/recovery proof; at least 20 contenders, three restarts, next-request invalidation and five-second UI outcomes are measurable. |
+| Misc / Placeholders | Clear | No unresolved clarification marker or scope conflict; approved choices/defaults and specific remaining planning choices are separated. Historical green evidence/tasks do not certify new semantics or close F1/F2. |
+
+Built-in author checklist re-evaluation is **16/16 -> 16/16**: no newly passing
+items, no regressions and no unchecked items. Every checkbox, heading, note and
+byte remains unchanged as the clarification skill requires when no marker
+changes. The separate reviewer-owned quality checklist and all 103 task entries,
+design/runtime reports and source remain untouched.
+
+No material question is deferred or outstanding. Exact identifier/password/
+lockout policies, setup/reset token lifetime/delivery/binding, session/actor/
+account API shapes, store compatibility and migration mechanisms remain assigned
+to planning. This does not select stores/packages, weaken finite budgets or
+approve a new design. **Next at that checkpoint:**
+`/speckit-plan SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap`
+in a separate invocation, on the same branch/draft PR. Implementation remains
+blocked; the subsequent explicit planning invocation is recorded below.
+
+### Reworked 005 technical plan - 2026-10-30
+
+**Result:** Phase 0 research and Phase 1 design are written, with design-level
+constitutional gates assessed before and after. No unresolved product ambiguity
+or constitutional conflict was found; exact technical choices are proposed for
+review, not new human approval, runtime compatibility or feature acceptance.
+The explicit feature directory resolves to the same original branch/draft PR.
+`setup-plan.sh --json` preserves the existing plan rather than overwriting it;
+the resolved project override governs this revision. No before/after plan hooks
+are configured.
+
+Artifacts: revised plan/research/data-model/quickstart, new HTTP/actor-v2 and
+operator-v2 contracts, and account-admission-v1 for existing 006. Source-backed
+A1-A12 decisions are new; historical R1-R12 retain their original meaning through
+the pre-rework Git snapshot. Old v1 contract files stay byte-identical.
+
+Standard EF stores were evaluated first: they can customize schema and share
+transactions/defer saves, but do not supply the existing bounded native SQLite
+executor. The proposed narrow store adapter lives in the existing Web Host,
+uses shared-framework Identity managers/validators/hasher/lockout/reset and the
+current owner transaction/committed-cookie bridge. No EF Identity package,
+new project, custom account manager, periodic positive-auth cache or weakened
+deadline is selected. Actual pinned-manager/store/deadline/cleanup proof on both
+providers is the first implementation adoption gate.
+
+The design defines production-local protection, explicit connection ownership,
+private fifteen-minute setup/reset authority, five-minute bound admission/fresh
+proof, exact local policy/lockout, next-request session invalidation and a
+deny-default future account policy. Format 3 / schema 2 / recovery-v3 preserve
+old migrations/catalog fingerprints, canonical IDs/exact external associations,
+module state and consumed legacy ownership; old tickets and pending nomination
+are retired explicitly. The future guide maps all 34 scenarios/29 FRs/nine SCs
+and requires fourteen version-2 public recipes plus `all` on each provider.
+
+The spec, both checklists, historical runtime/analysis reports and all 103 task
+entries/markers remain unchanged; only the tasks' non-task pause notice changes.
+F1/F2/T101-T103 remain open. No product/dependency/migration/test source changes,
+heavy local product suite, prohibited session-capacity proof or new numbered
+feature. Ledger history, feature pointer and active start time remain unchanged;
+the helper updates only the blocked implementation reason.
+
+Stage validation: `python3 scripts/check_repository.py` passed;
+`python3 -m unittest discover -s scripts/tests -v` passed all 170 tests;
+`git diff --check` passed. Preservation assertions cover ledger history/pointers,
+unchanged spec/checklists/v1 contracts/runtime reports/migration bytes, all 103
+task entries, original inventory prompts and complete scenario/requirement/
+outcome mapping. These are documentation/tooling checks, not new runtime proof.
+
+**Next:** Human review of the proposed design and changed requirements-quality
+criteria, then separately invoked task reconciliation and cross-artifact
+analysis. Plain `/drive-speckit` still selects blocked implementation, not a
+rewound plan/checklist stage. Do not resume implementation, mark old gates newly
+passed or request a merge between stages.
+
+### Reworked 005 checklist generation - 2026-10-30
+
+**Result:** Append-only generation, not requirements-quality assessment.
+The [existing reviewer checklist](../../specs/005-authentication-bootstrap/checklists/quality.md#revised-scope-requirements-quality---2026-10-30)
+now adds **28 unchecked criteria, CHK037-CHK064**. All original file bytes,
+CHK001-CHK036 markers and the complete 2026-10-26 assisted-review evidence remain
+unchanged. Its 36 historical satisfied items are not a revised-scope pass;
+the file now contains 64 criteria, with all 28 current criteria awaiting review.
+
+The explicit invocation sets
+`SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap` and names
+`checklists/quality.md` as the append-only target. Prerequisites ran once with
+`--json --template checklist-template`; absolute feature directory and the
+resolved canonical checklist template matched this checkout. No before/after
+checklist hooks are configured. The scope, standard depth and reviewer/PR
+audience are clear from the request and existing checklist; no clarification
+question or new product decision was needed.
+
+The new questions cover production local/OIDC/coexistence, protected first-login
+ownership, credential/reset/association and next-request session requirements,
+the 005/006 default-deny contract, versioned compatibility/migration/recovery,
+finite/privacy/accessibility evidence and retained F1/F2 limitations.
+All 28 questions carry revised-source references and assess written requirements,
+not executed behavior, API procedures or code correctness.
+
+The human's positive design feedback is not a request to evaluate or mark these
+criteria. No new item is assessed, no old item is re-certified and no requirements
+gap/pass is inferred from generation. Spec, author checklist, all design
+artifacts/contracts, 103 task entries/markers and runtime/review evidence remain
+unchanged. F1/F2/T101-T103 remain open.
+
+The driver helper updates only the active blocked implementation reason; history,
+feature pointer and original start time are preserved. No historical checklist
+stage is reset/completed. Publication records repository/Python/whitespace and
+append-only preservation checks, not product/runtime evidence. No product,
+dependency, migration or test source changes; no heavy local product suite or
+prohibited session-capacity proof.
+
+**Next:** Explicit reviewer assessment of CHK037-CHK064 against the revised
+005 requirements/design, with findings and evidence before marking any item.
+Only after that gate may separately requested task reconciliation and analysis
+proceed. Implementation and acceptance remain blocked/later on the same feature
+branch/draft PR. No intermediate merge or new numbered feature.
+
+### Reworked 005 assisted requirements-quality review - 2026-10-30
+
+**Result: changes required; 27/28 revised-scope criteria satisfied.**
+The human explicitly requested assessment of CHK037-CHK064 against the revised
+spec/plan/contracts/constitution and stated **"I authorize assisted
+requirements-quality evaluation and checkbox updates."** The explicit directory
+is `SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap`.
+
+The [review record](../../specs/005-authentication-bootstrap/checklists/quality.md#assisted-revised-scope-review---2026-10-30)
+assesses source `55b0aeb8c400060224a5fd59e0be7b32d1fc4b84` and supplies evidence
+for every item. Exactly CHK037-CHK051 and CHK053-CHK064 are marked satisfied;
+CHK052 remains unchecked. All questions/IDs/references, the complete original
+CHK001-CHK036 prefix and historical review are preserved. The preceding
+generation record describes that earlier checkpoint, not this authorized review.
+
+**RQ1:** OIDC reauthentication requires a signed fresh `auth_time`, but research
+A7, Identity-v2 and the proof model do not define its request-bound acceptance
+cutoff, bounded clock skew or future-timestamp treatment. Five minutes of
+subsequent proof validity does not define the source authentication's recency.
+This is a written technical-policy gap, not an implemented-vulnerability finding.
+The review selects no numerical policy and changes no design/spec/contract.
+
+No additional identity-model or 005/006 product-scope decision is requested.
+The spec, author checklist, all design/contracts, 103 tasks/markers, source/tests/
+migrations/dependencies and runtime reports remain unchanged. F1/F2/T101-T103
+remain open; satisfying written criteria does not diagnose, fix or waive them,
+prove framework/dependency adoption, supply runtime qualification or accept 005.
+
+Only the checklist, README, this workflow record and helper-managed active
+blocked reason change. Ledger history, feature pointer and original start time
+are preserved; 005 still points to blocked implementation. No historical
+checklist stage is reset/completed. Publication records repository/Python/
+whitespace and exact marker/history/protected-scope checks, not a local product
+or prohibited installation session-capacity run.
+
+**Next:** Clarify the bounded OIDC source-authentication timestamp/skew rule
+consistently in the design/contracts/validation expectations, then explicitly
+reassess CHK052. Only after that quality gate may separately requested task
+reconciliation and cross-artifact analysis proceed. This request stops before
+either task generation or implementation, on the same branch/draft PR.
+No feature acceptance, readiness or intermediate merge.
+
+### Earlier 005 checkpoints (historical)
+
+The preceding
+[final review](../../specs/005-authentication-bootstrap/review.md) identifies
+one MEDIUM forbidden-DNS-destination admission defect and one unresolved current
+qualification failure: SQLite enrollment setup returns 503 instead of 200,
+before the key-loss fault is injected. Exactly T101-T103 are appended unchecked.
+All original task bytes/markers, product/test/tooling source, reviewed checklists
+and historical reports remain unchanged. No product fix runs in this stage.
+The earlier
+[convergence assessment](../../specs/005-authentication-bootstrap/convergence.md)
+finds zero actionable gaps across 51 requirements/outcomes/scenarios, twelve
+plan decisions, all 100 tasks and twelve principles. It leaves tasks,
+product/test/tooling source and reviewer-owned checklists unchanged and verifies
+actual complete/current-head reports with the same 313 passing named steps.
+Current run `41098819181` has a failed recovery context; earlier green reports
+do not diagnose or replace it. T101-T103 remain unchecked; the later approved
+scope amendment now blocks that continuation. No acceptance, PR readiness,
+merge or new numbered feature is authorized.
+T092's focused operations join now has actual Linux qualification. T093 also
+requires exact private Playwright discovery/execution completeness, not just
+zero exit: no missing case, skip, retry or flaky result. Its complete local
+browser and quality gates pass. T094 now proves all nine public recipes and
+`all` on each provider, exact ordered observations and all 77 harness negatives.
+T095 reconciles delivered setup/API/operator documentation, private custody,
+session/capacity/retention and recovery limits. T096 reconciles the actual
+reviewed graph/archives/notices, generated contracts and zero-finding npm/NuGet
+audits. T097–T100 now close the exact hosted complete command, actual
+current-source CI, full traceability and same-PR publication.
+The complete command executes through Product checks'
+`workflow_dispatch` input `suite=complete` on a disposable GitHub-hosted Ubuntu
+runner, separately from the ordinary ten-job PR matrix. Do not restart a heavy
+local run on a shared workstation merely because the older guide says "local".
+Record the actual profile: the interrupted Mac attempts are not passing gates,
+and hosted evidence does not establish a final macOS qualification.
+The actual source-`4e16d36` complete run passes:
+[41072051400](https://github.com/Stonefly-Labs/Kofte/actions/runs/41072051400),
+all ten all-scope reports have `completeGate=true`, covering **313 named steps**.
+Its separate [ten-job matrix](https://github.com/Stonefly-Labs/Kofte/actions/runs/41072560598),
+[actual PR product run](https://github.com/Stonefly-Labs/Kofte/actions/runs/41076880183) and
+[repository checks](https://github.com/Stonefly-Labs/Kofte/actions/runs/41072565753)
+pass. The [complete evidence and acceptance mapping](../../specs/005-authentication-bootstrap/implementation.md#t097-t100-complete-hosted-qualification-and-traceability)
+records all 22 FRs, seven SCs, 22 scenarios, twelve research decisions and twelve
+principles. The reviewer-owned checklists remain unchanged and passing.
+
+The following verification timeline is historical, not the current gate status.
+The [historical evidence](../../specs/005-authentication-bootstrap/implementation.md#t097-in-progress-current-full-gate-and-assessed-head-failures)
+preserves actual sources/results and historical failures. Correlated tracing
+identifies expensive lazy RSA generation in the issuer fixture's first JWKS
+response. Preparing keys before serving has guarded red/green proof and
+unchanged runtime budgets. At repaired head `32d0d91`, actual Linux CI passes
+both complete provider integration jobs and 265 public identity/platform
+contract cases. Eight product contexts and repository checks pass; retained
+composition contracts and the isolated whole PostgreSQL propagation baseline
+still time out. The exact local all-suite attempt passes quality/unit and
+SQLite native/composition, but two SQLite storage methods fail. Unchanged
+isolated two-case and full 236-case storage probes pass without diagnosing
+or replacing that failure. Local PostgreSQL was interrupted for diagnosis;
+later suites did not execute. Temporary request probes are removed.
+The original implementation has resumed on the same draft PR, not awaiting
+human approval. A complete composition profile identifies repeated PostgreSQL
+service setup inside the public consumer; the continuation uses the existing
+process-owned service while preserving per-fixture databases/roles and verified
+cleanup. The complete composition selection improves from 823.858s to 551.735s
+(84 cases, zero skipped), and eleven uninstrumented ownership/isolation/outage
+checks pass. The later unchanged-source `b15f2f3` Linux assessment passes nine
+product contexts, including propagation, but still times out in composition;
+it predates this service-reuse repair. Full local/repaired-source CI qualification
+then completes at `0c79825` with nine passing local suite groups but a timed-out
+unavailable-PostgreSQL injection; the complete gate remains failed. Actual CI
+passes seven product contexts and repository checks, while PostgreSQL
+composition and both retained timing gates fail. The local injection has a
+reproduced reserved-port transport blackhole and a focused owned-listener
+repair, with unchanged budgets. Timeout reports now retain strictly validated
+failed child evidence; CI adds bounded safe recipe timings after contract
+failure, without replacing the failed required command.
+Published `e371245` passes complete local propagation in 730.130s, all baselines
+and five injections; its independent exact full gate finishes with nine passing
+suite groups but a failed SQLite composition `all` consumer, not a complete pass.
+That Linux assessment finishes nine contexts successfully, including all retained
+composition contracts; only the isolated PostgreSQL baseline times out. Subsequent
+safe timing evidence identifies its phase costs and a SQLite recovery configuration
+rejection. A forced host/web port-collision regression now passes, and overlapping
+only pre-barrier worker startup reduces the unchanged 400-process ownership proof
+from 86.862s to 48.242s locally. All rounds, contenders, readiness assertions,
+original selectors and budgets remain. Actual `13d4e9c` Linux integration
+passes, but its isolated baseline exposes overlapping exclusive warmup leases.
+The corrected two-phase fixture overlaps only runtime startup, restores serial
+warmup, then releases the unchanged registration barrier. A held-lease regression
+fails before repair on each provider; all six relevant cases pass afterward,
+including the same 800 fresh race workers. Repaired-source qualification continues.
+The subsequent `81e1805` Linux assessment passes nine contexts and the full
+propagation proof, including its whole PostgreSQL baseline in 691.368s.
+Retained composition still times out. The next fixture correction borrows the
+native parent's owned service across independent consumers, preserving fresh
+databases/roles and verified child exit before release. Its live-target
+regression fails before repair and passes afterward; all 86 retained cases pass
+locally in 466.741s under the original 900-second bound. Final qualification
+continues; no complete-gate pass or stage advance is claimed.
+Qualification and Linux diagnosis continue. The preserved earlier fixture remains
+stopped, not deleted or claimed cleaned up. Do not advance stages, waive the
+failed gates or attribute every historical failure to lazy key generation.
+
+### Historical implementation verification
+
+The following checkpoints preserve earlier failures and repairs; their pending
+task/capture statements do not override the current checkpoint above.
+The human-requested context pause has been resumed on the same branch/draft PR;
+it was not completion or a new approval gate.
+The [implementation checkpoint](../../specs/005-authentication-bootstrap/implementation.md#continued-implementation-short-private-chromium-temporaries)
+records the remaining work, actual results and required unchanged budgets.
+The complete browser gate now passes its root/Development selection and both
+native providers. Its real failure was the verifier's missing private
+canary-export directory; diagnostics had misleadingly retained passed-test
+declaration locations. The fix consumes the actual bounded private export and
+scans owned transport output, without weakening missing-capture or disclosure
+guards. This joins the earlier passing production login/enrollment/session
+journeys and private callback/accessibility evidence to close T090.
+The published-head assessment then found a separate native Linux launch failure:
+Chromium's inherited long temporary-root path overflows its singleton Unix
+socket. A pinned isolated Linux reproduction and the changed helper's actual
+untrusted/trusted TLS, ownership and complete cleanup proof pass with a short
+fresh private profile-owned temporary root; the local both-provider browser gate
+also passes its explicit long-temp regression. No request/deadline/ownership/TLS
+guard was relaxed. Its new hosted assessment is pending.
+The exact complete local gate at `c7f68a7` passes seven suites but fails native
+contract, PostgreSQL public privacy and the isolated propagation baseline.
+That head's actual CI passes repository checks and five product contexts, but
+fails PostgreSQL integration/contract/browser/privacy/propagation. Root browser
+tests pass in that hosted run; the later native launch is the separate failure.
+T092–T100 remain open. The earlier failed complete local/hosted results remain
+historical failures; unexpected native 503s are not diagnosed by isolated passes.
+No approval is needed to continue this engineering work. Later stages and
+acceptance remain separate.
+Earlier focused locked/paused-store and before/after-login-commit refusal cases pass
+ten cases per real provider. An actual binary built from accepted pre-005
+`3e41681` refuses format-2 serving and upgrade on both providers while exact
+security/module state stays unchanged. Forty-one strict consumer/transport-capture
+negatives and the complete 50-case SQLite/42-case PostgreSQL host recovery
+selections pass, including actual key/preparation classes. Those are
+focused results, not complete-gate or assessed-head CI completion.
+A historical full PostgreSQL storage run timed out at its
+unchanged 900-second limit after initial server reuse; the optimized
+owned Unix-engine inventory rerun then passed all 212 cases, zero skipped and
+eleven required identity classes in 832.601 seconds. The complete serial
+host/storage/composition baseline within its inherited 900-second budget
+remained unproved at that checkpoint; the newer actual nested
+baseline result above does not erase those failures.
+A later focused complete 119-case PostgreSQL host selection passed in 339.057 seconds
+with bounded independent fixture scheduling and verified owned administration
+cleanup. The same cases, product deadlines and within-test contention remain;
+that isolated result was not itself a passing serial/nested aggregate gate.
+The [runtime guide](../../specs/005-authentication-bootstrap/quickstart.md)
+separates delivered interfaces from exact results. The ledger recorded
+005/implement/blocked at the failed verification boundary, not a pending human
+approval; the current invocation resumes it as running on the same branch/PR.
+The [human-directed capacity-test amendment](../adr/0007-authentication-bootstrap-boundary.md#human-directed-verification-scope-amendment-installation-session-capacity)
+removes the 50,000-session boundary tests and exclusive helpers/corpus cases,
+without changing the runtime cap or claiming it verified. Chromium capture
+diagnosis now retains bounded source-allowlisted phase timings. Local quality
+and both-provider browser gates pass; a Linux capture fix is not yet established.
+Converge/review/acceptance have not run.
+
+The actual `cb188df` Linux browser assessments fail only the native Development
+fact's `/me` body capture; the production retry fact passes. The previously
+instrumented helper did not cover that separate Playwright child. Its new
+diagnostics preserve primary assertions alongside strict capture-cleanup errors
+and retain only validated phase timings/fixed failure categories. This does not
+establish a browser fix or change the remaining task markers.
+
+Subsequent `092ce94` Linux manual/automatic timelines instead pass Development
+and expose an aborted context response during production retry. The loop could
+accept pre-retry signed-out text and navigate before the new check completed.
+It now proves the fresh loading/result cycle through the unchanged actual
+request and drains strict capture before continuing. Matching `07eb672` Linux
+validation still fails both native browser facts; Development capture fails
+before any selection. Closed network categories and actual client AbortSignal
+observations now distinguish hypotheses without relaxing strict capture.
+Latest local quality and SQLite browser checks pass, but PostgreSQL production
+fails a text assertion after successful signed-out capture. Earlier passing
+local gates do not establish the cause or erase these failures.
+
+The actual abort-without-client-signal evidence matches
+[upstream Chromium issue 42742](https://github.com/microsoft/playwright/issues/42742):
+stream EOF could be misreported as cancellation, losing the captured body.
+The [reviewed exact test-tool pin](../adr/0007-authentication-bootstrap-boundary.md#implementation-follow-up-pinned-chromium-stream-completion-repair)
+uses the canary containing the upstream repair because stable 1.64.1 still
+fails. It is not a floating dependency or a capture exception; production
+readers and all existing guards remain unchanged. Actual Linux qualification
+and the remaining native/public gates are still required.
+
+The repaired-head Linux named browser verification and all twelve separate
+public HTTPS recipes pass, as do both complete native provider integrations.
+Its automatic unit job exposed seven action
+request doubles missing `Request.failure()`; both shared builders are corrected
+and the complete local unit gate passes, including all 38 capture cases.
+A separate public session keyboard-audit race is reproduced and corrected:
+wait for the actual control before pressing Tab, without requiring enablement
+of intentionally ARIA-disabled loading controls. These separate boundaries
+do not complete T092-T100.
+Native failure reports now retain only exact source-known/catalogued scenario
+arguments, independently revalidated in isolated reports. An earlier isolated
+PostgreSQL propagation baseline fails an initial login 303/503 assertion rather
+than timing out; passing independent integrations do not diagnose that failure.
+The exact privacy scenario evidence exposes a missing producer dependency:
+fresh jobs attempted all four browser-backed public guides before the first
+Next build. Privacy now builds the production web workspace before those guides
+and native browser selections, after disposable-provider admission. Existing
+local builds had masked this orchestration defect; actual fresh Linux
+both-provider privacy now passes at `376c7a1`, with verified assessed parents.
+Fresh `d1c2f50` Linux both-provider integration/recovery also pass, along with
+all three isolated propagation baselines and all five intentional failures.
+For missing Chromium only, require the exact nonzero browser command and the
+exact subsequent missing-canary refusal. Ordinary capture/cleanup remains strict.
+Native Development fixture setup now uses the real context/CSRF/session flow;
+helpers preserve finite current-request budget observations without changing
+budgets or leaking prior failures into later requests. The retained composition
+timeout and intermittent native positives
+remain engineering work, not a human approval gate.
+The full retained composition selection passes locally (84 cases, zero skipped,
+583.290s) but still times out on Linux. Its failed reports now preserve only
+source-known completed method names; progress does not replace required XML
+success evidence or extend the original 900-second bound.
+
+For focused Linux browser diagnostics on a published task branch, run
+`gh workflow run product-checks.yml --ref feature/005-authentication-bootstrap -f suite=browser`.
+This manual selection still executes the real browser suite and its public
+recipes with the existing pinned tools and guards. PR/main runs and default
+manual dispatch retain all ten contexts. Inspect actual safe artifacts and
+revision identity; a dispatch request alone is not test evidence.
+
+**Earlier implementation increments (historical):** The
+`a0c1fb0` Ubuntu browser job passes all eight HTTPS recipes, including both
+stores' enrollment/lost-acknowledgement and twenty-way race journeys; its
+complete PostgreSQL integration also passes. Real development-session and
+signed authority/profile/email negatives are added without claiming a delivered
+development-login endpoint. The expanded `f80eee9` head now passes both full
+provider integrations and the complete HTTPS browser job, closing US2.
+US3 sign-out/session parity is in progress: native durable revocation, exact
+Next/UI clearing and generated contracts are delivered, with twenty focused
+SQLite cases passing in two selections. Missing live keys now produce 503,
+not anonymous identity. The actual browser session journey still fails locally
+before login after verified TLS trust. Published `2852371` now passes all ten
+hosted HTTPS recipes, including both stores' session-boundary journeys with
+nineteen named observations each. Four additional actual HTTPS SQLite parity
+cases pass after fixing unknown identity/version responses to private empty
+404s without forwarding. Actual retained-key rotation across two fresh workers
+and actual development-cookie production refusal also pass. A fresh local
+PostgreSQL attempt fails before that new parity evidence can be established;
+it is not a passing counterpart or a diagnosis of the earlier network-pool limit.
+The TypeScript corpus now runs actual ordinary/designated actor and request
+comparisons, closing the test/probe additions T056/T061, not T064's entire
+both-provider corpus. Native case/method rejection and Next case/trailing-slash
+denial are corrected. The verifier now builds production Next before native
+HTTPS parity tests. Development's positive endpoint/adapter is an explicit
+full-corpus prerequisite; its test roots follow T055 without waiting on T070.
+Native Development selection now uses configured keys and the atomic owner/session
+bridge. Four SQLite cases pass, including actual stopped mode changes with equal
+profiles, old-cookie rejection and preserved consumed designation. The fresh
+PostgreSQL probe fails during fixture creation, before product execution; its
+generic Docker-command error does not establish a cause. Development web selection
+now passes actual native/Next HTTP and Chromium journeys, with explicit configured
+choices, persistent mode label, fresh identity-bound CSRF, sign-out and no personal
+SSR. Denied/uncertain switching clears stale identity without retrying the mutation.
+All thirty SQLite session/sign-out cases pass in one selection, including actual
+required-record insertion failure/rollback and explicit correction. T058–T060 and
+T074 are now reconciled. T057/T062 now additionally close the request-test/shared
+policy assertions: all sixteen SQLite native/HTTPS cases pass together, including
+exact header bytes, ambiguous headers, complete frozen unsafe returns and
+every unsupported method. Broader both-provider/full-corpus gates remain open.
+T063 now verifies actual empty/composed hosting with owned production Next,
+concurrent independent users, exact direct/adapted IDs and replay of the saved
+original credentials on the first protected request after stopped epoch revocation.
+Fresh explicit selection retains both user IDs; production fresh designation/
+corruption and separate stopped-worker authority checks also pass.
+The expanded TypeScript production corpus now passes thirteen ordinary cases
+plus the designated actor case through actual native/Next HTTPS routes. Exact
+header-byte testing exposed Node's bare 431 before application policy; all Next
+serving launchers now provide 32 KiB parser headroom while the unchanged 16 KiB
+identity boundary admits its limit and returns a private 400 one byte over.
+That production-only increment did not yet close T064's Development/provider
+requirements. The
+Development increment now exercises the same independent seven-method and exact
+header framing helpers, strict configured selection and body limits, ambiguous
+Origin/CSRF/Fetch Metadata, credential namespaces, cookie attributes, enrollment
+refusal and durable sign-out through both actual paths. The actual
+empty/composed scope facts now invoke that complete case on both providers;
+both SQLite facts and the retained owned runtime pass locally. The `89b8b3a`
+hosted native platform-contract phase now passes the complete Development case
+in both serving scopes on both actual providers.
+T065 now closes with a fresh complete thirty-case SQLite session/sign-out
+selection and verified unchanged both-provider hosted session and storage/trust
+suites. This does not close the separate HTTP/Development gates or turn retained
+host integration, recovery-recipe and timeout failures into a green full matrix.
+The production corpus additionally exercises exact callback-target bytes
+together with exact header bytes on both paths. A real initial adapted 414
+identified the owned HTTPS test ingress's default request-line cap; giving that
+fixture the same framing allowance as the native host preserves both 16-KiB
+application limits. The combined admitted request reaches protocol refusal,
+while one byte over either boundary returns private 400 without cookies.
+Native failure projection now also retains at most 32 source-allowlisted
+repository paths with valid in-file line numbers. Private traces/values remain
+discarded; isolated failure-propagation reports revalidate the same whitelist.
+This improves the next failed run's evidence, not the outcome of prior failures.
+Host projection now also retains bounded finite HTTP status assertion pairs and
+source-known identity fixture/readiness codes and helper locations. Isolated
+reports revalidate these fields; raw protocol, identity values and traces remain
+discarded. The unresolved initial-login and intermittent worker-readiness
+failures are not relabeled fixes by this diagnostic increment.
+The prior composition-privacy failure remains recorded: both a local unchanged recipe
+and the subsequently published `135fe80` privacy job pass, without establishing
+the failed job's cause. Its wrapper now retains the consumer result in private
+test output for existing source-allowlisted diagnostic projection.
+T075 additionally preserves explicit stopped preparation,
+loopback-only serving and matching Development environments in the supervisor
+and owned runtime. The actual SQLite negative startup matrix passes all 88
+configurations across both entry paths and unsafe-switch settings, with unchanged
+prepared storage/keys and verified exits. T076 now also reconciles the unchanged
+passing PostgreSQL startup matrix and actual direct/adapted endpoint evidence.
+T077's exact persisted profiles, cookie namespaces and pending/consumed authority
+transitions pass on both providers in the native platform-contract phase.
+T064 now also closes from the `9244e6b` native platform-contract phase: all
+production cases, including simultaneous target/header limits, and full
+Development cases pass on both stores. Later composition timeout remains failed.
+The new public `development-isolation` recipe runs the shared 88-case exposure
+matrix, actual browser/API/separately compiled actor equality, and independent
+pending/consumed mode transitions. SQLite passes all 135 independently validated
+named observations locally. Hosted `c5e65f2` now passes all 135 frozen named
+observations on each provider, independently checked against the exact catalog;
+T078 is complete. Its browser job passes all twelve public recipes.
+T068's regenerated types, independent required/nullable/additive/version shapes
+and original health/OpenAPI compatibility also pass.
+Strengthened production browser isolation and public session recipes now pass
+on both real providers at `49ef96e`, closing T066/T067/T069/T070. The private
+parent independently verifies all nineteen ordered session observations and
+all 135 unique Development observations per provider. Existing format,
+preparation and read-only-startup cases close T079 without duplicating them
+under the plan's proposed filename.
+Recovery-v2 complete-set backup/actual-state verification and streamed security
+digests now pass the new SQLite and retained v1 checks; the fresh PostgreSQL
+probe fails during owned fixture creation, before product execution. T080/T081
+remain open for their complete both-provider/quarantine/decision obligations.
+Identity-bearing sets explicitly refuse the legacy ungated restore path while
+T082 is unfinished. Current hosted SQLite enrollment replacement fails at its
+callback assertion; an unchanged focused reproduction passes without diagnosing
+that failure. The full matrix remains non-green.
+Hosted `f52150f` PostgreSQL integration now passes the actual new recovery-v2
+cases at verified merge `30bcebaa8f29636109774d1c28addefc5ab59414`.
+The separately gated complete-set restore paths and exact private decision
+reader now have actual SQLite snapshot/binding/tamper/private-file proof.
+The outside-snapshot marker blocks all six existing stopped commands.
+The explicit reconciliation command now passes actual SQLite v1 upgrade/v2
+activation, fresh protected keys and killed-worker retries at six boundaries.
+The durable exact decision/configuration/epoch/ring intent prevents replacement
+or duplicate security effects; recovered consumption wins and unknown history
+stays locked. Final activation keeps a private external receipt. Normal backup
+readers stay strict; explicit stopped retry separately verifies the owned live
+connection when SQLite retains an inactive crash journal. New PostgreSQL
+reconciliation and remaining partial-write/key/complete operations evidence
+remain pending; T080-T082 stay unchecked.
+T083 now has actual SQLite live key-loss/foreign/undecryptable-ring,
+stopped custody correction/revocation, certificate-overlap/retained rotation,
+client-secret correction and complete backup-separation proof. The optional
+strict retained-decryptor references preserve the current encryptor, trusted
+configuration, epoch, mappings and consumed designation. A new owned local
+PostgreSQL attempt fails during Docker fixture creation, before product
+execution; T083 remains unchecked. Earlier SQLite backup-worker readiness
+failures and the unchanged later passing selection are retained, not assigned
+an unverified cause or treated as a full-matrix pass.
+The next T084 increment now passes sixteen actual SQLite restore cases,
+including worker death with empty/partially flushed intent, key inventory and
+post-commit result journals. Only bounded syntactically incomplete pending
+scratch is discarded under reverified exclusive authority/current marker;
+complete unknown/conflicting/invalid state stays unchanged and refused.
+Foreign/disposed/cancelled/expired authority cannot remove pending state.
+Staging-key/remaining authority/new PostgreSQL proof is still pending.
+The next key-preparation increment reproduces and fixes interrupted pending owner
+inventory retry. Six actual worker-kill cases pass on SQLite and an isolated
+native PostgreSQL 17.9 cluster, preserving the original ring and complete keys.
+Full host units, five new actual SQLite artifact/state negatives and all sixteen
+restore-journal regressions pass. Cleanup requires a valid preparing owner,
+verified keys and unchanged owner/pending bytes under live authority; ready rings
+and complete invalid/foreign state remain refused. Partial initial owner/key
+writes and owned-image PostgreSQL execution of the new recovery negatives remain
+open. The published `ec01770` both-provider recovery job passes, but integration,
+contract and failure propagation still fail; initial-login HTTP 503 is observed
+without an established cause. Those earlier results did not establish feature acceptance.
+The next T086 increment passes four actual failure cases on SQLite and isolated
+native PostgreSQL: lost host authority/corrupt session tickets refuse warmed
+identity/actor requests, and real database rejection of required session or
+enrollment evidence rolls back login/designation. Explicit correction/retry
+preserves mapping and ceremony history; the existing revocation-record rollback
+case also passes on both. No production behavior/budget changes or full T086
+completion is claimed.
+Stopped bounded `maintain` is now implemented using the existing retention
+helpers, with passing actual SQLite batch, prepared-authority and live-host
+refusal regressions. It preserves consumed designation, active sessions and
+installation evidence. Hosted `20d751c` PostgreSQL host/storage and both-provider
+recovery now pass the actual new cases at verified merge
+`c5041de1f62a640d1e12c4300d4d090e95422833`, closing T087 with **80/100** complete.
+The newer `f52150f` SQLite host failure is the OIDC DNS-readmission test's
+initial/corrected-login assertions, not the earlier enrollment failure.
+Hosted `20d751c` native browser verification passes, but the subsequent public
+SQLite `enrollment-race` recipe fails; later recipes do not run. No cause or
+full-matrix pass is inferred from those safe reports.
+No budget or required case is relaxed, and intermittent native readiness
+failures remain recorded without an established cause.
+A new owned creation probe confirms local Docker
+network-pool exhaustion without removing existing resources; this diagnoses that
+probe, not every historical generic failure. Recovery/maintenance and final
+gates remain unfinished. The
+[implementation record](../../specs/005-authentication-bootstrap/implementation.md)
+preserves the initial 404/SAML failures and their resolved provenance proof.
+The actual OIDC package and closure are now adopted, centrally pinned,
+locked and inventory-reconciled at 403 npm / 87 NuGet. The independent HTTPS
+issuer, owned process/commit-barrier support, frozen acceptance corpora,
+strict configuration and immutable public actor-v1 are implemented.
+Real SQLite/PostgreSQL format-2 migration and exact v1/v2 verification now
+preserve installation/module IDs, assignments, markers, populated EF history,
+module data and registry revision totals. Constraint/physical tampering,
+rollback, idempotence, v0/unknown formats and foreign scopes are tested.
+The one-second timeout integration issue is resolved without a waiver:
+bounded native SQLite execution and cancellable PostgreSQL pass real lock,
+commit, cancellation and rollback tests. Metadata/admission transactions
+verify normal host authority, preserve epoch/trust and module revisions,
+advance checked security revisions and enforce bounded persisted quotas.
+The focused both-provider identity/registry/lease gate passes 105 tests.
+Transactional immutable security events, installation/purpose-bound persistent
+keys and admitted stopped preparation/reconciliation/revocation are implemented.
+Key tests pass 27 cases and stopped commands pass fourteen both-provider cases.
+The PostgreSQL recovery failure is reproduced and corrected by server-deparsed
+constraint definitions that preserve semantics across actual dump/restore;
+49 recovery/physical-format cases pass, retaining tamper refusal.
+These are foundations, not functioning login, enrollment, UI or recovery.
+At that foundation checkpoint, the later stories remained unimplemented.
+Shared T018–T020 endpoint/CSRF/default-deny and private diagnostic components now have executable component/operator
+evidence, including real child termination. T021
+installs the same configuration/prepared-state/key checks, normal-lease-backed
+services, middleware and private diagnostics in both actual serving paths.
+Foundation units, both-provider storage/startup and stop/privacy recipes pass,
+as do actual empty/composed browser warm starts. Exact checks, initial failures
+and the controlled deadline-test profile remain in the implementation report.
+T024/T027 add exact caller-transaction-owned mappings, same-transaction creation
+evidence, capacity/Unicode/rollback checks and three fresh owner processes.
+Explicit trust/mode reconciliation preserves original mappings and consumed
+designation; these storage tests do not establish an HTTP session.
+The published foundation CI exposed missing explicit preparation in three
+shared composition recipes; the reproduced omission is corrected before their
+preservation baselines, with both-provider public regressions passing.
+Published mapping/composition head `cdb19a8` subsequently passed repository
+checks and all ten product CI jobs, including actual failure propagation.
+T023/T026 now add maintained OIDC configuration, bounded HTTPS transport and
+66 real native-protocol/transport/issuer regressions. The fixture
+stops at the post-protocol/pre-session ticket seam; no product login route,
+stored session or actor is inferred from that earlier fixture. T028 supplies bounded durable
+attempts inside the caller's owner mutation and protected framework properties.
+Forty both-provider attempt/mapping cases, two binding units and two actual
+native-handler cases pass, including exact security context, replay and rollback.
+T025/T029/T030 now supply protected minimal server sessions, the one-shot
+framework bridge and the validated-login owner coordinator. Thirty both-provider
+contracts exercise actual native OIDC/cookie handlers, real callback-owner
+termination before/after commit, publication failure, expiry/revocation,
+fresh references and both session capacities. Ninety-two dependent storage
+and four original issuer/native-handler cases also pass.
+T031 now wires product browser-context, protected login/callback and the native
+post-protocol coordinator into both hosts. Native sliding renewal is disabled.
+Root-pipeline authentication remains after the explicit request/binding/budget
+boundary; conditional authentication had allowed automatic native callback
+middleware to run too early and was corrected. Health never retrieves a session.
+Confirmed sign-out semantics remain later endpoint work, not the framework's
+void-returning removal API. T032 now delivers self-only `/me`, fresh scoped
+actor projection and generated identity contracts, preserving accepted health
+operations/components. The combined native/session/route/API gate passes 52
+both-provider cases, with 21 focused startup/policy/OpenAPI/issuer regressions.
+T033's independent adapter/configuration tests pass 51 cases. T034 now passes
+all sixteen actual owned host/Next parity observations and verified cleanup.
+A post-exit `EPERM` is accepted only after a zero-signal kernel check proves
+the entire group absent; existing or unverifiable descendants still fail.
+T035/T036 deliver the accessible `/identity` page, deliberate sign-in,
+bounded no-store identity checks, refreshed token pairs and stale-state
+clearing. All 98 web units, lint/types and production build pass.
+The real HTTPS fixture confirmed native-form opaque Origin under required
+`no-referrer`; a bounded Next Server Action now preserves real Origin/CSRF
+without weakening either policy. Local browser lifecycle/cleanup still fails.
+The original Ubuntu browser job passed `oidc-login` and `trust-refusal`
+on SQLite and PostgreSQL at `6be0ee8`; this does not waive the local macOS
+cleanup failure. Corrected local protocol evidence passes 123/123, and T038's
+mapping/restart matrix passes 20/20 after an intervening 19/20 readiness
+failure with unknown cause. Both complete provider integration jobs and all
+four real HTTPS browser recipes pass at `2f56f35`; T037–T040 are now reconciled.
+Broader composition-contract/recovery failures remain. The isolated propagation
+wrapper now preserves/revalidates safe host diagnostics and admits only the
+exact additional private XML-report flags; the actual published false failure
+replays correctly and all 126 Python tests pass. No deadline is increased.
+Fifty-six tasks remain. No feature acceptance is claimed.
+Session-head `ad21b2b` CI failed composition and PostgreSQL baseline timeouts;
+their causes remain unestablished. They are not erased by local passes.
+The unchanged both-provider composition selector passed locally in 588.596s
+within its original 900-second limit; this does not diagnose Linux CI timeouts.
+Published `f89c1ec` subsequently passed all eleven CI contexts. The original
+stage is resumed, not completed; no second run or later stage began.
+The [US2 continuation](../../specs/005-authentication-bootstrap/implementation.md#us2-nominated-enrollment-and-real-interruption-evidence)
+adds actual private nomination, protected atomic enrollment and masked UI.
+Both-store operator/interruption, twenty-way race and enrollment crash evidence
+is recorded; full SQLite HTTP, retained recovery and generated OpenAPI checks
+pass. New browser enrollment privacy/uncertainty checks are wired into the
+existing Ubuntu recipes but are not yet passing evidence. Local browser login
+stalls before enrollment; fresh PostgreSQL fixtures are blocked by Docker network
+pool exhaustion. No global cleanup, deadline change, completed US2 gate or
+feature acceptance is inferred.
+Use `SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap` on downstream
+commands, keep the same draft PR #8 and do not begin a second run or advance to
+converge. No intermediate merge or feature acceptance is requested.
+
+The following preserves completed design-stage history. The
+[specification](../../specs/005-authentication-bootstrap/spec.md) uses the exact
+fenced inventory 005 prompt and resolved project template. Five stories,
+22 Given/When/Then scenarios, 22 functional requirements and seven measurable
+outcomes cover production OIDC, stable identity, deliberate non-repeatable
+first-admin enrollment, browser/API access, limited development mode and safe
+operation/recovery. The
+[built-in author checklist](../../specs/005-authentication-bootstrap/checklists/requirements.md)
+satisfies 16/16 criteria. The reviewer-owned
+[quality checklist](../../specs/005-authentication-bootstrap/checklists/quality.md)
+now satisfies 36/36 criteria after explicitly requested assisted evaluation,
+with per-item evidence and no unresolved requirements gap or new human decision.
+
+Before beginning this new feature, PR #7 was verified human-merged, 004's
+accepted state was verified on updated `origin/main`, and all five acceptance
+artifact hashes matched. Its historical failed local gate and undiagnosed,
+human-deferred PostgreSQL observation remain explicit limitations; merge does
+not supply a new runtime result or release waiver.
+
+**005 clarification assessment:** No critical ambiguities detected worth formal
+clarification. Zero questions were asked or answered; no human decision was
+invented. `specs/005-authentication-bootstrap/spec.md` and its author checklist
+remain byte-for-byte unchanged: **16/16 to 16/16**, with no newly passing items,
+regressions or unchecked criteria. No spec section was touched.
+
+| Category                        | Status | Existing specification evidence                                                                                                                                                                                     |
+| ------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functional scope and behavior   | Clear  | Scope/actors/exclusions, US1-5 and FR-001-015/021 distinguish production login, deliberate enrollment, local development and later authorization/MCP.                                                               |
+| Domain and data model           | Clear  | Key Entities, FR-003/009-014/016/017 and Data Ownership define issuer/subject uniqueness, stable internal users, session/ceremony states and owner-local atomicity.                                                 |
+| Interaction and UX flow         | Clear  | US1/3/4/5, FR-020 and Experience define entry/return, safe retry, sign-out, expired/dev/failure states, keyboard/focus/announcements, narrow width and enlarged text.                                               |
+| Non-functional quality          | Clear  | FR-008/009/015-020 and SC-002/005-007 require finite budgets, twenty concurrent enrollments, three restarts, five-second post-return UI, WCAG 2.2 AA, safe evidence and honest recovery.                            |
+| Integration and dependencies    | Clear  | Accepted 001-004, FR-001/007/016/019/021, Interfaces and explicit exclusions define configured OIDC trust, shared actor/versioning and both-provider ownership without pulling 006/007/009 forward.                 |
+| Edge cases and failure handling | Clear  | Edge Cases, US1-5 and FR-002/009-019 cover replay, request forgery, concurrent enrollment, commit uncertainty, outage, stale restore, secret rotation and bounded trusted requests.                                 |
+| Constraints and tradeoffs       | Clear  | Scope and Requirements-level defaults explicitly choose one configured production trust, nominated first admin, no account linking/machine issuance and loopback-only development; granular permissions remain 006. |
+| Terminology and consistency     | Clear  | Key Entities consistently separate external identity, internal user, login/session, bootstrap ceremony, initial designation and security record; profile values are not identity keys.                              |
+| Completion signals              | Clear  | Required Validation maps all 22 scenarios, 22 requirements and seven outcomes to independent protocol/provider/browser/contract/privacy and retained regression evidence.                                           |
+| Miscellaneous and placeholders  | Clear  | No unresolved clarification marker or canonical conflict; Planning choices explicitly assigns mechanisms and finite design budgets without leaving unanswered product intent.                                       |
+
+Exact provider fixture/library, login/session flow and API credential format,
+versioned fields/routes/origins, enrollment delivery, secrets/rotation, finite
+durations/sizes/rates/timeouts, security-record retention/access and storage
+migration design remain planning/ADR choices, not deferred requirements questions.
+There are no Outstanding or Deferred taxonomy categories.
+
+The historical clarification stage followed specification. Explicit
+feature-path resolution targets `specs/005-authentication-bootstrap`; there is no
+`.specify/extensions.yml`, so no before/after clarification hook is configured.
+That checkpoint introduced no authentication code, package adoption, plan,
+tasks, runtime proof, later reviewer-owned checklist or human feature acceptance.
+It selected plan on this same branch and
+[draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8),
+not a new branch or intermediate merge.
+
+The existing specification-head CI observation remains unresolved:
+`1aef63f714f53fe9792e2dcfdc278c0a20f64929` passed 10/11 contexts, while
+`composition-integration-postgres` failed in the actual `private-diagnostics`
+scenario with `composition_cleanup_incomplete`/`composition_consumer_failed`.
+The original assertion and cause are not established. Clarification does not
+diagnose or remediate that unchanged-code failure, replace it with a rerun or
+call the historical matrix green. The subsequent clarification head `dac20c1`
+was observed passing all eleven CI contexts; that does not diagnose or erase
+the prior failure. New-head checks are recorded separately in the PR.
+
+**005 plan checkpoint:** The
+[plan](../../specs/005-authentication-bootstrap/plan.md),
+[research](../../specs/005-authentication-bootstrap/research.md),
+[data model](../../specs/005-authentication-bootstrap/data-model.md),
+[identity-v1 contract](../../specs/005-authentication-bootstrap/contracts/identity-v1.md),
+[operator-v1 contract](../../specs/005-authentication-bootstrap/contracts/operator-v1.md)
+and [future validation guide](../../specs/005-authentication-bootstrap/quickstart.md)
+resolve twelve traced choices: confidential OIDC code+PKCE, exact same-origin
+adapters, durable revocable server tickets, minimal actor/default denial,
+nominated atomic enrollment, explicit platform format 2, recovery-v2 quarantine/
+reconciliation, isolated local development, finite trusted configuration/egress/
+state budgets, safe retained security records, accessible identity states and
+independent protocol/provider/consumer/browser evidence.
+
+Source review identified the existing blanket health route guard and exact
+format-1 table/recovery inventory as deliberate implementation integration
+points, not permission to remove validation. Preserve unknown-route denial,
+anonymous safe health, module allocator/marker/history/privilege boundaries and
+all unrelated data. Add exact versioned format branches and explicit stopped
+preparation; ordinary serving performs no migration. Restore never promises
+rollback-proof administrator state or silently reopens a consumed ceremony.
+
+[ADR 0007](../adr/0007-authentication-bootstrap-boundary.md) was **Proposed** at
+the planning checkpoint, requiring explicit human approval before implementation.
+Before-research and
+after-design gates assess all twelve constitutional principles and pass at
+design level. Microsoft Learn/Context7 MCP are unavailable; official web
+references were verified instead. Exact new OIDC/transitive package identity,
+license/provenance/lock review remains a pre-adoption implementation gate,
+not a package installed or approved by planning.
+
+The specification and 16/16 author checklist remain byte-for-byte unchanged.
+No product/test source, package/lock change, task list, runtime proof or human
+feature acceptance is introduced. There is no `.specify/extensions.yml`; no
+before/after planning hook is configured. The ledger records only **plan** in
+this invocation and selects **checklist** on this same branch/draft PR.
+Generate that later reviewer-owned checklist unchecked and stop for reviewer
+evaluation; no assistant marking, intermediate merge or PR readiness is implied.
+
+**Subsequent ADR 0007 approval:** On 2026-10-26, after the explanation of OIDC
+login, server-side sessions, deliberate first-admin enrollment, explicit
+storage/recovery upgrades and development-only identity, the human explicitly
+replied **"ok, I approve it"**. ADR 0007 is now **Accepted for implementation**.
+This later decision is the current authority for ADR status; plan/research/
+model/contracts/guide, the specification/author checklist and historical ledger
+entries/hashes remain unchanged. Exact dependency adoption, reviewer-owned
+checklist evaluation, actual runtime evidence and explicit feature acceptance
+remain separate gates. Recording approval executes no stage: **checklist is
+still next**, with no active stage, on the same branch/draft PR #8.
+
+**005 checklist generation checkpoint (historical):** Executed the installed
+`speckit-checklist` skill with explicit recorded feature-path and resolved
+checklist template. The driver supplies standard-depth reviewer/PR coverage
+for identity/access and nominated enrollment, storage/recovery, minimal UX and
+operability. MCP is limited to the shared actor/future authorization boundary
+and explicit exclusions, not a new runtime. No extra scope question or human
+decision was needed or invented.
+
+The new [quality checklist](../../specs/005-authentication-bootstrap/checklists/quality.md)
+originally contained **36 unchecked criteria, CHK001-CHK036**, grouped by completeness,
+clarity, consistency, acceptance quality, scenario/edge coverage, non-functional
+requirements, dependencies and ambiguities/conflicts. All items have source
+references. Generation does not evaluate them, identify a requirements defect
+or assert a passing quality result.
+
+At that checkpoint, **005 / checklist remained active and blocked for reviewer completion** on
+`feature/005-authentication-bootstrap` and
+[draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8).
+The reviewer must evaluate the criteria with evidence, or explicitly request
+assisted evaluation/marking, before the stage can complete. ADR 0007's approval
+does not authorize marking. Resume this recorded stage only when resolving
+that gate; tasks is the later stage, not run by this invocation.
+
+There is no `.specify/extensions.yml`; no before/after checklist hook is
+configured. Specification, planning artifacts, approved ADR, 16/16 author
+checklist and all historical ledger entries/hashes remain unchanged.
+Only the active checklist state, new checklist and progress documentation
+change. No product/test source, dependency/lock, task list, runtime proof,
+feature acceptance, PR readiness or intermediate merge was introduced by generation.
+
+**005 assisted checklist review checkpoint:** The reviewer explicitly requested
+**"review the hecklist and highlight what needs me attention"**. This authorizes
+evaluation/marking of the existing criteria, not checklist regeneration,
+dependency adoption or numbered-feature acceptance. The original blocked
+checklist stage was resumed on its recorded branch/directory.
+
+The [assisted assessment](../../specs/005-authentication-bootstrap/checklists/quality.md#assisted-review---2026-10-26)
+now satisfies **36/36 criteria**, from 0/36, with one evidence row per original
+question. All IDs/questions/references are preserved. Review covered the spec,
+plan, all twelve research decisions, eight-table model, both versioned
+contracts, future guide, approved ADR and constitution. It found no unresolved
+requirements gap, constitutional conflict, scope amendment or new human decision
+needing attention. No requirement or architecture artifact was amended.
+
+In particular, API 401/403/503 semantics remain distinct from necessary protocol
+redirects; direct/adapter parity prohibits accepting mixed credentials even
+when their unsupported header is not forwarded. Restored-copy uncertainty
+requires quarantine/reconciliation, not administrator reenrollment. ADR 0007's
+later Approval section resolves historical Proposed statements without inventing
+a new approval gate. These are existing requirements, not new design decisions.
+
+The helper completes only **005 / checklist**, retaining historical entries
+and selecting **tasks** with no active stage. Tasks is next in a separate
+invocation on the same branch/draft PR #8; none was generated here.
+Spec, planning artifacts, approved ADR and 16/16 author checklist remain
+byte-for-byte unchanged. No product/test/dependency change, authentication
+runtime proof, feature acceptance, PR readiness or intermediate merge occurs.
+Actual adoption/protocol/provider/browser/privacy evidence remains mandatory
+future work. Historical failed checks remain failed and undiagnosed, not cleared
+by requirements review. No extension hooks are configured.
+
+**005 tasks checkpoint (historical):** Executed the installed `speckit-tasks` skill with
+the recorded explicit feature directory and resolved project task override.
+The [task list](../../specs/005-authentication-bootstrap/tasks.md) contains
+**100 unchecked tasks**: setup 6, foundation 16, US1 18, US2 15, US3 15,
+US4 8, US5 14 and cross-cutting 8. All tasks have exact paths, requirement/
+principle traces and explicit prerequisites. Its **242 dependency edges are
+acyclic**; **22 parallel candidates** are conditional on their own prerequisites
+and separate files, not permission for concurrent stages.
+
+Coverage maps all **22 functional requirements, seven outcomes, 22 scenarios
+and twelve research/design decisions**. Shared foundations preserve explicit
+format-2 preparation, protected keys, owner-local records, default denial and
+safe health before real production login. Story increments then cover nominated
+atomic enrollment, direct/adapter/actor/session boundaries, isolated development
+and safe operations/recovery. Mandatory evidence includes independent HTTPS
+OIDC and actor consumers, twenty eligible HTTP contenders and three fresh
+restarts per provider, actual commit barriers, exact identity/module preservation,
+all-state browser accessibility/timing, channel canaries and retained full gates.
+Initialization remains a separate explicit stopped recipe; serving never migrates
+or silently replaces a missing key ring.
+
+The original spec, all six planning artifacts, approved ADR and both reviewed
+checklists remain unchanged, as does all prior ledger history. No product/test
+source, dependency/lock, authentication runtime proof, analysis report or human
+feature acceptance is introduced. No before/after tasks extension hook is
+configured. Historical failures remain failed/undiagnosed, not cleared by tasks.
+The helper completes **only tasks** and selects **analyze** in a separate
+invocation on the same branch/draft PR #8. Passing analysis must precede
+implementation; neither an intermediate merge nor PR readiness is requested.
+
+**005 analysis checkpoint:** Executed the installed `speckit-analyze` skill
+with the recorded explicit feature directory and prerequisite command. The
+read-only [report](../../specs/005-authentication-bootstrap/analysis.md) records
+**pass** against assessed revision `e6b136dc44be36f8b60f238c68c37110191a923f`.
+All 22 requirements, seven buildable outcomes, 22 scenarios, twelve design
+decisions and twelve constitutional principles were assessed against concrete
+task obligations. All 100 tasks are mapped and unchecked; 242 explicit dependency
+edges are acyclic, with no invalid/forward reference. The 22 parallel candidates
+remain conditional on their own prerequisites and isolated files/fixtures.
+
+No actionable duplication, ambiguity, underspecification, coverage gap,
+ordering/terminology inconsistency or constitutional conflict remains.
+Independent protocol/provider/actor/browser/privacy acceptance, exact format/
+recovery/key boundaries and truthful partial effects agree across artifacts.
+Historical Proposed labels are resolved by ADR 0007's later human approval;
+that approval does not adopt unchecked dependencies or accept feature 005.
+
+Specification, all planning artifacts, tasks, approved ADR, constitution and
+both reviewed checklists remain byte-for-byte unchanged. Reviewer counts remain
+16/16 and 36/36. The driver persists only analysis, its ledger transition and
+current progress docs; no remediation, authentication implementation, package
+adoption or product-runtime proof is introduced. No analysis hooks are configured.
+Historical failed/undiagnosed runtime observations remain explicit, not erased
+by design/task coverage.
+
+The helper completes **only analyze** and selects **implement** in a separate
+invocation on the original branch and
+[draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8).
+Keep its dependency-adoption and actual evidence gates; convergence, final review
+and explicit numbered-feature acceptance remain later. No intermediate merge
+or PR readiness is requested.
+
+**Historical 004 checkpoint:** **human acceptance recorded; renewed handoff required a fully green latest-head PR matrix** after specify, clarify,
 plan, checklist, tasks and analyze completed on
 `feature/004-module-lifecycle`, based on updated main after spec 003's human merge.
 The [draft specification](../../specs/004-module-lifecycle/spec.md) uses the

@@ -180,8 +180,9 @@ public sealed class PostgresRecoveryTests
                 (await Assert.ThrowsAsync<InvalidOperationException>(() => database.BackupAsync(backup, token))).Message);
             Assert.False(File.Exists(backup));
         }
-        await database.BackupAsync(backup, token);
-        Assert.True(File.Exists(backup));
+        Assert.Equal("postgres_registry_requires_complete_recovery_set",
+            (await Assert.ThrowsAsync<InvalidOperationException>(() => database.BackupAsync(backup, token))).Message);
+        Assert.False(File.Exists(backup));
         Assert.False(Directory.Exists(sqliteRoot.Path));
     }
 }

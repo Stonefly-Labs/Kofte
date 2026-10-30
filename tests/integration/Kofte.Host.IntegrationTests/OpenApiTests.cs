@@ -28,6 +28,43 @@ public sealed class OpenApiTests
         var expected = JsonNode.Parse(await File.ReadAllTextAsync(Path.Combine(
             PostgresService.FindRepository(), "packages", "bootstrap-contract", "openapi.json"), token)) ??
             throw new InvalidOperationException("test_openapi_baseline_missing");
+        var bootstrap = JsonNode.Parse(await File.ReadAllTextAsync(Path.Combine(
+            PostgresService.FindRepository(), "specs", "001-repository-bootstrap", "contracts",
+            "bootstrap.openapi.json"), token))!;
+        foreach (var (path, operation) in bootstrap["paths"]!.AsObject())
+            Assert.True(JsonNode.DeepEquals(operation, actual["paths"]![path]));
+        var identity = actual["components"]!["schemas"]!["CurrentIdentityV1"]!;
+        Assert.Equal(new[] { "displayName", "identityMode", "isInitialAdministrator", "userId", "version" },
+            identity["required"]!.AsArray().Select(value => value!.GetValue<string>()).Order());
+        Assert.False(identity["additionalProperties"]!.GetValue<bool>());
+        Assert.Equal("kofte-dev-session", actual["components"]!["securitySchemes"]!["kofteSession"]!["name"]!.GetValue<string>());
+        Assert.Equal("cookie", actual["components"]!["securitySchemes"]!["kofteSession"]!["in"]!.GetValue<string>());
+        Assert.NotEmpty(actual["paths"]!["/api/identity/v1/me"]!["get"]!["security"]!.AsArray());
+        var enrollment = actual["paths"]!["/api/identity/v1/first-administrator"]!["post"]!;
+        Assert.NotEmpty(enrollment["security"]!.AsArray());
+        var submission = enrollment["requestBody"]!["content"]!["application/json"]!["schema"]!;
+        Assert.False(submission["additionalProperties"]!.GetValue<bool>());
+        Assert.Equal("authorization", Assert.Single(submission["required"]!.AsArray())!.GetValue<string>());
+        var authorization = submission["properties"]!["authorization"]!;
+        Assert.Equal(43, authorization["minLength"]!.GetValue<int>());
+        Assert.Equal(43, authorization["maxLength"]!.GetValue<int>());
+        Assert.True(authorization["writeOnly"]!.GetValue<bool>());
+        Assert.NotNull(enrollment["responses"]!["409"]);
+        var signOut = actual["paths"]!["/api/identity/v1/sign-out"]!["post"]!;
+        Assert.NotEmpty(signOut["security"]!.AsArray());
+        Assert.Null(signOut["requestBody"]);
+        Assert.NotNull(signOut["responses"]!["204"]);
+        Assert.Null(signOut["responses"]!["204"]!["content"]);
+        Assert.Equal(new[] { "Origin", "X-Kofte-CSRF" },
+            signOut["parameters"]!.AsArray().Select(value => value!["name"]!.GetValue<string>()));
+        var development = actual["paths"]!["/api/identity/v1/development-session"]!["post"]!;
+        Assert.Empty(development["security"]!.AsArray());
+        var selection = development["requestBody"]!["content"]!["application/json"]!["schema"]!;
+        Assert.False(selection["additionalProperties"]!.GetValue<bool>());
+        Assert.Equal("identityKey", Assert.Single(selection["required"]!.AsArray())!.GetValue<string>());
+        Assert.Equal(255, selection["properties"]!["identityKey"]!["maxLength"]!.GetValue<int>());
+        Assert.Equal(new[] { "Origin", "X-Kofte-CSRF" },
+            development["parameters"]!.AsArray().Select(value => value!["name"]!.GetValue<string>()));
         Assert.Equal(1, actual["servers"]?.AsArray().Count);
         Assert.Equal(host.Client.BaseAddress?.GetLeftPart(UriPartial.Authority),
             actual["servers"]?[0]?["url"]?.GetValue<string>());

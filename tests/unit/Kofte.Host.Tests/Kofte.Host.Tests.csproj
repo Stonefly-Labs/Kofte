@@ -9,5 +9,6 @@
         <PackageReference Include="xunit.v3" />
         <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />
         <ProjectReference Include="../../../src/Kofte.Host/Kofte.Host.csproj" />
+        <ProjectReference Include="../../integration/Kofte.TestSupport/Kofte.TestSupport.csproj" />
     </ItemGroup>
 </Project>

@@ -9,7 +9,7 @@ test("shows real readiness and an honest, keyboard-operable bootstrap", async ({
   ).toBeVisible();
   await expect(page.getByRole("status")).toContainText("Local host is ready");
   await expect(
-    page.getByText(/No feature modules, teams, services, login or tools/),
+    page.getByText(/No feature modules, teams, services or tools/),
   ).toBeVisible();
   await page.keyboard.press("Tab");
   await expect(

@@ -325,8 +325,184 @@ without a speculative product fix. The
 separates storage/composition integration selections without removing cases
 or raising deadlines. All eleven latest-head checks must complete successfully
 before a renewed human merge handoff; current outcomes belong to the PR.
-Only human merge putting accepted evidence on updated main
-unlocks 005 in a later invocation; no new stage/feature is run here.
+That checkpoint required human merge before 005. PR #7 is now human-merged;
+004's accepted ledger and all five acceptance artifact hashes were verified
+on updated main before beginning the new feature.
+
+**Current 005 work is paused for approved account/ownership scope rework.**
+The [ADR amendment](docs/adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
+records ASP.NET Core Identity, production local/OIDC accounts, first-login
+ownership and owner-led onboarding/RBAC. The human also approved a one-time
+installation setup token for initial-claim admission. Update and review the
+affected design/evidence before resuming the blocked implementation.
+The [specification rework](specs/005-authentication-bootstrap/spec.md) now defines
+005 account/credential/session/initial-Owner mechanics and the handoff to existing
+006 invitations/user administration/teams/RBAC. Six stories/34 scenarios/29
+requirements/nine outcomes retain 16/16 author-quality validation after the
+separate clarification pass: all ten categories Clear, zero questions and no
+spec/checklist changes. The [revised technical plan](specs/005-authentication-bootstrap/plan.md)
+now proposes Identity/store integration, v2 contracts, format-3 upgrade/recovery
+and complete future validation. Human design/changed quality review, task
+reconciliation and analysis remain before implementation.
+Preserve historical ledger, reviewer checklist and task/runtime evidence;
+specification rework is not implementation or feature acceptance.
+
+**The original 005 implementation completed all 100 original tasks**, on
+`feature/005-authentication-bootstrap` and the same draft PR #8.
+Use the [delivered local guide](docs/development/local-development.md)
+for delivered commands and the implementation record for exact results.
+The revised feature quickstart is explicitly future v2 validation, not current
+command support.
+The nine named public recipes and `all` pass on both real providers with exact
+ordered observations and verified cleanup; 77 harness negatives also pass.
+Use explicit stopped preparation, private configuration/key custody and the
+documented HTTPS/ingress/network trust. Nomination replaces only pending
+authority; consumed designation never reopens. Complete-set recovery requires
+quarantine and a manifest-bound stopped decision; fence the old instance.
+The [operator contract](specs/005-authentication-bootstrap/contracts/operator-v1.md)
+defines session/revocation/key overlap, retention/capacity and IdP-loss/OS-copy/
+rollback limits. Granular permissions, teams, MCP, full UI/audit and deployment/
+release work remain 006–009/022–024. Final dependency/contract checks and fresh
+npm/NuGet audits pass with no findings. T097–T100 now join the actual passing
+single-command hosted full gate, all ten real PR product contexts/repository
+checks and complete requirement/assertion traceability.
+Run the complete command through the documented `suite=complete` hosted Ubuntu
+job, separately from the ten-job matrix; do not restart heavy product tests on
+a shared workstation. Interrupted Mac attempts remain incomplete, and hosted
+qualification is not a final macOS pass. Existing test/product deadlines remain.
+The [convergence assessment](specs/005-authentication-bootstrap/convergence.md)
+now **passes** across 51 requirements/outcomes/scenarios, twelve plan decisions,
+all 100 tasks and twelve principles, with zero actionable gaps. Tasks,
+product/test/tooling source and reviewed checklists remain unchanged. Actual
+complete/current-head CI reports each pass the same 313 named steps.
+The subsequent [final review](specs/005-authentication-bootstrap/review.md)
+requires **changes**: a MEDIUM forbidden-DNS-destination admission defect
+and an unresolved current recovery setup failure before key damage.
+Actual run `41098819181` fails recovery; earlier green evidence is preserved,
+not substituted for that failure or its diagnosis. Exactly T101-T103 are
+appended unchecked, preserving all original task bytes/markers, product/test
+source, historical reports and reviewer-owned checklists.
+That review selected implement T101-T103; the subsequent scope-rework pause
+blocks continuation. Later converge/review and explicit human acceptance remain
+separate; the same PR stays draft with no intermediate merge request.
+The following increments are
+historical, not current unimplemented-capability statements or acceptance.
+The [implementation record](specs/005-authentication-bootstrap/implementation.md)
+preserves the provenance investigation and records actual reviewed OIDC
+adoption (403 npm / 87 NuGet), independent HTTPS/owned-process fixtures and
+corpora, strict configuration and immutable actor-v1, plus tested exact
+format-2 migration/v1-v2 verification on SQLite and PostgreSQL. Real module
+assignments, markers, populated EF history/data and registry totals survive.
+The shared timeout incompatibility is resolved for identity through bounded
+native SQLite execution and cancellable PostgreSQL work, without changing
+legacy migration paths or the approved limits. Metadata/admission transactions
+verify the normal host lease, serialize quota decisions, bound cleanup and
+advance the checked security revision rather than module revisions.
+The focused both-provider identity/registry/lease gate passes 105 cases.
+Transactional evidence, persistent keys and stopped preparation/reconciliation/
+revocation now have focused real-provider/key tests. Actual PostgreSQL restore
+and both-provider format regressions pass 49 cases after a narrowly diagnosed
+constraint-deparsing correction.
+At that foundation checkpoint, the later stories remained unimplemented.
+Exact user mapping is now tested on both stores, including capacity, rollback, profile/key distinctions, three fresh
+owner processes and preserved consumed designation across explicit trust/mode
+changes. No OIDC session is established by those storage tests.
+Maintained OIDC configuration and the bounded HTTPS backchannel pass 66
+native-protocol/transport/issuer cases, including exact evidence, cancellation,
+key/payload/cache and inherited deadline checks. The test-owned native handler
+stops before local ticket persistence; product login registration remains
+pending. The published mapping/composition checkpoint
+passed all ten product CI jobs and repository checks.
+Durable attempts and protected framework properties now retain exact local
+binding with five-minute lifetime, finite quotas, bounded cleanup and single
+owner-transaction consumption. Forty both-provider attempt/mapping cases,
+two binding units and two actual native-handler cases pass; this is not yet a
+product login/session. T025/T029/T030 now add the one-owner-commit coordinator,
+protected minimal server tickets and one-shot committed-reference bridge.
+Thirty both-provider contracts pass through actual native OIDC/cookie handlers,
+including real before/after-commit process kills, publication failures,
+fresh references, expiry/revocation and per-user/global capacity.
+Dependent storage and original issuer/native regressions pass 92 and four cases.
+Product registration must use the dedicated session cookie manager and disable
+native sliding renewal; durable activity is renewed only by fresh store lookup.
+T031/T032 now register product browser-context, protected login/callback and
+self-only `/me` in both hosts, with fresh scoped actor projection and generated
+identity types. The combined both-provider native/session/endpoint gate passes
+52 cases; 21 startup/policy/OpenAPI/original-issuer regressions also pass.
+The current-user tests additionally verify escaped fresh profiles, designation,
+revocation, unavailable protection and continued denial of ungranted actions.
+T033 adds 51 independent adapter/configuration tests. T034 now passes all
+sixteen actual owned host/Next parity observations with verified cleanup.
+Post-exit `EPERM` is accepted only after the kernel confirms the whole group
+is absent; existing or unverifiable descendants still fail. T035/T036 deliver
+the accessible non-personal `/identity` page, bounded no-store checks, token
+renewal and safe stale-state/failure/retry handling. All 98 web units,
+lint/types/build pass. The sign-in Server Action preserves the actual Origin,
+CSRF and fixed bounded backend; it corrects confirmed native-form `Origin:
+null` under `no-referrer`, without admitting that Origin. Actual Ubuntu
+login/trust browser recipes pass on both stores at `6be0ee8`; local macOS
+browser lifecycle/cleanup still fails. The corrected protocol matrix passes
+123/123 and mapping/restarts pass 20/20, retaining the intervening 19/20
+SQLite readiness failure and unknown cause. PostgreSQL host CI still fails;
+the existing private XML/source-symbol diagnostics now cover host integration
+without retaining raw exceptions, arguments or private output. Continue
+the remaining tasks without an intermediate handoff. Full US1 reconciliation
+and later stories remain. Published `f89c1ec` passed all eleven CI contexts.
+The preceding
+session-head CI's composition and PostgreSQL baseline timeouts remain failed
+with unknown causes, not waived or replaced by local passes.
+Shared T018–T020 endpoint/CSRF/default-deny
+and sanitized diagnostic components now have executable component/operator
+tests, including real before/after-commit worker termination. T021
+installs these components in both serving entrypoints, using
+their actual normal host leases, explicit configuration and read-only
+prepared-storage/trust/key verification. Owned serving fixtures prepare identity
+explicitly before inventory baselines; recovery-v1 fixtures remain intentional.
+Foundation units, both-provider storage/startup and stop/privacy recipes pass,
+as do actual empty/composed browser warm starts. Preserve recorded failures
+and the controlled deadline-test profile. The complete browser login journey, enrollment, UI and
+recovery are not delivered. Preserve the same stage/branch/draft PR.
+
+The completed specify-through-analyze history below remains applicable on
+`feature/005-authentication-bootstrap`. Its
+[draft requirements](specs/005-authentication-bootstrap/spec.md) and
+[16/16 author checklist](specs/005-authentication-bootstrap/checklists/requirements.md)
+define OIDC/development login, stable identity, one-time first-admin enrollment
+and browser/API boundaries, not working authentication. Five stories,
+22 scenarios, 22 requirements and seven outcomes retain both-provider,
+protocol, browser and privacy evidence obligations. Clarification found all ten
+requirements categories clear with zero questions; the spec and author checklist
+remain byte-for-byte unchanged at 16/16. The
+[coverage assessment](docs/development/spec-workflow.md#invocation-and-current-progress)
+preserves the clarification evidence. The
+[plan](specs/005-authentication-bootstrap/plan.md), research, data model,
+identity/operator-v1 contracts and future guide now resolve twelve proposed
+design choices, including durable sessions, nominated atomic enrollment and
+verified platform/recovery format 2. Both constitutional design gates pass.
+[ADR 0007](docs/adr/0007-authentication-bootstrap-boundary.md) is now
+**human-approved for implementation**, with the explicit decision
+**"ok, I approve it"**. Historical planning artifacts/ledger are unchanged;
+exact dependency adoption and actual protocol/provider/browser/privacy evidence
+remain later gates. Recording approval executes no stage.
+Continue on this branch and [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8);
+the [requirements-quality checklist](specs/005-authentication-bootstrap/checklists/quality.md)
+now satisfies 36/36 criteria with per-item evidence under the reviewer's explicit
+request for assisted evaluation. No unresolved requirements gap or new human
+decision needs attention. This resolves the earlier reviewer-completion block;
+it is not inferred from ADR approval. Spec, planning artifacts and the 16/16
+author checklist are unchanged. The
+[100 tasks](specs/005-authentication-bootstrap/tasks.md) provide
+explicit dependencies, paths, model constraints and acceptance coverage for all
+five stories, 22 scenarios, 22 requirements, seven outcomes and twelve decisions.
+Independent protocol/actor consumers, both-provider enrollment/crash/restart/
+upgrade/recovery, accessible states and privacy captures remain required evidence.
+The read-only [analysis](specs/005-authentication-bootstrap/analysis.md) passes:
+29/29 requirements/outcomes and 22/22 scenarios have concrete coverage, all
+100 tasks are mapped, and 242 dependency edges are acyclic. No actionable
+or constitutional issue remains. Assessed inputs and reviewer markers are
+unchanged at that analysis checkpoint. Only T001 is now checked; implementation
+has not completed. No product package/code, runtime proof, feature acceptance
+or intermediate merge is introduced.
 
 The following paragraphs preserve the historical design-stage checkpoint.
 

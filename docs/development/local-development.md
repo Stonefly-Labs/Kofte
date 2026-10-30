@@ -1,5 +1,21 @@
 # Local bootstrap development
 
+**Current identity workflow:** Spec 005 remains implement/running, not accepted.
+Use its [runtime guide](../../specs/005-authentication-bootstrap/quickstart.md)
+and [operator-v1 contract](../../specs/005-authentication-bootstrap/contracts/operator-v1.md)
+for exact configuration/private files and delivered stopped commands.
+Initialize an empty store, explicitly upgrade its registry and run
+`--identity prepare` while stopped before `scripts/dev.py`; the supervisor
+never initializes, upgrades or repairs identity/key custody. Local Development
+uses explicit configured synthetic selection, without Docker or a real IdP.
+Production OIDC needs exact HTTPS/public-origin trust, private client-secret
+delivery and retained protected keys; an unsafe-exposure switch is not a bypass.
+The named browser suite now also exercises actual PostgreSQL identity failures:
+use `python3 scripts/verify.py --suite browser --disposable-postgres`.
+This verification dependency does not make Docker a local-development dependency.
+Earlier numbered-feature/checkpoint evidence below is historical; current
+commands are not a claim that the final local/CI matrix passes.
+
 **Status:** Spec 001 implementation is complete. Local SQLite/host/web,
 owned PostgreSQL verification, guarded store recovery and generated Development
 OpenAPI and fixture-owning named verification have final local/CI evidence and
@@ -442,6 +458,58 @@ are not bypassed.
 
 ## Prerequisites and explicit restore
 
+### Spec 005 stopped identity checkpoint
+
+Only the following identity commands are implemented at this checkpoint:
+
+```text
+--identity prepare
+--identity reconcile-configuration
+--identity revoke-sessions
+```
+
+Invoke them with the built host DLL and an explicit private
+`KOFTE_AUTH_CONFIG_FILE` matching the host/web origins. The exact configuration
+shape is in [operator-v1](../../specs/005-authentication-bootstrap/contracts/operator-v1.md);
+its remaining commands are still proposals. Stop the installation first.
+Prepare requires the existing separate `--registry upgrade` for table-free
+stores, then transactionally upgrades platform format 1 to 2 with disabled
+bootstrap, metadata and its event. Module mappings/history/data are preserved.
+Retries verify current state and may complete only an owned preparing ring;
+they never recreate missing ready keys. Reconciliation explicitly acknowledges
+configuration/key changes and revokes sessions/attempts/pending authority;
+revocation alone requires the acknowledged trust. Neither resets consumed
+designation or mappings.
+
+The admitted worker has a supervised 120-second envelope and strictly validated
+identity records of at most 1 KiB each, with generated correlation, fixed
+operation/outcome/guidance and truthful durability. The success record is
+published only after verified exit/cleanup; absent or invalid acknowledgement
+is uncertain, never success. Raw child output is discarded. Key files and database
+effects are not atomic together; retain owned partial artifacts for deliberate
+retry/correction. OIDC keys require certificate encryption; development keys
+require explicit Development/loopback configuration. These commands do not
+provide working login, enrollment or recovery-v2.
+
+Real interruption before SQLite's migration commit can leave a retained journal
+even though the database transaction did not commit. The existing physical
+inventory guard then refuses prepare with `identity_reconciliation_required`,
+preserving database, journal and completed key files. Stop and inspect the
+preserved recovery state; do not delete the journal or treat a retry as proof of
+rollback. A verified current database after commit remains idempotently prepared.
+Both normal serving entrypoints now load this explicit configuration, verify
+the exact prepared format and acknowledged trust, and validate the retained key
+ring before listening. Valid v0/v1 stores return `identity_prepare_required`;
+missing keys are not regenerated. An `identity-restore-required` marker blocks
+exposure until the later explicit recovery workflow is delivered. Startup does
+not contact the identity provider. The shared route/antiforgery/default-deny
+middleware and private diagnostics apply to both paths, but unfinished identity
+handlers are not mapped. T018–T022 foundation checks now pass; exact initial
+failures, controlled deadline-test scheduling and current limits remain in the
+implementation report. This is not a working login/session journey.
+
+### Toolchain
+
 Supported targets are macOS 15+ arm64 and Ubuntu 24.04 x64. Native Windows is not
 promised. Install .NET SDK **10.0.402** (runtime **10.0.13**), Node **24.22.0**
 with npm **11.19.1**, and Python 3.11+. The supervisor checks exact product tool
@@ -482,11 +550,36 @@ resolution, unsupported tool roll-forward or floating package versions.
 
 ## Initialize, start, stop and restart
 
-Initialization is separate, explicit and non-overwriting:
+Initialization and identity preparation are separate, explicit and
+non-overwriting. First create an owner-only directory outside `data/` and an
+owner-only configuration file (`0700` directory, `0600` file). For the default
+Development/loopback profile, use this shape with your actual absolute key path:
+
+```json
+{
+  "version": "1",
+  "mode": "development",
+  "publicOrigin": "http://127.0.0.1:3000",
+  "keyRingDirectory": "/absolute/private/kofte-identity/keys",
+  "development": {
+    "enabled": true,
+    "identities": [{ "key": "synthetic" }]
+  }
+}
+```
+
+Do not overwrite existing configuration or key material to repair a refusal.
+Set the configuration path in your shell or private `.env`; secret values must
+not be placed in either. The supervisor forwards this path but never creates,
+upgrades or prepares identity storage:
 
 ```bash
+export KOFTE_AUTH_CONFIG_FILE=/absolute/private/kofte-identity/identity.json
+export ASPNETCORE_ENVIRONMENT=Development
 dotnet build Kofte.slnx --no-restore -c Release -warnaserror
 dotnet run --project src/Kofte.Host --no-build -c Release -- --store init
+dotnet run --project src/Kofte.Host --no-build -c Release -- --registry upgrade
+dotnet run --project src/Kofte.Host --no-build -c Release -- --identity prepare
 python3 scripts/dev.py
 ```
 
@@ -496,6 +589,13 @@ actual host and fixed web adapter report usable storage. Startup is bounded to
 300 seconds. Ctrl-C stops only owned child process groups; existing port
 occupants are never killed. Repeat `python3 scripts/dev.py` to restart.
 
+The web `dev`/`start` scripts and owned Next launchers explicitly use
+`--max-http-header-size=32768`. This is parser headroom, not a larger identity
+input limit: Köfte still permits 16 KiB of combined headers/cookies and rejects
+the next byte with its private 400 response. Node's default parser otherwise
+returns a bare 431 before that policy can run at the admitted boundary.
+Keep this flag when launching Next directly instead of using the web scripts.
+
 Persistent SQLite data is `data/platform/platform.db`; directories are private
 to the current owner and the database is owner read/write only. Normal startup
 opens an existing store, never creates missing data, switches providers or resets
@@ -503,9 +603,10 @@ it. Stop/retry/restart do not delete data. Fresh format-0 initialization has no
 application/fixture table, migration history or registry. A host-held exclusive operation lock prevents
 concurrent initialization; the lock file remains in place after clean shutdown.
 
-On the 003 feature branch, initialization still creates genuine table-free
-format 0. The separate `--registry upgrade` maintenance command establishes
-format 1; normal serving never initializes or migrates it automatically.
+Initialization still creates genuine table-free format 0. The separate
+`--registry upgrade` maintenance command establishes format 1; explicit
+`--identity prepare` establishes identity-ready format 2 and its separate keys.
+Normal serving never initializes or migrates either automatically.
 The host remains module-free, and no public registration command is provided.
 Do not put `KOFTE_POSTGRES_PROVISIONING_CONNECTION` in serving configuration:
 the elevated connection is accepted only by owned offline maintenance.
@@ -580,13 +681,16 @@ Defaults are `local-sqlite`, host `http://127.0.0.1:5080`, web
 When changing ports, set host/web to distinct free ports. The backend origin
 defaults to the selected host's loopback address and port; an explicit value
 must match that listener, not an unrelated local service. Embedded URL credentials, paths,
-queries and fragments are refused. Broader binding needs
-`KOFTE_ALLOW_UNSAFE_EXPOSURE=true` plus a loopback backend origin; it emits a
-warning and remains unsupported for production.
-An explicit non-loopback IP host binding also retains its selected loopback
-backend listener; wildcard IPv4 bindings require an IPv4 loopback destination.
+queries and fragments are refused. The local identity-serving supervisor requires
+loopback host, web and backend addresses. `KOFTE_ALLOW_UNSAFE_EXPOSURE=true` does
+not override those identity restrictions; wildcard IPv4/IPv6 and non-loopback
+addresses are refused before building or starting either serving process.
 
-The supervisor sets Development and disables Next telemetry for its children.
+The supervisor sets both `ASPNETCORE_ENVIRONMENT` and `DOTNET_ENVIRONMENT` to
+`Development` and disables Next telemetry for its children. The authentication
+configuration is explicitly supplied and forwarded; serving never initializes,
+upgrades or prepares storage, or repairs a missing key ring. Use the separate
+stopped preparation commands documented above.
 `OTEL_EXPORTER_OTLP_ENDPOINT` is optional trusted-operator configuration; no
 collector/cloud service is required. Do not put credentials in command arguments,
 browser-public variables or checked-in files. Raw child/framework output is not
@@ -603,13 +707,294 @@ empty 400; unsupported methods are empty 405 and unknown/case-mismatched paths
 are empty 404.
 
 `GET /openapi/v1.json` is generated from native endpoint/type metadata with the
-strict bootstrap schema, anonymous applicability and no-store response contracts.
+strict bootstrap schema plus host identity-v1, explicit public/self-cookie
+applicability and no-store response contracts.
 It declares API version `1.0.0` and OpenAPI `3.1.1`; it is not a separately served
-static copy. All documentation methods are absent outside Development. Generation
+static copy. All documentation methods are absent outside Development.
+The configured mode determines which protocol routes are present. The
+generated shared contract now includes browser-context and self-only `/me`;
+OIDC-mode hosts additionally describe their login/callback protocol routes.
+Regeneration preserves every accepted bootstrap operation/component, rather
+than replacing spec 001's immutable baseline. Generation
 parity checks normalize only the actual owned listener and the semantically
 equivalent omitted/empty root security list, not paths, schemas or responses.
 
-The browser uses only `/backend/health/ready`. This server-only fixed adapter
+The exact Next identity handlers read only public routing fields and configured
+synthetic Development choices from
+the same private `KOFTE_AUTH_CONFIG_FILE`; credential references are never opened
+by the web adapter. They use the existing fixed loopback backend configuration,
+not caller Host/forwarding headers, with a 4.5-second total deadline. Independent
+transport/configuration tests and all sixteen actual owned host/Next parity
+observations pass. Cleanup accepts a post-exit permission error only when
+the kernel confirms the whole group absent; it never ignores a live or
+unverifiable group. See the
+[verified adapter/UI increment](../../specs/005-authentication-bootstrap/implementation.md#t034t036-verified-live-adapters-and-accessible-identity-entry).
+The `/identity` page now presents a non-personal shell, deliberate OIDC sign-in,
+fresh no-store verification/token pairs and accessible failure/retry. Hiding or
+blurring clears the displayed identity; returning revalidates it. Checks expire
+after 4.5 seconds and never retain failed/stale identity or browser storage.
+Only `/` and `/identity` are admitted returns. Development is labeled persistently
+and offers only the synthetic choices in the explicit configuration. Choose one,
+then select **Use Development identity**; merely opening the page never signs in.
+Selection uses the same fixed adapter, native transaction/session boundary and
+identity-bound CSRF as other mutations. Denial or uncertainty clears the previous
+identity; no automatic mutation retry is made. Successful selection fetches fresh
+current identity and CSRF before further actions. Personal identity is never
+server-rendered or stored in browser storage.
+
+After the existing Release/Next builds and pinned Chromium setup, the public
+Development proof is:
+
+```bash
+dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario development-isolation --provider sqlite
+```
+
+It owns its fixtures and checks all 88 environment/exposure refusals, exact
+visible browser/API/actor equality, explicit selection/sign-out and persisted
+pending/consumed OIDC-to-Development-to-OIDC isolation. SQLite has actual evidence
+for all 135 independently validated named observations; hosted `c5e65f2` also
+passes the exact frozen catalog on SQLite and PostgreSQL, closing T078.
+The recipe remains bounded at 120 seconds and reports no private values.
+
+The strengthened `session-boundary` recipe now also passes on both providers
+at hosted `49ef96e`, with all nineteen ordered observations independently
+verified. It exercises two-user direct/adapted/SSR isolation, transient stale
+DOM refusal, genuine-CSRF/invalid-Origin and ungranted-action denial, idle/
+absolute expiry, durable sign-out and uncertain-response clearing. Local
+pre-login browser timeouts remain historical failures, not successful runs.
+
+### Identity key and certificate custody
+
+**Current qualification:** all nine public identity recipes individually plus
+`all` pass on each real provider, with exact ordered observations and owned
+cleanup; all 77 harness negatives pass. See
+[T094's actual commands/results](../../specs/005-authentication-bootstrap/implementation.md#t094-t095-complete-public-catalog-and-delivered-documentation).
+The following operator instructions describe delivered behavior. Historical
+SQLite-only/pending-PostgreSQL observations below retain their original scope;
+T092's later actual focused integration/recovery/privacy/browser/propagation
+join qualifies both providers, not the final complete local/CI gate.
+
+OIDC keys remain encrypted at rest using the configured
+`keyEncryptionCertificateFile` / `keyEncryptionPrivateKeyFile` pair.
+For certificate rotation, stop the installation, retain the original private
+files separately, select the new current pair and add the old pair through
+the optional configuration member:
+
+```json
+"keyDecryptionCertificates": [
+  {
+    "certificateFile": "/srv/kofte-identity/retained-certificate.pem",
+    "privateKeyFile": "/srv/kofte-identity/retained-private-key.pem"
+  }
+]
+```
+
+This is a member of the existing private version-1 configuration, not a
+standalone document. It admits one to seven retained pairs, plus the current
+pair. Each referenced file remains an absolute canonical owner-only regular
+file, at most 64 KiB, outside managed database recovery data; each RSA
+certificate/private key must match and use at least 2048 bits. Duplicate
+certificates, extra fields or unreadable/unmatched pairs fail closed.
+Newly generated ring keys use only the current encryptor. Retained decryptors
+keep existing cookies/state/server-side tickets readable across rotation and
+restart. Their references and contents do not change provider trust, epoch,
+user mapping or consumed designation. Existing single-pair files are unchanged;
+PEM bundles do not select rotation behavior.
+
+Retain every certificate/private key required by **any** retained ring key.
+Certificate/session expiry alone is not permission to remove it: opening
+validates the entire ring. There is no automatic retirement, deletion or
+rewrapping. A needed missing decryptor refuses startup, not silent key repair.
+Lost/foreign/undecryptable live rings return 503 without cached successful
+identity or replacement keys. Stop before correcting custody from the exact
+original private material under exclusive installation authority. Revocation
+is separate: stopped `--identity revoke-sessions` advances epoch, and the next
+protected request rejects the old session without changing mappings or a
+consumed first administrator. Without trusted original material, use the
+explicit gated complete-set recovery/reconciliation path; never manufacture a
+new owner marker or reopen bootstrap.
+
+Replace a provider client secret through its private `clientSecretFile` and
+restart to load it. It affects future code exchange, not established local
+sessions, trust digest, consumed designation or local identity. Coordinate
+with the provider: a changed provider secret rejects exchanges from a process
+still using the original value. Neither certificate rotation nor client-secret
+replacement is a session-revocation mechanism. Keep all private key/certificate/
+client-secret custody outside ordinary database recovery artifacts.
+
+Actual SQLite tests now execute these live failure/correction, retained-key/
+certificate-overlap, client-secret replacement and complete backup-separation
+cases using real OIDC and consumed enrollment. PostgreSQL cases exist but
+the new local attempt fails during owned Docker fixture creation; no new
+PostgreSQL key-rotation pass is inferred.
+
+Identity-bearing complete-set backups now use recovery-v2 and verify actual
+identity rows, consumed history, counts and a streamed SHA-256 security snapshot.
+Keys/client/certificate secrets remain outside the artifacts. The new SQLite
+and retained v1 regression selection passes; hosted `f52150f` PostgreSQL
+integration now also passes the new recovery-v2 cases. The new separately named
+test-owned quarantine restore helpers write `identity-restore-required` in a
+fresh separate private key directory before copying/restoring. Actual SQLite
+proof preserves the full security snapshot and binds exact original manifest
+bytes independently of rewritten target artifact hashes. The marker remains;
+all six existing stopped commands refuse it without changing state.
+Strict private decision parsing now checks the exact five approved fields,
+recovery-set/installation IDs, original manifest SHA-256 and one of three
+historical attestations. It rejects duplicate/unknown fields, a wrong recovery
+point, public/symlinked/oversized/non-UTF-8 files; parsing does not clear a gate.
+The built host now accepts the explicit stopped reconciliation command:
+
+```bash
+dotnet src/Kofte.Host/bin/Release/net10.0/Kofte.Host.dll --identity reconcile-restore --decision-file "$PRIVATE_DECISION_FILE"
+```
+
+Set `PRIVATE_DECISION_FILE` to the absolute owner-only decision file and use
+the restored target's existing storage/authentication environment. This is
+not a backup/import command: first use a fresh stopped complete-set quarantine
+target. The current import helpers remain test-owned; the public
+`interrupted-recovery` consumer demonstrates that supported workflow on both
+providers. It is not a general production backup/import administration CLI.
+
+The command verifies actual ownership/inventory/security state, freezes the
+exact decision/configuration plus new epoch/ring IDs, prepares fresh protected
+keys without removing the marker, and commits revocation plus its security
+record. Restored users/mappings/module data/designation and evidence stay
+intact. Sessions/attempts/admission/pending authority cannot survive activation.
+A recovered consumed designation overrides `known-never-enrolled`; unknown
+or lost history stays `recovery_locked`. V1 gets an explicit verified upgrade,
+never automatic evidence of historically unused enrollment.
+
+Only independently verified committed effects and matching fresh keys permit
+moving the marker to the private sibling `KEY_DIRECTORY.identity-restore-receipt`.
+The protected staging ring at `KEY_DIRECTORY.identity-restore-keys` remains
+outside ordinary snapshots under operator custody. Keep these private control
+artifacts for inspection; never delete a gate to force activation. A changed
+decision/configuration or foreign/changed key is refused, not adopted.
+Explicit retries preserve the planned epoch/ring and do not duplicate the
+revision/event. After activation, receipt verification is read-only and refuses
+changed state instead of replaying recovery.
+
+Actual SQLite tests pass v1/v2 activation and killed-worker retries after intent
+flush, partial key publication, before commit, after commit and before gate
+removal, including a committed v1 upgrade with an unrecorded acknowledgement.
+Further partial-write/key/certificate/capacity cases and new PostgreSQL proof
+remain pending; this is not complete recovery acceptance. The legacy ungated
+helper still refuses identity-bearing sets. Fence the old instance; direct
+OS/database copies bypass this marker and remain outside its guarantee.
+
+Explicit reconciliation retry now also handles an actually empty or partially
+flushed pending intent/key-inventory/result journal. It validates the existing
+marker and live installation-specific exclusive scope, bounds and rereads the
+private pending bytes, and removes only known syntactically incomplete scratch
+before recomputing from verified state. A complete journal with unknown fields,
+changed binding or invalid syntax is refused unchanged; no malformed complete
+decision becomes a default. Persisted intent/epoch/ring and already-published
+key bytes remain fixed. A first intent interrupted before it was durably
+recorded has no published key/database effects to replay.
+The gate stays present throughout. Foreign/disposed/cancelled/expired authority
+cannot perform this cleanup. Actual SQLite killed-worker and negative-authority
+tests pass; this does not prove arbitrary initial quarantine/staging-key
+corruption recoverable, waive later PostgreSQL proof or permit manual gate
+deletion.
+
+Explicit stopped preparation also resumes an existing valid `preparing` key
+owner when its private `identity-owner.next` inventory is empty or syntactically
+incomplete. Recorded key hashes and every complete unrecorded key must first
+validate against that owner. Immediately before cleanup, live authority and exact
+unchanged owner/pending bytes are required. The ring ID and complete key bytes
+are retained; complete unknown/foreign/hash-conflicting/invalid pending owners
+and any scratch in a ready ring stay refused and unchanged. Six real worker-kill
+cases pass on SQLite and a private native PostgreSQL 17.9 cluster. This is not
+recovery of a partial initial owner or partial key XML, permission to delete
+arbitrary files, or a replacement for the pinned-image backup/restore profile.
+
+Actual native HTTP tests also verify that loss of serving authority or a corrupt
+durable ticket returns private 503 for warmed identity/actor requests rather
+than cached identity. Explicit host restart, or stopped session revocation
+followed by fresh login for corrupt tickets, preserves the original user and
+mapping. Test-owned database triggers reject required session/enrollment event
+inserts: the owning mutation rolls back without a success cookie/designation,
+and explicit trusted correction/retry works once. SQLite and private native
+PostgreSQL cases pass; this is not full outage/uncertainty or production recovery
+acceptance, and does not permit automatic repair or a second administrator.
+
+Stopped prepared installations now accept `--identity maintain` through the
+same admitted host supervisor and exclusive lease. Each explicit invocation
+removes at most 128 expired session-class evidence records (at least 30 days old),
+128 consumed/expired login attempts and 128 expired admission windows, within
+the unchanged 120-second envelope. Repeat explicitly for another bounded batch;
+this is not an unbounded drain or background job. Installation-retained
+evidence, user mappings, consumed designation, session epoch and active sessions
+are preserved. The identity security revision advances with the committed
+batch; registry/module revisions do not. SQLite regression evidence and hosted
+`20d751c` PostgreSQL host/storage plus both-provider recovery pass, closing T087.
+
+**Sign out** revokes only the current durable local session, not the upstream
+provider or other sessions. Confirmed, expired and uncertain results all clear
+local personal/enrollment content. Uncertainty is not known server revocation;
+explicit sign-in/selection is required for re-entry. Polling, focus and identity
+check retries cannot resurrect locally cleared content.
+Sign-in uses a Next Server Action, not native form navigation: real browsers
+sent `Origin: null` for the native POST under required `no-referrer`. The
+action preserves actual Origin/credential evidence and explicit CSRF through
+the same bounded fixed-backend adapter; null Origin is still refused.
+It publishes separately validated cookies before the framework redirect and
+does not retry mutations. Local HTTPS login/callback/current-user and Linux Chromium lifecycle/cleanup
+are now qualified. Historically the existing Ubuntu browser
+job passed public `oidc-login` and `trust-refusal` on each real store at
+`6be0ee8`; this does not waive the local macOS failure. The private fixture admits only its CA in a
+fresh owned profile, retains ordinary TLS checks, verifies the exact browser
+group is absent after normal close, and retains private configuration/profile
+files if browser completion cannot be confirmed. No OS trust changes or
+TLS-ignore switches are used.
+The corrected local protocol matrix passes 123/123 and mapping/restart passes
+20/20. An intervening SQLite restart-readiness failure remains recorded; a
+later isolated/serial pass does not establish its cause. Readiness now
+projects only a bounded HTTP status/transport category and last fixed
+configured/owner-opened/built/mapped/serving phase on timeout without changing the existing
+budget. The PostgreSQL host CI failure at that checkpoint had no established cause.
+Later focused qualification does not erase it or prove complete/operator-ready
+identity evidence.
+
+### Operator-nominated enrollment increment
+
+The stopped operator commands now include:
+
+```text
+--identity bootstrap authorize --nominee-file ABSOLUTE_PRIVATE_FILE --authorization-file NEW_PRIVATE_FILE
+--identity bootstrap disable-pending
+```
+
+Use the prepared installation's explicit production configuration and exclusive
+stopped authority. The nominee file is owner-only strict JSON with exactly
+`version:"1"`, `issuer` and `subject`; the keys must match the configured,
+operator-verified production identity, not an email/profile/role. The new
+authorization file must not already exist. It receives a random 256-bit,
+43-character authorization, while the database stores only its installation/
+generation/nominee-bound digest for fifteen minutes. Commands never print the
+secret, nominee or private path. File write/flush and DB commit are separate
+effects: retain evidence after uncertainty and explicitly replace only a
+pending ceremony. Consumed or recovery-locked authority cannot reopen.
+
+After restarting, the exact nominee signs in and explicitly enters the secret
+in the masked `/identity` enrollment form. The protected POST
+`/api/identity/v1/first-administrator` requires the current OIDC session, exact
+Origin and fresh CSRF pair, accepting only `{authorization:string}`. The UI
+clears the input, never stores/retries it and queries `/me` after confirmation
+or a lost reply. Initial designation grants no unrelated permission.
+IdP subject loss is not a reset/reassignment mechanism. Follow the
+[operator contract](../../specs/005-authentication-bootstrap/contracts/operator-v1.md#nominate-and-enroll)
+for private delivery/custody and explicit correction.
+
+The [implementation record](../../specs/005-authentication-bootstrap/implementation.md#us2-nominated-enrollment-and-real-interruption-evidence)
+distinguishes passing both-store core/interruption evidence from incomplete
+acceptance. At that checkpoint the complete new PostgreSQL HTTP/browser matrix was not
+verified locally: Docker default networks were exhausted and HTTPS browser login stalled.
+Only independently proven task-owned Docker resources may be cleaned up.
+The later T092/T094 evidence qualifies both providers with owned fixtures;
+do not lower contention, extend deadlines or treat focused checks as acceptance.
+
+The existing status browser uses only `/backend/health/ready`. This server-only fixed adapter
 forwards no caller credentials/headers and validates status, content type and
 payload before returning a minimal response. Its total deadline is five seconds;
 invalid/failed upstream data becomes an explicit correlated unavailable 503.
@@ -663,11 +1048,83 @@ their three-second connection/query limits; product acquisition, lifecycle and
 probe deadlines are unchanged. A controlled pause of an owned disposable
 service exercises this distinction without retries or shared-service mutation.
 
+Ordinary fixtures may share an assembly-owned server, never a database or role.
+Each resource owns a maximum-one-connection administration data source for
+system-database queries and closes it before cleanup or an ownership refusal.
+Target-database and exported connections remain unpooled. The real two-scope
+regression verifies that disposing one removes its administration backend,
+database and roles without closing the other's backend.
+
+Ordinary host fixtures use that same owner. Fixtures requiring an actual
+service outage still create a dedicated service. The composition public
+consumer also owns one lazy service for its complete invocation, including
+`all`; each scenario retains its own database, application/provisioning roles,
+ownership evidence and cleanup. The service owner verifies no residual
+databases, roles or sessions and disposes before any successful consumer result
+is emitted. This avoids repeated engine startup without sharing installation
+state, bypassing ownership checks or changing serial verification commands.
+
+The verifier limits independently scheduled provider fixture collections to
+at most four, or the reported logical CPU count when smaller. This bounds
+competing native fixture processes; it does not reduce contenders within a
+test, skip cases, reorder provider phases or extend application/test deadlines.
+The unavailable-PostgreSQL failure exercise reuses the same three serial
+phase commands. It requires all three exact ordered nonzero command failures;
+an omitted phase, substituted selector, missing tool or timeout is not proof.
+Its unavailable endpoint owns a listening socket and immediately closes each
+accepted connection without reading data or implementing PostgreSQL. Merely
+binding a non-listening port can blackhole TCP on macOS and consume every
+fixture's administration budget instead of promptly refusing. The supervised
+listener retains exclusive port ownership and must close/join successfully.
+An outer timeout retains only a strictly validated failed child report after
+owned-process cleanup; that evidence never turns the timeout into a pass.
+Failed Linux contract jobs also retain bounded per-recipe composition timings
+using the existing strict public helper. These targeted diagnostics do not
+replace the original required command or increase any product/gate deadline.
+Passed native phases also retain `nativeTiming`: summed case seconds for only
+source-selected required classes and a numeric aggregate for other cases.
+Names, parameters, output and arbitrary XML class identifiers are never copied.
+Case sums can exceed command wall time because tests overlap; compare both,
+rather than treating summed time as elapsed time. Missing or invalid timing is
+explicitly unavailable, never a fabricated zero or a substitute for case evidence.
+Isolated child reports revalidate the closed fields, exact source-selected class
+set, finite bounds and aggregate consistency before retaining these summaries.
+
 The registry's twenty-round, ten-connection/process contention tests run in an
 exclusive xUnit collection. Their intended ten-way workload is unchanged, but
 unrelated hosted lifecycle fixtures do not compete with that benchmark's fixed
 acquisition budgets. Worker counts, rounds, retry rules and product deadlines
 are not reduced or relaxed.
+Each separate-process round launches all ten fresh workers and validates their
+startup messages, explicitly prepares each exclusive warmup lease serially, then
+releases the original registration barrier only after every waiting message is
+validated. Only runtime startup overlaps, not exclusive warmup acquisitions.
+The ownership operation retains its original contenders, rounds, deadlines and
+retries; children remain separately owned and disposed. A real held-lease
+regression verifies that startup cannot acquire maintenance before preparation.
+Composition fixtures also exclude the prepared identity's nominal web port when
+allocating a host port. If the kernel reuses it, the candidate stays bound while
+one replacement is allocated, guaranteeing distinct ports without retry loops.
+Admitted native public-consumer calls also borrow their assembly's owned
+PostgreSQL service when no external connection is supplied. Independent children
+still create distinct databases/roles; the parent retains its borrow through
+verified child exit/output drain and verifies server/engine cleanup afterward.
+Standalone public commands retain their existing owned service. Real
+forced-port-collision and live-child-target regressions raise the complete
+retained composition minimum from 84 to 86; its original 900-second budget is
+unchanged.
+
+The Python verifier also holds one explicitly owned service across its twelve
+separate PostgreSQL composition-guide invocations, including `all`. A private
+owner-only lease delivers only the administrative test-service connection to
+those children; each still creates and drops its own databases and roles.
+The verifier checks service health while each child runs, waits for child exit
+and output drain before releasing the service, and verifies final database,
+role, session and Docker cleanup. Start, consumer or cleanup failure fails the
+gate; ownership evidence is retained on unconfirmed cleanup. SQLite and an
+explicit external administrative connection do not start this service.
+This closes a Python-to-native lifetime gap, not permission to run uncontrolled
+container-heavy work on a shared machine or to pool installation state.
 
 Failed native storage and public platform-contract commands retain only
 source-allowlisted test identities and closed diagnostic codes. Their private,
@@ -684,6 +1141,23 @@ its unchanged 900-second budget. This does not reduce contention rounds,
 skip tests, retry failures or relax product deadlines.
 
 ## Focused checks currently available
+
+Use a dedicated execution environment for the full gate; do not assume a shared
+workstation is available for container-heavy validation. The existing Product
+checks workflow supports one complete all-mode run on GitHub-hosted Ubuntu:
+
+```bash
+gh workflow run product-checks.yml --ref feature/005-authentication-bootstrap -f suite=complete
+```
+
+`suite=all` still means the ordinary independent ten-job matrix; `suite=complete`
+runs the unchanged `python3 scripts/verify.py --suite all --disposable-postgres
+--warm-starts 10` command in one job. Its four-hour outer allowance covers the
+aggregate command and setup; ordinary matrix jobs retain 90 minutes, and all
+inner suite, native, runtime and product deadlines are unchanged. Retain exact
+source/profile/report evidence. Hosted Linux results never become a macOS pass.
+SIGTERM/SIGINT now latch a stop request independently of cleanup errors, so a
+failed cleanup cannot silently schedule another suite or certify a partial run.
 
 Run the repository checks and the smallest affected product commands:
 
@@ -740,7 +1214,7 @@ python3 scripts/verify.py --suite integration --provider sqlite
 python3 scripts/verify.py --suite integration --provider postgres --disposable-postgres
 python3 scripts/verify.py --suite recovery --provider both --disposable-postgres
 python3 scripts/verify.py --suite contract --provider both --disposable-postgres
-python3 scripts/verify.py --suite browser
+python3 scripts/verify.py --suite browser --disposable-postgres
 python3 scripts/verify.py --suite privacy --provider both --disposable-postgres
 python3 scripts/verify.py --suite startup --warm-starts 10
 python3 scripts/verify.py --suite failure-propagation --disposable-postgres
@@ -759,6 +1233,32 @@ selected provider environment. PostgreSQL requires explicit disposable opt-in
 before any child; single-provider runs exclude the other provider's trait
 without excluding provider-neutral manifest/harness tests. Startup verification
 also builds `Kofte.Storage.Consumer` before its timed browser exercise.
+Host integration now uses the same private bounded xUnit XML diagnostic path
+as storage/contract tests. Only source-known failed test symbols, admitted fixed
+codes and at most 32 allowlisted repository source locations enter safe reports.
+Host reports additionally retain at most 32 finite `expected_NNN_actual_NNN`
+HTTP status assertions, never arbitrary assertion values. Fixed source-known
+identity fixture codes and closed readiness-status/worker-phase combinations
+are admitted; unknown codes are discarded. Known identity helper paths/lines
+can identify the actual failing worker boundary without exposing private paths.
+Matching preserves the source-defined case of transport exception categories
+before exact allowlist verification; a CamelCase category is not silently lost.
+`hostFailureLocations`, `storageFailureLocations` and `contractFailureLocations`
+contain project-relative `.cs` paths with positive line numbers bounded by the
+actual source file, never private checkout prefixes. Locations come only from
+known failed tests; successful/unknown tests and invalid/out-of-file lines cannot
+publish them. Isolated failure-propagation evidence revalidates this whitelist.
+Raw arguments, other assertion values, exceptions, traces, output and private XML are
+not retained or uploaded. This makes failing host CI diagnosable without exposing
+identity exchanges.
+
+Every Playwright command also discovers its actual selected cases before
+execution and requires matching private JSON evidence: all required files/case
+minima, every discovered case passing exactly once, no skips/retries/flakiness
+or global error. Discovery and execution share the original command deadline.
+Only `browserEvidence` counts are retained; owner-only transient JSON, including
+any child output, is discarded after verified cleanup. Zero exit alone is not
+browser proof. Missing or unsafe reports fail the suite and isolated baselines.
 
 | Suite                      | Underlying runner                                                                                                                                                                                                                     |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -766,8 +1266,8 @@ also builds `Kofte.Storage.Consumer` before its timed browser exercise.
 | integration, each provider | `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore -c Release --filter-trait Provider=PROVIDER --minimum-expected-tests 1`                                                                             |
 | recovery, each provider    | Same integration project with `--filter-query "/[(Suite=recovery)&(Provider=PROVIDER)]" --minimum-expected-tests 1`, then `npm run test --workspace tests/e2e -- recovery.spec.ts --workers=1 --output PRIVATE_DIRECTORY`             |
 | contract, each provider    | Same integration project with `--filter-class "*OpenApiTests" --filter-trait Provider=PROVIDER --minimum-expected-tests 1`, then `npm run test --workspace tests/contract -- --no-file-parallelism bootstrap.test.ts adapter.test.ts` |
-| browser                    | `npm run test --workspace tests/e2e -- accessibility.spec.ts bootstrap.spec.ts recovery.spec.ts` against owned SQLite; one configured worker                                                                                          |
-| privacy, each provider     | `npm run test --workspace tests/contract -- --no-file-parallelism privacy.test.ts`; E2E `privacy.spec.ts --workers=1 --output PRIVATE_DIRECTORY`; then `python3 scripts/run_python_tests.py --pattern test_dev_output.py`             |
+| browser                    | All required E2E specs, including `identity.spec.ts`, against owned SQLite; then actual native identity failure/correction journeys on SQLite and owned PostgreSQL. Requires `--disposable-postgres`; one browser worker. |
+| privacy, each provider     | Existing provider storage/public captures, actual identity privacy guide journeys and native callback-failure browser captures; HTTP `privacy.test.ts`, E2E `privacy.spec.ts`, and `python3 scripts/run_python_tests.py --pattern test_dev_output.py`. |
 | startup                    | `npm run test --workspace tests/e2e -- startup.spec.ts --output tests/e2e/test-results/verify-startup-UUID`, with `BOOTSTRAP_WARM_STARTS` set to the requested 2-10 cycles                                                            |
 | failure-propagation        | `tests/integration/tooling/test_failure_propagation.py` exercises the actual wrapper in an isolated no-hardlinks checkout, never the working checkout                                                                                 |
 

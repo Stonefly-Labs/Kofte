@@ -20,7 +20,8 @@ public sealed class StorageProviderScope : IAsyncDisposable
     public CancellationToken Token => lifetime.Token;
     public PostgresResources? Postgres { get; private set; }
 
-    public static async Task<StorageProviderScope> CreateAsync(string provider, CancellationToken token)
+    public static async Task<StorageProviderScope> CreateAsync(string provider, CancellationToken token,
+        bool sharePostgres = true)
     {
         StorageScenarioCatalog.RequireProvider(provider);
         token.ThrowIfCancellationRequested();
@@ -28,7 +29,7 @@ public sealed class StorageProviderScope : IAsyncDisposable
         try
         {
             if (provider == "postgres")
-                scope.Postgres = await PostgresResources.CreateFromEnvironmentAsync(scope.Token);
+                scope.Postgres = await PostgresResources.CreateFromEnvironmentAsync(scope.Token, sharePostgres);
             else
             {
                 await new SqlitePlatformStore(scope.DataRoot).InitializeAsync();

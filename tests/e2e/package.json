@@ -5,11 +5,11 @@
   "type": "module",
   "scripts": {
     "lint": "eslint .",
-    "typecheck": "tsc --strict --noEmit --skipLibCheck --types node --target ES2022 --moduleResolution bundler --module esnext *.ts",
+    "typecheck": "tsc --strict --noEmit --skipLibCheck --allowImportingTsExtensions --types node --target ES2022 --moduleResolution bundler --module esnext *.ts",
     "test": "playwright test"
   },
   "devDependencies": {
-    "@playwright/test": "1.64.1",
+    "@playwright/test": "1.65.0-alpha-2026-10-29",
     "@axe-core/playwright": "4.14.0"
   }
 }
