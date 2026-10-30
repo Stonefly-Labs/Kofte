@@ -178,7 +178,7 @@ IDENTITY_SCENARIOS = (
     "interrupted-recovery", "private-evidence",
 )
 IDENTITY_HOST_CASES = (
-    "IdentityStartupTests", "IdentityPreparationTests", "IdentityKeyTests",
+    "IdentityStartupTests", "IdentityPreparationTests", "IdentityRestoreCommandTests", "IdentityKeyTests",
     "EnrollmentTests", "EnrollmentConcurrencyTests", "OidcBudgetTests", "DevelopmentBoundaryTests",
     "IdentityFailureTests",
 )
@@ -318,7 +318,7 @@ def required_native_classes(name, command):
         if name == f"storage-integration-{provider}":
             return prefixed(provider, IDENTITY_STORAGE_CASES)
         if name == f"recovery-{provider}-native":
-            return prefixed(provider, ("IdentityPreparationTests", "IdentityKeyTests"))
+            return prefixed(provider, ("IdentityPreparationTests", "IdentityRestoreCommandTests", "IdentityKeyTests"))
         if name == f"storage-recovery-{provider}":
             return prefixed(provider, ("IdentityRecoveryTests",))
         if name in (f"identity-browser-native-{provider}", f"identity-privacy-browser-native-{provider}"):

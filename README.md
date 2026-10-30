@@ -129,6 +129,12 @@ bound. The next scoped fixture change overlaps only read-only provider
 initialization before the unchanged serial exclusive warmup and registration
 barrier. All ten both-provider concurrency cases pass, including the original
 800 fresh race workers; final aggregate qualification remains required.
+Actual `e0dba6f` still times out its whole PostgreSQL propagation baseline after
+121 host and 212 storage cases pass. The next fixture correction separates
+independently owned restore-command cases from preparation/reconciliation
+within the unchanged four-thread runner. Pre/post-build discovery preserves
+all 68 provider-qualified operator cases exactly, and fail-closed inventories
+require both groups. No test assertion, contention, cleanup or deadline is relaxed.
 Historical failures remain failed; no universal issuer-key explanation is claimed.
 Continue on the same branch/draft PR #8. Converge, review and explicit feature
 acceptance are later stages; designation grants no module permissions.

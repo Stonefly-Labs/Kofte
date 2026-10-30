@@ -1,8 +1,8 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement running; 96/100 complete (T001-T096). Published `3345783` passes all ten actual Linux product contexts and repository checks. Its independent exact full local gate finishes nine groups successfully but fails SQLite composition recovery; all ten reports remain completeGate false. A controlled real-writer regression identifies false sharing contention in live SQLite header inspection. Platform, module and bootstrap writer regressions now pass, together with 32 storage/boundary/deadline cases, nine bootstrap compatibility cases and all four actual public SQLite composition recovery cases. Full assessment of this subsequent header repair is still required; no complete-gate pass is claimed. T097-T100 remain unchecked.
+**Result:** implement running; 96/100 complete (T001-T096). The latest actual Linux propagation baseline at `e0dba6f` still times out after passing host/storage, not a complete qualification. Independent stopped-operator groups now preserve every original case and assertion within the unchanged runner bound; full quality, all affected SQLite cases and the entire PostgreSQL integration selection pass. Exact final local all-mode and actual Linux qualification remain mandatory; T097-T100 remain unchecked.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-30.
-**Assessed baseline:** published parent-service reuse correction `3345783b672fdcd22ae2a3a9515c30e2d32dc09e`; actual Linux merge `08a4532f8ad48617c2bc2b8b8a34bb2c9ca956bf`. The subsequent SQLite header repair's working-tree evidence is distinguished below; earlier assessments retain their original baselines.
+**Assessed baseline:** published fixture warmup `e0dba6f3bf1630649281e3de3fe9942bf60d6a56`; actual Linux merge `bdf34b3f624c5b45f527cbf7f092fe61bbf55e76`. The subsequent operator-grouping working-tree evidence is distinguished below; earlier assessments retain their original baselines.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
 `specs/005-authentication-bootstrap`.
 **Checkpoint:** [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8).
@@ -14,6 +14,70 @@ adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
 
 ## T097 in progress: current full-gate and assessed-head failures
+
+### Separate independent stopped-operator groups within the existing runner bound, 2026-10-30
+
+The actual `2912449` Linux assessment finishes nine product contexts successfully,
+including all retained composition contracts; only failure propagation fails.
+Its assessed merge `0f766527a9ecf86d40818e43bfdefee9070b36e8` has verified main
+`3e416813233c9d291eb20cf72d5882dbddf3e1b6` and feature `2912449...` parents;
+both trees equal `e4f91c9db38ed24ddec0c1606c6af90778ab09a7`.
+That exact local attempt was deliberately interrupted during contract for the
+published fixture continuation: quality/unit/both integrations/recovery pass;
+contract records `verification_interrupted`, not a newly diagnosed assertion.
+All six reports remain completeGate false, with the owned failed checkout retained.
+
+The subsequent actual `e0dba6f` propagation assessment also reaches its original
+whole healthy PostgreSQL baseline bound:
+`failure-propagation-none-46d247811ec94a82bccba1921bfe7922.json`, assessed merge
+`bdf34b3f624c5b45f527cbf7f092fe61bbf55e76`.
+Host **121/332.549s** and storage **212/365.060s** pass without skips;
+composition is interrupted after **202.301s**, entire baseline **900.402s**.
+Its separate full integration passes **121/212/59**, 971.777s. Read-only worker
+warmup therefore does not, by itself, close this aggregate gate.
+
+Safe native timings identify an unnecessarily serialized stopped-operator group:
+all 34 preparation/reconciliation/restore cases on each provider occupy a single
+xUnit class (207.830 aggregate case-seconds at `e0dba6f`). Restore command cases
+use independent owned fixtures and no ambient process mutation. They now occupy
+`IdentityRestoreCommandTests.cs`, separate from preparation/reconciliation, under
+the **unchanged at-most-four-thread native runner**. Shared fixture helpers remain
+inside the dedicated host test project. No command, case, assertion, interruption,
+lease, durable operation, actual contender, cleanup or time budget changes.
+Both provider/recovery traits remain, and native integration/recovery inventories
+now require the additional class instead of permitting it to disappear.
+
+Actual pre/post-build discovery proves the exact same **68** provider-qualified
+method/argument cases, with zero omissions or duplicates. The moved 204-line
+restore case/assertion block is byte-for-byte identical. The new missing-class
+regression detects all four provider/suite omission mutations and then passes
+against the real inventory. These checks do not substitute for full qualification.
+The final intended scope now includes **294** tracked paths, adding only this
+dedicated test source to the preceding 293-path audit.
+
+Working-tree checks over `e0dba6f`, with the pinned SDK/environment and explicit
+005 feature context:
+
+```text
+dotnet format Kofte.slnx --no-restore --include tests/integration/Kofte.Host.IntegrationTests/Identity/IdentityPreparationTests.cs tests/integration/Kofte.Host.IntegrationTests/Identity/IdentityRestoreCommandTests.cs
+dotnet build tests/integration/Kofte.Host.IntegrationTests --no-restore -c Release -warnaserror -m:1 -nr:false
+python3 -m unittest scripts.tests.test_verify.VerifyTests.test_integration_and_recovery_cannot_omit_the_independent_restore_command_group -v
+python3 scripts/verify.py --suite quality
+dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-build --no-restore -c Release --filter-trait Provider=sqlite --filter-class '*IdentityPreparationTests' --filter-class '*IdentityRestoreCommandTests' --max-threads 4 --minimum-expected-tests 34 --output Detailed --show-stdout None --show-stderr None
+python3 scripts/verify.py --suite integration --provider postgres --disposable-postgres
+git diff --check
+```
+
+All **pass**: warning-free build; one omission regression after its four detected
+negative mutations; complete quality **35.021s**, including repository/**166**
+Python/whitespace, .NET/web/contracts/dependencies
+(`quality-none-d58e2f777b91428b8e2641a767edda24.json`);
+all **34** SQLite operator cases, zero skipped, **28.009s**; complete PostgreSQL
+**441.012s** (`integration-postgres-ddd7a22a39244c6ba8155d9edd966f48.json`),
+host **121/181.679s**, storage **212/187.498s**, composition **59/71.643s**,
+all zero skipped. Native evidence now verifies all **nine** required host classes.
+These are actual local observations, not exclusive-CPU comparisons or proof that
+the original 900-second Linux aggregate now passes.
 
 ### Overlap read-only provider initialization before exclusive warmup, 2026-10-30
 

@@ -205,6 +205,27 @@ class VerifyTests(unittest.TestCase):
         self.assertEqual({"passed": 1, "skipped": 0, "requiredClasses": 1},
                          diagnostic.native_success(path, 1, ("IdentityFailureTests",)))
 
+    def test_integration_and_recovery_cannot_omit_the_independent_restore_command_group(self):
+        path = self.root / "storage.xml"
+        for provider, prefix in (("sqlite", "Sqlite"), ("postgres", "Postgres")):
+            for name in (f"integration-{provider}", f"recovery-{provider}-native"):
+                with self.subTest(name=name):
+                    required = verify.required_native_classes(name, [])
+                    restore = prefix + "IdentityRestoreCommandTests"
+                    passed = [case for case in required if case != restore]
+                    path.write_text("<assemblies>" + "".join(
+                        f'<test type="Kofte.Host.Identity.{case}" result="Pass" />' for case in passed
+                    ) + "</assemblies>")
+                    diagnostic = verify.runtime_support.CommandDiagnostics("host")
+                    with self.assertRaisesRegex(verify.runtime_support.RuntimeFailure,
+                                                "^native_evidence_required_case_missing$"):
+                        diagnostic.native_success(path, 1, required)
+                    path.write_text(path.read_text().replace(
+                        "</assemblies>", f'<test type="Kofte.Host.Identity.{restore}" result="Pass" /></assemblies>',
+                    ))
+                    self.assertEqual(len(required),
+                                     diagnostic.native_success(path, 1, required)["requiredClasses"])
+
     def test_identity_inventory_requires_sources_scanners_scenarios_and_solution_build_edge(self):
         verify.identity_inventory(self.root)
         for name in verify.IDENTITY_REQUIRED_FILES:
