@@ -66,6 +66,14 @@ The corrected two-phase fixture overlaps only runtime startup, restores serial
 warmup, then releases the unchanged registration barrier. A held-lease regression
 fails before repair on each provider; all six relevant cases pass afterward,
 including the same 800 fresh race workers. Repaired-source qualification continues.
+The subsequent `81e1805` Linux assessment passes nine contexts and the full
+propagation proof, including its whole PostgreSQL baseline in 691.368s.
+Retained composition still times out. The next fixture correction borrows the
+native parent's owned service across independent consumers, preserving fresh
+databases/roles and verified child exit before release. Its live-target
+regression fails before repair and passes afterward; all 86 retained cases pass
+locally in 466.741s under the original 900-second bound. Final qualification
+continues; no complete-gate pass or stage advance is claimed.
 Qualification and Linux diagnosis continue. The preserved earlier fixture remains
 stopped, not deleted or claimed cleaned up. Do not advance stages, waive the
 failed gates or attribute every historical failure to lazy key generation.

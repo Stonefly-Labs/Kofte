@@ -1,11 +1,63 @@
 using System.Text;
 using Kofte.Infrastructure.Storage;
 using Kofte.TestSupport;
+using Npgsql;
 
 namespace Kofte.Platform.ContractTests.Composition;
 
 public sealed class CompositionFixtureTests
 {
+    [Fact]
+    [Trait("Provider", "postgres")]
+    public async Task IndependentConsumerBorrowsOwnedServiceWithoutSharingOrLeakingTargets()
+    {
+        using var lifetime = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
+        lifetime.CancelAfter(TimeSpan.FromSeconds(60));
+        var token = lifetime.Token;
+        await using var fixture = await CompositionFixture.CreateAsync("postgres", token);
+        await fixture.SeedUnrelatedNoStorageAsync(token);
+        var before = await CompositionStoreSnapshot.CaptureAsync(fixture.Storage, token);
+        var postgres = fixture.Storage.Postgres ??
+            throw new InvalidOperationException("composition_postgres_fixture_required");
+        await using var connection = new NpgsqlConnection(postgres.ConnectionString);
+        await connection.OpenAsync(token);
+        async Task<long> CountAsync(string sql)
+        {
+            await using var command = new NpgsqlCommand(sql, connection) { CommandTimeout = 3 };
+            return (long)(await command.ExecuteScalarAsync(token) ??
+                throw new InvalidOperationException("composition_service_inventory_missing"));
+        }
+        const string databases = "SELECT count(*) FROM pg_catalog.pg_database WHERE datname ~ '^kofte_test_'";
+        const string roles = "SELECT count(*) FROM pg_catalog.pg_roles WHERE rolname ~ '^kofte_(app|provisioner)_'";
+        var databaseCount = await CountAsync(databases);
+        var roleCount = await CountAsync(roles);
+        var execution = CompositionConsumerHarness.InvokeAsync(
+            ["--provider", "postgres", "--scenario", "empty-boot"], token);
+        try
+        {
+            var observed = false;
+            while (!execution.IsCompleted)
+            {
+                if (await CountAsync(databases) > databaseCount)
+                {
+                    observed = true;
+                    break;
+                }
+                await Task.Delay(TimeSpan.FromMilliseconds(25), token);
+            }
+            CompositionConsumerHarness.RequireSuccess(await execution, "postgres", "empty-boot");
+            Assert.True(observed, "composition_consumer_did_not_borrow_owned_service");
+            Assert.Equal(databaseCount, await CountAsync(databases));
+            Assert.Equal(roleCount, await CountAsync(roles));
+            Assert.True(before == await CompositionStoreSnapshot.CaptureAsync(fixture.Storage, token));
+        }
+        finally
+        {
+            await lifetime.CancelAsync();
+            await execution;
+        }
+    }
+
     [Fact]
     [Trait("Provider", "sqlite")]
     public async Task ReusedEphemeralWebPortCannotInvalidateAComposedHostConfiguration()

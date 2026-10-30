@@ -1,8 +1,8 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement running; 96/100 complete (T001-T096). The independent exact full local gate at `e371245` finishes with nine passing suite groups and a failed SQLite composition consumer; completeGate remains false. Actual `13d4e9c` Linux integration passes in 613.840s, but its isolated healthy baseline exposes a pre-registration warmup acquisition collision, not a timeout. The corrected two-phase fixture overlaps runtime startup while restoring serial warmup leases before the unchanged ten-contender registration barrier. A held-lease regression fails on both providers before repair; all six regression/retained cases now pass, including the same 800 fresh race workers. Full repaired-source qualification continues; T097-T100 remain unchecked. No human approval is requested.
+**Result:** implement running; 96/100 complete (T001-T096). Actual `81e1805` Linux passes nine product contexts, including the entire propagation proof and its healthy PostgreSQL baseline in 691.368s; only retained composition still times out. The next fixture correction reuses the native parent's owned service across independent consumers, with separate databases/roles and verified child exit before release. Its live-target regression fails before repair and passes afterward; all 86 retained composition cases pass locally in 466.741s under the unchanged 900-second bound. Exact full local qualification at frozen `81e1805` is still running; no complete-gate pass or repaired-source CI pass is claimed. T097-T100 remain unchecked.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-30.
-**Assessed baseline:** published port/startup repair `13d4e9c88577745e975a8e1630f8d9d77b8a7b0b`; actual Linux merge `250825b1a6af9c801c5fbe1db50fd3766c8e911b`. The subsequent two-phase warmup correction is distinguished below; earlier assessments retain their original baselines.
+**Assessed baseline:** published two-phase warmup correction `81e1805d8c6ae4ab8bfac150454f83b9d4faf706`; actual Linux merge `1f1e0bef73030821b526bfe6d8b9e81e1be85ce7`. The subsequent parent-service reuse correction is distinguished below; earlier assessments retain their original baselines.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
 `specs/005-authentication-bootstrap`.
 **Checkpoint:** [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8).
@@ -14,6 +14,84 @@ adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
 
 ## T097 in progress: current full-gate and assessed-head failures
+
+### Reuse the native parent's service across independent consumers, 2026-10-30
+
+Actual [run 41013543462](https://github.com/Stonefly-Labs/Kofte/actions/runs/41013543462)
+at `81e1805` finishes **nine of ten** product contexts successfully, including
+both complete integrations, recovery, browser, privacy, startup and propagation.
+[Repository run 41013543562](https://github.com/Stonefly-Labs/Kofte/actions/runs/41013543562)
+passes. Merge `1f1e0bef73030821b526bfe6d8b9e81e1be85ce7` has verified main
+`3e416813233c9d291eb20cf72d5882dbddf3e1b6` and feature
+`81e1805d8c6ae4ab8bfac150454f83b9d4faf706` parents.
+
+Complete propagation passes in **1100.081s**
+(`failure-propagation-none-94c7da2dec984a848ee46884df16f659.json`).
+Healthy quality/PostgreSQL/browser baselines pass in 85.300s/691.368s/88.314s.
+The entire PostgreSQL baseline, under its original 900-second bound, contains
+native 121/229.307s, storage **212**/290.511s and composition 59/171.194s,
+zero skipped. All five actual test/formatter/build/unavailable-PostgreSQL/
+missing-Chromium injections and owned cleanup pass. The added preparation
+regression increases storage by one case per provider; nothing is omitted.
+
+Contract still fails retained composition after 900.066s
+(`contract-both-aecf549da74c4f6d9e16039cbd8d0b21.json`); the overall context
+takes 1479.049s. The bounded follow-up independently passes all 24 public
+composition invocations in 978.462s
+(`composition-diagnostic-both-9c1f5a5973504fe4867bbfa826b259b3.json`).
+This preserves the failed required command, not a replacement pass.
+The preceding `13d4e9c` assessment also times out at 900.065s, with all
+follow-up recipes passing in 957.429s; timing variability is not a waiver.
+
+The public consumer's process-local service reuse still creates a fresh Docker
+service for **each independent consumer process**, even when the native owning
+assembly already has one. The harness now borrows that parent's service only
+for admitted, source-catalogued PostgreSQL scenarios with no supplied external
+connection. It passes credentials only through private child environment, never
+arguments/results. Existing external-service fixture provisioning creates fresh
+databases and application/provisioning roles for every child fixture. Standalone
+public commands and invalid/unadmitted selectors retain their existing paths.
+No public product command, schema, deadline, retry, case or collection changes.
+
+The parent retains its borrow through actual child stop and bounded output
+drain; unverified cleanup cannot release it. Each child verifies/removes only
+its own database/roles, and the original parent owner still checks exact empty
+server state and Docker ownership before disposal. The contract assembly's
+existing nonparallel execution is unchanged.
+
+New `IndependentConsumerBorrowsOwnedServiceWithoutSharingOrLeakingTargets`
+observes a real transient child database on the parent's server, then requires
+the exact original database/role counts and unchanged parent module snapshot.
+Before sharing, the public consumer succeeds but this assertion **fails**:
+`composition_consumer_did_not_borrow_owned_service`. After repair the same
+command **passes 1/zero skipped, 8.713s**:
+
+```text
+dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore -c Release --filter-method '*IndependentConsumerBorrowsOwnedServiceWithoutSharingOrLeakingTargets' --minimum-expected-tests 1 --output Detailed --show-stdout None --show-stderr None
+```
+
+The complete strengthened selection **passes 86/zero skipped in 466.741s**
+under the original owned 900-second runner:
+
+```text
+dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore -c Release --filter-class '*Composition*' --output Detailed --show-stdout None --show-stderr None --minimum-expected-tests 86
+```
+
+Safe diagnostic report
+`composition-shared-parent-complete-both-23d2af78e4d94707a5991541c460767a.json`
+takes 466.966s including version checks. It assesses the working-tree correction
+over `81e1805`, remains targeted/completeGate false and is not final qualification.
+The earlier 85-case selection took 500.139s; the new case strengthens rather
+than reduces coverage. Other isolated qualification is active on this macOS
+host, so this is not an exclusive-CPU controlled benchmark or a Linux repair
+claim.
+
+Focused `dotnet format Kofte.slnx --verify-no-changes --no-restore --include
+tests/integration/Kofte.TestSupport/CompositionConsumerHarness.cs
+tests/contract/Kofte.Platform.ContractTests/Composition/CompositionFixtureTests.cs`
+passes. `dotnet build Kofte.slnx --no-restore -c Release -warnaserror` passes
+with zero warnings/errors; all 165 repository Python tests pass. Full
+repaired-source local/Linux qualification remains required.
 
 ### Separate runtime startup from exclusive warmup, 2026-10-30
 

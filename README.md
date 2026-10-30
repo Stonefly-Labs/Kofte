@@ -95,6 +95,13 @@ overlapping exclusive warmup leases. A held-lease regression reproduces that
 failure on both providers. The corrected two-phase fixture overlaps runtime
 startup, restores serial warmup, then releases the unchanged registration
 barrier; all six regression/retained cases pass, including 800 fresh race workers.
+Actual `81e1805` Linux then passes nine product contexts, including complete
+propagation and its 691.368-second healthy PostgreSQL baseline. Only retained
+composition still times out. The next fixture correction borrows the native
+parent's owned service across independent consumers while preserving fresh
+databases/roles and verified child exit before release. A live-target regression
+fails before repair and passes afterward; all **86** retained composition cases
+pass locally in 466.741s under the same 900-second bound.
 Full repaired-source qualification continues; no complete-gate pass is claimed.
 Historical failures remain failed; no universal issuer-key explanation is claimed.
 Continue on the same branch/draft PR #8. Converge, review and explicit feature

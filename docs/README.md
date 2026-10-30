@@ -62,6 +62,13 @@ overlaps runtime startup but restores serial warmup before the unchanged
 registration barrier. A real held-lease regression fails before repair on both
 providers; all six relevant cases pass afterward, including 800 race workers.
 Actual repaired-source qualification continues.
+At `81e1805`, actual Linux passes nine contexts, including the complete
+propagation proof and 691.368-second healthy PostgreSQL baseline; only retained
+composition still times out. Borrowing the native parent's owned service across
+independent consumers removes repeated service creation without sharing their
+databases/roles or releasing ownership before verified child exit. A real
+live-target red/green regression and all 86 retained cases pass locally under
+the original 900-second bound; its actual Linux qualification is still required.
 The remaining gates are engineering work, not human approval; no failed
 result is replaced by a subset or attributed universally to issuer keys.
 Use the [operator contract](../specs/005-authentication-bootstrap/contracts/operator-v1.md)

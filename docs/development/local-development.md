@@ -1105,8 +1105,14 @@ regression verifies that startup cannot acquire maintenance before preparation.
 Composition fixtures also exclude the prepared identity's nominal web port when
 allocating a host port. If the kernel reuses it, the candidate stays bound while
 one replacement is allocated, guaranteeing distinct ports without retry loops.
-The forced-collision regression raises the complete retained composition minimum
-from 84 to 85; the command's original 900-second budget remains unchanged.
+Admitted native public-consumer calls also borrow their assembly's owned
+PostgreSQL service when no external connection is supplied. Independent children
+still create distinct databases/roles; the parent retains its borrow through
+verified child exit/output drain and verifies server/engine cleanup afterward.
+Standalone public commands retain their existing owned service. Real
+forced-port-collision and live-child-target regressions raise the complete
+retained composition minimum from 84 to 86; its original 900-second budget is
+unchanged.
 
 Failed native storage and public platform-contract commands retain only
 source-allowlisted test identities and closed diagnostic codes. Their private,

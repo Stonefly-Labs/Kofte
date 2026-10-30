@@ -27,7 +27,29 @@ public static class CompositionConsumerHarness
         OwnedProcesses.ClearSensitiveEnvironment(start);
         if (Environment.GetEnvironmentVariable("KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE") == "true")
             start.Environment["KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE"] = "true";
-        return await OwnedProcesses.RunAsync(start, TimeSpan.FromSeconds(600), token);
+        var owner = arguments is ["--provider", "postgres", "--scenario", var scenario] &&
+            (scenario == "all" || CompositionScenarioCatalog.Scenarios.Contains(scenario, StringComparer.Ordinal)) &&
+            Environment.GetEnvironmentVariable("KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE") == "true" &&
+            Environment.GetEnvironmentVariable("KOFTE_POSTGRES_CONNECTION") is null
+                ? PostgresAssemblyFixture.Current : null;
+        if (owner is null)
+            return await OwnedProcesses.RunAsync(start, TimeSpan.FromSeconds(600), token);
+        var borrowed = await owner.BorrowAsync(token);
+        OwnedProcess? child = null;
+        try
+        {
+            token.ThrowIfCancellationRequested();
+            start.Environment["KOFTE_POSTGRES_CONNECTION"] = borrowed.Connection;
+            child = OwnedProcesses.Start(start);
+            using var budget = CancellationTokenSource.CreateLinkedTokenSource(token);
+            budget.CancelAfter(TimeSpan.FromSeconds(600));
+            return await child.WaitAsync(budget.Token);
+        }
+        finally
+        {
+            if (child is not null) await child.DisposeAsync();
+            owner.Release();
+        }
     }
 
     public static CompositionConsumerResult RequireSuccess(ProcessOutput output, string provider, string scenario)
