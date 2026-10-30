@@ -189,58 +189,58 @@ they do not certify the revised scope.
 
 ### Requirement Completeness
 
-- [ ] CHK037 Are local-only, OIDC-only and coexistence requirements complete for enabled/disabled methods, production transport/key protection and independence from an external identity service, while keeping production local accounts distinct from restricted Development identity? [Completeness, Spec §FR-001/013/014/023; §US1.6; §US5; §Scope and Dependencies]
-- [ ] CHK038 Are canonical-user and named-connection requirements complete for multiple explicitly associated methods, exact external identity ownership, stable user IDs and minimal browser/API identity, without profile-based linking or production-method-specific user types? [Completeness, Spec §FR-003/004/023; §US1.2/3/8; §Key Entities]
-- [ ] CHK039 Are local credential creation, identifier uniqueness, password policy, protected non-recoverable storage, change, reset and failed-attempt/lockout responsibilities all specified, with no implicit password for an external-only user? [Completeness, Spec §FR-019/024/025; §US3; §Key Entities]
-- [ ] CHK040 Is the 005/006 boundary complete about protected initial admission, denied post-setup self-registration, later trusted onboarding and Owner designation granting no unavailable user-administration/team/resource permissions, with future SAML and other later capabilities explicitly excluded? [Completeness, Spec §FR-005/007/021/027; §US1.7; §US4.6; §Scope and Dependencies]
+- [x] CHK037 Are local-only, OIDC-only and coexistence requirements complete for enabled/disabled methods, production transport/key protection and independence from an external identity service, while keeping production local accounts distinct from restricted Development identity? [Completeness, Spec §FR-001/013/014/023; §US1.6; §US5; §Scope and Dependencies]
+- [x] CHK038 Are canonical-user and named-connection requirements complete for multiple explicitly associated methods, exact external identity ownership, stable user IDs and minimal browser/API identity, without profile-based linking or production-method-specific user types? [Completeness, Spec §FR-003/004/023; §US1.2/3/8; §Key Entities]
+- [x] CHK039 Are local credential creation, identifier uniqueness, password policy, protected non-recoverable storage, change, reset and failed-attempt/lockout responsibilities all specified, with no implicit password for an external-only user? [Completeness, Spec §FR-019/024/025; §US3; §Key Entities]
+- [x] CHK040 Is the 005/006 boundary complete about protected initial admission, denied post-setup self-registration, later trusted onboarding and Owner designation granting no unavailable user-administration/team/resource permissions, with future SAML and other later capabilities explicitly excluded? [Completeness, Spec §FR-005/007/021/027; §US1.7; §US4.6; §Scope and Dependencies]
 
 ### Requirement Clarity
 
-- [ ] CHK041 Is first-login ownership unambiguously the first eligible authenticated local/OIDC commit within operator-authorized setup admission, rather than first arrival, prior personal nomination, token possession, profile claims or Development login? [Clarity, Spec §FR-010/011/028; §US2.1-3; §Key Entities]
-- [ ] CHK042 Are setup-token delivery, finite expiry, browser binding, failed/cancelled authentication, replacement and permanent consumption clearly distinguished, including why restart, Owner loss and recovery cannot reopen consumed ownership? [Clarity, Spec §FR-010/012/028; §US2.3/5/6; Operator-v2 §Authorize protected initial setup]
-- [ ] CHK043 Are local lockout, administrative disablement, provider outage and independent enabled methods distinguished, with one bounded local-proof policy and no automatic fallback or ambiguity about recovery preserving the user? [Clarity, Spec §FR-015/019/023/024/029; §US1.5; §US3.6; §US4.6; §Assumptions and Constitutional Review]
+- [x] CHK041 Is first-login ownership unambiguously the first eligible authenticated local/OIDC commit within operator-authorized setup admission, rather than first arrival, prior personal nomination, token possession, profile claims or Development login? [Clarity, Spec §FR-010/011/028; §US2.1-3; §Key Entities]
+- [x] CHK042 Are setup-token delivery, finite expiry, browser binding, failed/cancelled authentication, replacement and permanent consumption clearly distinguished, including why restart, Owner loss and recovery cannot reopen consumed ownership? [Clarity, Spec §FR-010/012/028; §US2.3/5/6; Operator-v2 §Authorize protected initial setup]
+- [x] CHK043 Are local lockout, administrative disablement, provider outage and independent enabled methods distinguished, with one bounded local-proof policy and no automatic fallback or ambiguity about recovery preserving the user? [Clarity, Spec §FR-015/019/023/024/029; §US1.5; §US3.6; §US4.6; §Assumptions and Constitutional Review]
 
 ### Requirement Consistency
 
-- [ ] CHK044 Are the revised browser/direct-host/adapter/trusted-actor requirements consistent for public versus protected surfaces, identity and authority, accepted credentials, request binding, safe returns, caching and unauthenticated/forbidden/unavailable results? [Consistency, Spec §FR-002/004-008/020/021; §US4.1-5; §Interfaces and Permission Parity; Identity-v2 §Trust and common HTTP rules]
-- [ ] CHK045 Are session lifetime/renewal and credential/association/account/trust-change requirements consistent about fresh durable validation, next-request invalidation of affected sessions and which changes do not revoke access, without periodic positive admission, unrelated-user changes or alteration of consumed Owner provenance? [Consistency, Spec §FR-009/012/025/026/029; §US3.2/3/5; §US4.4/6; Identity-v2 §Credential, setup and proof semantics]
-- [ ] CHK046 Are approved account-management responsibilities, host-owned persistence and session publication consistent about one owner-local sensitive-change/security-record commit, denial-only security changes, rollback and no authenticated success before known completion? [Consistency, Spec §FR-011/015/016/017/024; §Data Ownership and Compatibility; Plan §Account/store/session coordination; Research §A1/A2]
+- [x] CHK044 Are the revised browser/direct-host/adapter/trusted-actor requirements consistent for public versus protected surfaces, identity and authority, accepted credentials, request binding, safe returns, caching and unauthenticated/forbidden/unavailable results? [Consistency, Spec §FR-002/004-008/020/021; §US4.1-5; §Interfaces and Permission Parity; Identity-v2 §Trust and common HTTP rules]
+- [x] CHK045 Are session lifetime/renewal and credential/association/account/trust-change requirements consistent about fresh durable validation, next-request invalidation of affected sessions and which changes do not revoke access, without periodic positive admission, unrelated-user changes or alteration of consumed Owner provenance? [Consistency, Spec §FR-009/012/025/026/029; §US3.2/3/5; §US4.4/6; Identity-v2 §Credential, setup and proof semantics]
+- [x] CHK046 Are approved account-management responsibilities, host-owned persistence and session publication consistent about one owner-local sensitive-change/security-record commit, denial-only security changes, rollback and no authenticated success before known completion? [Consistency, Spec §FR-011/015/016/017/024; §Data Ownership and Compatibility; Plan §Account/store/session coordination; Research §A1/A2]
 
 ### Acceptance Criteria Quality
 
-- [ ] CHK047 Do all six stories, 34 scenarios, FR-001-029 and SC-001-009 have identifiable independent evidence obligations for the revised scope, with real protocol/local credential, both-provider, browser, trusted-consumer and privacy coverage rather than historical old-scope passes? [Measurability, Spec §FR-022; §Required Validation; §Success Criteria; Quickstart §Acceptance matrix; §Proposed version-2 public recipe catalog]
-- [ ] CHK048 Are the mixed-method ownership criteria precise about at least twenty eligible contenders and three fresh restarts per provider, exactly one Owner/consumption/session/security record or no commit, and zero unapproved active accounts for losing contenders? [Measurability, Spec §FR-011/017/019; §US2.4; §SC-002/006; §Required Validation]
-- [ ] CHK049 Are all introduced method-choice/setup/credential/reset/association/expiry/Development/error states covered by measurable keyboard, focus, announcement, 320-pixel, 200%-text and five-second actionable-result criteria, with human/provider time separate from application latency? [Measurability, Spec §FR-013/020; §US6.4; §SC-004/005; §Experience, Security and Operations; Identity-v2 §Next.js and UI]
+- [x] CHK047 Do all six stories, 34 scenarios, FR-001-029 and SC-001-009 have identifiable independent evidence obligations for the revised scope, with real protocol/local credential, both-provider, browser, trusted-consumer and privacy coverage rather than historical old-scope passes? [Measurability, Spec §FR-022; §Required Validation; §Success Criteria; Quickstart §Acceptance matrix; §Proposed version-2 public recipe catalog]
+- [x] CHK048 Are the mixed-method ownership criteria precise about at least twenty eligible contenders and three fresh restarts per provider, exactly one Owner/consumption/session/security record or no commit, and zero unapproved active accounts for losing contenders? [Measurability, Spec §FR-011/017/019; §US2.4; §SC-002/006; §Required Validation]
+- [x] CHK049 Are all introduced method-choice/setup/credential/reset/association/expiry/Development/error states covered by measurable keyboard, focus, announcement, 320-pixel, 200%-text and five-second actionable-result criteria, with human/provider time separate from application latency? [Measurability, Spec §FR-013/020; §US6.4; §SC-004/005; §Experience, Security and Operations; Identity-v2 §Next.js and UI]
 
 ### Scenario Coverage
 
-- [ ] CHK050 Are credential establishment and fresh-proof password-change requirements complete for admitted versus forged creation, policy/uniqueness failures, unchanged user/Owner identity, old-password refusal and next-request old-session denial, including their relationship to shared local lockout? [Coverage, Spec §FR-024/025/029; §US3.1/2/6; §SC-008]
-- [ ] CHK051 Are private reset issuance/delivery and redemption requirements complete for account binding, expiry, replacement, concurrent one-use consumption, non-enumerating requests/results and operator assistance without promised email or mandatory mail service? [Coverage, Spec §FR-018/025; §US3.3/4; §SC-008; Operator-v2 §Private operator-assisted local password reset]
+- [x] CHK050 Are credential establishment and fresh-proof password-change requirements complete for admitted versus forged creation, policy/uniqueness failures, unchanged user/Owner identity, old-password refusal and next-request old-session denial, including their relationship to shared local lockout? [Coverage, Spec §FR-024/025/029; §US3.1/2/6; §SC-008]
+- [x] CHK051 Are private reset issuance/delivery and redemption requirements complete for account binding, expiry, replacement, concurrent one-use consumption, non-enumerating requests/results and operator assistance without promised email or mandatory mail service? [Coverage, Spec §FR-018/025; §US3.3/4; §SC-008; Operator-v2 §Private operator-assisted local password reset]
 - [ ] CHK052 Are explicit association/removal requirements complete for fresh existing-account proof, proof of the additional method, self-scoping, single-use authority, security-state effects and deliberate re-entry, without treating an existing session or matching profile as sufficient proof? [Coverage, Spec §FR-003/026/029; §US3.5; §SC-008; Identity-v2 §Credential, setup and proof semantics]
-- [ ] CHK053 Are fresh/foundation/delivered-store upgrade requirements explicit about stable IDs, exact associations, consumed legacy Owner, unrelated module data/history and immutable old migrations, while retiring obsolete sessions/nomination without manufacturing local credentials or production Development authority? [Coverage, Spec §FR-003/012/014/016/025; §US6.1/5; §SC-006; §Data Ownership and Compatibility]
+- [x] CHK053 Are fresh/foundation/delivered-store upgrade requirements explicit about stable IDs, exact associations, consumed legacy Owner, unrelated module data/history and immutable old migrations, while retiring obsolete sessions/nomination without manufacturing local credentials or production Development authority? [Coverage, Spec §FR-003/012/014/016/025; §US6.1/5; §SC-006; §Data Ownership and Compatibility]
 
 ### Edge Case Coverage
 
-- [ ] CHK054 Are duplicate-issuer connections, renamed/disabled/retired methods, concurrent association conflicts, already-owned methods, final-usable-method removal and provider outage addressed without retargeting an identity, merging users or creating association authority? [Coverage, Spec §FR-003/023/026; §US1.3/8; §US3.5; §Edge Cases; Data model §Exact external identity ownership and connection login]
-- [ ] CHK055 Are foreign-browser setup, switched/revoked-session reauthentication/association and wrong-account/replayed/expired/replaced reset requirements explicitly distinguished, with no reset-created password for an external-only user? [Coverage, Spec §FR-002/008/010/025/026/028; §US2.3/6; §US3.4/5; §Edge Cases; Identity-v2 §Credential, setup and proof semantics]
-- [ ] CHK056 Are interrupted delivery/commit and retry requirements precise about known versus uncertain effects, previously committed account results and newly resubmitted secrets, without blind retries, success-shaped fallback or implied filesystem/cross-module atomicity? [Coverage, Spec §FR-011/015/016/017/027; §US2.4; §US6.2; Data model §Password reset and trusted account-operation idempotency; Account-admission-v1 §Idempotency and failure]
+- [x] CHK054 Are duplicate-issuer connections, renamed/disabled/retired methods, concurrent association conflicts, already-owned methods, final-usable-method removal and provider outage addressed without retargeting an identity, merging users or creating association authority? [Coverage, Spec §FR-003/023/026; §US1.3/8; §US3.5; §Edge Cases; Data model §Exact external identity ownership and connection login]
+- [x] CHK055 Are foreign-browser setup, switched/revoked-session reauthentication/association and wrong-account/replayed/expired/replaced reset requirements explicitly distinguished, with no reset-created password for an external-only user? [Coverage, Spec §FR-002/008/010/025/026/028; §US2.3/6; §US3.4/5; §Edge Cases; Identity-v2 §Credential, setup and proof semantics]
+- [x] CHK056 Are interrupted delivery/commit and retry requirements precise about known versus uncertain effects, previously committed account results and newly resubmitted secrets, without blind retries, success-shaped fallback or implied filesystem/cross-module atomicity? [Coverage, Spec §FR-011/015/016/017/027; §US2.4; §US6.2; Data model §Password reset and trusted account-operation idempotency; Account-admission-v1 §Idempotency and failure]
 
 ### Non-Functional Requirements
 
-- [ ] CHK057 Are finite input/state/rate/lifetime capacities and nested operation/cleanup budgets defined consistently for the added local/setup/reset/proof flows, retaining the one-second local envelope and required contention while explicitly excluding the prohibited installation session-capacity proof? [Consistency, Spec §FR-019; §SC-002/005/008; §Required Validation; Identity-v2 §Errors and finite bounds]
-- [ ] CHK058 Are privacy, non-enumeration, correlated security evidence, retention/capacity and recording-failure requirements complete for passwords, setup/reset/proof/session material across public/private channels, without sensitive metric labels or claims of a general audit service? [Completeness, Spec §FR-017/018/019/028; §US6.3; §SC-007; §Experience, Security and Operations; Data model §Security evidence and admission counters]
-- [ ] CHK059 Are forbidden-destination requirements explicit at both DNS-answer and connected-peer admission even inside an allowed network, including mapped/mixed addresses, while preserving normal TLS and deliberately approved private-provider support without a production bypass? [Clarity, Spec §FR-001/002/015/019/023; §Required Validation; Research §A10]
+- [x] CHK057 Are finite input/state/rate/lifetime capacities and nested operation/cleanup budgets defined consistently for the added local/setup/reset/proof flows, retaining the one-second local envelope and required contention while explicitly excluding the prohibited installation session-capacity proof? [Consistency, Spec §FR-019; §SC-002/005/008; §Required Validation; Identity-v2 §Errors and finite bounds]
+- [x] CHK058 Are privacy, non-enumeration, correlated security evidence, retention/capacity and recording-failure requirements complete for passwords, setup/reset/proof/session material across public/private channels, without sensitive metric labels or claims of a general audit service? [Completeness, Spec §FR-017/018/019/028; §US6.3; §SC-007; §Experience, Security and Operations; Data model §Security evidence and admission counters]
+- [x] CHK059 Are forbidden-destination requirements explicit at both DNS-answer and connected-peer admission even inside an allowed network, including mapped/mixed addresses, while preserving normal TLS and deliberately approved private-provider support without a production bypass? [Clarity, Spec §FR-001/002/015/019/023; §Required Validation; Research §A10]
 
 ### Dependencies and Assumptions
 
-- [ ] CHK060 Are account-management/persistence dependencies and exact-version, bounded-operation, provenance/license/lock adoption-evidence obligations documented without treating documentation research, existing pins or design approval as proof of the revised integration? [Dependency, Spec §FR-001/019/022/024; §Assumptions and Constitutional Review; Plan §Technical Context; Research §A12; Constitution §III/VI/XI]
-- [ ] CHK061 Are actor/current-identity, operator and account-admission compatibility requirements explicit about new versus retired contracts, host-established authority, default-denied Owner/ordinary admission, future verified onboarding grants and no cross-module transaction or local-as-external reinterpretation? [Dependency, Spec §FR-004/007/021/027; §Interfaces and Permission Parity; Identity-v2 §Canonical identity and actor-v2; Account-admission-v1 §Policy and actor establishment]
-- [ ] CHK062 Are operator origin/key/secret custody and stopped restore/reconciliation assumptions explicit about trusted history, quarantined activation, restored-credential rollback, invalidated continuity and recovery-locked unknown ownership, without a new-Owner shortcut or rollback-proof guarantee? [Assumption, Spec §FR-012/015/016/023/028; §US2.5; §US6.2; §Data Ownership and Compatibility; Operator-v2 §Complete-set recovery and compatibility]
+- [x] CHK060 Are account-management/persistence dependencies and exact-version, bounded-operation, provenance/license/lock adoption-evidence obligations documented without treating documentation research, existing pins or design approval as proof of the revised integration? [Dependency, Spec §FR-001/019/022/024; §Assumptions and Constitutional Review; Plan §Technical Context; Research §A12; Constitution §III/VI/XI]
+- [x] CHK061 Are actor/current-identity, operator and account-admission compatibility requirements explicit about new versus retired contracts, host-established authority, default-denied Owner/ordinary admission, future verified onboarding grants and no cross-module transaction or local-as-external reinterpretation? [Dependency, Spec §FR-004/007/021/027; §Interfaces and Permission Parity; Identity-v2 §Canonical identity and actor-v2; Account-admission-v1 §Policy and actor establishment]
+- [x] CHK062 Are operator origin/key/secret custody and stopped restore/reconciliation assumptions explicit about trusted history, quarantined activation, restored-credential rollback, invalidated continuity and recovery-locked unknown ownership, without a new-Owner shortcut or rollback-proof guarantee? [Assumption, Spec §FR-012/015/016/023/028; §US2.5; §US6.2; §Data Ownership and Compatibility; Operator-v2 §Complete-set recovery and compatibility]
 
 ### Ambiguities and Conflicts
 
-- [ ] CHK063 Are approved intent/design feedback, historical checklist evidence, current unchecked criteria, adoption/runtime proof and later human acceptance clearly separated, so neither the original satisfied markers nor current generation authorizes unreconciled tasks or implementation? [Traceability, Spec §Authority and progress; §Assumptions and Constitutional Review; Plan §Validation and Operational Handoff; Constitution §Delivery and Review Gates]
-- [ ] CHK064 Are F1/F2 and T101-T103 carried forward with their exact destination-admission and pre-key-damage SQLite failure meanings, without allowing a renamed flow, passing rerun, historical green report or checklist satisfaction to diagnose, close or waive them? [Traceability, Spec §FR-022; §Required Validation; Review §Findings; Quickstart §Retained failures and stop conditions]
+- [x] CHK063 Are approved intent/design feedback, historical checklist evidence, current unchecked criteria, adoption/runtime proof and later human acceptance clearly separated, so neither the original satisfied markers nor current generation authorizes unreconciled tasks or implementation? [Traceability, Spec §Authority and progress; §Assumptions and Constitutional Review; Plan §Validation and Operational Handoff; Constitution §Delivery and Review Gates]
+- [x] CHK064 Are F1/F2 and T101-T103 carried forward with their exact destination-admission and pre-key-damage SQLite failure meanings, without allowing a renamed flow, passing rerun, historical green report or checklist satisfaction to diagnose, close or waive them? [Traceability, Spec §FR-022; §Required Validation; Review §Findings; Quickstart §Retained failures and stop conditions]
 
 ### Revised-Scope Notes
 
@@ -265,3 +265,102 @@ they do not certify the revised scope.
   author checklist remains separate and unchanged. Revised task reconciliation,
   analysis, adoption evidence, implementation and feature acceptance are later
   gates on the same feature branch/draft PR; no intermediate merge.
+
+## Assisted Revised-Scope Review - 2026-10-30
+
+**Authorization**: The reviewer explicitly requested review of CHK037-CHK064
+against the revised 005 spec, plan, contracts and constitution, stating
+**"I authorize assisted requirements-quality evaluation and checkbox updates."**
+The request also requires preserving CHK001-CHK036 and all historical evidence,
+publishing on the existing branch/draft PR and stopping before tasks or
+implementation. Positive design feedback alone is not the authorization.
+
+**Assessed source**: `55b0aeb8c400060224a5fd59e0be7b32d1fc4b84`, using the
+revised specification/design/contracts and supporting research/model/guide.
+Constitution 2.0.1 is unchanged.
+
+**Result: changes required.** **0/28 -> 27/28 satisfied**; CHK052 remains
+unchecked for RQ1 below. Every question, ID and reference is unchanged.
+CHK001-CHK036 and the complete original review remain byte-identical.
+The generation metadata/unchecked counts above record the preceding generation
+checkpoint, not the outcome of this separately authorized assessment.
+The 36 historical satisfied items are not re-certified.
+
+This assesses written requirements, not implemented authentication, exact
+framework compatibility, dependency adoption or actual runtime evidence.
+Spec/design/contracts, author checklist, all 103 task entries/markers and
+runtime/review reports remain unchanged. No task generation, analysis,
+implementation, feature acceptance or intermediate merge is performed.
+
+### Per-Item Evidence
+
+| Item | Result | Revised-source evidence and assessment |
+| --- | --- | --- |
+| CHK037 | Satisfied | FR-001/013/014/023, US1.6 and US5 distinguish production local-only/OIDC-only/coexistence from restricted Development. Operator-v2 Configuration requires production HTTPS/protected keys for both methods; local-only needs no external identity service and disabled methods refuse. |
+| CHK038 | Satisfied | FR-003/004/023, research A3/A4 and model Canonical user/Exact external ownership require stable GUID users, exact issuer/subject ownership across explicit connection bindings and no profile linking. Identity-v2 exposes one production/development context, not a local/OIDC user type. |
+| CHK039 | Satisfied | FR-024/025, research A3/A6 and model Local credential/Password reset specify identifier uniqueness, finite password/hash policy, non-recoverable storage, creation/change/reset and five-failure/fifteen-minute lockout. External-only users have no implicit password or reset-created credential. |
+| CHK040 | Satisfied | Spec Scope/005-006 table and FR-005/007/021/027 deny unknown post-setup admission and unavailable Owner administration. Account-admission-v1 defaults to denial even for Owner; 006 retains invitations/teams/RBAC and SAML remains excluded. |
+| CHK041 | Satisfied | FR-010/011/028, US2 and research A5 require private setup admission plus successful eligible authentication, with the first owner-local commit winning. Token possession, first arrival, nomination/profile claims and Development cannot grant ownership. |
+| CHK042 | Satisfied | Operator-v2 Authorize protected initial setup and model Setup define private fifteen-minute token delivery, five-minute browser admission clipped to expiry, generation replacement, failed-login non-consumption and terminal consumed/recovery-locked state. Restart/Owner loss/restore cannot mint another Owner. |
+| CHK043 | Satisfied | Spec defaults, research A3/A6 and plan Coordination separate shared local lockout from all-method administrative disablement. Reset clears local lockout without enabling a disabled account; enabled OIDC remains independent and outages never create automatic fallback. |
+| CHK044 | Satisfied | FR-004-008/020/021 and Identity-v2 common rules/endpoint/actor inventory define the same host/adapter/trusted identity, cookie-only credential boundary, Origin/antiforgery/callback binding, fixed local returns, no-store and safe 401/403/503 without API login redirects. |
+| CHK045 | Satisfied | FR-009/029, plan Coordination and model Sessions require fresh durable validation and terminal-safe renewal. Credential/association/account security changes invalidate affected sessions; operator trust reconciliation explicitly revokes globally, while labels/ordinary rotatable secrets do not. User IDs/Owner provenance stay unchanged. |
+| CHK046 | Satisfied | Plan Coordination, research A1/A2 and model store/events require one owner transaction, commit-blocking failed writes even if a manager ignores a result, denial-only failed-count/evidence effects, rollback of aborted sensitive work and cookie publication only after known commit. |
+| CHK047 | Satisfied | Spec Required Validation and quickstart Acceptance matrix identify all six stories/34 scenarios, FR-001-029 and SC-001-009 with independent provider/protocol/browser/consumer/privacy obligations. Fourteen explicitly future v2 recipes and both-provider inventories cannot be substituted by old passes. This establishes coverage obligations, not their execution or RQ1's missing freshness rule. |
+| CHK048 | Satisfied | SC-002, US2.4, model Setup and the ownership-race recipe specify at least twenty eligible mixed-method contenders, exact atomic Owner/consumption/session/evidence, three fresh restarts per provider and no losing unadmitted accounts. Interruption distinguishes one known commit, none or uncertainty. |
+| CHK049 | Satisfied | FR-020, SC-004/005, Experience and Identity-v2 UI cover every introduced state, keyboard/focus/announcements, 320 CSS pixels, 200% text and zero serious/critical automated findings. Plan/UI bound actionable final-input/return results to five seconds, excluding human/provider interaction. |
+| CHK050 | Satisfied | US3.1/2/6, research A3/A6, Identity-v2 local creation/change and plan Coordination require trusted creation, uniqueness/policy checks, fresh local proof/shared lockout, stable user/Owner and atomic old-password/next-request old-session refusal. |
+| CHK051 | Satisfied | Research A6, model Password resets and Operator-v2 reset define private account-bound fifteen-minute authorization, one pending digest/user, replacement and atomic one-use redemption. Public requests do no account lookup and explicitly require operator assistance, without promised mail/queue or mandatory vendor. |
+| CHK052 | Not satisfied: RQ1 | FR-026, research A7 and Identity-v2/model define dual proof, session binding, five-minute one-use proof and sign-out after mutation. They require a signed fresh OIDC auth_time but leave its acceptance cutoff/clock-skew/future-time rule undefined; the resulting proof's TTL does not resolve that source-authentication freshness gap. |
+| CHK053 | Satisfied | FR-016, model Migration and Operator-v2 Prepare preserve exact IDs/associations/consumed legacy Owner/modules/history and frozen old migrations/catalogs. Explicit format-3 upgrade retires old tickets/pending nomination without passwords or Development-to-production conversion; serve never migrates. |
+| CHK054 | Satisfied | Research A4/A7, model Exact external ownership and Identity-v2 method rules distinguish canonical ownership from explicit connection bindings, preserve disabled/retired ownership, prevent retarget/merge and require another enabled usable method before removal. Outage is not association/removal authority. |
+| CHK055 | Satisfied | Identity-v2 setup/proof semantics explicitly require foreign-browser refusal and original bound session/current-cookie revalidation for reauth/association callbacks. Model/operator reset bind one-use authorization to its account/generation and forbid external-only password creation. These binding/replay requirements are explicit; the separate source-time ambiguity is RQ1. |
+| CHK056 | Satisfied | Model Operations and Account-admission-v1 Idempotency authorize every replay, return the original committed nonsecret intent/result and never promise resubmitted password bytes were installed. Operator setup/reset separates private-file delivery from DB commit; uncertainty never triggers blind retry or filesystem/cross-module ACID claims. |
+| CHK057 | Satisfied | Identity-v2 finite bounds/model cap new inputs, attempts/admissions/proofs/resets and rates, including sufficient setup contention. Plan/research A10 retain one-second local work including managers/commit/cleanup, four-second OIDC and bounded outer/maintenance envelopes. Proof-record lifetime is defined; RQ1 concerns source auth_time, not that lifetime. The installation session-capacity proof remains prohibited. |
+| CHK058 | Satisfied | FR-017/018, model Events and Operator-v2 Private evidence specify correlated sanitized records, mandatory owner-local recording, installation/expiring retention/caps, bounded pruning and failure refusal. Credentials/setup/reset/session canaries and public/private captures exclude sensitive labels/disclosure; general audit remains 009. |
+| CHK059 | Satisfied | FR-019, research A10 and Identity-v2 require both DNS-answer and connected-peer forbidden-address rejection even inside approved CIDRs, with mapped/mixed cases, approved private fixtures and TLS. This is explicit written intent; F1's implementation defect remains open. |
+| CHK060 | Satisfied | Plan Technical Context, research A1/A12 and quickstart First implementation proof require actual pinned manager/store/transaction/deadline/cleanup evidence on both providers plus provenance/license/advisory/lock review. Documentation and shared-framework membership are explicitly not adoption/runtime proof. |
+| CHK061 | Satisfied | Identity-v2 explicitly versions current actor/HTTP and retires v1 HTTP/DI without local-as-OIDC coercion. Operator-v2 versions config/commands/recovery decisions. Account-admission-v1 uses host-established authority, default denial and future verified 006 grants, never caller privilege flags or cross-module transactions. |
+| CHK062 | Satisfied | Operator-v2/model Recovery define private origin/key custody, exact complete-set verification, stopped quarantine/history reconciliation, fresh protected keys and invalidated restored continuity. Consumed evidence wins over contrary attestation; unknown ownership stays locked and restored credentials require reconciliation where security is uncertain. No rollback-proof/fencing claim is made. |
+| CHK063 | Satisfied | Spec authority/defaults, plan proposal/adoption limits and checklist generation notes separate approved direction, design feedback, old scope and new criteria. This explicit reviewer request alone authorizes current marking; constitution Delivery gates still require task reconciliation/analysis and later proof/acceptance. RQ1 remains a current blocker. |
+| CHK064 | Satisfied | Spec Required Validation, review F1/F2, tasks T101-T103 and quickstart stop conditions preserve forbidden-but-allowlisted admission and the exact pre-key-damage SQLite 503 versus 200. No renamed flow, rerun, historical green report or this written review diagnoses, fixes or waives them. |
+
+### RQ1 - OIDC Freshness Acceptance Is Not Objectively Defined
+
+**Affected item:** CHK052. **Kind:** requirements/design clarity gap, not an
+assertion about an implemented vulnerability.
+
+[Research A7](../research.md#a7---fresh-proof-and-explicit-association),
+[Identity-v2 proof semantics](../contracts/identity-v2.md#credential-setup-and-proof-semantics)
+and the [proof model](../data-model.md#attempt-session-and-fresh-account-control-proof)
+require `prompt=login`, `max_age=0` and a signed fresh `auth_time`. They define
+five minutes of subsequent proof validity but do not define the relying party's
+accepted authentication timestamp relative to the bound reauthentication attempt,
+the allowed clock skew or treatment of future timestamps.
+Source locations at the assessed baseline are `research.md:215-218`,
+`contracts/identity-v2.md:122-130` and `data-model.md:149-156`.
+
+The proof's expiry starts when that proof is created; it does not specify how
+recent the underlying external authentication must have been. An outbound
+reauthentication request and the word "fresh" do not choose an independently
+assessable timestamp boundary. Different implementations/negative expectations
+could therefore disagree while claiming to follow this design.
+
+**Resolution needed:** Select and document a bounded, request-bound acceptance
+rule and numerical clock tolerance, with unambiguous old/future timestamp
+boundary outcomes. Keep source-authentication recency separate from the
+five-minute proof lifetime, and reconcile the contract/research/model/validation
+expectations. This review does not choose that policy or amend the design.
+
+### Human Attention and Next Gate
+
+Only RQ1 needs a technical-policy decision/design clarification. No additional
+account model, 005/006 scope or product capability is requested.
+CHK052 remains unchecked until that clarification and explicit reassessment.
+Do not regenerate tasks or resume implementation first.
+
+All other assessed questions have evidence of written requirements, not a new
+runtime pass. F1/F2/T101-T103, exact framework/dependency adoption, full revised
+provider/browser/privacy qualification and final human acceptance remain later
+obligations. The helper records the current block without resetting historical
+stage history. Continue on the same branch/draft PR; no merge.

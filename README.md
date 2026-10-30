@@ -52,10 +52,13 @@ material question or spec change was needed. The [revised technical plan](specs/
 now proposes framework account managers over bounded native persistence,
 versioned contracts and format-3 migration/recovery. The
 [reviewer checklist](specs/005-authentication-bootstrap/checklists/quality.md#revised-scope-requirements-quality---2026-10-30)
-now appends **28 unchecked revised-scope criteria (CHK037-CHK064)**, preserving
-all 36 original checked items and their historical review evidence.
-Generation evaluates no item; changed quality review, task reconciliation and
-analysis remain before implementation.
+now has an explicitly authorized **27/28 revised-scope review** (CHK037-CHK064),
+preserving all 36 original items and historical review evidence.
+**CHK052 remains unchecked:** [RQ1](specs/005-authentication-bootstrap/checklists/quality.md#rq1---oidc-freshness-acceptance-is-not-objectively-defined)
+requires an objective OIDC authentication-time freshness/clock-skew rule,
+separate from the resulting proof's five-minute lifetime.
+Resolve and reassess that criterion before task reconciliation or analysis;
+implementation remains blocked.
 Historical quality/runtime evidence is not re-certified by this replan.
 No new behavior is implemented or feature acceptance inferred.
 

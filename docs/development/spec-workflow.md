@@ -24,11 +24,13 @@ The separate clarification pass now finds all ten categories Clear, with zero
 questions, unchanged spec and author checklist, and 16/16 to 16/16 author
 criteria. The separate [revised plan](../../specs/005-authentication-bootstrap/plan.md)
 now proposes framework/store integration, credential/setup policy, v2 contracts,
-format-3 migration/recovery and future validation. The explicit checklist pass
-now appends 28 revised-scope criteria, CHK037-CHK064, all unchecked, preserving
-the 36 original checked items and historical review verbatim.
-Reviewer assessment, task reconciliation and analysis remain before resume;
-see the clarification, replan and checklist records below.
+format-3 migration/recovery and future validation. The explicitly authorized
+review of CHK037-CHK064 now satisfies 27/28 criteria, preserving all 36 original
+items and their historical review verbatim. CHK052 remains unchecked for RQ1:
+the source OIDC authentication-time freshness/clock-skew rule is not objectively
+defined by the later proof's five-minute lifetime.
+Clarify/reassess that rule before task reconciliation and analysis; see the
+clarification, replan, checklist-generation and assisted-review records below.
 Do not reset prior history or treat the old passing gates as proof of new
 semantics. No implementation skill or product
 command ran; begin/block records only the pause, not a completed stage.
@@ -172,6 +174,48 @@ prohibited session-capacity proof.
 Only after that gate may separately requested task reconciliation and analysis
 proceed. Implementation and acceptance remain blocked/later on the same feature
 branch/draft PR. No intermediate merge or new numbered feature.
+
+### Reworked 005 assisted requirements-quality review - 2026-10-30
+
+**Result: changes required; 27/28 revised-scope criteria satisfied.**
+The human explicitly requested assessment of CHK037-CHK064 against the revised
+spec/plan/contracts/constitution and stated **"I authorize assisted
+requirements-quality evaluation and checkbox updates."** The explicit directory
+is `SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap`.
+
+The [review record](../../specs/005-authentication-bootstrap/checklists/quality.md#assisted-revised-scope-review---2026-10-30)
+assesses source `55b0aeb8c400060224a5fd59e0be7b32d1fc4b84` and supplies evidence
+for every item. Exactly CHK037-CHK051 and CHK053-CHK064 are marked satisfied;
+CHK052 remains unchecked. All questions/IDs/references, the complete original
+CHK001-CHK036 prefix and historical review are preserved. The preceding
+generation record describes that earlier checkpoint, not this authorized review.
+
+**RQ1:** OIDC reauthentication requires a signed fresh `auth_time`, but research
+A7, Identity-v2 and the proof model do not define its request-bound acceptance
+cutoff, bounded clock skew or future-timestamp treatment. Five minutes of
+subsequent proof validity does not define the source authentication's recency.
+This is a written technical-policy gap, not an implemented-vulnerability finding.
+The review selects no numerical policy and changes no design/spec/contract.
+
+No additional identity-model or 005/006 product-scope decision is requested.
+The spec, author checklist, all design/contracts, 103 tasks/markers, source/tests/
+migrations/dependencies and runtime reports remain unchanged. F1/F2/T101-T103
+remain open; satisfying written criteria does not diagnose, fix or waive them,
+prove framework/dependency adoption, supply runtime qualification or accept 005.
+
+Only the checklist, README, this workflow record and helper-managed active
+blocked reason change. Ledger history, feature pointer and original start time
+are preserved; 005 still points to blocked implementation. No historical
+checklist stage is reset/completed. Publication records repository/Python/
+whitespace and exact marker/history/protected-scope checks, not a local product
+or prohibited installation session-capacity run.
+
+**Next:** Clarify the bounded OIDC source-authentication timestamp/skew rule
+consistently in the design/contracts/validation expectations, then explicitly
+reassess CHK052. Only after that quality gate may separately requested task
+reconciliation and cross-artifact analysis proceed. This request stops before
+either task generation or implementation, on the same branch/draft PR.
+No feature acceptance, readiness or intermediate merge.
 
 ### Earlier 005 checkpoints (historical)
 
