@@ -1,8 +1,8 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement running; 96/100 complete (T001-T096). Actual `81e1805` Linux passes nine product contexts, including the entire propagation proof and its healthy PostgreSQL baseline in 691.368s; only retained composition still times out. The next fixture correction reuses the native parent's owned service across independent consumers, with separate databases/roles and verified child exit before release. Its live-target regression fails before repair and passes afterward; all 86 retained composition cases pass locally in 466.741s under the unchanged 900-second bound. Exact full local qualification at frozen `81e1805` is still running; no complete-gate pass or repaired-source CI pass is claimed. T097-T100 remain unchecked.
+**Result:** implement running; 96/100 complete (T001-T096). Published `3345783` passes all ten actual Linux product contexts and repository checks. Its independent exact full local gate finishes nine groups successfully but fails SQLite composition recovery; all ten reports remain completeGate false. A controlled real-writer regression identifies false sharing contention in live SQLite header inspection. Platform, module and bootstrap writer regressions now pass, together with 32 storage/boundary/deadline cases, nine bootstrap compatibility cases and all four actual public SQLite composition recovery cases. Full assessment of this subsequent header repair is still required; no complete-gate pass is claimed. T097-T100 remain unchecked.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-30.
-**Assessed baseline:** published two-phase warmup correction `81e1805d8c6ae4ab8bfac150454f83b9d4faf706`; actual Linux merge `1f1e0bef73030821b526bfe6d8b9e81e1be85ce7`. The subsequent parent-service reuse correction is distinguished below; earlier assessments retain their original baselines.
+**Assessed baseline:** published parent-service reuse correction `3345783b672fdcd22ae2a3a9515c30e2d32dc09e`; actual Linux merge `08a4532f8ad48617c2bc2b8b8a34bb2c9ca956bf`. The subsequent SQLite header repair's working-tree evidence is distinguished below; earlier assessments retain their original baselines.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
 `specs/005-authentication-bootstrap`.
 **Checkpoint:** [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8).
@@ -14,6 +14,147 @@ adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
 
 ## T097 in progress: current full-gate and assessed-head failures
+
+### Let SQLite own live header validation, 2026-10-30
+
+Actual [product run 41019501863](https://github.com/Stonefly-Labs/Kofte/actions/runs/41019501863)
+passes **all ten** contexts at `3345783`.
+[Repository run 41019501861](https://github.com/Stonefly-Labs/Kofte/actions/runs/41019501861)
+also passes. Merge `08a4532f8ad48617c2bc2b8b8a34bb2c9ca956bf` has verified main
+`3e416813233c9d291eb20cf72d5882dbddf3e1b6` and feature
+`3345783b672fdcd22ae2a3a9515c30e2d32dc09e` parents; merge and feature have identical
+tree `a2c52ec4c7f468934e86ea83aea42864fd976f5e`.
+
+| Actual Linux context   | Passed duration |
+| ---------------------- | --------------: |
+| Quality                |         80.122s |
+| Unit                   |         70.942s |
+| SQLite integration     |        754.619s |
+| PostgreSQL integration |        797.469s |
+| Recovery               |       1675.709s |
+| Contract               |       2157.055s |
+| Browser                |        146.930s |
+| Privacy                |        726.084s |
+| Startup                |         70.666s |
+| Failure propagation    |       1405.126s |
+
+Retained composition passes **86/zero skipped, 612.589s**
+(`contract-both-2f2472e0fab74edd9afd4318ff3757dd.json`).
+The entire isolated healthy PostgreSQL baseline passes **840.325s**, within its
+original 900-second bound; all healthy baselines, all five actual injections and
+owned cleanup pass
+(`failure-propagation-none-48c1e13dc605430db98ac3c8d88c597c.json`).
+Startup records ten actual empty-host observations and exact fixture matches.
+These are named-suite CI reports, not a local all-mode complete-gate pass.
+
+The earlier frozen `81e1805` all-mode assessment finishes nine passing groups but
+rejects the outer scratch checkout's inherited Git alternates before propagation
+baselines. That wrapper used `git clone --shared`. Its rejection is correct and
+unchanged. Subsequent qualification checkouts use `git clone --local --no-hardlinks`,
+verify no alternates and check Git connectivity; each checkout owns its objects.
+
+The independent exact `3345783` assessment executes:
+
+```text
+python3 scripts/verify.py --suite all --disposable-postgres --warm-starts 10
+```
+
+| Local group            | Outcome    |  Duration |
+| ---------------------- | ---------- | --------: |
+| Quality                | passed     |   34.651s |
+| Unit                   | passed     |   48.562s |
+| SQLite integration     | passed     |  457.423s |
+| PostgreSQL integration | passed     |  452.592s |
+| Recovery               | **failed** |  406.152s |
+| Contract               | passed     | 1747.691s |
+| Browser                | passed     |   76.119s |
+| Privacy                | passed     |  408.241s |
+| Startup                | passed     |   12.778s |
+| Failure propagation    | passed     |  730.477s |
+
+All ten reports remain **completeGate false**. Recovery report
+`recovery-both-ba79dc933847453c9ad6819e40b2cb24.json` fails the original
+`composition-public-recovery-sqlite` command in 58.369s:
+`SqliteCompositionMigrationContractTests.PublicSelectionChangesPreserveOriginalsAcrossThreeCompleteFreshProcessCycles`,
+scenario `disable-reenable`, code `composition_test_boot_exited_before_ready`.
+The other nine groups do not waive this failure.
+
+An isolated execution of the same real case reproduces the failure. A private
+first-chance probe emits only finite exception categories/codes, then source
+method metadata: no exception messages, raw stacks, paths, credentials or protocol
+payloads. The failed child records `IOException` followed by `StorageException`
+`Busy`; no address-in-use event is observed. Twenty later diagnostic executions
+pass but do not establish the cause or replace qualification.
+
+A deterministic real SQLite `BEGIN IMMEDIATE` transaction then reproduces false
+header rejection at **both** platform and module boundaries. The same test of
+`SqlitePlatformStore.Open` fails with the managed sharing-lock stack. The controlled
+probe locates `StorageInstallation.ValidateSqlite`; all three cases fail before
+repair. Merely choosing `FileShare.ReadWrite` still fails. The installed
+[.NET 10.0.13 Unix handle implementation](https://github.com/dotnet/runtime/blob/v10.0.13/src/libraries/System.Private.CoreLib/src/Microsoft/Win32/SafeHandles/SafeFileHandle.Unix.cs)
+takes a shared lock for read-only file opens. This conflicts with SQLite's valid
+reserved byte-range lock on this macOS profile.
+
+Live admission now keeps canonical/private regular-file, link, sidecar and
+minimum-length guards, but verifies the database format through `PRAGMA schema_version`
+on the actual unpooled SQLite handle. It does not open and close a second raw file
+descriptor, which [could release this process's SQLite locks](https://sqlite.org/howtocorrupt.html).
+Legacy admission uses
+zero native busy timeout and an operation-budget progress callback, cleared before
+return. Bootstrap reuses that admission, retains its one-second command timeout
+and translates original invalid-file errors. Module verification retains its
+reconciliation classification. Foreign keys remain enabled in the connection
+configuration. Identity runs the header read through its existing bounded native
+executor and retains its 50-ms cleanup reserve and known-not-committed retries.
+The obsolete managed-header-open retry loop is removed. Stopped legacy recovery
+retains its original byte-header check, explicitly named as offline validation.
+No deadline, contention round, runtime retry budget, capacity cap or cleanup
+ownership is relaxed; no process-global file-locking switch is used.
+
+The transient contention test now holds a **real native exclusive transaction**,
+not a managed whole-file lock, for the same 150ms inside the same one-second
+budget. It observes waiting, releases the blocker, then verifies committed data.
+Held native exclusive locks still refuse within one second and leave no later
+write. A full-size foreign header is rejected without changing either its bytes
+or the other module's database.
+
+Focused checks assess this repair's working tree **over** `3345783`, not the old
+revision's source:
+
+```text
+dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-class '*SqliteStorageBoundaryTests' --filter-class '*SqliteIdentityDeadlineTests' --minimum-expected-tests 10 --output Detailed --show-stdout None --show-stderr None
+dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore -c Release --filter-class '*.StorageCompatibilityTests' --minimum-expected-tests 9 --output Detailed --show-stdout None --show-stderr None
+dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore -c Release --filter-query '/[(Suite=recovery)&(Provider=sqlite)&(Feature=composition)]' --max-threads 4 --minimum-expected-tests 4
+```
+
+Results: **32/zero skipped, 6.238s**; **9/zero skipped, 3.877s**; and
+**4/zero skipped, 63.442s**, respectively. The last two are retained in
+`sqlite-header-regressions-sqlite-5bc1675c9329494d8e9b5de04515071a.json`,
+targeted/completeGate false. The four public cases retain three complete
+disable/re-enable cycles, six fresh roots/workers, exact assignments/data/history
+and all original observations. An earlier loose bootstrap class glob also
+selected three unadmitted PostgreSQL cases; the disposable-target guard correctly
+refused them. The corrected exact class selection above passes all nine cases.
+Full repaired-source local/Linux assessment remains required before T097.
+
+`python3 scripts/verify.py --suite quality` **passes in 34.311s**:
+`quality-none-c6e874e776d1402e80de7deb19ff5251.json`. This executes inventory,
+repository, all 165 Python tests, whitespace, pinned restores, full .NET format
+and warning-free build, npm formatting/lint/type checks, contract generation,
+workspace builds and dependency review. Separate required
+`python3 scripts/check_repository.py`,
+`python3 -m unittest discover -s scripts/tests -v` and `git diff --check` all
+**pass**. `dotnet build Kofte.slnx --no-restore -c Release -warnaserror` also
+**passes with zero warnings/errors**. Historical evidence is not reformatted;
+`npm run format:check` passes again after removing unrelated formatter churn.
+
+The **entire** `python3 scripts/verify.py --suite integration --provider sqlite`
+selection then **passes in 476.008s** on the repair working tree:
+`integration-sqlite-87ab7ff2a2e1405185d81db1bb15eed1.json`, targeted/completeGate
+false. Native host **212/193.810s**, storage **240/235.336s** and composition
+**57/46.657s** all pass with zero skipped. This includes all original SQLite
+identity/storage/health/format/recovery and race checks plus the added regressions;
+the original selectors, source/class inventories and bounds remain unchanged.
 
 ### Reuse the native parent's service across independent consumers, 2026-10-30
 

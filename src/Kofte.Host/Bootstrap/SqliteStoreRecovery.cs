@@ -60,11 +60,20 @@ public sealed partial class SqlitePlatformStore
         return Convert.ToHexStringLower(SHA256.HashData(file));
     }
 
+    private static void ValidateOfflineSqliteHeader(string path)
+    {
+        using var file = File.OpenRead(path);
+        Span<byte> header = stackalloc byte[16];
+        if (file.Length < 100 || file.Read(header) != header.Length ||
+            !header.SequenceEqual("SQLite format 3\0"u8))
+            throw new BootstrapException(BootstrapError.StorageInvalid);
+    }
+
     private static SqliteConnection OpenRecoveryFile(string path, bool readOnly)
     {
         UnixStorePaths.ValidateRoot(Path.GetDirectoryName(path)!, allowMissing: false);
         UnixStorePaths.ValidateFile(path);
-        if (readOnly) ValidateSqliteHeader(path);
+        if (readOnly) ValidateOfflineSqliteHeader(path);
         var connection = new SqliteConnection(new SqliteConnectionStringBuilder
         {
             DataSource = path,

@@ -139,16 +139,17 @@ public sealed class SqliteIdentityDeadlineTests : IdentityDeadlineTests
     protected override string Provider => "sqlite";
 
     [Fact]
-    public async Task TransientHeaderSharingContentionIsRetriedBeforeAnyTransactionWithinTheOriginalBudget()
+    public async Task TransientNativeHeaderContentionIsRetriedBeforeAnyTransactionWithinTheOriginalBudget()
     {
         await using var fixture = await PreparedAsync();
+        using var setup = new OperationBudget(OperationBudget.Register, Token);
+        await using var blocker = await fixture.Installation.OpenPlatformAsync(setup);
+        await ExecuteAsync(blocker, "BEGIN EXCLUSIVE");
         using var budget = new OperationBudget(TimeSpan.FromSeconds(1), Token);
-        using var headerLock = new FileStream(fixture.Installation.PlatformPath,
-            FileMode.Open, FileAccess.Read, FileShare.None);
         var opening = DeadlineStore.OpenAsync(fixture.Installation, budget);
         await Task.Delay(150, Token);
         var waitedForRelease = !opening.IsCompleted;
-        headerLock.Dispose();
+        await ExecuteAsync(blocker, "ROLLBACK");
         await using var store = await opening;
         Assert.True(waitedForRelease);
         await store.BeginWriteAsync();

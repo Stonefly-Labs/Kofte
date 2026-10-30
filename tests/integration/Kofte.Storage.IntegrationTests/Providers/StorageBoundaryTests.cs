@@ -207,6 +207,25 @@ public sealed class SqliteStorageBoundaryTests : StorageBoundaryTests
 {
     protected override string Provider => "sqlite";
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task HeaderInspectionDoesNotRejectAnAdmittedSqliteWriter(bool platform)
+    {
+        var token = TestContext.Current.CancellationToken;
+        await using var fixture = await ModuleFixture.CreateAsync("sqlite", token);
+        using var budget = new OperationBudget(OperationBudget.Resolve, token);
+        await using var writer = platform
+            ? await fixture.Installation.OpenPlatformAsync(budget)
+            : StorageInstallation.OpenSqlite(
+                new ModuleStorePaths(fixture.Installation, fixture.Alpha.Assignment.AllocationKey).DatabasePath, budget);
+        await using var transaction = await writer.BeginTransactionAsync(token);
+        var resolved = Assert.IsType<StorageResult.Ready>(
+            await fixture.Registry.ResolveAsync(fixture.Alpha.Owner, token));
+        Assert.Equal(StorageAssignmentSnapshot.From(fixture.Alpha.Assignment),
+            StorageAssignmentSnapshot.From(resolved.Assignment));
+    }
+
     [Fact]
     public async Task MissingAndLinkedReadyFilesAreNeverCreatedOrFollowedAtActualOpen()
     {
@@ -229,6 +248,7 @@ public sealed class SqliteStorageBoundaryTests : StorageBoundaryTests
     [InlineData("hardlink")]
     [InlineData("directory")]
     [InlineData("corrupt")]
+    [InlineData("foreign-header")]
     [InlineData("ancestor")]
     public async Task ActualOpenRejectsAliasesAndCorruptionWithoutChangingTheOtherStore(string failure)
     {
@@ -252,13 +272,18 @@ public sealed class SqliteStorageBoundaryTests : StorageBoundaryTests
                 Directory.CreateDirectory(alpha);
                 break;
             case "corrupt": await File.WriteAllBytesAsync(alpha, "not a database"u8.ToArray(), token); break;
+            case "foreign-header":
+                await File.WriteAllBytesAsync(alpha, Enumerable.Repeat((byte)'x', 100).ToArray(), token);
+                break;
             case "ancestor":
                 Directory.Move(Path.GetDirectoryName(alpha)!, Path.Combine(fixture.Root, "preserved-alpha"));
                 Directory.CreateSymbolicLink(Path.GetDirectoryName(alpha)!, Path.GetDirectoryName(beta)!);
                 break;
         }
+        var rejectedBytes = failure is "corrupt" or "foreign-header" ? await File.ReadAllBytesAsync(alpha, token) : null;
         var rejected = await Assert.ThrowsAsync<StorageException>(() => fixture.Alpha.CreateContextAsync(ModuleFixture.AlphaFactory, token));
         Assert.DoesNotContain(fixture.Root, rejected.ToString(), StringComparison.Ordinal);
+        if (rejectedBytes is not null) Assert.Equal(rejectedBytes, await File.ReadAllBytesAsync(alpha, token));
         Assert.Equal(before, await File.ReadAllBytesAsync(beta, token));
         if (failure == "sidecar") File.Delete(alpha + "-journal");
         if (failure == "hardlink") File.Delete(alpha);

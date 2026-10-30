@@ -814,6 +814,12 @@ Schema-per-module is an **ownership boundary**, not a security guarantee when al
 
 Each module MUST have its own SQLite database file managed under a restricted host data directory, e.g. `data/modules/<opaque-module-key>/module.db`. The platform system registry uses its own SQLite database file. File paths MUST come from the registry, not untrusted module-supplied relative paths; check canonical paths to prevent traversal.
 
+Live format validation uses SQLite-owned handles after private canonical-file,
+link, sidecar and length checks. A separate managed header reader can falsely
+conflict with admitted writers; opening and closing an independent raw descriptor
+can also disrupt SQLite's process-scoped locks. Native header reads retain the
+operation's existing deadline, and stopped recovery retains its offline checks.
+
 Enforce foreign keys and choose SQLite WAL/busy-timeout based on the deployment profile. Each module's DbContext, migrations, backups and recovery act on that **single module file**. Do not claim SQLite schemas, `ATTACH`, or a common shared database as the default module storage strategy. Cross-module joins are not a supported contract.
 
 ### 6.3 DbContext, migrations and transactions

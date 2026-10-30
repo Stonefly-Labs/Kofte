@@ -102,7 +102,21 @@ parent's owned service across independent consumers while preserving fresh
 databases/roles and verified child exit before release. A live-target regression
 fails before repair and passes afterward; all **86** retained composition cases
 pass locally in 466.741s under the same 900-second bound.
-Full repaired-source qualification continues; no complete-gate pass is claimed.
+Actual `3345783` Linux passes **all ten** product contexts and repository checks,
+including retained composition in 612.589s and the entire isolated PostgreSQL
+baseline in 840.325s, within their original 900-second bounds. Its exact full
+local gate passes nine groups but fails SQLite recovery, so it remains failed.
+A deterministic real-writer regression identifies a managed header-sharing lock
+that rejects valid SQLite activity at platform, module and bootstrap boundaries.
+Live header validation now uses SQLite-owned handles instead; original private
+path, length, format and ownership checks, foreign keys and deadlines remain.
+All three formerly failing writer cases pass, as do 32 storage/boundary/deadline
+cases, nine bootstrap compatibility cases and all four actual public SQLite
+composition recovery cases. Genuine native exclusive-lock contention still waits
+or refuses within its original budget. The entire SQLite integration selection
+also passes: native host 212, storage 240 and composition 57, zero skipped.
+These are focused working-tree results,
+not complete-gate qualification; repaired-source local/Linux assessment continues.
 Historical failures remain failed; no universal issuer-key explanation is claimed.
 Continue on the same branch/draft PR #8. Converge, review and explicit feature
 acceptance are later stages; designation grants no module permissions.

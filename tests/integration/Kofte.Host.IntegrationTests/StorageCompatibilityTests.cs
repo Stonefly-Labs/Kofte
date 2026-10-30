@@ -12,6 +12,21 @@ namespace Kofte.Host.IntegrationTests;
 public sealed class StorageCompatibilityTests
 {
     [Fact]
+    public async Task BootstrapHeaderInspectionAdmitsAReaderBesideAnActualSqliteWriter()
+    {
+        var token = TestContext.Current.CancellationToken;
+        using var root = new TempRoot();
+        var store = new SqlitePlatformStore(root.Path);
+        await store.InitializeAsync();
+        await using var writer = store.Open();
+        await using var transaction = await writer.BeginTransactionAsync(token);
+        await using var reader = store.Open();
+        await using var command = reader.CreateCommand();
+        command.CommandText = "PRAGMA user_version";
+        Assert.Equal(0L, await command.ExecuteScalarAsync(token));
+    }
+
+    [Fact]
     public async Task ModuleFreeV0AndExplicitV1RequireIdentityPreparationWithoutAutomaticWrites()
     {
         using var root = new TempRoot();

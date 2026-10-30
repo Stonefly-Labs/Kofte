@@ -45,31 +45,16 @@ internal sealed class DeadlineStore : IAsyncDisposable
         DeadlineStore? store = null;
         try
         {
-            DbConnection connection;
-            if (installation.Provider == "sqlite")
-            {
-                while (true)
-                {
-                    work.Check();
-                    try
-                    {
-                        connection = installation.OpenSqliteHandle(work);
-                        break;
-                    }
-                    catch (StorageException error) when (error.Code == StorageCode.Busy)
-                    {
-                        // The header guard has not opened a SQLite handle or begun any transaction.
-                        await Task.Delay(OperationBudget.ProbeInterval, work.Token);
-                    }
-                }
-            }
-            else connection = await installation.OpenPlatformAsync(work, preciseDeadline: true);
+            DbConnection connection = installation.Provider == "sqlite"
+                ? installation.OpenSqliteHandle(work)
+                : await installation.OpenPlatformAsync(work, preciseDeadline: true);
             store = new(connection, work);
             if (connection is SqliteConnection sqlite)
             {
                 SqliteException.ThrowExceptionForRC(sqlite3_busy_timeout(sqlite.Handle!, 0), sqlite.Handle);
                 sqlite3_progress_handler(sqlite.Handle!, 1000, _ =>
                     work.Token.IsCancellationRequested || work.Remaining <= TimeSpan.Zero ? 1 : 0, null);
+                await store.QueryAsync("PRAGMA schema_version");
                 await store.QueryAsync("PRAGMA foreign_keys=ON");
                 if (AssertScalar(await store.QueryAsync("PRAGMA foreign_keys")) is not 1L)
                     throw new StorageException(StorageCode.Corrupt);
