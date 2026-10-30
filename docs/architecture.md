@@ -499,8 +499,13 @@ administrator history or cross-module atomicity is promised. See the delivered
 [operator contract](../specs/005-authentication-bootstrap/contracts/operator-v1.md)
 and [local guide](development/local-development.md) for session/key overlap,
 retention/capacity, nomination and IdP-loss limits. Approval of ADR 0007 is not
-feature acceptance; converge is next, followed separately by review and
-explicit human acceptance.
+feature acceptance. The
+[convergence assessment](../specs/005-authentication-bootstrap/convergence.md)
+now passes across all 51 requirements/outcomes/scenarios, twelve plan decisions,
+100 tasks and twelve principles with zero actionable gaps. No task, product,
+test, dependency or architecture decision changes. Actual complete/current-head
+CI reports each pass the same 313 named steps. Review is next, followed
+separately by explicit human acceptance on the same draft PR.
 
 The earlier implementation increments below retain the source/signature
 investigation and record the adopted maintained

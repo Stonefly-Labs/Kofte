@@ -6,10 +6,16 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement complete; 100/100 tasks evidenced**, on
+**Current checkpoint: 005 / converge passes; review is next**, on
 `feature/005-authentication-bootstrap`, with recorded directory
-`specs/005-authentication-bootstrap`. **Converge is next on a later invocation**,
-not review, acceptance, PR readiness, merge or a new numbered feature.
+`specs/005-authentication-bootstrap`. The
+[convergence assessment](../../specs/005-authentication-bootstrap/convergence.md)
+finds zero actionable gaps across 51 requirements/outcomes/scenarios, twelve
+plan decisions, all 100 tasks and twelve principles. It leaves tasks,
+product/test/tooling source and reviewer-owned checklists unchanged and verifies
+actual complete/current-head reports with the same 313 passing named steps.
+**Review is next on a later invocation**, not acceptance, PR readiness, merge
+or a new numbered feature.
 T092's focused operations join now has actual Linux qualification. T093 also
 requires exact private Playwright discovery/execution completeness, not just
 zero exit: no missing case, skip, retry or flaky result. Its complete local

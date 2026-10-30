@@ -37,7 +37,12 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 > [!IMPORTANT]
 > **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md) and [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) is now human-merged. Its accepted ledger and evidence were verified on updated main before 005 began. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) retains prior failures and unknown causes; the historical failed local gate remains failed, not waived by acceptance or merge. Spec 005's [authentication/bootstrap implementation](specs/005-authentication-bootstrap/implementation.md#t097-t100-complete-hosted-qualification-and-traceability) now evidences all 100 tasks, but the feature is not accepted. Nothing here claims production readiness or MVP completion.
 
-**Current stage: 005 / implement complete; 100/100 tasks evidenced.** T001–T100
+**Current stage: 005 / converge passes; review is next.** The
+[convergence assessment](specs/005-authentication-bootstrap/convergence.md)
+checks all 51 requirements/outcomes/scenarios, twelve plan decisions, 100 tasks
+and twelve principles against delivered source/assertions and actual CI evidence.
+Zero actionable gaps remain; tasks and product/test code are unchanged.
+This is not feature acceptance or a merge request. T001–T100
 are evidenced: production OIDC login, nominated enrollment, shared session
 boundaries, explicit Development identity and stopped operational recovery.
 The [runtime guide](specs/005-authentication-bootstrap/quickstart.md) now records
@@ -64,7 +69,7 @@ owned service, retaining fresh targets, private credentials, health checks and
 verified final cleanup.
 All 22 requirements, seven outcomes, 22 scenarios, twelve research decisions
 and twelve principles are mapped to delivered assertions and exact evidence.
-**Converge is next**, separately on the same draft PR; implementation completion
+**Review is next**, separately on the same draft PR; implementation/convergence completion
 is not feature acceptance, readiness or a merge request.
 
 The following sequence is historical evidence. Earlier `b629b5f` passes all ten

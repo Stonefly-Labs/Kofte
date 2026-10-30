@@ -14,7 +14,12 @@ The [technology-stack exploration](kofte-technology-stack-architecture.md) is hi
 
 ## Working in the repository
 
-**Current Spec Kit checkpoint: 005 / implement complete, all 100 tasks evidenced.**
+**Current Spec Kit checkpoint: 005 / converge passes; review is next.**
+The [assessment](../specs/005-authentication-bootstrap/convergence.md) finds
+zero actionable gaps across 51 requirements/outcomes/scenarios, twelve plan
+decisions, all 100 tasks and twelve principles. Tasks, product/test code and
+reviewer-owned checklists are unchanged; actual full/current-head CI reports
+each pass the same 313 named steps. This is not feature acceptance.
 The [runtime guide](../specs/005-authentication-bootstrap/quickstart.md) covers
 delivered sign-in, enrollment, session/Development and stopped operator commands.
 All nine public recipes individually and `all` pass on each provider, with
@@ -26,7 +31,7 @@ Final dependency/contract checks and zero-finding npm/NuGet audits pass.
 T097–T100 now have the complete hosted command (ten passed all-scope reports,
 313 named steps, every `completeGate=true`), all ten actual PR product contexts,
 passing repository checks and full requirement/assertion traceability.
-**Converge is next** on the same draft PR, not feature acceptance.
+**Review is next** on the same draft PR, not feature acceptance.
 The full command ran in one GitHub-hosted Ubuntu `suite=complete` job,
 separately from the ten-job matrix. Do not restart heavy product tests on a
 shared workstation or turn the interrupted Mac attempts into a passing profile.
