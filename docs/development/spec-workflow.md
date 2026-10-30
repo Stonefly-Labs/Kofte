@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement in progress; 96/100 complete** (T001–T096), on
+**Current checkpoint: 005 / implement blocked; 96/100 complete** (T001–T096), on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. Implementation continues until the entire
 spec is ready for converge, not until an incremental subset passes.
@@ -19,32 +19,25 @@ T095 reconciles delivered setup/API/operator documentation, private custody,
 session/capacity/retention and recovery limits. T096 reconciles the actual
 reviewed graph/archives/notices, generated contracts and zero-finding npm/NuGet
 audits. T097–T100 retain complete local/assessed-head CI and traceability/
-publication gates. The exact local gate at `30178eb` fails native PostgreSQL identity
-and retained registration; contract was deliberately interrupted afterward for
-diagnosis, not timed out or completed. That head's Linux CI passes eight
-contexts, including complete contract and propagation, but both native
-integration contexts fail. These are engineering failures, not an approval gate
+publication gates. These are engineering gates, not an approval request
 or permission to advance to converge.
 The [current evidence](../../specs/005-authentication-bootstrap/implementation.md#t097-in-progress-current-full-gate-and-assessed-head-failures)
-preserves actual sources/results and historical failures. Temporary probes are
-removed; uninstrumented subsets still reproduce healthy 503s and separate
-fixture/acquisition failures. The finite verifier now retains source-known
-PostgreSQL fixture codes/locations without raw logs, not a speculative runtime
-fix. Resumed unchanged-head diagnosis at `f68dd98` again fails a broad native
-selection and the isolated initial healthy PostgreSQL login. Independent WAL
-wait observations are not correlated to its cause. That head's completed Linux
-assessment passes seven product contexts but fails both native integrations
-and the whole PostgreSQL propagation baseline at its inherited parent timeout;
-retained storage/composition pass. The preserved local fixture is stopped,
-not deleted or claimed successfully cleaned up. No runtime/test change is
-retained at that checkpoint. Continued correlated tracing identifies expensive
-lazy RSA generation in the issuer fixture's first JWKS response. The fixture
-now prepares keys before serving, with a failing-before/passing-after guarded
-regression, 106 passing SQLite protocol/failure cases and both original
-PostgreSQL authority-loss/correction rows passing. No runtime budget or
-required coverage changes. The ledger is `running` while the exact complete
-local gate and actual repaired-head CI are checked on the same draft PR.
-Do not advance stages or infer feature acceptance from these focused passes.
+preserves actual sources/results and historical failures. Correlated tracing
+identifies expensive lazy RSA generation in the issuer fixture's first JWKS
+response. Preparing keys before serving has guarded red/green proof and
+unchanged runtime budgets. At repaired head `32d0d91`, actual Linux CI passes
+both complete provider integration jobs and 265 public identity/platform
+contract cases. Eight product contexts and repository checks pass; retained
+composition contracts and the isolated whole PostgreSQL propagation baseline
+still time out. The exact local all-suite attempt passes quality/unit and
+SQLite native/composition, but two SQLite storage methods fail. Unchanged
+isolated two-case and full 236-case storage probes pass without diagnosing
+or replacing that failure. Local PostgreSQL was interrupted for diagnosis;
+later suites did not execute. Temporary request probes are removed.
+The ledger is blocked on these remaining engineering failures on the same
+draft PR, not awaiting human approval. The preserved earlier fixture remains
+stopped, not deleted or claimed cleaned up. Do not advance stages, waive the
+failed gates or attribute every historical failure to lazy key generation.
 
 ### Historical implementation verification
 

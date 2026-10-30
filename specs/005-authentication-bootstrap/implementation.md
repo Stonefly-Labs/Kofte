@@ -1,8 +1,8 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement incomplete; 96/100 complete (T001-T096). Chromium, the complete both-provider public catalog and final dependency reconciliation are qualified. Complete local/assessed-head CI and traceability gates remain T097-T100; historical failed native/composition/propagation results are not waived or diagnosed by focused passes. The ledger is running while repaired fixture behavior and final gates are assessed; no human approval is requested.
+**Result:** implement incomplete; 96/100 complete (T001-T096). The deferred issuer-key defect is repaired and both complete provider CI jobs plus 265 public identity/platform contract cases pass. The complete feature gate remains blocked by local storage failures and CI composition/propagation timeouts; T097-T100 remain unchecked. Passing diagnostic reruns do not establish the remaining failures' causes. No human approval is requested.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-30.
-**Assessed baseline:** published `cc4be995ea3d29d0a3dc3940d2b6ceb9a9f29a61` plus the explicitly identified fixture/test repair below; earlier assessments retain their original baselines.
+**Assessed baseline:** published repair `32d0d91e263cd206037748bf9b997959618cd950`; actual Linux merge `5b41205a76ab85a76c01d1e35b3e3bd844212658`. Earlier assessments retain their original baselines.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
 `specs/005-authentication-bootstrap`.
 **Checkpoint:** [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8).
@@ -14,6 +14,79 @@ adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
 
 ## T097 in progress: current full-gate and assessed-head failures
+
+### Repaired-head qualification and remaining gates, 2026-10-30
+
+The fixture repair below has actual uninstrumented full-selection evidence,
+not only its focused red/green regression. Product
+[run 40985384074](https://github.com/Stonefly-Labs/Kofte/actions/runs/40985384074)
+finishes with **eight passing contexts**: quality, unit, both integrations,
+recovery, browser, privacy and startup. Contract and failure-propagation fail.
+[Repository run 40985384065](https://github.com/Stonefly-Labs/Kofte/actions/runs/40985384065)
+passes. The checkout log and fetched merge object independently verify
+`5b41205a76ab85a76c01d1e35b3e3bd844212658` with main
+`3e416813233c9d291eb20cf72d5882dbddf3e1b6` and repaired feature
+`32d0d91e263cd206037748bf9b997959618cd950` parents.
+
+| Actual Linux safe report / selection | Result |
+| --- | --- |
+| `integration-sqlite-2f81239f0b4744dfa178bb8193ce8bed.json` | **Passed**, 764.734s. Native 211/zero skipped, 13 required classes, 322.093s; storage 236/zero skipped, 11 required classes, 340.107s; composition 57/zero skipped, 102.288s. |
+| `integration-postgres-8c2ce1ed48aa4658bc76611efe6808d5.json` | **Passed**, 1064.119s. Native 120/zero skipped, eight required classes, 376.464s; storage 211/zero skipped, 11 required classes, 438.786s; composition 59/zero skipped, 248.618s. Individual command bounds are unchanged. |
+| `contract-both-a91d64041eb04738ac525cb38d03de18.json` | **Failed**, 1422.768s. `platform-public-contracts` passes 265/zero skipped, 18 required classes, 488.947s. The separate retained `composition-public-contracts` reaches its unchanged 900-second bound at 900.055s; no completed XML/assertion is available. |
+| `failure-propagation-none-6335444ddca047dda9afe4234bdd983f.json` | **Failed**, 1032.710s. Isolated quality baseline passes in 128.896s; the subsequent whole PostgreSQL integration baseline reaches its inherited parent bound at 900.367s. No browser baseline or injected-failure proof is inferred. |
+
+These are the workflow's exact named commands: `python3 scripts/verify.py
+--suite integration --provider sqlite`; `python3 scripts/verify.py --suite
+integration --provider postgres --disposable-postgres`; `python3
+scripts/verify.py --suite contract --provider both --disposable-postgres`;
+and `python3 scripts/verify.py --suite failure-propagation
+--disposable-postgres`. The other six product contexts and repository context
+also finish successfully at this assessed merge. No passing complete matrix
+is claimed.
+
+The exact local `python3 scripts/verify.py --suite all
+--disposable-postgres --warm-starts 10` at the repaired head is **not a passing
+complete gate**:
+
+| Local safe report | Actual result |
+| --- | --- |
+| `quality-none-782871dcecec4f4da5d1a76f08c001d4.json` | Passed, 97.915s: repository validator, all 159 Python tests, whitespace, locked restores, complete .NET format/build, Prettier, ESLint, TypeScript, generated contracts, workspace builds and dependency review. |
+| `unit-none-ba5482ad218d4e84acb52a43453a330d.json` | Passed, 73.099s, including retained composition, web/package, capture and Python units. |
+| `integration-sqlite-ba7f56a9655e473995866c89f6d30b97.json` | Failed, 701.162s. Native passes 211/zero skipped in 279.586s; composition passes 57/zero skipped in 95.955s. Storage fails in 325.176s at `EnrollmentRestartTests.OriginalModuleDataAndConsumedDesignationSurviveRestartsPreparationAndUnavailableAdministrator` and `IdentityEventTests.ExactCapacitiesWarnAtNinetyPercentAndRefuseWithoutCommittingEarlierEffects`. Safe locations include restart-test contender assertion line 61 and event-test first post-seed mutation line 88; no exact actual status/exception is retained, so none is invented. |
+| `integration-postgres-16bbfaafdf9f4dd9a24f990e7de85709.json` | Deliberately interrupted for isolated storage diagnosis after the aggregate had already failed; native records `verification_interrupted` at 406.395s, not a completed selection or timeout qualification. Later suites did not execute in this invocation. |
+
+No product or test source changes follow these failures. An isolated two-case
+diagnostic selection of the exact SQLite methods passes 2/zero skipped in
+16.931s (`identity-storage-isolated-sqlite-0421d91f5e594afbaedd3e3749a51030.json`).
+The unchanged full `storage-integration-sqlite` command then passes
+236/zero skipped, all 11 required classes, in 311.786s
+(`identity-storage-full-probe-sqlite-4bc58d0f4df34f7b959cf52318aaeb60.json`).
+The probes privately inspect failing XML only for finite exception types and
+numeric/status assertions, then discard it; both return no failing assertions.
+These passes narrow reproducibility but neither diagnose nor replace the
+failed all-suite execution.
+
+The deferred signing-key work is demonstrably removed from budgeted requests;
+the original healthy-login failure no longer prevents either full native CI
+selection. That does **not** establish a universal cause for the remaining
+storage, composition, service-startup or propagation failures. In particular,
+the independently timed successful PostgreSQL integration takes longer than
+the isolated parent's 900-second envelope, but this is not a phase-correlated
+diagnosis of the timed-out baseline. No retries, deadlines, durability,
+contenders, coverage or prohibited installation-session proof are changed.
+
+**Decision:** preserve the verified repair and block the still-incomplete
+implement stage on these remaining engineering failures, not on human
+approval. T097-T100 stay unchecked; final traceability cannot claim passing
+prerequisites. No converge, review, acceptance or merge is requested.
+
+Final documentation/ledger checkpoint checks pass: `python3
+scripts/check_repository.py`; `python3 -m unittest discover -s scripts/tests
+-v` (159 tests, 10.581s); and `git diff --check`. No extension hooks are
+configured. The subsequent checkpoint changes only documentation/driver state,
+not the assessed fixture/product/test source. The session-only RSA probe
+source is removed; no diagnostic helper remains running. Earlier preserved
+Docker resources are not deleted or claimed successfully cleaned up.
 
 ### Continued diagnosis: prepare issuer keys before serving, 2026-10-30
 
@@ -68,8 +141,9 @@ service startup/cleanup (456.062s); no healthy-request diagnosis is inferred.
 The subsequent uninstrumented two-row PostgreSQL pass above uses a fresh
 normally provisioned fixture, without relaxing that setup or retrying requests.
 
-The exact complete local gate and actual repaired-head CI are next. T097-T100
-remain unchecked and the ledger is `running`; no later stage has begun.
+At repair publication, the exact complete local gate and actual repaired-head
+CI were pending and the ledger was `running`. Their actual results are recorded
+above; T097-T100 remain unchecked and no later stage has begun.
 
 ### Resumed unchanged-head investigation, 2026-10-29
 

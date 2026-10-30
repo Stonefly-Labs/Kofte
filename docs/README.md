@@ -14,7 +14,7 @@ The [technology-stack exploration](kofte-technology-stack-architecture.md) is hi
 
 ## Working in the repository
 
-**Current Spec Kit checkpoint: 005 / implement in progress, T001–T096 complete (96/100).**
+**Current Spec Kit checkpoint: 005 / implement blocked, T001–T096 complete (96/100).**
 The [runtime guide](../specs/005-authentication-bootstrap/quickstart.md) covers
 delivered sign-in, enrollment, session/Development and stopped operator commands.
 All nine public recipes individually and `all` pass on each provider, with
@@ -24,14 +24,17 @@ first-attempt success without skips/retries. See the
 [current evidence](../specs/005-authentication-bootstrap/implementation.md#t094-t095-complete-public-catalog-and-delivered-documentation).
 Final dependency/contract checks and zero-finding npm/NuGet audits pass.
 T097–T100 retain complete local/actual CI and traceability gates.
-Earlier failures are not waived or diagnosed by subsets. Resumed unchanged-head
-native attempts still fail; completed `f68dd98` CI fails both integrations and
-the propagation baseline. Database wait samples do not establish the cause.
-Continued tracing identifies lazy issuer-key generation inside the first JWKS
-response. The fixture now prepares keys before serving; guarded red/green and
-focused both-provider checks pass without changing runtime budgets.
-The ledger is `running` while complete local/repaired-head CI gates are checked,
-not waiting for human approval.
+Tracing identifies lazy issuer-key generation inside the first JWKS response.
+The repaired fixture prepares keys before serving without changing runtime
+budgets. Its guarded regression, both complete provider CI jobs and 265 public
+identity/platform contract cases pass. Actual repaired-head CI passes eight
+product contexts and repository checks but times out in retained composition
+contracts and the isolated PostgreSQL propagation baseline. The local all-suite
+attempt fails two SQLite storage methods; isolated two-case and complete
+236-case storage probes pass without diagnosing that failure. Local PostgreSQL
+was interrupted for diagnosis, with later suites unexecuted. The ledger is
+blocked on these remaining engineering gates, not human approval; no failed
+result is replaced by a subset or attributed universally to issuer keys.
 Use the [operator contract](../specs/005-authentication-bootstrap/contracts/operator-v1.md)
 and [local guide](development/local-development.md) for private setup/trust,
 nomination, session/key custody, bounded maintenance and quarantined recovery.
