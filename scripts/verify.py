@@ -1524,7 +1524,7 @@ def execute_suite(runner, suite, provider, arguments):
                 "dotnet", "test", "--project", "tests/contract/Kofte.Platform.ContractTests",
                 "--no-restore", "-c", "Release", *public_selector, "--filter-class", "*Composition*",
                 "--output", "Detailed", "--show-stdout", "None", "--show-stderr", "None",
-                "--minimum-expected-tests", "84" if provider == "both" else "1",
+                "--minimum-expected-tests", "85" if provider == "both" else "1",
             ], environment=public_environment)
             runner.command("module-manifest-schema", [
                 "npm", "run", "test", "--workspace", "tests/contract", "--", "module-manifest.test.ts",

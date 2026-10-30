@@ -62,12 +62,15 @@ public abstract class RegistrationConcurrencyTests
                     var child = OwnedProcesses.Start(start, captureOutput: false);
                     var reader = new StreamReader(child.StandardOutput);
                     children.Add((child, reader));
-                    var line = await reader.ReadLineAsync(deadline.Token);
+                }
+                await Task.WhenAll(children.Select(async pair =>
+                {
+                    var line = await pair.Reader.ReadLineAsync(deadline.Token);
                     using var waiting = JsonDocument.Parse(line ?? throw new InvalidOperationException("storage_worker_missing"));
                     Assert.True(waiting.RootElement.GetProperty("eventCode").GetString() != "storage_worker_failed",
                         Failure(waiting.RootElement));
                     Assert.Equal("storage_worker_waiting", waiting.RootElement.GetProperty("eventCode").GetString());
-                }
+                }));
                 foreach (var (child, _) in children)
                 {
                     await child.StandardInput.WriteLineAsync("start");

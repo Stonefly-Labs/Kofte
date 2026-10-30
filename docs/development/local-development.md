@@ -1095,6 +1095,15 @@ exclusive xUnit collection. Their intended ten-way workload is unchanged, but
 unrelated hosted lifecycle fixtures do not compete with that benchmark's fixed
 acquisition budgets. Worker counts, rounds, retry rules and product deadlines
 are not reduced or relaxed.
+Each separate-process round launches all ten fresh workers before awaiting their
+individual ready messages, then releases the original registration barrier only
+after every message is validated. This overlaps cold startup, not the ownership
+operation's contenders or rounds; children remain separately owned and disposed.
+Composition fixtures also exclude the prepared identity's nominal web port when
+allocating a host port. If the kernel reuses it, the candidate stays bound while
+one replacement is allocated, guaranteeing distinct ports without retry loops.
+The forced-collision regression raises the complete retained composition minimum
+from 84 to 85; the command's original 900-second budget remains unchanged.
 
 Failed native storage and public platform-contract commands retain only
 source-allowlisted test identities and closed diagnostic codes. Their private,

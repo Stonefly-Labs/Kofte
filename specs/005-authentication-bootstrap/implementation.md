@@ -1,8 +1,8 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement running; 96/100 complete (T001-T096). Published `e371245` passes complete local failure propagation, all healthy baselines and five injections, in 730.130s. Its exact full local gate is running in a separate clean checkout. Eight actual Linux product contexts and repository checks pass; isolated whole PostgreSQL propagation still reaches 900 seconds after passing native/storage, while contract is still being observed. Safe native class timing summaries support the continuing diagnosis; no complete-gate pass is claimed. T097-T100 remain unchecked. No human approval is requested.
+**Result:** implement running; 96/100 complete (T001-T096). Published `e371245` passes complete local propagation in 730.130s; its exact full local gate is running independently. That Linux assessment finishes nine product contexts successfully. Subsequent `5ee4367` timing evidence retains the healthy PostgreSQL aggregate timeout and a SQLite recovery configuration rejection. A forced host/web port-collision regression now passes, and pre-barrier startup overlap reduces the unchanged 400-process proof from 86.862s to 48.242s locally. Full repaired-source qualification continues; no complete-gate pass is claimed. T097-T100 remain unchecked. No human approval is requested.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-30.
-**Assessed baseline:** published refusal repair `e371245d41465a47c072dccd24cb33a88f8a5abe`; actual Linux merge `b5f38609dd781edcc456c2f61b9ea5c464e46b62`. The subsequent working-tree native timing diagnostic is distinguished below; earlier assessments retain their original baselines.
+**Assessed baseline:** published timing diagnostic `5ee43672cfc82f59659274f3eddc3d1c4c8d579f`; actual Linux merge `6a4f6f3efe15d2d08b383b408079fdeda4cecf8c`. The subsequent working-tree port/startup repairs are distinguished below; earlier assessments retain their original baselines.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
 `specs/005-authentication-bootstrap`.
 **Checkpoint:** [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8).
@@ -14,6 +14,93 @@ adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
 
 ## T097 in progress: current full-gate and assessed-head failures
+
+### Forced port-collision repair and measured worker startup, 2026-10-30
+
+The final `e371245` Linux assessment finishes **nine of ten** product contexts
+successfully. Contract report `contract-both-596cca97b40549fab6fcd24b7ac49b80.json`
+passes in 2755.418s: public 265/18 required classes in 455.790s, retained
+composition 84 in 780.754s, ten identity guides per provider, all twelve
+composition invocations per provider, native OpenAPI and HTTP observations,
+with zero native skips. No post-failure diagnostic step was needed. Only the
+isolated healthy PostgreSQL propagation baseline remains failed at that head.
+
+Actual timing-source [run 41007722188](https://github.com/Stonefly-Labs/Kofte/actions/runs/41007722188)
+at `5ee4367` confirms merge `6a4f6f3efe15d2d08b383b408079fdeda4cecf8c`,
+with main `3e416813233c9d291eb20cf72d5882dbddf3e1b6` and feature
+`5ee43672cfc82f59659274f3eddc3d1c4c8d579f` parents.
+[Repository run 41007722220](https://github.com/Stonefly-Labs/Kofte/actions/runs/41007722220)
+passes. Completed native timing summaries are measured, not unavailable;
+the failed nested baseline retains them after strict revalidation.
+
+| Actual Linux safe report | Evidence |
+| --- | --- |
+| `integration-postgres-1482e7f3531d449795c476f83ea20233.json` | Passed, 884.191s: native 121 in 315.439s, storage 211 in 365.569s, composition 59 in 202.969s; zero skips. |
+| `failure-propagation-none-eb6c2b16f7f849cca60acf28b965ef63.json` | Failed, 1038.854s. Healthy PostgreSQL native 121 passes in 330.072s and storage 211 in 412.408s; composition is interrupted after 157.463s at the unchanged aggregate 900-second bound. |
+| `recovery-both-55e77a46fb3b45ee92cec31a3dc28a91.json` | Failed, 439.325s. SQLite native 50 and storage 73 pass. Public `SqliteCompositionMigrationContractTests.ActualPublicCommandsPrepareUpgradeAndServeWithoutRewritingHistoryOrOriginalData`, scenario `ordered-migration`, fails with `composition_configuration_invalid`/`composition_test_command_exit_expected_`; later recovery phases are unexecuted. |
+
+The measured isolated native case sum is 825.221s; identity preparation accounts
+for 223.215s and OIDC budgets 173.230s. The storage sum is 601.496s, of which
+391.205s is retained non-identity work. These are overlapping case sums, not
+command wall time. Source inspection identifies a serial pre-barrier warmup
+inside the retained twenty-round, ten-process registration proof: each new
+worker is awaited before the next worker is even launched.
+
+The fixture now launches all ten fresh workers first and validates all ten
+ready messages before releasing the **same** registration barrier. All twenty
+rounds, same/distinct-owner assertions, fresh processes, ten simultaneous
+contenders, per-round deadlines, retries, exclusive collection and cleanup remain
+unchanged. No provider phase, collection limit or product scheduling changes.
+The exact two-case PostgreSQL command before/after is:
+
+```text
+dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-trait Provider=postgres --filter-method '*TwentyRoundsOfTenSeparateProcessesKeepActualOwnershipUnique' --max-threads 4 --minimum-expected-tests 2 --output Detailed --show-stdout None --show-stderr None
+```
+
+Both versions pass 2/zero skipped, executing the same 400 fresh children.
+Before: same-owner 40.824s, distinct-owner 45.018s; runner 86.862s.
+After: 22.075s/25.191s; runner 48.242s. SQLite's unchanged corresponding
+two-case proof also passes, zero skipped, in 26.881s with `--no-build`.
+This is measured local setup improvement, not yet proof that the Linux whole
+baseline fits its budget. Other isolated qualification is running on the same
+18-logical-CPU macOS host; no controlled exclusive-CPU benchmark is claimed.
+
+The configuration rejection also reveals a genuine fixture defect.
+`ServingIdentity` allocates and releases its nominal web port; subsequent
+`CompositionFixture` host allocation can receive that same ephemeral port.
+The product correctly rejects equal host/web ports in `BootstrapConfiguration`.
+The new fixture regression supplies that exact candidate through the test
+helper's preferred-port argument: before exclusion, actual validation exits 2
+instead of 0, deterministically. The fixture now keeps that candidate bound
+while allocating one replacement, ensuring a different host port without
+retries, released-port races between the two allocations or changed product
+validation. It does not claim to reserve the chosen port until child startup.
+Historical CI did not retain the actual port pair, so this reproduction is not
+claimed as retroactive proof of every prior configuration rejection.
+
+The forced collision plus original migration/preservation cases pass on both
+stores: 6/zero skipped in 62.589s
+(`composition-port-regression-both-e2ee3448fe0545c48a26dda5f5b19e72.json`).
+Two initial diagnostic wrapper invocations fail before executing native tests
+because of an incorrect constant/positional arguments; they are not product
+failures. The corrected wrapper uses the actual keyword-only runner API.
+The full retained composition selection now requires **85**, not 84, including
+the new forced-collision case under the same 900-second command bound.
+The complete selection now **passes 85/zero skipped** in 500.139s
+(`composition-port-complete-both-e5e444675c564f4db8df88e530cd051e.json`,
+500.259s including version checks), under the unchanged owned 900-second
+runner. This includes every original case and the forced-collision regression;
+it is not a full all-suite pass. Whole-solution
+`dotnet build Kofte.slnx --no-restore -c Release -warnaserror` passes with zero
+warnings/errors. Focused `dotnet format Kofte.slnx --verify-no-changes
+--no-restore --include tests/integration/Kofte.TestSupport/CompositionFixture.cs
+tests/contract/Kofte.Platform.ContractTests/Composition/CompositionFixtureTests.cs
+tests/integration/Kofte.Storage.IntegrationTests/Registry/RegistrationConcurrencyTests.cs`,
+repository validation, all 165 Python tests and `git diff --check` pass.
+The worker's separate cold-initialization maintenance lease still completes
+and is released before its ready message; no registration can begin until
+all ten messages pass validation. Full repaired-source local/CI qualification
+remains required; engineering continues on the original draft PR.
 
 ### Whole propagation verified; isolated Linux baseline measured, 2026-10-30
 

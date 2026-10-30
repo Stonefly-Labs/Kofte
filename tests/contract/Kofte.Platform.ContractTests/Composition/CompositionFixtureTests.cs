@@ -8,6 +8,24 @@ public sealed class CompositionFixtureTests
 {
     [Fact]
     [Trait("Provider", "sqlite")]
+    public async Task ReusedEphemeralWebPortCannotInvalidateAComposedHostConfiguration()
+    {
+        var token = TestContext.Current.CancellationToken;
+        await using var fixture = await CompositionFixture.CreateAsync("sqlite", token);
+        await fixture.WriteSelectionAsync(Encoding.UTF8.GetBytes("""{"schemaVersion":"1","modules":[]}"""), token);
+        await fixture.PrepareIdentityAsync(token);
+        Assert.NotNull(fixture.WebUrl);
+        await using var process = fixture.Start("validate", CompositionTestCatalog.EmptyBoot,
+            preferredHostPort: fixture.WebUrl.Port);
+        var result = await process.WaitAsync(token);
+        Assert.Equal(0, result.ExitCode);
+        Assert.NotEqual(fixture.WebUrl.Port, fixture.HostUrl.Port);
+        Assert.DoesNotContain("composition_configuration_invalid", result.Stdout);
+        Assert.True(process.ExitVerified && process.DescendantExitsVerified);
+    }
+
+    [Fact]
+    [Trait("Provider", "sqlite")]
     public async Task SelectionReplacementIsPrivateAndOwnedWithoutLeakingFixtureResources()
     {
         var fixture = await CompositionFixture.CreateAsync("sqlite", TestContext.Current.CancellationToken);
