@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using Kofte.Host.Features.Identity;
 using Kofte.Host.Features.Identity.Login;
@@ -14,6 +15,53 @@ namespace Kofte.Host.IntegrationTests.Identity;
 public sealed class OidcBackchannelTests
 {
     private CancellationToken Token => TestContext.Current.CancellationToken;
+
+    [Fact]
+    public async Task IssuerPreparesSigningMaterialBeforeTheFirstBudgetedDiscovery()
+    {
+        using var signing = new RequestGuardRsa();
+        using var foreign = new RequestGuardRsa();
+        await using var issuer = await OidcIssuer.CreateAsync(Token, signing, foreign);
+        signing.RequestsStarted = foreign.RequestsStarted = true;
+        var accessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
+        using var backchannel = new OidcBackchannel(Provider(issuer), accessor, issuer.CreateSocketsHandler());
+        var options = new OpenIdConnectOptions();
+        OidcConfiguration.Apply(options, Provider(issuer), new("https://kofte.identity.test"), backchannel);
+        using var deadline = CancellationTokenSource.CreateLinkedTokenSource(Token);
+        deadline.CancelAfter(TimeSpan.FromSeconds(1));
+        accessor.HttpContext.RequestAborted = deadline.Token;
+        var configuration = await options.ConfigurationManager!.GetConfigurationAsync(deadline.Token);
+        Assert.Single(configuration.SigningKeys);
+        Assert.Equal(new[] { "discovery", "jwks" }, issuer.Observations);
+        Assert.Equal(1, signing.Exports);
+        Assert.Equal(1, foreign.Exports);
+    }
+
+    private sealed class RequestGuardRsa : RSA
+    {
+        private readonly RSA key = RSA.Create(2048);
+        internal bool RequestsStarted { get; set; }
+        internal int Exports { get; private set; }
+        public override RSAParameters ExportParameters(bool includePrivateParameters)
+        {
+            if (RequestsStarted)
+                throw new InvalidOperationException("identity_fixture_key_material_not_prepared");
+            Exports++;
+            return key.ExportParameters(includePrivateParameters);
+        }
+        public override void ImportParameters(RSAParameters parameters) => key.ImportParameters(parameters);
+        public override byte[] Encrypt(byte[] data, RSAEncryptionPadding padding) => key.Encrypt(data, padding);
+        public override byte[] Decrypt(byte[] data, RSAEncryptionPadding padding) => key.Decrypt(data, padding);
+        public override byte[] SignHash(byte[] hash, HashAlgorithmName algorithm, RSASignaturePadding padding) =>
+            key.SignHash(hash, algorithm, padding);
+        public override bool VerifyHash(byte[] hash, byte[] signature, HashAlgorithmName algorithm,
+            RSASignaturePadding padding) => key.VerifyHash(hash, signature, algorithm, padding);
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing) key.Dispose();
+            base.Dispose(disposing);
+        }
+    }
 
     [Theory]
     [InlineData("untrusted-tls")]

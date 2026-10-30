@@ -1,8 +1,8 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement incomplete; 96/100 complete (T001-T096). Chromium, the complete both-provider public catalog and final dependency reconciliation are qualified. Complete local/assessed-head CI and traceability gates remain T097-T100; historical failed native/composition/propagation results are not waived or diagnosed by focused passes. The ledger records the reproduced engineering failures as blocked; no human approval is requested.
-**Stage / date:** implement, 2026-10-26; continued 2026-10-29.
-**Assessed baseline:** resumed native diagnosis and completed hosted assessment of published `f68dd98a049ca205e1849074170c6b3636e41023`; the earlier full-gate attempt at `30178ebf77916be706806d9a02bbede479596108` and all other experiments retain their original baselines below.
+**Result:** implement incomplete; 96/100 complete (T001-T096). Chromium, the complete both-provider public catalog and final dependency reconciliation are qualified. Complete local/assessed-head CI and traceability gates remain T097-T100; historical failed native/composition/propagation results are not waived or diagnosed by focused passes. The ledger is running while repaired fixture behavior and final gates are assessed; no human approval is requested.
+**Stage / date:** implement, 2026-10-26; continued 2026-10-30.
+**Assessed baseline:** published `cc4be995ea3d29d0a3dc3940d2b6ceb9a9f29a61` plus the explicitly identified fixture/test repair below; earlier assessments retain their original baselines.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
 `specs/005-authentication-bootstrap`.
 **Checkpoint:** [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8).
@@ -14,6 +14,62 @@ adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
 
 ## T097 in progress: current full-gate and assessed-head failures
+
+### Continued diagnosis: prepare issuer keys before serving, 2026-10-30
+
+The same branch/draft PR and passing 16/16 and 36/36 checklists were verified,
+and implement was resumed through the driver. This is engineering work, not
+an acceptance request.
+
+Request-correlated temporary probes separated owner mutations, metadata/JWKS
+egress and terminal exceptions. In the complete SQLite native selection,
+healthy starts spent up to 527.4ms between the JWKS TCP connection and response
+headers while their local transactions completed in milliseconds. The fixture
+called `RSA.Create(2048)` during construction but first exported its signing
+key inside `OidcIssuer.KeysAsync`. The provider defers expensive prime
+generation until that export. An isolated twelve-key probe confirmed creation
+at 0.001-0.152ms versus first export at 40.514-231.003ms, with subsequent exports
+at 0.011-0.201ms. Under load this variable provider setup work consumes the
+unchanged one-second login envelope; it is not PostgreSQL commit work.
+This identifies a concrete fixture defect, not proof that it explains every
+historical storage, fixture-startup or propagation failure.
+
+The repair materializes the signing and wrong-signature keys before the issuer
+starts listening and serves JWKS from the prepared public parameters. No
+product code, cryptographic strength, request/cleanup deadline, rate, contender
+count, retry policy or required selector is changed. The fixture accepts
+test-supplied RSA instances solely so a regression can prohibit key export
+after preparation. That regression runs real bounded metadata/JWKS discovery,
+requires both keys prepared and exact provider observations, and demonstrably
+fails without the repair. All temporary runtime/fixture probes were removed;
+the uninstrumented projects were rebuilt before qualification.
+
+| Exact check / safe report | Actual result |
+| --- | --- |
+| `dotnet build tests/integration/Kofte.Host.IntegrationTests/Kofte.Host.IntegrationTests.csproj --no-restore -c Release -warnaserror` | Passed before red and green runs; zero warnings/errors. |
+| `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-build --no-restore -c Release --filter-class '*OidcBackchannelTests' --filter-method '*IssuerPreparesSigningMaterialBeforeTheFirstBudgetedDiscovery' --minimum-expected-tests 1` | **Failed before repair**, exit 2, 3.413s; `identity-key-preparation-red-sqlite-c92f7fab6367451ea7703d8674f43214.json`, at the real configuration fetch. |
+| `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-build --no-restore -c Release --filter-class '*OidcBackchannelTests' --filter-class '*OidcProtocolTests' --filter-class '*OidcBudgetTests' --filter-class '*IdentityFailureTests' --filter-trait Provider=sqlite --max-threads 4 --minimum-expected-tests 1` | **Passed after repair**, 106/zero skipped, 69.807s; `identity-key-preparation-green-sqlite-252e9e48f0624f43aea9e317ff293f37.json`. Includes the guarded-key regression and actual invalid signatures, deadlines, cancellation and corrected logins. |
+| `KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-build --no-restore -c Release --filter-class '*PostgresIdentityFailureTests' --filter-method '*LostStoreAuthorityOrCorruptTicketCannotServeAWarmedIdentityAndNeedsExplicitCorrection' --filter-trait Provider=postgres --max-threads 4 --minimum-expected-tests 2` | **Passed after repair**, both rows/zero skipped, 32.011s; `identity-prepared-key-postgres-postgres-ff6475e54a8140a992dabe45887f02da.json`. Reaches the actual authority-loss/corruption assertions and correction, unlike the earlier failed initial-login run. |
+| `dotnet format Kofte.slnx --verify-no-changes --no-restore --include tests/integration/Kofte.TestSupport/Identity/OidcIssuer.cs tests/integration/Kofte.Host.IntegrationTests/Identity/OidcBackchannelTests.cs` | Passed. |
+| `python3 scripts/check_repository.py`; `python3 -m unittest discover -s scripts/tests -v`; `git diff --check` | Passed; all 159 Python tests. |
+
+These are safe runner projections with private XML discarded, using the
+previously recorded pinned macOS arm64 tool profile. They remain targeted,
+`completeGate=false`, not the complete local gate or fixed-head CI.
+
+The intermediate instrumented broad selection
+`identity-request-phase-broad-both-9f92745d7e024956bee545f28c641b8b.json`
+exits 9 with no known failing assertion: its custom 90-case minimum does not
+match that subset. It is not a new native assertion failure or qualification.
+Full instrumented SQLite selections pass 210/zero skipped, including all
+thirteen required classes; these selections are diagnosis only.
+The instrumented PostgreSQL selection instead fails before serving, in owned
+service startup/cleanup (456.062s); no healthy-request diagnosis is inferred.
+The subsequent uninstrumented two-row PostgreSQL pass above uses a fresh
+normally provisioned fixture, without relaxing that setup or retrying requests.
+
+The exact complete local gate and actual repaired-head CI are next. T097-T100
+remain unchecked and the ledger is `running`; no later stage has begun.
 
 ### Resumed unchanged-head investigation, 2026-10-29
 

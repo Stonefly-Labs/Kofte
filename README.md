@@ -37,7 +37,7 @@ Developers deserve a clear, welcoming home for services, owners, resources and g
 > [!IMPORTANT]
 > **Spec 001's bootstrap is human-accepted and merged, not a finished product.** A module-free .NET host, persistent local SQLite store, Next.js status page, local supervisor, owned PostgreSQL verification, guarded recovery and generated Development OpenAPI now exist. All 64 implementation tasks are evidenced, including the complete local gate, all ten actual Ubuntu CI jobs and human-confirmed T056/T059. Final review found no acceptance defect, and [explicit human acceptance](specs/001-repository-bootstrap/acceptance.md) is recorded. Spec 002's offline manifest-validation contracts are [explicitly human-accepted](specs/002-platform-contracts/acceptance.md) and human-merged. Spec 003's storage registry and module isolation are [explicitly human-accepted](specs/003-storage-registry/acceptance.md) and human-merged. Spec 004 is [explicitly human-accepted](specs/004-module-lifecycle/acceptance.md) and [PR #7](https://github.com/Stonefly-Labs/Kofte/pull/7) is now human-merged. Its accepted ledger and evidence were verified on updated main before 005 began. The [full-matrix follow-up](specs/004-module-lifecycle/implementation.md#full-matrix-ci-follow-up) retains prior failures and unknown causes; the historical failed local gate remains failed, not waived by acceptance or merge. Spec 005 now has [authentication/bootstrap requirements](specs/005-authentication-bootstrap/spec.md) and US1 sign-in implemented, not the complete identity feature. Nothing here claims production readiness or MVP completion.
 
-**Current stage: 005 / implement blocked; 96/100 tasks complete.** T001–T096
+**Current stage: 005 / implement in progress; 96/100 tasks complete.** T001–T096
 are evidenced: production OIDC login, nominated enrollment, shared session
 boundaries, explicit Development identity and stopped operational recovery.
 The [runtime guide](specs/005-authentication-bootstrap/quickstart.md) now records
@@ -61,8 +61,12 @@ product contexts but fails both native integrations and the isolated propagation
 baseline. Independent database wait samples do not establish the request's cause;
 no speculative runtime fix or weakened deadline/durability is retained.
 The verifier preserves source-known PostgreSQL fixture codes without raw logs.
-The ledger records an engineering `blocked` state, not completion or a request
-for human approval.
+Continued request tracing found lazy RSA key generation inside the test issuer's
+first JWKS response. Keys are now prepared before serving, with a red/green
+regression, 106 passing SQLite protocol/failure cases and both original
+PostgreSQL authority-loss/correction rows passing. Runtime budgets are unchanged.
+The ledger is `running` while the complete local gate and repaired-head CI are
+verified; focused passes do not complete T097–T100 or request human approval.
 Continue on the same branch/draft PR #8. Converge, review and explicit feature
 acceptance are later stages; designation grants no module permissions.
 Specs 006–009/022–024 and production-readiness claims remain out of scope.

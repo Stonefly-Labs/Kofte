@@ -28,8 +28,9 @@ public sealed class OidcIssuer : IAsyncDisposable
 {
     private sealed record Authorization(string Challenge, string Nonce, string RedirectUri, DateTimeOffset Expires);
 
-    private readonly RSA signingKey = RSA.Create(2048);
-    private readonly RSA foreignKey = RSA.Create(2048);
+    private readonly RSA signingKey;
+    private readonly RSA foreignKey;
+    private RSAParameters signingPublicKey;
     private readonly ConcurrentDictionary<string, Authorization> codes = new(StringComparer.Ordinal);
     private readonly ConcurrentQueue<string> observations = new();
     private readonly X509Certificate2 authority;
@@ -39,8 +40,10 @@ public sealed class OidcIssuer : IAsyncDisposable
     private int tokenRequests;
     private bool disposed;
 
-    private OidcIssuer(CancellationToken token)
+    private OidcIssuer(CancellationToken token, RSA? signingKey, RSA? foreignKey)
     {
+        this.signingKey = signingKey ?? RSA.Create(2048);
+        this.foreignKey = foreignKey ?? RSA.Create(2048);
         lifetime = CancellationTokenSource.CreateLinkedTokenSource(token);
         lifetime.CancelAfter(TimeSpan.FromSeconds(120));
         using var caKey = RSA.Create(2048);
@@ -83,12 +86,17 @@ public sealed class OidcIssuer : IAsyncDisposable
     public string AuthorityCertificatePem => authority.ExportCertificatePem();
     internal X509Certificate2 ServerCertificate => serverCertificate;
 
-    public static async Task<OidcIssuer> CreateAsync(CancellationToken token)
+    public static async Task<OidcIssuer> CreateAsync(CancellationToken token,
+        RSA? signingKey = null, RSA? foreignKey = null)
     {
         token.ThrowIfCancellationRequested();
-        var fixture = new OidcIssuer(token);
+        var fixture = new OidcIssuer(token, signingKey, foreignKey);
         try
         {
+            // RSA providers can defer prime generation until first use; it belongs to fixture setup.
+            fixture.signingPublicKey = fixture.signingKey.ExportParameters(false);
+            _ = fixture.foreignKey.ExportParameters(false);
+            token.ThrowIfCancellationRequested();
             var builder = WebApplication.CreateSlimBuilder(new WebApplicationOptions
             {
                 EnvironmentName = "Production"
@@ -192,7 +200,7 @@ public sealed class OidcIssuer : IAsyncDisposable
     {
         await ObserveAsync("jwks", context.RequestAborted);
         if (ResponseOverride?.Invoke("jwks", context) is { } overridden) return overridden;
-        var key = signingKey.ExportParameters(false);
+        var key = signingPublicKey;
         return Results.Json(new
         {
             keys = PublishSigningKey ? new[]

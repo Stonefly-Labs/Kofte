@@ -27,7 +27,11 @@ T097–T100 retain complete local/actual CI and traceability gates.
 Earlier failures are not waived or diagnosed by subsets. Resumed unchanged-head
 native attempts still fail; completed `f68dd98` CI fails both integrations and
 the propagation baseline. Database wait samples do not establish the cause.
-The ledger is `blocked` on engineering evidence, not human approval.
+Continued tracing identifies lazy issuer-key generation inside the first JWKS
+response. The fixture now prepares keys before serving; guarded red/green and
+focused both-provider checks pass without changing runtime budgets.
+The ledger is `running` while complete local/repaired-head CI gates are checked,
+not waiting for human approval.
 Use the [operator contract](../specs/005-authentication-bootstrap/contracts/operator-v1.md)
 and [local guide](development/local-development.md) for private setup/trust,
 nomination, session/key custody, bounded maintenance and quarantined recovery.

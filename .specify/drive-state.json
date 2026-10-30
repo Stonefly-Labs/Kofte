@@ -29,9 +29,9 @@
     "spec": "005",
     "step": "implement",
     "directory": "specs/005-authentication-bootstrap",
-    "status": "blocked",
+    "status": "running",
     "branch": "feature/005-authentication-bootstrap",
-    "reason": "T097 remains incomplete at f68dd98: unchanged both-provider native selection fails in 720.188s and isolated PostgreSQL initial healthy login fails expected 303/actual 503 in 90.400s. Independent WAL/commit observations do not establish its cause. Latest assessed-head CI 40958406127 fails both native integrations and propagation baseline; retained storage/composition pass. Fixture cleanup refusal is preserved; its exact owned service is stopped, not deleted. Repair healthy refusals and fixture/acquisition failures, then rerun the exact complete local gate and actual fixed-head CI. No approval gate or later stage.",
+    "reason": "",
     "started_at": "2026-10-26T21:30:18+00:00"
   },
   "history": [

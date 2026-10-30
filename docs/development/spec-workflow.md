@@ -6,7 +6,7 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement blocked; 96/100 complete** (T001–T096), on
+**Current checkpoint: 005 / implement in progress; 96/100 complete** (T001–T096), on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. Implementation continues until the entire
 spec is ready for converge, not until an incremental subset passes.
@@ -37,8 +37,14 @@ assessment passes seven product contexts but fails both native integrations
 and the whole PostgreSQL propagation baseline at its inherited parent timeout;
 retained storage/composition pass. The preserved local fixture is stopped,
 not deleted or claimed successfully cleaned up. No runtime/test change is
-retained. The ledger records an engineering `blocked` state on the same draft PR,
-with no pending approval request. Resume implement there; do not advance stages.
+retained at that checkpoint. Continued correlated tracing identifies expensive
+lazy RSA generation in the issuer fixture's first JWKS response. The fixture
+now prepares keys before serving, with a failing-before/passing-after guarded
+regression, 106 passing SQLite protocol/failure cases and both original
+PostgreSQL authority-loss/correction rows passing. No runtime budget or
+required coverage changes. The ledger is `running` while the exact complete
+local gate and actual repaired-head CI are checked on the same draft PR.
+Do not advance stages or infer feature acceptance from these focused passes.
 
 ### Historical implementation verification
 
