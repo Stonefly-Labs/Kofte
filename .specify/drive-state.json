@@ -22,7 +22,7 @@
     },
     "005": {
       "directory": "specs/005-authentication-bootstrap",
-      "next_step": "review"
+      "next_step": "implement"
     }
   },
   "active": null,
@@ -1201,6 +1201,24 @@
       "evidence_sha256": {
         "specs/005-authentication-bootstrap/tasks.md": "c65bae2e49bf5b8e9fe86479dd59f338a8ed1ff0ebee895a3a16bc3a1d2d139f",
         "specs/005-authentication-bootstrap/convergence.md": "a2ca0f4e4e04556e4b4d30548c2d972e7a3fc4e8160d373028952c91c5225df6"
+      }
+    },
+    {
+      "spec": "005",
+      "step": "review",
+      "directory": "specs/005-authentication-bootstrap",
+      "status": "complete",
+      "branch": "feature/005-authentication-bootstrap",
+      "reason": "",
+      "started_at": "2026-10-30T17:29:04+00:00",
+      "completed_at": "2026-10-30T17:39:40+00:00",
+      "outcome": "changes",
+      "note": "Final spec-review assessment records changes: F1 MEDIUM forbidden-but-allowlisted DNS/connected-peer address admission omits existing policy (FR019/R9/VI/XI); F2 actual current recovery setup fails expected200/actual503 before key damage, cause unverified. Append exactly T101-T103 unchecked; all original100task bytes, implementation/convergence reports and both reviewed checklists preserved. All22FR/7SC/22scenarios/12R/100originaltasks/12principles assessed against source/assertions. Independently downloaded full41072051400 and prior matrix41091559018:10reports/313passed steps each, exact names+multiset parity with full/targeted scope preserved; qualified/current product/test/tooling identical. Current41098819181 recovery job124211497414/artifact12998755111 fails at merge8b5c448f; partial passing reports do not replace failed or pending checks. Repository validator,170Python tests,whitespace and prefix-preservation checks pass. No heavy local/Docker suite or prohibited50000session proof. Next invocation implement only on same branch/draftPR8; no fixes,acceptance,readiness or merge in this review stage.",
+      "evidence_sha256": {
+        "specs/005-authentication-bootstrap/tasks.md": "11527b2eb5e205c80e822d2ab18febd87c389a0d55763a5242ec9cd3c9a6bd2c",
+        "specs/005-authentication-bootstrap/review.md": "62619769615a746eb7bbe2537e9306109a096ee0bba589f0304580cf3b3a3fcd",
+        "specs/005-authentication-bootstrap/checklists/quality.md": "c169329a32af64d429d94ad29597a0c8560497e2599269962a6b3db2f0b868ca",
+        "specs/005-authentication-bootstrap/checklists/requirements.md": "26bdb3c100317600de5c4be50934873933b0942bf23b7913e49571dd2ce65adb"
       }
     }
   ]

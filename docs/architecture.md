@@ -504,8 +504,16 @@ feature acceptance. The
 now passes across all 51 requirements/outcomes/scenarios, twelve plan decisions,
 100 tasks and twelve principles with zero actionable gaps. No task, product,
 test, dependency or architecture decision changes. Actual complete/current-head
-CI reports each pass the same 313 named steps. Review is next, followed
-separately by explicit human acceptance on the same draft PR.
+CI reports each pass the same 313 named steps at that historical checkpoint.
+The subsequent [final review](../specs/005-authentication-bootstrap/review.md)
+requires **changes**: the OIDC backchannel checks configured networks but
+omits the promised forbidden-address rule for resolved/connected destinations.
+A separate current SQLite recovery enrollment setup returns 503 before key
+damage; its cause is not diagnosed. Run `41098819181` is not green.
+Exactly T101-T103 are appended for the existing-policy correction, diagnosis
+and changed-source qualification. No architecture decision, product/test code,
+original task marker or historical report changes in this review stage.
+**Implement is next** on the same draft PR, not acceptance or merge.
 
 The earlier implementation increments below retain the source/signature
 investigation and record the adopted maintained

@@ -14,8 +14,13 @@ The [technology-stack exploration](kofte-technology-stack-architecture.md) is hi
 
 ## Working in the repository
 
-**Current Spec Kit checkpoint: 005 / converge passes; review is next.**
-The [assessment](../specs/005-authentication-bootstrap/convergence.md) finds
+**Current Spec Kit checkpoint: 005 / review requires changes; implement is next.**
+The [final review](../specs/005-authentication-bootstrap/review.md) identifies
+a MEDIUM forbidden-DNS-destination admission defect and an unresolved
+current SQLite recovery enrollment-setup failure, before key damage.
+Exactly T101-T103 are appended unchecked; the original 100 task markers,
+product/test source and historical reports remain unchanged. The earlier
+[assessment](../specs/005-authentication-bootstrap/convergence.md) finds
 zero actionable gaps across 51 requirements/outcomes/scenarios, twelve plan
 decisions, all 100 tasks and twelve principles. Tasks, product/test code and
 reviewer-owned checklists are unchanged; actual full/current-head CI reports
@@ -31,7 +36,9 @@ Final dependency/contract checks and zero-finding npm/NuGet audits pass.
 T097–T100 now have the complete hosted command (ten passed all-scope reports,
 313 named steps, every `completeGate=true`), all ten actual PR product contexts,
 passing repository checks and full requirement/assertion traceability.
-**Review is next** on the same draft PR, not feature acceptance.
+The historical passing reports do not erase current run `41098819181`'s failed
+recovery context or diagnose its cause. **Implement T101-T103 is next** on
+the same draft PR, not feature acceptance or an intermediate merge.
 The full command ran in one GitHub-hosted Ubuntu `suite=complete` job,
 separately from the ten-job matrix. Do not restart heavy product tests on a
 shared workstation or turn the interrupted Mac attempts into a passing profile.

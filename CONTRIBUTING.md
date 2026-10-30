@@ -355,8 +355,15 @@ now **passes** across 51 requirements/outcomes/scenarios, twelve plan decisions,
 all 100 tasks and twelve principles, with zero actionable gaps. Tasks,
 product/test/tooling source and reviewed checklists remain unchanged. Actual
 complete/current-head CI reports each pass the same 313 named steps.
-**Review is next**, followed separately by explicit human acceptance;
-the same PR remains draft and no intermediate merge is requested.
+The subsequent [final review](specs/005-authentication-bootstrap/review.md)
+requires **changes**: a MEDIUM forbidden-DNS-destination admission defect
+and an unresolved current recovery setup failure before key damage.
+Actual run `41098819181` fails recovery; earlier green evidence is preserved,
+not substituted for that failure or its diagnosis. Exactly T101-T103 are
+appended unchecked, preserving all original task bytes/markers, product/test
+source, historical reports and reviewer-owned checklists.
+**Implement T101-T103 is next**, followed later by converge/review and explicit
+human acceptance; the same PR remains draft with no intermediate merge request.
 The following increments are
 historical, not current unimplemented-capability statements or acceptance.
 The [implementation record](specs/005-authentication-bootstrap/implementation.md)

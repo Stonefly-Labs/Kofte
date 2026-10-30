@@ -6,16 +6,24 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / converge passes; review is next**, on
+**Current checkpoint: 005 / review requires changes; implement is next**, on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
+[final review](../../specs/005-authentication-bootstrap/review.md) identifies
+one MEDIUM forbidden-DNS-destination admission defect and one unresolved current
+qualification failure: SQLite enrollment setup returns 503 instead of 200,
+before the key-loss fault is injected. Exactly T101-T103 are appended unchecked.
+All original task bytes/markers, product/test/tooling source, reviewed checklists
+and historical reports remain unchanged. No product fix runs in this stage.
+The earlier
 [convergence assessment](../../specs/005-authentication-bootstrap/convergence.md)
 finds zero actionable gaps across 51 requirements/outcomes/scenarios, twelve
 plan decisions, all 100 tasks and twelve principles. It leaves tasks,
 product/test/tooling source and reviewer-owned checklists unchanged and verifies
 actual complete/current-head reports with the same 313 passing named steps.
-**Review is next on a later invocation**, not acceptance, PR readiness, merge
-or a new numbered feature.
+Current run `41098819181` has a failed recovery context; earlier green reports
+do not diagnose or replace it. **Implement T101-T103 is next on a later
+invocation**, not acceptance, PR readiness, merge or a new numbered feature.
 T092's focused operations join now has actual Linux qualification. T093 also
 requires exact private Playwright discovery/execution completeness, not just
 zero exit: no missing case, skip, retry or flaky result. Its complete local
