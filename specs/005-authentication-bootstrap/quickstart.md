@@ -1,9 +1,9 @@
 # Runtime and Validation Guide: 005 Authentication and Bootstrap
 
-**Status:** Implementation in progress, not accepted or production-ready.
+**Status:** Implementation complete (100/100 tasks), not accepted or production-ready.
 The host, identity page, stopped commands and test-owned consumer are delivered
 source, not proposed interfaces. The [implementation record](implementation.md)
-identifies exact executed commands, assessed sources and remaining failures;
+identifies the passing hosted full gate, actual CI, assessed sources and historical failures;
 the command inventory below is not itself a passing complete gate.
 [ADR 0007](../../docs/adr/0007-authentication-bootstrap-boundary.md) has explicit
 human design approval, separate from feature acceptance.

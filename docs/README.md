@@ -14,19 +14,21 @@ The [technology-stack exploration](kofte-technology-stack-architecture.md) is hi
 
 ## Working in the repository
 
-**Current Spec Kit checkpoint: 005 / implement running, T001–T096 complete (96/100).**
+**Current Spec Kit checkpoint: 005 / implement complete, all 100 tasks evidenced.**
 The [runtime guide](../specs/005-authentication-bootstrap/quickstart.md) covers
 delivered sign-in, enrollment, session/Development and stopped operator commands.
 All nine public recipes individually and `all` pass on each provider, with
 exact ordered observations and 77 passing harness negatives. Local and Linux
 Chromium qualification is recorded; private browser reports must prove complete
 first-attempt success without skips/retries. See the
-[current evidence](../specs/005-authentication-bootstrap/implementation.md#t094-t095-complete-public-catalog-and-delivered-documentation).
+[current evidence](../specs/005-authentication-bootstrap/implementation.md#t097-t100-complete-hosted-qualification-and-traceability).
 Final dependency/contract checks and zero-finding npm/NuGet audits pass.
-T097–T100 retain complete-command/actual CI and traceability gates.
-The exact full command now runs in one GitHub-hosted Ubuntu `suite=complete`
-job, separately from the ten-job matrix. Repository checks pass on `4e16d36`;
-the product runs remain in progress. Do not restart heavy product tests on a
+T097–T100 now have the complete hosted command (ten passed all-scope reports,
+313 named steps, every `completeGate=true`), all ten actual PR product contexts,
+passing repository checks and full requirement/assertion traceability.
+**Converge is next** on the same draft PR, not feature acceptance.
+The full command ran in one GitHub-hosted Ubuntu `suite=complete` job,
+separately from the ten-job matrix. Do not restart heavy product tests on a
 shared workstation or turn the interrupted Mac attempts into a passing profile.
 The following increments preserve historical evidence.
 Tracing identifies lazy issuer-key generation inside the first JWKS response.

@@ -1,8 +1,8 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement running; 96/100 complete (T001-T096). Published code `4e16d36` is running the unchanged complete command and separate ten-job matrix on GitHub-hosted Ubuntu; its repository checks pass. All final-source product reports and traceability/publication gates remain required. Interrupted Mac attempts remain incomplete, not a final macOS qualification. T097-T100 remain unchecked.
+**Result:** implement complete; 100/100 tasks evidenced. The exact source-`4e16d36` hosted complete command passes all ten groups and 313 named steps, with every report `scope=all`, `completeGate=true` and `outcome=passed`. Actual assessed-head PR CI also passes all ten product contexts and repository checks. This completes implementation only, not convergence, review, feature acceptance or production qualification. Interrupted Mac attempts remain incomplete.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-30.
-**Assessed baseline:** published product/test/tooling `4e16d36f5cd54fd3da3e81d6641ef1d8f0598f4f`; hosted complete run `41072051400`, matrix `41072560598` and passing repository run `41072565753`. This documentation checkpoint does not change that code; earlier assessments retain their original baselines.
+**Assessed baseline:** product/test/tooling `4e16d36f5cd54fd3da3e81d6641ef1d8f0598f4f`; complete run `41072051400`. Actual PR merge `9521abda6406709ea2d9df5344dd678aa0d6a8f2` assesses documentation checkpoint `5ea6ec8c46653a418a12746b08ff9c5f8baa65d4`, with identical product/test/tooling code. Final task/ledger/documentation publication preserves that code; earlier assessments retain their original baselines.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
 `specs/005-authentication-bootstrap`.
 **Checkpoint:** [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8).
@@ -12,6 +12,260 @@ The initial blocked assessment below is retained as history. The
 resolves that blocker and resumes the original implement stage. The later
 adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
+
+## T097-T100: complete hosted qualification and traceability
+
+### T097: one actual complete command
+
+The exact command
+`python3 scripts/verify.py --suite all --disposable-postgres --warm-starts 10`
+**passes, exit zero**, in [GitHub run 41072051400](https://github.com/Stonefly-Labs/Kofte/actions/runs/41072051400),
+job **124118452600**, at exact feature SHA
+`4e16d36f5cd54fd3da3e81d6641ef1d8f0598f4f`. This is one actual `complete-gate`
+job, not a sum of targeted reports. The command ran from **2026-10-30
+14:31:18 UTC to 16:30:03 UTC**. All **ten** expected unique suite/provider
+reports have `scope=all`, `completeGate=true` and `outcome=passed`; every one
+of their **313 named steps** passes.
+
+The actual profile is GitHub-hosted Ubuntu 24.04, Linux
+`7.0.0-1017-azure`/`x86_64`, **four logical CPUs**, **16,760,348,672 bytes RAM**,
+Python **3.12.3**, .NET SDK **10.0.402**, Node **24.22.0** and npm **11.19.1**.
+The existing pinned PostgreSQL image and Chromium setup passed. The new
+four-hour outer allowance covers aggregate setup/execution only; all original
+suite, command, fixture, product and observation deadlines remain unchanged.
+
+| Suite / provider | Complete command, seconds | Actual PR CI, seconds |
+| --- | --- | --- |
+| Quality | 108.878 | 120.963 |
+| Unit | 55.743 | 64.473 |
+| Integration / SQLite | 627.196 | 742.364 |
+| Integration / PostgreSQL | 760.966 | 639.664 |
+| Recovery / both | 1396.332 | 1167.903 |
+| Contract / both | 2261.847 | 2230.897 |
+| Browser | 98.642 | 144.541 |
+| Privacy / both | 587.289 | 737.408 |
+| Startup | 29.928 | 60.733 |
+| Failure propagation | 1198.329 | 1018.975 |
+
+These are group durations, not new per-command budgets. Quality includes
+repository validation, all **170 Python tests**, whitespace, locked restores,
+.NET format/warning-free build, Prettier/ESLint/TypeScript, generated contracts,
+workspace builds and dependency review. Both real-provider integrations,
+operator/recovery groups, all identity/public/retained composition contracts,
+strict native/browser completeness and actual privacy captures pass.
+The PostgreSQL composition service start, twelve independent consumer recipes
+with exact observations, and verified service stop all pass.
+
+Startup records **ten actual empty warm cycles**, each with matching fixtures:
+maximum readiness **0.901s** and page observation **0.170s**. Both configured
+composition cycles publish modules and match their fixtures, with maximum
+total **1.515s**. Failure propagation passes all three fresh baselines and all
+five required intentional failures. No skip, retry, suppressed observation,
+reduced contender/case count or substituted successful rerun qualifies this
+complete invocation.
+
+### T098: actual CI, source identity and profile comparison
+
+The separate exact-feature [matrix 41072560598](https://github.com/Stonefly-Labs/Kofte/actions/runs/41072560598)
+and [repository run 41072565753](https://github.com/Stonefly-Labs/Kofte/actions/runs/41072565753)
+pass at `4e16d36`. The actual PR [product run 41076880183](https://github.com/Stonefly-Labs/Kofte/actions/runs/41076880183)
+also passes all ten contexts, and [repository run 41076880293](https://github.com/Stonefly-Labs/Kofte/actions/runs/41076880293)
+passes. Its assessed merge is
+`9521abda6406709ea2d9df5344dd678aa0d6a8f2`, with verified parents main
+`3e416813233c9d291eb20cf72d5882dbddf3e1b6` and feature
+`5ea6ec8c46653a418a12746b08ff9c5f8baa65d4`. Merge and feature trees both equal
+`6699ce8ea5468d558ebaa8841cfee0756ccb4ab5`.
+The change from `4e16d36` is six documentation files only; the diff across
+`src`, `apps`, `packages`, `tests`, `scripts` and `.github` is empty.
+
+Both matrix report sets contain exactly the expected ten provider-qualified
+reports, all passed and targeted with `completeGate=false`. Their **313 named
+steps match the complete command exactly, including multiplicity**. This joins
+the identity/retained inventories, both integrations, stopped recovery,
+public guide observations, empty-host/health/OpenAPI/browser/privacy/startup
+and failure baselines/injections. The browser CI job also passes its twelve
+separate configured-HTTPS public commands. None of these targeted reports is
+promoted into the complete invocation's certificate.
+
+Required local lightweight checks pass on the documentation checkpoint:
+`python3 scripts/check_repository.py`,
+`python3 -m unittest discover -s scripts/tests -v` (**170 tests, 7.874s**) and
+`git diff --check`. Final publication runs the same required checks again.
+Final complete product qualification is **hosted Linux**, not macOS. The
+stopped `b629b5f` and `ae7806f` Mac attempts retain their incomplete reports,
+without inferring the cause of the latter PostgreSQL stopping error.
+The older exact `e0dba6f` Mac pass has identical production `src`/`apps`/
+`packages` trees, but different test/tooling code; it is provenance, not a
+final-source Mac pass. Local Python is 3.15.0 on the 18-logical-CPU/64-GiB
+arm64 workstation; actual hosted Python is 3.12.3 on four-CPU/~16-GB x64
+runners. Both execute the same 170 script regressions. No further Mac product
+or Docker verification run was started.
+
+### T099: delivered requirement and acceptance traceability
+
+Every row joins the exact complete-command and actual CI evidence above.
+All **52 explicit source/test files** and **nine alias directories** exist;
+file existence is an audit aid, not substituted behavioral proof.
+
+Path keys: **H** = `src/Kofte.Host/Features/Identity/`;
+**I** = `src/Kofte.Infrastructure/Identity/`;
+**HI** = `tests/integration/Kofte.Host.IntegrationTests/Identity/`;
+**SI** = `tests/integration/Kofte.Storage.IntegrationTests/Identity/`;
+**C** = `tests/contract/Kofte.Platform.ContractTests/Identity/`;
+**P** = `tests/contract/Kofte.Identity.Consumer/Scenarios/`;
+**TS** = `tests/integration/Kofte.TestSupport/Identity/`;
+**W** = `apps/web/features/identity/`; **E** = `tests/e2e/`.
+Names below are actual source files, not proposed test paths.
+
+| Requirement | Delivered source | Meaningful assertions / qualifying suites |
+| --- | --- | --- |
+| FR-001 | H `Login/IdentityLoginRegistration.cs`, `Login/OidcConfiguration.cs` | HI `OidcProtocolTests.cs`; independent HTTPS issuer, real confidential code/PKCE exchange and authenticated identity; integration/contract/browser. |
+| FR-002 | H `Login/IdentityBrowserBinding.cs`; I `IdentityLoginAttempts.cs` | HI `OidcProtocolTests.cs`, `OidcBackchannelTests.cs`; altered issuer/audience/signature/time/nonce/state/correlation, unsolicited and replayed evidence rejected before session creation; integration and public `trust-refusal`. |
+| FR-003 | I `IdentityUserStore.cs` | SI `IdentityMappingTests.cs`; exact opaque mode/issuer/subject mapping, changed profile and three fresh product processes; different subjects/issuers remain distinct; both integrations. |
+| FR-004 | H `CurrentUser/CurrentUserEndpoints.cs`; platform actor-v1 | C `CurrentIdentityContractTests.cs`, `IdentityParityTests.cs`; direct/Next/separately compiled actor consumer agree on user/mode/designation; contract/browser. |
+| FR-005 | H `IdentityRegistration.cs`, `IdentityRequestBoundary.cs` | HI `IdentityPolicyTests.cs`; explicit safe anonymous health, protected 401 and unknown-route 404 with no protected effects; integration/contract. |
+| FR-006 | H cookie redirect events and `IdentityProblem.cs` | HI `IdentityPolicyTests.cs`; C `LoginEndpointContractTests.cs`, `IdentityParityTests.cs`; actual 401/403/503 rather than provider HTML/redirects and zero refused effects; integration/contract. |
+| FR-007 | Verified session projection and immutable `src/Kofte.Platform/Identity/ActorContracts.cs` | C `ActorContractTests.cs`, `IdentityParityTests.cs`, `SessionScopeContractTests.cs`; forged identity/admin fields cannot select an actor or grant an unregistered operation; direct/adapter/separate consumer contract. |
+| FR-008 | H `IdentityRequestBoundary.cs`, `Login/IdentityCookieFormat.cs`, `Login/IdentityTicketStore.cs` | HI policy and C login/session tests; exact Origin plus antiforgery, Secure/HttpOnly opaque transport, fixation/credential confusion refusal, no-store and safe local destinations; integration/contract/browser. |
+| FR-009 | I `IdentitySessionStore.cs` | C `SessionPersistenceContractTests.cs`, `SignOutContractTests.cs`; exact 30-minute idle/eight-hour absolute boundaries, restart, corrupt ticket, ninth-session no-eviction and next-request revocation; contract/browser. No provider-wide logout claim. |
+| FR-010 | `src/Kofte.Host/Features/IdentityMaintenance/IdentityNomination.cs`; I `IdentityBootstrapStore.cs` | HI `EnrollmentTests.cs`; SI `IdentityNominationTests.cs`; exact nominated production identity, private 256-bit authorization/domain-separated digest and 15-minute expiry; ordinary/other/development/forged/expired/replayed requests refuse. |
+| FR-011 | I `IdentityBootstrapStore.cs` | HI `EnrollmentConcurrencyTests.cs`; SI `EnrollmentCrashTests.cs`; 20 synchronized real HTTP contenders, one winner/19 conflicts, actual before/after-commit interruption, consumed designation/revision/event atomicity and truthful uncertain replies; both providers. |
+| FR-012 | Consumed singleton and stopped preparation/recovery | SI `EnrollmentRestartTests.cs` and public `nominated-enrollment`; three fresh host processes, exact original module data/history/assignments, preparation and unavailable administrator/IdP cannot reopen bootstrap. |
+| FR-013 | H `IdentityConfiguration.cs`; W `IdentityPanel.tsx` | HI `DevelopmentBoundaryTests.cs`; C `DevelopmentIdentityTests.cs`; explicit Development plus loopback at host/web/backend/public boundaries, unsafe opt-in cannot override, visible mode; integration/contract/browser. |
+| FR-014 | I `IdentityUserStore.cs`, `IdentitySessionStore.cs` | Development boundary tests and public `development-isolation`; persisted mode/epoch separation, no production authentication/enrollment or profile merge after transition; both providers. |
+| FR-015 | Strict configuration, bounded backchannel/owner operations, truthful identity problems | HI `IdentityFailureTests.cs`, `IdentityBrowserFailureTests.cs`; SI `IdentityDeadlineTests.cs`; E `identity.failures.ts`; real cancellation/provider/store loss, commit uncertainty, no cached success/fallback and corrected retry; integration/recovery/browser. |
+| FR-016 | I `IdentityPreparation.cs`, `IdentityRecoverySnapshot.cs`, `IdentityRestoreQuarantine.cs` | SI `IdentityFormatTests.cs`, `IdentityRecoveryTests.cs`; HI `IdentityPreparationTests.cs`/`IdentityRestoreCommandTests.cs`/`IdentityRestoreJournalTests.cs`; explicit format 2, actual pre-005 binary refusal, real complete-set restore/quarantine and exact original module state/history on both providers; integration/recovery/public recipes. |
+| FR-017 | I `IdentityEventStore.cs`; host/infrastructure `IdentityDiagnostics.cs` | SI `IdentityEventTests.cs`; P `OperationsScenarios.cs`; fixed useful correlation, unchanged/committed/uncertain outcomes, durable security records and obligatory sign-out-record failure rollback/refusal; integration/privacy. |
+| FR-018 | Closed diagnostics/guidance and bounded low-cardinality metrics | P `OperationsScenarios.cs` private-evidence, TS `LoginCommitFixture.Privacy.cs`, E `identityPrivacyCapture.ts`; real nonempty native/Next/HTTPS-ingress channels, secret/other-user canary refusal and absent/broken capture negatives; privacy/browser. |
+| FR-019 | I `IdentityAdmission.cs`; strict request/backchannel/key boundaries | SI `IdentityAdmissionTests.cs`, `IdentityCapacityTests.cs`; HI `OidcBudgetTests.cs`, `OidcBackchannelTests.cs`; exact input/quota/rate/pending/user/event bounds and durable refusal/retention. Human-prohibited 50,000-session boundary proof is not run, replaced or claimed; runtime cap unchanged. |
+| FR-020 | W `useIdentity.ts`, `IdentityPanel.tsx` | E `identity.spec.ts`, `identity.failures.ts`, `identityAccessibility.ts`; stale identity cleared during loading/refusal, bounded unavailable states, keyboard/focus/announcements, 320 CSS pixels, 200% text and zero serious/critical axe findings; unit/browser. |
+| FR-021 | Minimal versioned platform actor-v1 and H current-user projection | C `ActorContractTests.cs` and separately compiled consumer; immutable trusted identity parity, no credential/database/permission grant. MCP/jobs/realtime/service credentials and 006–009/022–024 remain future work. |
+| FR-022 | `scripts/verify.py`, source/project/native/browser/observation inventories and workflow | `scripts/tests/test_verify.py`, C `IdentityConsumerHarnessTests.cs`, TS `IdentityConsumerHarness.cs`; missing/truncated/duplicate observations, absent source/capture, skipped/omitted/retried cases, nonzero child and unverified cleanup fail. Requested cancellation cannot schedule another suite or certify a partial pass, even after a masked cleanup error. Actual single-command full-gate and current-head CI evidence qualify completion, not workflow existence or a subset. |
+
+| Success criterion | Actual assertion and evidence join |
+| --- | --- |
+| SC-001 | Independent HTTPS OIDC/login/sign-out, exact native/Next/actor identity and SI mapping through profile changes/three fresh processes on both stores; integration/contract/browser. |
+| SC-002 | HI enrollment concurrency and SI restart/crash tests: 20 actual HTTP contenders, one 200/19 conflicts, exact durable user/consumed generation/event correlation and three fresh host processes; replay/ordinary login/admin loss cannot reopen. |
+| SC-003 | Protocol/policy/parity/session tests assert refusal and zero effects for missing/forged/expired/wrong audience/replay/CSRF/origin/ungranted requests, including exact native/adapter outcomes; both integrations and contract. |
+| SC-004 | Explicit local Development browser plus boundary/transition tests show visible mode, zero production grants and no persisted development authority after exposure/mode change; integration/contract/browser. |
+| SC-005 | Real browser states at 320px/200% with keyboard/focus/announcements and zero serious/critical axe findings. `identity.failures.ts` measures from actual `/auth/oidc/callback` browser request to actionable failure/corrected success within 5000ms. Provider/user interaction time is excluded; OS/CPU/RAM/tool profiles are recorded separately. No human usability study is claimed. |
+| SC-006 | Format/preparation/crash/restart/recovery tests, including independent HI `IdentityRestoreCommandTests.cs` and `IdentityRestoreJournalTests.cs`, execute clean/upgrade/reopen, real commit interruption and corrected manifest-bound complete-set restore with exact identity/bootstrap/module comparisons on both stores. No cross-module transaction, old-instance fencing or rollback-proof historical administrator state is promised. |
+| SC-007 | Public private-evidence joins rejected-login unchanged state, enrolled durable correlation, sign-out recording-failure 503/rollback then corrected 204/event, idle expiry 401/event and stopped revocation; actual native/Next/ingress/browser capture/scanners reject canaries and absent/broken capture. |
+
+All **22** Given/When/Then scenarios map without combining away a refusal:
+
+| Scenario | Delivered assertion |
+| --- | --- |
+| US1.1 | `oidc-login`; protocol/current-identity/parity plus actual OIDC browser. |
+| US1.2 | Mapping: changed profile, three fresh processes, exact original designation. |
+| US1.3 | Mapping: distinct subjects/issuers despite matching email/profile. |
+| US1.4 | Protocol and `trust-refusal`: invalid/expired/replay/unsolicited/wrong audience create no session. |
+| US1.5 | Backchannel/configuration/browser failure and actual cancellation/outage/corrected retry, no fallback. |
+| US2.1 | Ordinary login without operator authorization leaves designation absent and discloses no nominee/secret. |
+| US2.2 | Stopped nomination and `nominated-enrollment`: exact production mapping, one durable consumed designation. |
+| US2.3 | Enrollment/nomination wrong identity, forgery, expiry and replay leave designation unchanged. |
+| US2.4 | Twenty real contenders and before/after-commit barriers preserve atomic state and truthful uncertainty. |
+| US2.5 | Three fresh processes, exact module/security state, preparation and admin/IdP loss do not reopen. |
+| US3.1 | Policy/login-endpoint/parity native and Next anonymous 401 without protected data/provider redirect. |
+| US3.2 | Current identity/parity/session scope before/after enrollment/sign-out; spoofing ignored and separate consumer agrees. |
+| US3.3 | Policy/parity require CSRF/exact Origin and deny ungranted operations before effects. |
+| US3.4 | Session/sign-out/browser expiry and retry enforce next-request invalidation and cleared UI. |
+| US3.5 | Safe anonymous aggregate health, no-store identity and two-user direct/SSR/adapter/cache separation. |
+| US4.1 | Actual Development browser/contract uses only configured identity and visibly marks mode. |
+| US4.2 | Environment/exposure/unsafe-opt-in negatives admit no development authority. |
+| US4.3 | `development-isolation`: persisted mode/epoch transition cannot authenticate or enroll production. |
+| US5.1 | Explicit preparation/upgrade preservation, actual pre-005 refusal and exact original module state. |
+| US5.2 | Real deadline/store/commit failure and quarantined interrupted recovery preserve consumed state. |
+| US5.3 | Correlated durable events and real native/Next/ingress/browser private capture reject disclosure/absent capture. |
+| US5.4 | Actual loading/identity/mode/cancel/outage/uncertain/retry states, safe destinations and keyboard/narrow/enlarged operability. |
+
+| Research decision | Delivered source/assertions |
+| --- | --- |
+| R1 | Native confidential OIDC/code/PKCE and exact trust; independent HTTPS protocol/backchannel tests. |
+| R2 | Enumerated Next identity route handlers/fixed backend; direct/Next/real HTTPS-ingress parity, no arbitrary proxy. |
+| R3 | Validated-login/ticket/session owner-local commit before cookie; login-commit/session persistence and next-request durable validation. |
+| R4 | Default/fallback denial, request boundary and immutable shared actor; policy/parity, no fabricated team permission. |
+| R5 | Stopped nomination/one-use bootstrap; real enrollment/race/commit/restart assertions, no public reopen. |
+| R6 | Explicit format-2 preparation/migrations; exact physical/module preservation, startup and actual old-binary refusal. |
+| R7 | Recovery-v2/quarantine/explicit decision; real restore/interruption, separate secrets/epoch invalidation/stale-backup limitation. |
+| R8 | Explicit loopback Development and separate mapping/session namespaces; exposure/production-transition negatives. |
+| R9 | Admission/request/backchannel/key boundaries; exact budgets, TLS/egress/rotation, real native lock/cancellation/commit proofs. Installation session-boundary proof remains human-prohibited. |
+| R10 | Owner-local obligatory events/diagnostics; real retention/capacity/recording failure and private-evidence, no 009 audit UI/export. |
+| R11 | Minimal identity UI and actual keyboard/axe/width/text/post-callback timing; no shared identity cache or full 008 shell. |
+| R12 | Independent protocol/compiled consumer/real stores, 20 HTTP contenders, three root processes, real commit barriers, all public recipes and fail-closed inventories; no test-only product bypass. |
+
+| Principle | Implementation boundary and evidence |
+| --- | --- |
+| I | MIT/Köfte brand/portable empty optional composition; no Hoard or mandatory cloud dependency. |
+| II | Retained manifest/dependency/lifecycle/disable preservation, versioned actor consumer and unchanged trusted-plugin boundary. |
+| III | Host-local identity slices/native DI/direct handlers; shared actor only; all .NET test source inside dedicated test projects; reviewed pinned dependency/license evidence. |
+| IV | Host identity only in platform owner; exact module assignments/schema/file/history preserved; no foreign module reads/public tables/SQLite ATTACH. Live SQLite format validation uses SQLite-owned handles, not independent lock-disrupting descriptors. |
+| V | Mapping/session/attempt/event/bootstrap consumption are owner-local; required failures roll back or report uncertainty; no cross-module atomicity or exactly-once claim. |
+| VI | Exact configured OIDC, isolated development, nominated one-use bootstrap, default deny/shared verified actor, CSRF/origin/egress/canary controls and real refusal effects. |
+| VII | Actor-v1 is the future 006/007 seam, not an MCP runtime or authorization bypass. |
+| VIII | No resource/job/realtime/broker implementation; bounded local security records are not cross-owner exactly-once delivery. |
+| IX | Existing Next/React/TypeScript design primitives, explicit states and real responsive/keyboard/axe/post-callback timing; no remote frontend extension or full shell. |
+| X | Real SQLite/PostgreSQL and pinned tools/locks; documented secret/TLS/proxy/backup/upgrade/operator responsibilities; no compulsory cloud/Kubernetes/IdP service. |
+| XI | Exact independent protocol/public/native/browser/recovery/privacy/retained gates with failed history retained. No release/reference-module/deployment acceptance claim. |
+| XII | Approved 005/ADR0007 and explicit human session-capacity verification amendment only; no roadmap expansion, stage chaining, merge or self-acceptance. |
+
+**Test-location reconciliation:** T089's proposed `SI/IdentityPrivacyTests.cs`
+was not created. Identity-specific assertions instead live in P
+`OperationsScenarios.cs`, privacy guide classes in C `IdentityGuideTests.cs`,
+TS `LoginCommitFixture.Privacy.cs` and actual identity browser capture/scripts.
+Existing `tests/contract/privacy.test.ts` and `tests/e2e/privacy.spec.ts`
+retain generic bootstrap coverage; they exist but are not substituted for
+the identity-specific tests.
+
+**Intended-scope audit:** **296 changed tracked paths** against main
+`3e416813233c9d291eb20cf72d5882dbddf3e1b6`; approved requirements and both
+checklists are unchanged by this closure. Reviewed generated OpenAPI/contract
+source and dependency inventory are delivery artifacts, not local build output.
+The exact public `.env.example` contains local defaults/private-file guidance,
+not runtime secrets; it is an inspected template exception, not permission to
+track real environment files. No unsafe runtime/build paths were found.
+Scoped production Fact/Theory, production-linked test and PEM private-key
+scans returned zero matches; the intended diff was reviewed for secrets and
+local artifacts. These checks are not universal secret detection.
+
+Shared verified actor/default denial, immutable module ownership, owner-local
+consumed-designation/event commit and verified child-disposal-before-borrow-
+release remain explicit. The SQLite header repairs retain offline recovery and
+real writer/foreign-header guards. Independent stopped-operator/journal groups
+preserve all 68 discovered original provider-qualified method/argument cases,
+with byte-identical relocated assertions and eight omission mutations proving
+required group coverage. Only retained composition collections opt into
+bounded parallelism; the global service-inventory collection stays exclusive.
+All native inventories, effects, contenders, deadlines, durability and verified
+cleanup remain required.
+
+The standalone verifier owns one native service across all twelve PostgreSQL
+composition consumers; each retains independent target databases/roles and
+verified cleanup. The actual private-lease regression in
+`tests/integration/Kofte.Host.IntegrationTests/PostgresOwnershipTests.cs`
+proves one target's disposal does not disturb the other, followed by verified
+cleanup of both. Both read-only checklists pass (**16/16** and **36/36**);
+there is no `.specify/extensions.yml` and no before/after implementation hook.
+The prohibited 50,000-session proof is neither run nor replaced; the runtime
+cap remains unchanged. Historical unknown causes remain unknown, not
+retrospectively diagnosed by the current passing gates.
+
+### T100: publication boundary
+
+This closure reconciles all four final task markers, current README and related
+guides, the traceability below and the driver ledger together on the original
+feature branch and draft PR. Final publication changes documentation, task
+markers and state only, not the verified product/test/tooling source.
+The earlier GitHub server errors and stale PR head are resolved: PR #8 was
+verified open/draft at `5ea6ec8` before closure. Its final published head and
+required checks must also be verified, without amending or force-pushing.
+**Converge is the next stage on a later invocation.** Neither this complete
+implementation nor an earlier ADR approval accepts numbered feature 005,
+marks the PR ready, requests merge or starts 006.
+
+The remaining sections preserve chronological history. Their older
+running/blocked/pending descriptions do not override the completed checkpoint
+above; historical failures and unknown causes are not rewritten as passes.
 
 ## T097 in progress: current full-gate and assessed-head failures
 

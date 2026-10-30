@@ -6,10 +6,10 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / implement running; 96/100 complete** (T001–T096), on
+**Current checkpoint: 005 / implement complete; 100/100 tasks evidenced**, on
 `feature/005-authentication-bootstrap`, with recorded directory
-`specs/005-authentication-bootstrap`. Implementation continues until the entire
-spec is ready for converge, not until an incremental subset passes.
+`specs/005-authentication-bootstrap`. **Converge is next on a later invocation**,
+not review, acceptance, PR readiness, merge or a new numbered feature.
 T092's focused operations join now has actual Linux qualification. T093 also
 requires exact private Playwright discovery/execution completeness, not just
 zero exit: no missing case, skip, retry or flaky result. Its complete local
@@ -18,21 +18,26 @@ browser and quality gates pass. T094 now proves all nine public recipes and
 T095 reconciles delivered setup/API/operator documentation, private custody,
 session/capacity/retention and recovery limits. T096 reconciles the actual
 reviewed graph/archives/notices, generated contracts and zero-finding npm/NuGet
-audits. T097–T100 retain complete-command/current-source CI and traceability/
-publication gates. These are engineering gates, not an approval request
-or permission to advance to converge.
-The remaining complete command is scheduled through Product checks'
+audits. T097–T100 now close the exact hosted complete command, actual
+current-source CI, full traceability and same-PR publication.
+The complete command executes through Product checks'
 `workflow_dispatch` input `suite=complete` on a disposable GitHub-hosted Ubuntu
 runner, separately from the ordinary ten-job PR matrix. Do not restart a heavy
 local run on a shared workstation merely because the older guide says "local".
 Record the actual profile: the interrupted Mac attempts are not passing gates,
 and hosted evidence does not establish a final macOS qualification.
-The actual source-`4e16d36` complete run is
+The actual source-`4e16d36` complete run passes:
 [41072051400](https://github.com/Stonefly-Labs/Kofte/actions/runs/41072051400),
-with a separate [ten-job matrix](https://github.com/Stonefly-Labs/Kofte/actions/runs/41072560598);
+all ten all-scope reports have `completeGate=true`, covering **313 named steps**.
+Its separate [ten-job matrix](https://github.com/Stonefly-Labs/Kofte/actions/runs/41072560598),
+[actual PR product run](https://github.com/Stonefly-Labs/Kofte/actions/runs/41076880183) and
 [repository checks](https://github.com/Stonefly-Labs/Kofte/actions/runs/41072565753)
-pass. Product completion remains unclaimed while those runs execute.
-The [current evidence](../../specs/005-authentication-bootstrap/implementation.md#t097-in-progress-current-full-gate-and-assessed-head-failures)
+pass. The [complete evidence and acceptance mapping](../../specs/005-authentication-bootstrap/implementation.md#t097-t100-complete-hosted-qualification-and-traceability)
+records all 22 FRs, seven SCs, 22 scenarios, twelve research decisions and twelve
+principles. The reviewer-owned checklists remain unchanged and passing.
+
+The following verification timeline is historical, not the current gate status.
+The [historical evidence](../../specs/005-authentication-bootstrap/implementation.md#t097-in-progress-current-full-gate-and-assessed-head-failures)
 preserves actual sources/results and historical failures. Correlated tracing
 identifies expensive lazy RSA generation in the issuer fixture's first JWKS
 response. Preparing keys before serving has guarded red/green proof and

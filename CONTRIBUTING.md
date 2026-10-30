@@ -329,7 +329,7 @@ That checkpoint required human merge before 005. PR #7 is now human-merged;
 004's accepted ledger and all five acceptance artifact hashes were verified
 on updated main before beginning the new feature.
 
-**005 / implement is incomplete, with T001–T096 complete (96/100)**, on
+**005 / implement is complete, with all 100 tasks evidenced**, on
 `feature/005-authentication-bootstrap` and the same draft PR #8.
 Use the [current runtime guide](specs/005-authentication-bootstrap/quickstart.md)
 for delivered commands and the implementation record for exact results.
@@ -343,13 +343,15 @@ The [operator contract](specs/005-authentication-bootstrap/contracts/operator-v1
 defines session/revocation/key overlap, retention/capacity and IdP-loss/OS-copy/
 rollback limits. Granular permissions, teams, MCP, full UI/audit and deployment/
 release work remain 006–009/022–024. Final dependency/contract checks and fresh
-npm/NuGet audits pass with no findings. T097–T100 still require the complete
-command, actual current-source CI and traceability evidence, not human approval.
+npm/NuGet audits pass with no findings. T097–T100 now join the actual passing
+single-command hosted full gate, all ten real PR product contexts/repository
+checks and complete requirement/assertion traceability.
 Run the complete command through the documented `suite=complete` hosted Ubuntu
 job, separately from the ten-job matrix; do not restart heavy product tests on
 a shared workstation. Interrupted Mac attempts remain incomplete, and hosted
 qualification is not a final macOS pass. Existing test/product deadlines remain.
-Converge/review/acceptance are later stages. The following increments are
+**Converge is next**; review and explicit human acceptance remain later stages.
+The following increments are
 historical, not current unimplemented-capability statements or acceptance.
 The [implementation record](specs/005-authentication-bootstrap/implementation.md)
 preserves the provenance investigation and records actual reviewed OIDC

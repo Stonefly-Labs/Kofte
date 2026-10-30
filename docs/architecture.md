@@ -473,7 +473,7 @@ not one passing provider job. PR #7 is now human-merged; its accepted ledger
 and all five acceptance artifact hashes were verified on updated main before
 005 began. Historical failed checks and undiagnosed causes remain unchanged.
 
-**005 / implement is incomplete after T001–T096 (96/100), not a completed feature**, on
+**005 / implement is complete after all 100 tasks, not an accepted feature**, on
 `feature/005-authentication-bootstrap`. The
 [implementation checkpoint](../specs/005-authentication-bootstrap/implementation.md)
 retains exact results and historical failures. The
@@ -484,7 +484,8 @@ work. All nine public recipes individually and `all` now pass on each provider,
 with exact observations and owned cleanup. Local/Linux Chromium, focused
 privacy/accessibility and strict browser completeness are qualified. Final
 dependency/contract reconciliation and fresh zero-finding audits pass;
-complete-command/CI/traceability evidence remains T097–T100.
+T097–T100 join the actual passing full hosted command, all ten real PR product
+contexts/repository checks and complete requirement/assertion traceability.
 Final complete-command execution is hosted Ubuntu, separately from the ten-job
 matrix; interrupted Mac attempts are not a final macOS qualification. Placement
 does not change any product/test deadline or architectural boundary.
@@ -498,7 +499,8 @@ administrator history or cross-module atomicity is promised. See the delivered
 [operator contract](../specs/005-authentication-bootstrap/contracts/operator-v1.md)
 and [local guide](development/local-development.md) for session/key overlap,
 retention/capacity, nomination and IdP-loss limits. Approval of ADR 0007 is not
-feature acceptance; converge/review/acceptance remain later stages.
+feature acceptance; converge is next, followed separately by review and
+explicit human acceptance.
 
 The earlier implementation increments below retain the source/signature
 investigation and record the adopted maintained
