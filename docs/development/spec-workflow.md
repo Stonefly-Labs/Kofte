@@ -51,6 +51,12 @@ reproduced reserved-port transport blackhole and a focused owned-listener
 repair, with unchanged budgets. Timeout reports now retain strictly validated
 failed child evidence; CI adds bounded safe recipe timings after contract
 failure, without replacing the failed required command.
+Published `e371245` passes complete local propagation in 730.130s, all baselines
+and five injections; a separate clean checkout is running the exact full gate.
+Eight Linux contexts pass, including PostgreSQL composition. Its isolated healthy
+PostgreSQL baseline still reaches 900 seconds after native/storage passes, while
+contract is still being observed. Safe class timing summaries now distinguish
+case execution from command overhead; original selectors and budgets remain.
 Qualification and Linux diagnosis continue. The preserved earlier fixture remains
 stopped, not deleted or claimed cleaned up. Do not advance stages, waive the
 failed gates or attribute every historical failure to lazy key generation.

@@ -224,6 +224,13 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
                         not 1 <= evidence["requiredClasses"] <= evidence["passed"])):
                 raise error("failure_child_report_unsafe")
             selected["nativeEvidence"] = evidence
+        if "nativeTiming" in step:
+            if ("nativeEvidence" not in selected or
+                    not api.runtime_support.CommandDiagnostics.valid_native_timing(
+                        step["nativeTiming"], selected["nativeEvidence"]["passed"],
+                        api.required_native_classes(step["name"], step["command"]))):
+                raise error("failure_child_report_unsafe")
+            selected["nativeTiming"] = step["nativeTiming"]
         if "browserEvidence" in step or (
                 step["outcome"] == "passed" and
                 step["command"][:5] == ["npm", "run", "test", "--workspace", "tests/e2e"]):

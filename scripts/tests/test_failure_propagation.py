@@ -253,6 +253,43 @@ class FailurePropagationTests(unittest.TestCase):
                     verify.VerificationError, "failure_child_report_unsafe"):
                 checked()
 
+    def test_native_timing_is_revalidated_without_private_class_names_or_unbounded_values(self):
+        evidence = self.evidence()
+        step = evidence["steps"][0]
+        step["nativeEvidence"] = {"passed": 2, "skipped": 0}
+        timing = {
+            "status": "measured", "totalCaseSeconds": 2.5,
+            "requiredClassSeconds": {}, "otherCaseSeconds": 2.5,
+        }
+        step["nativeTiming"] = timing
+        self.assertEqual(timing, self.checked(evidence)["steps"][0]["nativeTiming"])
+        for invalid in (
+            timing | {"requiredClassSeconds": {"credential-canary": 2.5}},
+            timing | {"totalCaseSeconds": float("nan")},
+            timing | {"totalCaseSeconds": float("inf")},
+            timing | {"totalCaseSeconds": 10 ** 400},
+            timing | {"otherCaseSeconds": -1},
+            timing | {"otherCaseSeconds": True},
+            timing | {"totalCaseSeconds": 172801, "otherCaseSeconds": 172801},
+            timing | {"otherCaseSeconds": 1},
+            timing | {"rawOutput": "credential-canary"},
+            {"status": "unavailable", "code": "credential-canary"},
+        ):
+            step["nativeTiming"] = invalid
+            with self.subTest(invalid=invalid), self.assertRaisesRegex(
+                    verify.VerificationError, "failure_child_report_unsafe"):
+                self.checked(evidence)
+        step["nativeTiming"] = {"status": "unavailable", "code": "native_timing_missing"}
+        self.assertEqual(step["nativeTiming"], self.checked(evidence)["steps"][0]["nativeTiming"])
+        with patch.object(verify, "required_native_classes", return_value=("IdentityFailureTests",)):
+            step["nativeTiming"] = timing | {
+                "requiredClassSeconds": {"IdentityFailureTests": 1.25}, "otherCaseSeconds": 1.25,
+            }
+            self.assertEqual(step["nativeTiming"], self.checked(evidence)["steps"][0]["nativeTiming"])
+            step["nativeTiming"] = timing
+            with self.assertRaisesRegex(verify.VerificationError, "failure_child_report_unsafe"):
+                self.checked(evidence)
+
     def test_native_success_counts_are_revalidated_without_impossible_class_or_skip_claims(self):
         evidence = self.evidence()
         evidence["steps"][0]["nativeEvidence"] = {"passed": 2, "skipped": 0, "requiredClasses": 1}

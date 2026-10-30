@@ -794,6 +794,7 @@ class Runner:
                     )
                     step["nativeEvidence"] = diagnostic.native_success(
                         storage_report, minimum, required_native_classes(name, command))
+                    step["nativeTiming"] = diagnostic.native_timing
             finally:
                 try:
                     processes.stop()

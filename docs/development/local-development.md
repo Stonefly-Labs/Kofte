@@ -1081,6 +1081,14 @@ owned-process cleanup; that evidence never turns the timeout into a pass.
 Failed Linux contract jobs also retain bounded per-recipe composition timings
 using the existing strict public helper. These targeted diagnostics do not
 replace the original required command or increase any product/gate deadline.
+Passed native phases also retain `nativeTiming`: summed case seconds for only
+source-selected required classes and a numeric aggregate for other cases.
+Names, parameters, output and arbitrary XML class identifiers are never copied.
+Case sums can exceed command wall time because tests overlap; compare both,
+rather than treating summed time as elapsed time. Missing or invalid timing is
+explicitly unavailable, never a fabricated zero or a substitute for case evidence.
+Isolated child reports revalidate the closed fields, exact source-selected class
+set, finite bounds and aggregate consistency before retaining these summaries.
 
 The registry's twenty-round, ten-connection/process contention tests run in an
 exclusive xUnit collection. Their intended ten-way workload is unchanged, but

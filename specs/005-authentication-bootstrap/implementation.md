@@ -1,8 +1,8 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement running; 96/100 complete (T001-T096). The exact full local run at `0c79825` passes nine suite groups but fails unavailable-PostgreSQL failure propagation. Actual assessed-head CI passes seven product contexts and repository checks, not the complete matrix. The portable refusal fixture has a demonstrated transport defect and focused repair; the remaining Linux failures are still under investigation. T097-T100 remain unchecked. No human approval is requested.
+**Result:** implement running; 96/100 complete (T001-T096). Published `e371245` passes complete local failure propagation, all healthy baselines and five injections, in 730.130s. Its exact full local gate is running in a separate clean checkout. Eight actual Linux product contexts and repository checks pass; isolated whole PostgreSQL propagation still reaches 900 seconds after passing native/storage, while contract is still being observed. Safe native class timing summaries support the continuing diagnosis; no complete-gate pass is claimed. T097-T100 remain unchecked. No human approval is requested.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-30.
-**Assessed baseline:** published service-reuse repair `0c7982541f5ab1f617e8a9facb278118602abc2d`; actual Linux merge `a0a260dbab502a15e65d584c3a50c228d988fdcf`. The subsequent working-tree refusal/diagnostic repair is distinguished below; earlier assessments retain their original baselines.
+**Assessed baseline:** published refusal repair `e371245d41465a47c072dccd24cb33a88f8a5abe`; actual Linux merge `b5f38609dd781edcc456c2f61b9ea5c464e46b62`. The subsequent working-tree native timing diagnostic is distinguished below; earlier assessments retain their original baselines.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
 `specs/005-authentication-bootstrap`.
 **Checkpoint:** [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8).
@@ -14,6 +14,68 @@ adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
 
 ## T097 in progress: current full-gate and assessed-head failures
+
+### Whole propagation verified; isolated Linux baseline measured, 2026-10-30
+
+The exact `python3 scripts/verify.py --suite failure-propagation
+--disposable-postgres` passes on clean published `e371245`, exit 0, in
+**730.130s** (`failure-propagation-none-ed87d4d127094e8f8dcb479651e21ba2.json`).
+Healthy quality/PostgreSQL/browser baselines pass in 46.868s/458.233s/77.843s;
+all five test/formatter/build/unavailable-PostgreSQL/missing-Chromium injections
+pass in 7.144s/16.639s/32.836s/80.493s/7.022s. Every required ordered negative
+phase and owned cleanup is validated. This is a complete **propagation suite**
+pass, not a complete all-suite gate. The exact all-suite command has started
+separately in an isolated clean checkout of that same published revision,
+using the existing pinned toolchain and unchanged selectors/deadlines.
+
+Actual product [run 41004206190](https://github.com/Stonefly-Labs/Kofte/actions/runs/41004206190)
+at `e371245` passes eight observed contexts: quality, unit, integration-sqlite,
+integration-postgres, recovery, browser, privacy and startup. Contract is still
+being observed; failure-propagation fails. Repository
+[run 41004206193](https://github.com/Stonefly-Labs/Kofte/actions/runs/41004206193)
+passes. The completed unit job's checkout log and Git object verify merge
+`b5f38609dd781edcc456c2f61b9ea5c464e46b62`, with parents
+`3e416813233c9d291eb20cf72d5882dbddf3e1b6` and
+`e371245d41465a47c072dccd24cb33a88f8a5abe`.
+
+The new timeout projection retains the validated actual failed child, rather
+than losing its phase. Linux report
+`failure-propagation-none-c51a722cb44c4abd9647a19b06bb51b4.json` fails after
+1034.753s: quality passes, then the **healthy whole PostgreSQL baseline**
+reaches 900.414s. This is not the repaired unavailable-service injection.
+
+| Same three required PostgreSQL phases | Independent Linux context | Isolated Linux propagation baseline |
+| --- | --- | --- |
+| Native | 121 passed, eight classes, zero skipped; 239.296s | 121 passed, eight classes, zero skipped; 307.677s |
+| Storage | 211 passed, eleven classes, zero skipped; 279.869s | 211 passed, eleven classes, zero skipped; 410.793s |
+| Composition | 59 passed, zero skipped; 161.550s | Interrupted after 181.474s when the unchanged aggregate parent bound expires; not passed |
+
+The independent integration report is
+`integration-postgres-d93226be91ea43ddba9d0f7edade240a.json`, total 680.878s.
+The isolated child spends 718.470s in the first two passing commands, leaving
+less than 182 seconds for composition. These are different hosted jobs; the
+comparison identifies the phase distribution, not a proven mechanism for the
+slowdown. The formerly failing invalid-disable case passes in this assessment;
+the diagnostic assertion split is not claimed as a behavioral repair.
+Actual Linux profile: x86_64, four logical CPUs, 16,760,344,576 bytes RAM,
+kernel `7.0.0-1017-azure`, Python 3.12.3, SDK 10.0.402, Node 24.22.0/npm 11.19.1.
+
+The continuing diagnostic now projects native `time` values before discarding
+private XML: summed seconds for exact source-selected required class names,
+and only a numeric aggregate for every other class. No XML name, parameter,
+output or unknown class identifier is retained. Parallel case sums are not
+command wall time; comparing both distinguishes test work from build/startup
+overhead. Missing, malformed, non-finite, negative or over-one-day case timing
+is explicitly unavailable, not guessed as zero. The isolated evidence validator
+revalidates exact class sets, finite numeric bounds and aggregate consistency.
+Existing `nativeEvidence`, case/class minima, skip rejection, complete-baseline
+requirements and every deadline/selector remain unchanged.
+
+Four focused tests fail before the timing projection/revalidation, then pass.
+The full repository Python suite passes 165 tests; repository validation and
+`git diff --check` pass. No product source, dependency or workflow selection
+changes in this timing increment. T097-T100 and the active implement ledger
+remain open; engineering continues rather than requesting approval.
 
 ### Full local qualification and portable refusal repair, 2026-10-30
 

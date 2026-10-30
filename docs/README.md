@@ -47,7 +47,14 @@ That head's actual Linux assessment passes seven product contexts and repository
 checks; PostgreSQL composition and both retained timing gates still fail.
 A real socket regression identifies and repairs the local reserved-port
 blackhole with an owned protocol-refusing listener, without increasing budgets.
-The remaining Linux failures require actual diagnosis, not an isolated local pass.
+Published `e371245` now passes the complete local propagation suite in 730.130s,
+including all healthy baselines and five injections. Exact full local qualification
+is running in a separate clean checkout. Eight Linux contexts pass, including
+PostgreSQL composition; its isolated healthy PostgreSQL baseline still reaches
+900 seconds after native/storage passes, and contract is still being observed.
+Safe source-selected class timing summaries support continued diagnosis without
+changing coverage or deadlines; the targeted propagation pass does not replace
+the complete local gate.
 The remaining gates are engineering work, not human approval; no failed
 result is replaced by a subset or attributed universally to issuer keys.
 Use the [operator contract](../specs/005-authentication-bootstrap/contracts/operator-v1.md)

@@ -1,6 +1,7 @@
 """Private test-runtime control and transient output; never an HTTP surface."""
 
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -88,6 +89,7 @@ class CommandDiagnostics:
         self.failed_statuses = set()
         self.browser_phases = []
         self.storage_report_code = None
+        self.native_timing = None
         self.lock = threading.Lock()
         self.closed = False
 
@@ -212,6 +214,7 @@ class CommandDiagnostics:
             self.storage_report_code = "no_known_failure"
 
     def native_success(self, path, minimum, required_classes=()):
+        self.native_timing = None
         try:
             with path.open("rb") as stream:
                 content = stream.read(16 * 1024 * 1024 + 1)
@@ -232,10 +235,57 @@ class CommandDiagnostics:
         observed_classes = {test.get("type", "").rsplit(".", 1)[-1] for test in tests}
         if not set(required_classes).issubset(observed_classes):
             raise RuntimeFailure("native_evidence_required_case_missing")
+        class_times = {name: 0.0 for name in sorted(required_classes)}
+        other_time = 0.0
+        for test in tests:
+            raw_time = test.get("time")
+            try:
+                elapsed = float(raw_time) if raw_time is not None else None
+            except ValueError:
+                elapsed = None
+            if elapsed is None or not math.isfinite(elapsed) or not 0 <= elapsed <= 86400:
+                self.native_timing = {
+                    "status": "unavailable",
+                    "code": "native_timing_missing" if raw_time is None else "native_timing_invalid",
+                }
+                break
+            owner = test.get("type", "").rsplit(".", 1)[-1]
+            if owner in class_times:
+                class_times[owner] += elapsed
+            else:
+                other_time += elapsed
+        else:
+            self.native_timing = {
+                "status": "measured", "totalCaseSeconds": round(sum(class_times.values()) + other_time, 3),
+                "requiredClassSeconds": {name: round(value, 3) for name, value in class_times.items()},
+                "otherCaseSeconds": round(other_time, 3),
+            }
         return {
             "passed": len(tests), "skipped": 0,
             **({"requiredClasses": len(required_classes)} if required_classes else {}),
         }
+
+    @staticmethod
+    def valid_native_timing(value, passed, required_classes=()):
+        if not isinstance(value, dict):
+            return False
+        if value.get("status") == "unavailable":
+            return set(value) == {"status", "code"} and value["code"] in (
+                "native_timing_missing", "native_timing_invalid",
+            )
+        if (set(value) != {"status", "totalCaseSeconds", "requiredClassSeconds", "otherCaseSeconds"}
+                or value["status"] != "measured"):
+            return False
+        classes = value["requiredClassSeconds"]
+        if not isinstance(classes, dict) or set(classes) != set(required_classes):
+            return False
+        values = [value["totalCaseSeconds"], value["otherCaseSeconds"], *classes.values()]
+        if any(type(seconds) not in (int, float) or not 0 <= seconds <= passed * 86400
+               or not math.isfinite(seconds) for seconds in values):
+            return False
+        return abs(value["totalCaseSeconds"] - value["otherCaseSeconds"] - sum(classes.values())) <= (
+            0.001 * (len(classes) + 2)
+        )
 
     def valid_native_location(self, value):
         if not isinstance(value, str):
@@ -320,6 +370,7 @@ class CommandDiagnostics:
             self.failed_statuses.clear()
             self.browser_phases.clear()
             self.storage_report_code = None
+            self.native_timing = None
 
 
 class OutputCapture:

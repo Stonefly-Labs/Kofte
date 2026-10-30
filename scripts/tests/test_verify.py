@@ -126,6 +126,50 @@ class VerifyTests(unittest.TestCase):
         with self.assertRaisesRegex(verify.runtime_support.RuntimeFailure, "^native_evidence_cases_missing$"):
             verify.runtime_support.CommandDiagnostics("host").native_success(path, 2)
 
+    def test_native_timings_aggregate_only_source_selected_class_names_before_discarding_xml(self):
+        path = self.root / "storage.xml"
+        path.write_text(
+            '<assemblies><test type="Kofte.Host.IdentityFailureTests" result="Pass" time="1.25" />'
+            '<test type="Kofte.Host.IdentityFailureTests" result="Pass" time="2.5" />'
+            '<test type="credential-canary" method="private-canary" result="Pass" time="0.75" />'
+            '</assemblies>'
+        )
+        diagnostic = verify.runtime_support.CommandDiagnostics("host")
+        diagnostic.native_success(path, 3, ("IdentityFailureTests",))
+        self.assertEqual({
+            "status": "measured", "totalCaseSeconds": 4.5,
+            "requiredClassSeconds": {"IdentityFailureTests": 3.75}, "otherCaseSeconds": 0.75,
+        }, diagnostic.native_timing)
+        self.assertNotIn("canary", json.dumps(diagnostic.native_timing))
+
+    def test_missing_or_invalid_native_times_are_explicitly_unavailable_not_fabricated_zeroes(self):
+        path = self.root / "storage.xml"
+        for value in (None, "private-canary", "NaN", "Infinity", "-1", "86401"):
+            attribute = "" if value is None else f' time="{value}"'
+            path.write_text(f'<assemblies><test result="Pass"{attribute} /></assemblies>')
+            diagnostic = verify.runtime_support.CommandDiagnostics("host")
+            with self.subTest(value=value):
+                self.assertEqual({"passed": 1, "skipped": 0}, diagnostic.native_success(path, 1))
+                self.assertEqual({
+                    "status": "unavailable",
+                    "code": "native_timing_missing" if value is None else "native_timing_invalid",
+                }, diagnostic.native_timing)
+
+    def test_runner_retains_safe_native_timing_after_private_xml_and_diagnostic_cleanup(self):
+        runner = verify.Runner(self.root, self.report(), {})
+        diagnostic = verify.runtime_support.CommandDiagnostics("host")
+        script = (
+            "import pathlib,sys; p=pathlib.Path(sys.argv[sys.argv.index('--results-directory')+1]);"
+            "(p/'storage.xml').write_text('<assemblies><test result=\"Pass\" time=\"1.25\" /></assemblies>')"
+        )
+        runner.command("native-timing", ["python3", "-c", script], diagnostics=diagnostic)
+        self.assertEqual({
+            "status": "measured", "totalCaseSeconds": 1.25,
+            "requiredClassSeconds": {}, "otherCaseSeconds": 1.25,
+        }, runner.report.data["steps"][-1]["nativeTiming"])
+        self.assertIsNone(diagnostic.native_timing)
+        self.assertFalse(any((self.root / "artifacts/verification/.private").iterdir()))
+
     def test_native_timeout_retains_known_prior_failure_without_disclosing_private_xml(self):
         name = sorted(verify.command_diagnostics(
             ["dotnet", "test", "--project", verify.STORAGE_INTEGRATION]).tests)[0]
