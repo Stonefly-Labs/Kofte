@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using Kofte.Host.Bootstrap;
+using Kofte.TestSupport;
 using Npgsql;
 
 [assembly: Xunit.AssemblyFixture(typeof(Kofte.TestSupport.PostgresAssemblyFixture))]
@@ -12,7 +13,7 @@ public static class FixtureProgram
 {
     public static async Task<int> Main(string[] args)
     {
-        if (args.FirstOrDefault() == "--postgres-fixture")
+        if (args.FirstOrDefault() is "--postgres-fixture" or "--postgres-service-fixture")
             return await RunFixtureAsync(args);
         return args.Any(arg => arg is "--server" or "--internal-msbuild-node")
             ? await Xunit.MicrosoftTestingPlatform.TestPlatformTestFramework.RunAsync(args,
@@ -24,7 +25,8 @@ public static class FixtureProgram
     {
         try
         {
-            if (OperatingSystem.IsWindows() || args is not ["--postgres-fixture", var path] ||
+            if (OperatingSystem.IsWindows() ||
+                args is not ["--postgres-fixture" or "--postgres-service-fixture", var path] ||
                 !Path.IsPathFullyQualified(path) || path != Path.GetFullPath(path))
                 throw new InvalidOperationException("postgres_lease_path_invalid");
             UnixStorePaths.ValidateRoot(Path.GetDirectoryName(path)!, allowMissing: false);
@@ -35,16 +37,22 @@ public static class FixtureProgram
                 context => { context.Cancel = true; stop.Cancel(); });
             using var interrupt = PosixSignalRegistration.Create(PosixSignal.SIGINT,
                 context => { context.Cancel = true; stop.Cancel(); });
-            await using var fixture = await PostgresFixture.CreateFromEnvironmentAsync(stop.Token);
-            await using (var file = new FileStream(path, new FileStreamOptions
+            await using var service = args[0] == "--postgres-service-fixture" ? new PostgresAssemblyFixture() : null;
+            await using var fixture = service is null ? await PostgresFixture.CreateFromEnvironmentAsync(stop.Token) : null;
+            if (service is not null)
+                await service.WriteLeaseAsync(path, stop.Token);
+            else
             {
-                Mode = FileMode.CreateNew,
-                Access = FileAccess.Write,
-                Share = FileShare.None,
-                UnixCreateMode = UnixStorePaths.FileMode
-            }))
-                await JsonSerializer.SerializeAsync(file, new { fixture.RunId, fixture.ConnectionString },
+                await using var file = new FileStream(path, new FileStreamOptions
+                {
+                    Mode = FileMode.CreateNew,
+                    Access = FileAccess.Write,
+                    Share = FileShare.None,
+                    UnixCreateMode = UnixStorePaths.FileMode
+                });
+                await JsonSerializer.SerializeAsync(file, new { fixture!.RunId, fixture.ConnectionString },
                     cancellationToken: stop.Token);
+            }
             Console.WriteLine("""{"eventCode":"postgres_fixture_ready","component":"verification"}""");
             try
             {
@@ -52,7 +60,7 @@ public static class FixtureProgram
                 {
                     var command = await Console.In.ReadLineAsync(stop.Token);
                     if (command is null or "" or "stop") break;
-                    if (command is not ("pause" or "resume"))
+                    if (command is not ("pause" or "resume") || fixture is null)
                         throw new InvalidOperationException("postgres_fixture_command_invalid");
                     await fixture.SetAvailableAsync(command == "resume", stop.Token);
                     Console.WriteLine(JsonSerializer.Serialize(new

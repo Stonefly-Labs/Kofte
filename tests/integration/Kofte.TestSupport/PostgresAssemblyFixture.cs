@@ -67,6 +67,22 @@ public sealed class PostgresAssemblyFixture : IAsyncDisposable
             throw new InvalidOperationException("postgres_assembly_fixture_release_invalid");
     }
 
+    public async Task WriteLeaseAsync(string path, CancellationToken token)
+    {
+        if (Environment.GetEnvironmentVariable("KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE") != "true")
+            throw new InvalidOperationException("postgres_owned_service_opt_in_required");
+        UnixStorePaths.ValidateRoot(Path.GetDirectoryName(path)!, allowMissing: false);
+        if (UnixStorePaths.ValidateFile(path, allowMissing: true))
+            throw new InvalidOperationException("postgres_lease_exists");
+        var borrowed = await BorrowAsync(token);
+        try
+        {
+            PrivateTestFiles.WriteNew(path, JsonSerializer.SerializeToUtf8Bytes(
+                new { borrowed.Service.RunId, ConnectionString = borrowed.Connection }));
+        }
+        finally { Release(); }
+    }
+
     public async ValueTask DisposeAsync()
     {
         await gate.WaitAsync();

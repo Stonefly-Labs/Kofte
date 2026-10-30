@@ -862,14 +862,14 @@ class Runner:
                 self.report.data["toolVersions"][tool] = expected
             self.operation(f"{tool}-version", probe, [tool, "--version"])
 
-    def composition_guide(self, provider, scenario, environment):
+    def composition_guide(self, provider, scenario, environment, *, health_check=None):
         capture = CompositionGuideCapture()
         name = f"composition-guide-{provider}-{scenario}"
         try:
             self.command(name, [
                 "dotnet", "run", "--project", "tests/contract/Kofte.Composition.Consumer",
                 "--no-build", "-c", "Release", "--", "--provider", provider, "--scenario", scenario,
-            ], environment=environment, timeout=600, capture=capture)
+            ], environment=environment, timeout=600, capture=capture, health_check=health_check)
             self.operation(name + "-observations", lambda step: step.update(
                 composition=capture.result(provider, scenario)))
         finally:
@@ -908,9 +908,10 @@ def private_root(root):
 class PostgresLease:
     """The C# fixture alone owns database/role/Compose teardown."""
 
-    def __init__(self, runner, directory, external_connection=None):
+    def __init__(self, runner, directory, external_connection=None, *, service_only=False):
         self.runner, self.path = runner, directory / "lease.json"
         self.external_connection = external_connection
+        self.fixture_mode = "--postgres-service-fixture" if service_only else "--postgres-fixture"
         self.child, self.readers = None, []
         self.events = queue.Queue()
         self.event_failures = runtime_support.Failures()
@@ -922,7 +923,7 @@ class PostgresLease:
         if self.external_connection is not None:
             environment["KOFTE_POSTGRES_CONNECTION"] = self.external_connection
         self.child = subprocess.Popen(
-            ["dotnet", FIXTURE, "--postgres-fixture", str(self.path)],
+            ["dotnet", FIXTURE, self.fixture_mode, str(self.path)],
             cwd=self.runner.root, env=environment, stdin=subprocess.PIPE,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True,
         )
@@ -1401,6 +1402,25 @@ def provider_environment(runner, arguments, provider):
     return environment
 
 
+@contextmanager
+def composition_service(runner, arguments, provider):
+    environment = provider_environment(runner, arguments, provider)
+    if provider != "postgres" or arguments.postgres_connection is not None:
+        yield environment, None
+        return
+    with private_root(runner.root) as directory:
+        lease = PostgresLease(runner, directory, service_only=True)
+        try:
+            def provision(_):
+                environment["KOFTE_POSTGRES_CONNECTION"] = lease.start()
+            runner.operation("composition-guide-postgres-service-start", provision, [
+                "dotnet", FIXTURE, "--postgres-service-fixture", "<private-lease>",
+            ])
+            yield environment, lease.check
+        finally:
+            runner.operation("composition-guide-postgres-service-stop", lambda _: lease.stop())
+
+
 def integration_command(provider, suite=None, project=INTEGRATION, feature=None):
     feature_query = f"&(Feature={feature})" if feature else ""
     fixture_threads = str(min(4, os.cpu_count() or 1))
@@ -1581,8 +1601,9 @@ def execute_suite(runner, suite, provider, arguments):
                     runner.command(f"identity-privacy-browser-native-{selected}",
                         integration_command(selected, "browser"), environment=environment)
             if suite == "contract":
-                for scenario in (*COMPOSITION_OBSERVATIONS, "all"):
-                    runner.composition_guide(selected, scenario, provider_environment(runner, arguments, selected))
+                with composition_service(runner, arguments, selected) as (environment, check):
+                    for scenario in (*COMPOSITION_OBSERVATIONS, "all"):
+                        runner.composition_guide(selected, scenario, environment, health_check=check)
             canary = f"bootstrap-privacy-canary-{uuid.uuid4().hex}" if suite == "privacy" else None
             with runtime(
                 runner, selected, arguments.disposable_postgres,

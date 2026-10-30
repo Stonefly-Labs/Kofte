@@ -1077,6 +1077,53 @@ class VerifyTests(unittest.TestCase):
         self.assertTrue(lease.child.stdin.closed)
         lease.child.wait.assert_called_once_with(timeout=75)
 
+    def test_composition_guides_share_only_the_owned_service_and_always_check_cleanup(self):
+        for fail in (False, True):
+            runner = verify.Runner(self.root, self.report("contract"), {})
+            arguments = Mock(disposable_postgres=True, postgres_connection=None)
+            with self.subTest(fail=fail), patch.object(verify, "PostgresLease") as factory:
+                lease = factory.return_value
+                lease.start.return_value = "private-service-credential-canary"
+                try:
+                    with verify.composition_service(runner, arguments, "postgres") as (environment, check):
+                        factory.assert_called_once()
+                        self.assertTrue(factory.call_args.kwargs["service_only"])
+                        self.assertEqual("true", environment["KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE"])
+                        self.assertEqual(lease.start.return_value, environment["KOFTE_POSTGRES_CONNECTION"])
+                        self.assertEqual(lease.check, check)
+                        if fail:
+                            raise verify.VerificationError("command_failed")
+                except verify.VerificationError as error:
+                    self.assertTrue(fail)
+                    self.assertEqual("command_failed", error.code)
+                lease.start.assert_called_once()
+                lease.stop.assert_called_once()
+                self.assertFalse(factory.call_args.args[1].exists())
+            self.assertNotIn("private-service-credential-canary", json.dumps(runner.report.data))
+        runner = verify.Runner(self.root, self.report("contract"), {})
+        with patch.object(verify, "PostgresLease") as factory:
+            factory.return_value.start.side_effect = verify.VerificationError("postgres_fixture_failed")
+            with self.assertRaisesRegex(verify.VerificationError, "postgres_fixture_failed"):
+                with verify.composition_service(runner, arguments, "postgres"):
+                    self.fail("failed service must not run a consumer")
+            factory.return_value.stop.assert_called_once()
+
+    def test_composition_service_never_creates_a_container_for_sqlite_external_or_missing_opt_in(self):
+        runner = verify.Runner(self.root, self.report("contract"), {})
+        with patch.object(verify, "PostgresLease") as factory:
+            for provider, external in (("sqlite", None), ("postgres", "explicit-external-canary")):
+                with verify.composition_service(runner, Mock(
+                    disposable_postgres=provider == "postgres", postgres_connection=external,
+                ), provider) as (environment, check):
+                    self.assertIsNone(check)
+                    self.assertEqual(external, environment.get("KOFTE_POSTGRES_CONNECTION"))
+            with self.assertRaisesRegex(verify.VerificationError, "disposable_postgres_opt_in_required"):
+                with verify.composition_service(runner, Mock(
+                    disposable_postgres=False, postgres_connection=None,
+                ), "postgres"):
+                    self.fail("missing opt-in must not acquire a service")
+            factory.assert_not_called()
+
     def test_runtime_worker_failure_interrupts_the_owned_test_command(self):
         report = self.report()
         runner = verify.Runner(self.root, report, {})
@@ -1141,6 +1188,7 @@ class VerifyTests(unittest.TestCase):
             runner = verify.Runner(self.root, self.report(suite), {})
             with patch.object(runner, "versions"), patch.object(runner, "command") as command, \
                     patch.object(runner, "composition_guide") as guide, \
+                    patch.object(verify, "PostgresLease") as service, \
                     patch.object(verify, "runtime", side_effect=owned_runtime):
                 verify.execute_suite(runner, suite, "both", arguments)
             http = [call for call in command.call_args_list if call.args[0].endswith("-http")]
@@ -1176,6 +1224,16 @@ class VerifyTests(unittest.TestCase):
                 self.assertIn("scripts/run_python_tests.py", capture.args[1])
                 self.assertIn("test_dev_output.py", capture.args[1])
             else:
+                self.assertEqual(1, service.call_count)
+                self.assertTrue(service.call_args.kwargs["service_only"])
+                service.return_value.start.assert_called_once()
+                service.return_value.stop.assert_called_once()
+                postgres_guides = [call for call in guide.call_args_list if call.args[0] == "postgres"]
+                self.assertEqual(12, len(postgres_guides))
+                for call in postgres_guides:
+                    self.assertEqual(service.return_value.start.return_value,
+                                     call.args[2]["KOFTE_POSTGRES_CONNECTION"])
+                    self.assertEqual(service.return_value.check, call.kwargs["health_check"])
                 self.assertEqual(
                     [(provider, scenario) for provider in ("sqlite", "postgres")
                      for scenario in (*verify.COMPOSITION_OBSERVATIONS, "all")],

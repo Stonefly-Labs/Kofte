@@ -49,6 +49,13 @@ strict browser completeness rejects missing cases, skips and retries.
 The [current evidence](specs/005-authentication-bootstrap/implementation.md#t094-t095-complete-public-catalog-and-delivered-documentation)
 also records final dependency/contract checks and zero npm/NuGet advisory findings.
 Complete-local-gate, assessed-head CI and traceability tasks T097–T100 remain.
+**Latest qualification:** `b629b5f` passes all ten actual Linux product contexts
+and repository checks. Its local all-mode run was deliberately stopped after a
+shared-machine resource complaint; the six partial reports remain incomplete,
+not passing. The verifier continuation gives its twelve separate PostgreSQL
+composition-consumer invocations one owned service, retaining fresh targets,
+private credentials, health checks and verified final cleanup. Final-source
+qualification remains required. The following sequence is historical evidence.
 Request tracing found lazy RSA key generation inside the test issuer's first
 JWKS response. Keys are now prepared before serving, with a red/green regression
 and unchanged runtime budgets. At repaired head `32d0d91`, both **complete

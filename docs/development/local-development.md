@@ -1114,6 +1114,18 @@ forced-port-collision and live-child-target regressions raise the complete
 retained composition minimum from 84 to 86; its original 900-second budget is
 unchanged.
 
+The Python verifier also holds one explicitly owned service across its twelve
+separate PostgreSQL composition-guide invocations, including `all`. A private
+owner-only lease delivers only the administrative test-service connection to
+those children; each still creates and drops its own databases and roles.
+The verifier checks service health while each child runs, waits for child exit
+and output drain before releasing the service, and verifies final database,
+role, session and Docker cleanup. Start, consumer or cleanup failure fails the
+gate; ownership evidence is retained on unconfirmed cleanup. SQLite and an
+explicit external administrative connection do not start this service.
+This closes a Python-to-native lifetime gap, not permission to run uncontrolled
+container-heavy work on a shared machine or to pool installation state.
+
 Failed native storage and public platform-contract commands retain only
 source-allowlisted test identities and closed diagnostic codes. Their private,
 bounded xUnit XML is deleted; raw assertions, arguments, output and stacks do
@@ -1231,16 +1243,16 @@ Only `browserEvidence` counts are retained; owner-only transient JSON, including
 any child output, is discarded after verified cleanup. Zero exit alone is not
 browser proof. Missing or unsafe reports fail the suite and isolated baselines.
 
-| Suite                      | Underlying runner                                                                                                                                                                                                                     |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| unit                       | `dotnet test --project tests/unit/Kofte.Host.Tests --no-restore -c Release --minimum-expected-tests 1`; web and shared-contract `test:unit`; complete Python discovery                                                                |
-| integration, each provider | `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore -c Release --filter-trait Provider=PROVIDER --minimum-expected-tests 1`                                                                             |
-| recovery, each provider    | Same integration project with `--filter-query "/[(Suite=recovery)&(Provider=PROVIDER)]" --minimum-expected-tests 1`, then `npm run test --workspace tests/e2e -- recovery.spec.ts --workers=1 --output PRIVATE_DIRECTORY`             |
-| contract, each provider    | Same integration project with `--filter-class "*OpenApiTests" --filter-trait Provider=PROVIDER --minimum-expected-tests 1`, then `npm run test --workspace tests/contract -- --no-file-parallelism bootstrap.test.ts adapter.test.ts` |
-| browser                    | All required E2E specs, including `identity.spec.ts`, against owned SQLite; then actual native identity failure/correction journeys on SQLite and owned PostgreSQL. Requires `--disposable-postgres`; one browser worker. |
+| Suite                      | Underlying runner                                                                                                                                                                                                                                      |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| unit                       | `dotnet test --project tests/unit/Kofte.Host.Tests --no-restore -c Release --minimum-expected-tests 1`; web and shared-contract `test:unit`; complete Python discovery                                                                                 |
+| integration, each provider | `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-restore -c Release --filter-trait Provider=PROVIDER --minimum-expected-tests 1`                                                                                              |
+| recovery, each provider    | Same integration project with `--filter-query "/[(Suite=recovery)&(Provider=PROVIDER)]" --minimum-expected-tests 1`, then `npm run test --workspace tests/e2e -- recovery.spec.ts --workers=1 --output PRIVATE_DIRECTORY`                              |
+| contract, each provider    | Same integration project with `--filter-class "*OpenApiTests" --filter-trait Provider=PROVIDER --minimum-expected-tests 1`, then `npm run test --workspace tests/contract -- --no-file-parallelism bootstrap.test.ts adapter.test.ts`                  |
+| browser                    | All required E2E specs, including `identity.spec.ts`, against owned SQLite; then actual native identity failure/correction journeys on SQLite and owned PostgreSQL. Requires `--disposable-postgres`; one browser worker.                              |
 | privacy, each provider     | Existing provider storage/public captures, actual identity privacy guide journeys and native callback-failure browser captures; HTTP `privacy.test.ts`, E2E `privacy.spec.ts`, and `python3 scripts/run_python_tests.py --pattern test_dev_output.py`. |
-| startup                    | `npm run test --workspace tests/e2e -- startup.spec.ts --output tests/e2e/test-results/verify-startup-UUID`, with `BOOTSTRAP_WARM_STARTS` set to the requested 2-10 cycles                                                            |
-| failure-propagation        | `tests/integration/tooling/test_failure_propagation.py` exercises the actual wrapper in an isolated no-hardlinks checkout, never the working checkout                                                                                 |
+| startup                    | `npm run test --workspace tests/e2e -- startup.spec.ts --output tests/e2e/test-results/verify-startup-UUID`, with `BOOTSTRAP_WARM_STARTS` set to the requested 2-10 cycles                                                                             |
+| failure-propagation        | `tests/integration/tooling/test_failure_propagation.py` exercises the actual wrapper in an isolated no-hardlinks checkout, never the working checkout                                                                                                  |
 
 `PROVIDER` is the requested `sqlite` or `postgres`, never a substitute fallback.
 Each owned runtime builds the Release solution and web first, then launches
