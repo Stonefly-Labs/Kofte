@@ -190,8 +190,9 @@ records approval, including one-time installation setup-token admission, and
 the [rewritten specification](../specs/005-authentication-bootstrap/spec.md).
 005 owns accounts/authentication/initial ownership and self-service credential
 mechanics; existing 006 owns invitations/user administration/teams/RBAC through
-central authorization. Clarification and revised design/review gates remain
-before implementation, which stays blocked.
+central authorization. Clarification finds no critical ambiguities across all
+ten categories, with zero questions or spec changes. Revised design/review gates
+remain before implementation, which stays blocked.
 SAML remains a future extension, not an MVP prerequisite. The original
 generation prompt below is historical; it does not override this amendment
 or authorize resuming the old OIDC-only/nominated-bootstrap plan.

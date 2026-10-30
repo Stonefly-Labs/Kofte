@@ -520,8 +520,9 @@ accounts and first-login ownership with owner-led onboarding/RBAC.
 One-time installation setup-token admission and the 005/006 delivery boundary
 are now human-approved. The rewritten spec covers 005 account/authentication/
 initial-Owner mechanics; existing 006 delivers invitations/user administration/
-teams/RBAC. Separate clarification and remaining design/review rework still
-block implementation. Existing reviewer/design/runtime evidence does not
+teams/RBAC. Clarification finds all ten categories Clear, with zero questions,
+unchanged spec and 16/16 author criteria. Remaining design/review rework still
+blocks implementation. Existing reviewer/design/runtime evidence does not
 certify the amended semantics. The same PR remains draft,
 not accepted or ready to merge.
 

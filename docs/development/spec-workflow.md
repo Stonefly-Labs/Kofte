@@ -20,11 +20,57 @@ mechanics; existing 006 invitations/user administration/teams/RBAC. Six stories,
 34 scenarios, 29 requirements and nine outcomes have 16/16 built-in author
 validation. This is a controlled scope revision under the blocked feature,
 not a ledger rewind or a newly completed historical specify stage.
-Next is separate clarification of revised defaults, then replanning/contracts/
-migration and reviewed quality/task/analysis evidence before resume.
+The separate clarification pass now finds all ten categories Clear, with zero
+questions, unchanged spec and author checklist, and 16/16 to 16/16 author
+criteria. Replanning/contracts/migration and reviewed quality/task/analysis
+evidence remain before resume; see the coverage assessment below.
 Do not reset prior history or treat the old passing gates as proof of new
 semantics. No implementation skill or product
 command ran; begin/block records only the pause, not a completed stage.
+
+### Reworked 005 clarification assessment - 2026-10-30
+
+**Result:** No critical ambiguities detected worth formal clarification.
+**Scope:** The explicit `specs/005-authentication-bootstrap` directory on the
+original feature branch/draft PR #8, revised source `46f662b`. This assesses the
+new local/OIDC/account/ownership requirements, not the original clarification
+entry's old scope, and does not reset or complete a historical ledger stage.
+
+The prerequisites script ran once with `--json --paths-only` and the explicit
+feature-directory environment. Its absolute feature/spec paths matched this
+checkout. No before/after clarification hooks are configured.
+Zero questions were asked or answered; no answer or fresh human decision is
+invented. No empty Clarifications section is added to the unchanged spec.
+
+| Category | Status | Revised-spec coverage and assessment |
+| -------- | ------ | ------------------------------------ |
+| Functional Scope & Behavior | Clear | Scope/005-006 table, US1-6 and FR-001/007/010-012/023-027 define local/OIDC/coexistence, protected initial ownership, self-service account mechanics and existing 006 administration/RBAC, including denied post-setup self-admission. |
+| Domain & Data Model | Clear | Key Entities and FR-003/010-012/016/024-028 distinguish canonical users, credentials, exact external associations, setup/admission/session state and immutable initial designation; uniqueness, consumption, migration and preservation have observable outcomes. Physical model/capacity policies remain explicit planning obligations within retained limits. |
+| Interaction & UX Flow | Clear | US1-6, FR-004/006/008/020 and SC-005 define method selection, setup, self-service credential/reset/association, shared current identity, sign-out, safe retry/errors and measured accessible states. |
+| Non-Functional Quality Attributes | Clear | FR-008/009/013-020/024-029, SC-002-008 and Required Validation cover fresh next-request invalidation, privacy, bounded work/lockout/trust, race/restart/recovery, evidence and accessibility/timing; retained one-second local budget and prohibited capacity test remain explicit. No additional regulatory certification is claimed or inferred. |
+| Integration & External Dependencies | Clear | FR-001/002/021/023/027 and interfaces distinguish enabled local/OIDC connections, trusted actor/account admission, deliberate independent-method choice, no automatic fallback and no mandatory mail/identity vendor; future 006/007 and versioned contract design are explicit. |
+| Edge Cases & Failure Handling | Clear | Edge Cases, US2/3/6 and FR-010-019/024-029 cover local/OIDC contention, token/reset replay and foreign binding, association conflicts, lockout, last-method removal, uncertain commits, corrupt stores and stale restore without reopening consumed ownership. |
+| Constraints & Tradeoffs | Clear | Scope, ownership, assumptions and constitutional review retain approved framework direction, dedicated test ownership, host/module storage and honest transactions. Standard-store versus narrow adapter, finite policy values and transport choices are technical planning decisions, not missing product intent. |
+| Terminology & Consistency | Clear | Canonical internal user, local credential, external association, authentication connection, setup admission and initial-Owner designation have distinct meanings. Production local is not development identity; initial designation is not a universal permission or an Identity-role replacement for central RBAC. |
+| Completion Signals | Clear | Six stories/34 scenarios, FR-001-029, SC-001-009 and Required Validation map positive/negative, real-provider, browser, privacy and migration/recovery proof; at least 20 contenders, three restarts, next-request invalidation and five-second UI outcomes are measurable. |
+| Misc / Placeholders | Clear | No unresolved clarification marker or scope conflict; approved choices/defaults and specific remaining planning choices are separated. Historical green evidence/tasks do not certify new semantics or close F1/F2. |
+
+Built-in author checklist re-evaluation is **16/16 -> 16/16**: no newly passing
+items, no regressions and no unchecked items. Every checkbox, heading, note and
+byte remains unchanged as the clarification skill requires when no marker
+changes. The separate reviewer-owned quality checklist and all 103 task entries,
+design/runtime reports and source remain untouched.
+
+No material question is deferred or outstanding. Exact identifier/password/
+lockout policies, setup/reset token lifetime/delivery/binding, session/actor/
+account API shapes, store compatibility and migration mechanisms remain assigned
+to planning. This does not select stores/packages, weaken finite budgets or
+approve a new design. **Next:**
+`/speckit-plan SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap`
+in a separate invocation, on the same branch/draft PR. Implementation remains
+blocked for revised plan/contracts/migration and quality/task/analysis gates.
+
+### Earlier 005 checkpoints (historical)
 
 The preceding
 [final review](../../specs/005-authentication-bootstrap/review.md) identifies

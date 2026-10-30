@@ -371,10 +371,17 @@ executed by recording this pause. Do not reset prior ledger history or fake
 completed specify/clarify/plan/checklist/analyze entries.
 
 The setup-token choice and top-level 005/006 delivery boundary are resolved, and
-the specification is rewritten. Before implementation resumes, separately assess
-the revised requirements/defaults through clarification, then revise research/
-plan, account/session/actor and operator contracts, data/migration/recovery design
-and their validation mapping. Exact integration contracts remain planning work.
+the specification is rewritten. Its separate clarification assessment on
+2026-10-30 finds all ten categories Clear and no critical ambiguity worth a
+formal question. Zero questions are asked/answered; the spec and built-in author
+checklist remain byte-identical, with 16/16 criteria before and after.
+See the [coverage evidence](../development/spec-workflow.md#reworked-005-clarification-assessment---2026-10-30).
+This assesses written requirements, not a new runtime or human approval result.
+
+Before implementation resumes, revise research/plan, account/session/actor and
+operator contracts, data/migration/recovery design and their validation mapping.
+Exact policies, token delivery/binding, persistence choice and integration
+contracts remain planning work, not unanswered product decisions to fabricate.
 Preserve stable user IDs, exact external mappings, module data/assignments,
 consumed ownership and honest partial effects. A versioned migration and
 explicit old-session invalidation must replace reinterpretation of mode-bound

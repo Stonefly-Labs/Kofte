@@ -47,9 +47,10 @@ initial-claim admission and the [rewritten specification](specs/005-authenticati
 The draft now covers six stories, 34 scenarios, 29 requirements and nine outcomes.
 005 owns account/authentication/initial-Owner mechanics; existing 006 owns
 invitations, user administration, teams and RBAC. The built-in author checklist
-passes 16/16; clarification, replanning and changed review/task/analysis gates
-remain before implementation. Historical quality/runtime evidence is not
-re-certified by this rewrite.
+remains 16/16 after clarification: all ten coverage categories are Clear and no
+material question or spec change was needed. Replanning and changed review/task/
+analysis gates remain before implementation. Historical quality/runtime evidence
+is not re-certified by this rewrite.
 No new behavior is implemented or feature acceptance inferred.
 
 The preceding review checkpoint is retained below.

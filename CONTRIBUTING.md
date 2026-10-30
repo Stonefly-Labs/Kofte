@@ -338,8 +338,9 @@ affected design/evidence before resuming the blocked implementation.
 The [specification rework](specs/005-authentication-bootstrap/spec.md) now defines
 005 account/credential/session/initial-Owner mechanics and the handoff to existing
 006 invitations/user administration/teams/RBAC. Six stories/34 scenarios/29
-requirements/nine outcomes have 16/16 author-quality validation; a separate
-clarification pass and revised design/review/task/analysis gates remain.
+requirements/nine outcomes retain 16/16 author-quality validation after the
+separate clarification pass: all ten categories Clear, zero questions and no
+spec/checklist changes. Replanning and revised review/task/analysis gates remain.
 Preserve historical ledger, reviewer checklist and task/runtime evidence;
 specification rework is not implementation or feature acceptance.
 

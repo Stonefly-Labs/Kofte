@@ -23,9 +23,11 @@ The [rewritten specification](../specs/005-authentication-bootstrap/spec.md)
 assigns account/authentication/initial-Owner mechanics to 005 and invitations,
 user administration, teams and RBAC to existing 006. It has six stories, 34
 scenarios, 29 requirements, nine outcomes and 16/16 author-checklist validation.
-Separate clarification, replanning/contracts and changed review/task/analysis
-gates remain before implementation. The old reviewer/design/runtime evidence
-is historical, not re-certified. No new code, stage completion or acceptance.
+Clarification finds all ten categories Clear with zero questions and unchanged
+spec/author-checklist bytes (16/16 to 16/16). Replanning/contracts and changed
+review/task/analysis gates remain before implementation. The old reviewer/design/
+runtime evidence is historical, not re-certified. No new code, stage completion
+or acceptance.
 
 The preceding review checkpoint remains historical:
 The [final review](../specs/005-authentication-bootstrap/review.md) identifies
