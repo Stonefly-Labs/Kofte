@@ -15,6 +15,53 @@ is now wired but feature 005 is not accepted.
 
 ## T097 in progress: current full-gate and assessed-head failures
 
+### Overlap read-only provider initialization before exclusive warmup, 2026-10-30
+
+Published `291244963e8a85a983ba79be701db2c6edc71f11` still reaches the original
+900-second **whole** PostgreSQL propagation-baseline limit in actual
+[run 41041326143](https://github.com/Stonefly-Labs/Kofte/actions/runs/41041326143).
+Its safe child evidence records host **121/328.187s** and storage **212/387.768s**
+passing, zero skipped; composition is interrupted after 184.003s. Retaining
+the fixture pool removes redundant connections, but is not a complete resolution
+of this aggregate timing failure.
+
+The registration workers already overlap runtime startup, but first native
+provider/connection initialization still happens inside each worker's **serial**
+exclusive warmup. Each fresh worker now opens and closes one read-only platform
+admission before acknowledging `storage_worker_started`. These independent
+admissions overlap; they neither acquire installation authority nor mutate the
+registry. The subsequent explicit preparation handshake, serial exclusive
+warmup, simultaneous registration barrier and every registration assertion stay
+unchanged. The extra admission uses the original acquire-operation bound inside
+the same 45-second child lifetime; no timeout, retry, round, contender, process
+or cleanup allowance increases.
+
+All **ten** both-provider registration concurrency cases pass, **zero skipped,
+109.553s**: both held-lease preparation cases, all twenty-round/ten-connection
+cases and all twenty-round/ten-fresh-process cases, including the same **800**
+fresh race workers and exact persisted ownership/inventory observations:
+
+```text
+dotnet build tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release -warnaserror -m:1 -nr:false
+KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --filter-class '*SqliteRegistrationConcurrencyTests' --filter-class '*PostgresRegistrationConcurrencyTests' --minimum-expected-tests 10 --output Detailed --show-stdout None --show-stderr None
+```
+
+Both-provider held-lease cases observe readiness while another owner still holds
+exclusive maintenance, then release that owner before explicitly permitting the
+original warmup. This verifies read-only initialization is not a hidden exclusive
+acquisition. This is a focused working-tree result over `2912449`, not a claim
+that the aggregate Linux gate passes. Full qualification remains required.
+`python3 scripts/verify.py --suite quality` then **passes, 36.401s**
+(`quality-none-47499536bc604d6a8583588f2d7282a6.json`), including repository,
+165 Python tests, whitespace, .NET format/warning-free build, web checks,
+contract generation and dependency review. An initial format failure is
+corrected with the existing formatter on this worker only; no semantics or
+historical Markdown are reformatted.
+The superseded independent `9210931` local all attempt was explicitly interrupted
+for the published fixture continuation: quality/unit/both complete integrations
+pass; recovery is interrupted and later suites do not execute. Its five reports
+all remain completeGate false, with the owned failed checkout retained.
+
 ### Retain the fixture administration pool through verified teardown, 2026-10-30
 
 Actual [product run 41035775363](https://github.com/Stonefly-Labs/Kofte/actions/runs/41035775363)

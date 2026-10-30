@@ -53,6 +53,8 @@ public static class RegistrationWorker
                 int.TryParse(roundText, out var round) && round is >= 0 and < 20 &&
                 int.TryParse(indexText, out var index) && index is >= 0 and < 10)
             {
+                using (var warmup = new OperationBudget(OperationBudget.Acquire, budget.Token))
+                await using (await installation.OpenPlatformAsync(warmup)) { }
                 Console.WriteLine("""{"eventCode":"storage_worker_started"}""");
                 if (await Console.In.ReadLineAsync(budget.Token) != "prepare")
                     throw new InvalidOperationException("storage_worker_preparation_required");

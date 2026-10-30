@@ -124,6 +124,11 @@ administrative connection through all original ownership-verified cleanup,
 then closes it before releasing service ownership. Real backend observations,
 five isolation/authority/outage cases and the entire 121/212/59-case PostgreSQL
 selection pass; no deadline, durability or cleanup guard changes.
+The `2912449` Linux propagation baseline still reaches its original whole-suite
+bound. The next scoped fixture change overlaps only read-only provider
+initialization before the unchanged serial exclusive warmup and registration
+barrier. All ten both-provider concurrency cases pass, including the original
+800 fresh race workers; final aggregate qualification remains required.
 Historical failures remain failed; no universal issuer-key explanation is claimed.
 Continue on the same branch/draft PR #8. Converge, review and explicit feature
 acceptance are later stages; designation grants no module permissions.
