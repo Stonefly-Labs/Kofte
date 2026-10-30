@@ -3,17 +3,21 @@
 **Feature Branch**: `feature/005-authentication-bootstrap`
 **Feature Directory**: `specs/005-authentication-bootstrap`
 **Created**: 2026-10-26
+**Revised**: 2026-10-30
 **Status**: Draft
 **Constitution**: 2.0.1; principles I-XII assessed below
-**Scope rework (2026-10-30):** The human approved ASP.NET Core Identity,
-production local/OIDC accounts and first-successful-login ownership with
-owner-led onboarding/RBAC. The [ADR amendment](../../docs/adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
-records the decisions, including the subsequently approved one-time installation
-setup token for initial-claim admission.
-**Implementation is blocked.** The requirements/scenarios below retain the
-original OIDC-only baseline, including its now-superseded exclusions and
-nominated bootstrap; they must be reconciled and reviewed before new code.
-No existing checklist, analysis or acceptance result certifies the new scope.
+**Rework input**: Human-approved production local/OIDC accounts using ASP.NET Core
+Identity, one canonical user/session boundary, and first-login ownership guarded
+by a one-time installation setup token. The human authorized this specification
+rework and alignment with existing 006 after the proposed boundary was explained.
+The [ADR amendment](../../docs/adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
+records those decisions.
+**Authority and progress**: This revision supersedes the original OIDC-only,
+exact-person-nominated requirements. It specifies intended behavior, not delivered
+behavior or feature acceptance. The old plan, contracts, reviewer checklist,
+analysis, tasks and runtime reports remain historical until explicitly reconciled.
+Implementation stays blocked for clarification/design/review gates; this rewrite
+does not rewind or complete a recorded driver stage.
 
 **Original input (historical)**: Exact fenced inventory 005 generation prompt:
 
@@ -35,9 +39,10 @@ Dependencies / integration assumptions: 001,004. Identify any genuine ambiguity 
 
 **Inventory 005 is an MVP foundation slice**, not a complete authorization system,
 identity-management product or production-readiness claim. Its value is that an
-operator can connect a supported identity provider, deliberately establish the
-first administrator, and let a user enter and leave Köfte with one trustworthy
-identity across the browser and host.
+operator can choose local accounts, OIDC or both, protect initial ownership with
+a setup token, and let a user enter and leave Köfte with one trustworthy identity
+across the browser and host. Production local accounts must work without an
+external identity provider; they are not the development identity selector.
 
 **Prerequisites:** accepted 001 supplies the host/web, configuration, telemetry
 and verification foundations; accepted 004 supplies trusted module composition
@@ -52,25 +57,48 @@ complete local gate or release waiver.
 bootstrap state and the minimal security record belong to the host's core
 identity feature. Optional modules consume the host's authenticated actor rather
 than maintaining competing user identities or reading identity tables.
-Actors are the installation operator, nominated first administrator, ordinary
+Actors are the installation operator, prospective initial Owner, ordinary
 signed-in user, anonymous/forged client and trusted module author. The installation
 is one organization with future multi-team scoping; login grants no team
-membership, resource access or automatic administration.
+membership, resource access or automatic administration outside the admitted
+initial-ownership ceremony.
 
-**Included:** configurable provider-neutral OpenID Connect (OIDC) sign-in;
-explicit development-only sign-in; durable external-to-internal identity mapping;
-deliberate, one-time first-admin enrollment; browser session, current-identity and
-API access boundaries; sign-out/expiry; accessible minimal identity UI; safe
-failure/recovery and correlated security evidence on both storage providers.
+**Included:** production local-account and provider-neutral OpenID Connect (OIDC)
+sign-in, independently selectable or explicitly enabled together; named
+authentication connections; stable internal users with explicitly associated
+login methods; local credential creation/change/reset and lockout mechanics;
+explicit development-only sign-in; setup-token-admitted first-login ownership;
+shared browser session/current-identity/API boundaries; sign-out/expiry;
+accessible minimal identity UI; safe migration/recovery and correlated security
+evidence on both storage providers.
 
-**Excluded:** local production passwords, account registration/password recovery,
-account linking/merging, user-directory synchronization, multiple organizations,
-additional non-OIDC providers (030), teams/roles/granular resource authorization
-(006), MCP server/client authorization flows and tools (007/013), full UI shell
-(008), general audit browsing/export (009), module settings administration (015),
+**005/006 delivery boundary:** This rework uses the existing inventory 006,
+not a new or renumbered feature.
+
+| 005 owns | Existing 006 owns |
+| -------- | ----------------- |
+| Canonical users, local credentials, external associations, authentication connections and shared sessions. | Owner-led user administration, invitations/onboarding workflows, account disablement decisions and their registered authorization. |
+| Local account creation during admitted initial setup; self-service credential change/reset and explicit login-method association. Account primitives accept only trusted, authorized admission, never a request-supplied privilege flag. | Authorization to add users after setup, issue invitations, associate access with teams, manage memberships and assign roles/permissions. |
+| One immutable initial-Owner designation, consumed setup state and a versioned actor/account integration boundary. | Interpretation of that designation as centrally registered Owner permissions, including team/resource scope and positive/negative authorization tests. |
+
+Before 006, an existing admitted user can authenticate and manage their own
+credentials. An unknown local or OIDC identity cannot self-register after setup
+or gain access merely by knowing the login URL. The later invitation/onboarding
+workflow authorizes account admission through 005's boundary; a matching email
+or an external administrator claim is not admission. There is no temporary
+anonymous registration endpoint or universal Owner bypass to bridge the stages.
+005 can be accepted without delivering the 006 administration screens/workflows;
+the complete Owner-led onboarding/RBAC journey is delivered by 006.
+
+**Excluded:** unrestricted public registration, automatic account association or
+user merging, user-directory synchronization, multiple organizations,
+additional non-OIDC providers including SAML (030), teams/roles/granular resource
+authorization and administration workflows (006), MCP server/client authorization
+flows and tools (007/013), full UI shell (008), general audit browsing/export
+(009), module settings administration (015),
 machine/service-principal credential issuance, jobs/events/realtime, frontend
 extensions, module marketplace, AI chat and external MCP federation.
-The first-admin designation is an installation-level seed for 006, not a bypass
+The initial-Owner designation is an installation-level seed for 006, not a bypass
 for future registered permissions. Existing offline maintenance authority does
 not become a public login or lifecycle-control interface.
 
@@ -84,73 +112,135 @@ remaining design choices are distinguished at the end.
 
 ## User Scenarios & Testing *(mandatory)*
 
-### User Story 1 - Enter Köfte with a trusted identity (Priority: P1)
+### User Story 1 - Enter Köfte through an enabled login method (Priority: P1)
 
-As a user, I can sign in through my installation's configured provider and see
-who I am in Köfte without handing provider credentials to the portal.
+As a user, I can sign in with an admitted local account or a configured OIDC
+connection and see one consistent Köfte identity, regardless of login method.
+My external provider's credentials stay with that provider.
 
 **Why this priority**: Every subsequent user-facing feature needs a trustworthy
 actor, and the production path must not depend on a development shortcut.
-**Independent Test**: Use an isolated configured OIDC provider and the browser
-against each supported store; observe successful login and matching host
-identity, then challenge the provider trust boundary.
+**Independent Test**: Exercise local-only, OIDC-only and coexistence profiles
+against each supported store, using an isolated real OIDC provider where enabled.
+Observe matching browser/API identity and rejection at disabled/trust boundaries.
 
 **Acceptance Scenarios**:
 
-1. **Given** a valid production OIDC configuration and an anonymous browser,
-   **When** a user completes provider login, **Then** Köfte establishes one
-   authenticated internal identity, displays its safe identity summary, and
-   reports the same identity through the authenticated current-user API.
-2. **Given** an existing external issuer/subject mapping, **When** that user
-   signs in again after host restart or a display-name/email change, **Then**
-   the same internal user is returned with unchanged administrative designation.
-3. **Given** two external subjects with the same email/display name or the same
-   subject at different trusted issuers, **When** they sign in, **Then** their
-   internal identities remain distinct and neither inherits the other's access.
+1. **Given** a valid production profile and an admitted user with an enabled
+   local or OIDC login method, **When** that user completes login, **Then**
+   Köfte establishes one authenticated internal identity, displays its safe
+   summary, and reports the same identity through the authenticated current-user API.
+2. **Given** an existing local credential or exact external identity association,
+   **When** that user signs in again after restart, a profile change or an
+   explicitly authorized addition of another login method, **Then** the same
+   internal user and unchanged initial-Owner designation are returned.
+3. **Given** different local/external identities with the same email/display
+   name, or the same subject at distinct issuers, **When** login is attempted,
+   **Then** no association, admission or authority is inferred from that match;
+   separately admitted users remain distinct.
 4. **Given** invalid, expired, replayed, unsolicited or wrongly addressed login
    evidence, **When** it reaches the login boundary, **Then** no authenticated
    session or privileged identity is created; the user gets a safe retry state
    and the operator gets a correlated rejection.
-5. **Given** a provider outage, user cancellation or invalid production
-   configuration, **When** login is attempted or the host starts, **Then** no
-   development/anonymous fallback grants access; a bounded, sanitized failure
-   identifies the corrective action without an endless redirect loop.
+5. **Given** provider outage, cancellation or invalid configuration, **When**
+   login is attempted or the host starts, **Then** a bounded sanitized refusal
+   gives safe corrective guidance without redirect loops or automatic fallback.
+   An independently enabled local method may be chosen deliberately, but never
+   creates a fallback credential, account association or Owner grant.
+6. **Given** local-only, OIDC-only or explicit coexistence configuration,
+   **When** enabled and disabled methods are invoked, **Then** only enabled
+   methods authenticate; local-only needs no external provider and production
+   local login retains production transport/cookie/key protections.
+7. **Given** consumed setup and an unknown identity without trusted onboarding
+   admission, **When** it attempts local registration or valid OIDC login,
+   **Then** no active account, session or Owner designation is created; admitted
+   existing users can still sign in without a new invitation.
+8. **Given** a renamed, disabled or changed authentication connection, **When**
+   old and new login evidence is presented, **Then** no existing association is
+   silently retargeted or reinterpreted; affected sessions follow the documented
+   invalidation policy and no new identity inherits the old user's authority.
 
-### User Story 2 - Deliberately establish the first administrator (Priority: P1)
+### User Story 2 - Claim initial ownership through protected setup (Priority: P1)
 
-As the installation operator, I can nominate and enroll the first administrator
-without making the first visitor, email match or fastest login privileged.
+As the operator, I can privately authorize initial setup without nominating a
+person. The first successful local or OIDC login in that admitted setup becomes
+Owner, rather than the first unauthorised visitor to a public installation.
 
 **Why this priority**: Accidental or repeatable bootstrap would compromise every
 later administration boundary.
-**Independent Test**: On fresh stores, explicitly authorize a nominated verified
-identity, race eligible enrollments, interrupt completion and restart; inspect
-the durable designation and consumed bootstrap state.
+**Independent Test**: On fresh stores, privately authorize setup with a one-time
+token, race eligible local/OIDC logins, interrupt completion and restart; inspect
+one durable Owner designation, consumed token/setup state and security record.
 
 **Acceptance Scenarios**:
 
-1. **Given** an uninitialized installation without an operator-authorized
-   bootstrap ceremony, **When** any user logs in or submits a bootstrap request,
-   **Then** nobody becomes administrator and public responses disclose no
-   bootstrap credential or other user's identity.
-2. **Given** an explicit operator-authorized ceremony bound to a nominated
-   external issuer/subject and a valid login as that identity, **When** its
-   one-time authorization is completed, **Then** exactly that internal user is
-   durably designated first administrator and the ceremony is consumed.
-3. **Given** that ceremony, **When** another identity, forged client, expired
-   authorization or replay attempts enrollment, **Then** no designation changes;
-   the rejection does not reveal the nominee or usable authorization material.
-4. **Given** concurrent authorized attempts or interruption before/after the
-   enrollment commit, **When** callers retry or the host restarts, **Then**
-   exactly one designation and consumed state persist together, or neither
-   commits; no second administrator is minted and no success is reported for
-   an uncertain result.
-5. **Given** completed bootstrap, **When** configuration is replayed, users sign
-   in, the host upgrades/restarts or the administrator is unavailable, **Then**
-   automatic bootstrap stays closed; recovery requires documented explicit
-   operator action, not deleting identity data or promoting the next login.
+1. **Given** an unclaimed installation without valid setup admission, **When**
+   a visitor signs in or submits a setup request, **Then** no Owner is granted
+   and public responses disclose no setup token or other user's identity.
+2. **Given** valid one-time-token admission bound to the initiating setup session,
+   **When** its first successful eligible local or OIDC login commits, **Then**
+   that internal user becomes the single initial Owner and the token/setup
+   authority is consumed in the same commit, with durable security evidence.
+3. **Given** missing, wrong, expired, replaced, foreign-session or replayed setup
+   material, or a development login, **When** ownership is attempted, **Then**
+   no claim or privileged session is created and the rejection reveals no token.
+4. **Given** eligible concurrent local/OIDC attempts or interruption around the
+   ownership commit, **When** callers retry or the host restarts, **Then** one
+   Owner, consumed authority and security record persist together, or none do;
+   losing contenders gain neither Owner authority nor unapproved active accounts,
+   and an uncertain result is never reported as known success.
+5. **Given** consumed ownership, including a migrated legacy designation,
+   **When** configuration/token setup is replayed, the host restarts/upgrades,
+   provider configuration changes or the Owner is unavailable, **Then**
+   ownership does not reopen and the same designated user ID remains.
+6. **Given** admitted setup with failed/cancelled login or token replacement
+   before ownership is committed, **When** the user retries, **Then** only
+   current unexpired admission can be used, authentication is still required,
+   and a replaced token or another browser cannot inherit the setup session.
 
-### User Story 3 - Keep browser and API access within the same boundary (Priority: P1)
+### User Story 3 - Maintain my account without rebuilding identity (Priority: P1)
+
+As an admitted user, I can manage my own local credentials and explicitly
+associate an enabled login method without changing who I am or receiving
+another user's access.
+
+**Why this priority**: Production local accounts need a safe lifecycle, not
+only a password check; coexistence must not become an account-takeover shortcut.
+**Independent Test**: Create the initial local account through protected setup,
+change/reset credentials, challenge lockout and association boundaries, and
+observe the same user through both enabled methods on each supported store.
+
+**Acceptance Scenarios**:
+
+1. **Given** admitted initial local setup or trusted account admission from the
+   later onboarding boundary, **When** local credentials are established,
+   **Then** credential policy and account-identifier uniqueness are enforced
+   and one stable user results; a forged admission request creates no account.
+2. **Given** an authenticated local user and fresh proof of control, **When**
+   the password is changed, **Then** the old password stops working and prior
+   sessions fail their next protected request unless explicitly replaced by a
+   newly established session; the stable user and Owner designation do not change.
+3. **Given** an existing local account and privately delivered, account-bound,
+   expiring one-use reset authorization, **When** a valid reset completes,
+   **Then** only that account's credential changes, the authorization is
+   consumed and old sessions stop on their next protected request. Reset
+   requests do not reveal whether the account exists or require a specific
+   mail service.
+4. **Given** missing, forged, expired, replayed or another account's reset
+   authorization, **When** a reset is attempted, **Then** credentials, sessions
+   and ownership do not change; an OIDC-only user gains no implicit password.
+5. **Given** an authenticated user with fresh proof of account control and proof
+   of the additional local/external login method, **When** explicit association
+   is requested, **Then** only an unassigned method may be attached to that same
+   user; an association owned by another user is refused, never merged.
+   Removing a method cannot silently leave the account without a usable method.
+6. **Given** repeated invalid local credentials or local credential lockout,
+   **When** local login is attempted, **Then** bounded failure/lockout rules
+   apply without revealing account existence, granting a session or bypassing
+   the restriction through another local entry point. Documented recovery
+   preserves the user ID.
+
+### User Story 4 - Keep browser and API access within the same boundary (Priority: P1)
 
 As a user or module author, I can rely on the host's identity rather than
 browser-supplied claims, and I can tell a missing login from denied authority.
@@ -168,8 +258,8 @@ requests and a test-owned protected operation.
    the host refuses with unauthenticated semantics and no identity/protected data;
    non-browser API clients receive no provider HTML or automatic login redirect.
 2. **Given** a valid ordinary login, **When** the browser and API request current
-   identity, **Then** they agree on internal user, identity mode and first-admin
-   designation; spoofed headers, request fields or changed profile claims cannot
+   identity, **Then** they agree on internal user, production/development context
+   and initial-Owner designation; spoofed headers, request fields or changed profile claims cannot
    select another user or grant administrator/team/resource authority.
 3. **Given** missing required authority or a cross-origin state-changing browser
    request, **When** a protected action is attempted, **Then** it is refused
@@ -182,8 +272,14 @@ requests and a test-owned protected operation.
    checks existing aggregate liveness/readiness, **Then** the documented safe
    health contract remains usable without identity, module details or secrets;
    protected responses cannot be reused from another user's cache.
+6. **Given** credential reset/change, account disablement through authorized
+   future administration, session revocation or a security-relevant trust change,
+   **When** an affected old session next requests protected access, **Then**
+   it is refused using fresh durable state, not a periodic positive-authentication
+   cache; unrelated users' identities and consumed ownership are not changed.
+   Until 006, Owner designation alone cannot invoke unavailable administration.
 
-### User Story 4 - Develop locally without a production backdoor (Priority: P2)
+### User Story 5 - Develop locally without a production backdoor (Priority: P2)
 
 As a contributor, I can use explicitly selected local identities without a live
 external provider while seeing clearly that this is not production login.
@@ -208,9 +304,10 @@ production-store transitions.
    starts in production or a production identity has matching profile values,
    **Then** development authentication and authority are not accepted or merged
    into production users; development enrollment cannot consume or grant the
-   production first-admin designation.
+   production initial-Owner designation. Production local accounts remain
+   a separate secure login method, not renamed development users.
 
-### User Story 5 - Operate and recover identity safely (Priority: P2)
+### User Story 6 - Operate and recover identity safely (Priority: P2)
 
 As an operator, I can diagnose login/bootstrap failures and maintain identity
 storage without disclosing secrets or silently resetting administrator state.
@@ -227,8 +324,8 @@ capture public/private diagnostics and follow documented correction/retry paths.
    **Then** the host owns only its identity data; prior assignments/data remain
    unchanged, and normal serving does not silently perform new migrations.
 2. **Given** unavailable/corrupt identity storage or interrupted identity/session
-   persistence, **When** login, enrollment or current-identity verification
-   requires it, **Then** the operation fails closed with a truthful bounded
+   persistence, **When** login, ownership/credential change or current-identity
+   verification requires it, **Then** the operation fails closed with a truthful bounded
    unavailable/uncertain result; corrected explicit recovery preserves committed
    mappings and consumed bootstrap state without a new administrator.
 3. **Given** successful/rejected login, bootstrap, expiry or sign-out,
@@ -242,14 +339,22 @@ capture public/private diagnostics and follow documented correction/retry paths.
    width or enlarged text, **When** the user retries or signs out, **Then**
    loading, signed-out, signed-in, development and failure states remain
    understandable and operable without losing a safe local return destination.
+5. **Given** a delivered identity store with stable users, exact external
+   associations and consumed or pending nominated bootstrap, **When** the
+   versioned account-model upgrade is explicitly prepared, **Then** stable IDs,
+   associations, consumed ownership and unrelated module data survive; old
+   mode-bound sessions are invalidated explicitly. Unconsumed legacy nomination
+   material cannot authorize the new flow; fresh setup admission is required
+   only if ownership was never consumed.
 
 ### Edge Cases
 
-- Duplicate callbacks, multiple browser tabs, simultaneous first login for one
-  subject and concurrent enrollment must not create duplicate users/privilege.
+- Duplicate callbacks, multiple browser tabs, concurrent credential creation and
+  mixed local/OIDC first-Owner attempts must not create duplicate users/privilege.
 - Issuer/subject are trusted identity keys; missing or malformed keys, renamed
   provider labels, reused email, mixed-case/display variants and changed provider
-  configuration must not silently relink accounts.
+  configuration must not silently relink accounts. Local credentials and
+  external associations are login methods, not separate kinds of internal user.
 - Expired or foreign login state, callback replay, session fixation, forged
   proxy/identity headers, credential-type confusion and browser request forgery
   must not authenticate a different user or cause protected effects.
@@ -261,6 +366,16 @@ capture public/private diagnostics and follow documented correction/retry paths.
   uncertainty; retries reconcile durable state rather than assume failure.
 - Expired/abandoned bootstrap authorization must permit explicit operator
   replacement before completion without reopening a consumed ceremony.
+- Setup token possession alone, a stolen/foreign setup-session binding, reset
+  authorization or an external administrator claim must not grant ownership.
+- Invalid local passwords, unknown accounts, identifier collisions, concurrent
+  resets, repeated guesses and attempts during lockout need safe bounded denial;
+  credential reset/change cannot leave old sessions valid until a periodic check.
+- Explicit method association must prove control, reject an already-owned
+  association and avoid both email auto-linking and removal of the final usable
+  method. Reset must not add local credentials to an OIDC-only user.
+- Invitations/admission from 006 cannot be represented by an untrusted request
+  flag or bypass 005's account uniqueness, credential or session protections.
 - Secret rotation, restart and profile changes must have documented session
   effects; identity mappings and consumed bootstrap remain stable.
 - Restoring an older backup can roll back security state. Restore must keep
@@ -274,21 +389,25 @@ capture public/private diagnostics and follow documented correction/retry paths.
 
 ### Functional Requirements
 
-- **FR-001**: The host MUST support production login through operator-configured,
-  standards-conforming OIDC without requiring a particular vendor, cloud,
-  optional module or local production password. Provider credentials stay with
-  the provider; only validated authentication evidence establishes a user.
-- **FR-002**: Login MUST validate configured issuer, intended recipient, integrity,
-  validity period and binding to the initiating browser/attempt; reject replay,
+- **FR-001**: The host MUST support production local-account login and
+  operator-configured, standards-conforming OIDC without requiring a particular
+  vendor, cloud or optional module. Local-only operation MUST require no external
+  identity service. External provider credentials stay with that provider;
+  only validated evidence for an enabled method establishes a user.
+- **FR-002**: OIDC login MUST validate configured issuer, intended recipient,
+  integrity, validity period and binding to the initiating browser/attempt; reject replay,
   unsolicited/forged evidence and incompatible credential types before creating
   a session. Client-supplied identity/privilege claims are not authoritative.
-- **FR-003**: The host MUST durably map the verified external issuer/subject pair
-  to one stable opaque internal user, including concurrent first login and
-  restart. Profile changes MUST NOT change that key; distinct external identities
-  MUST NOT merge automatically through email, display name or provider label.
+- **FR-003**: Every admitted local credential and exact verified external
+  issuer/subject association MUST resolve to one stable opaque internal user,
+  including concurrency/restart. Each login method has at most one owner;
+  multiple methods may refer to the same user only through explicit association.
+  Profile/connection-label changes MUST NOT change the user key. Matching email,
+  display name or provider claims MUST NOT merge users or create associations.
 - **FR-004**: The browser and authenticated current-user API MUST expose the same
-  minimal internal identity, safe display information, identity mode and local
-  first-admin designation, without provider tokens or other users' data.
+  minimal internal identity, safe display information, production/development
+  context and initial-Owner designation, without credentials or other users'
+  data. Production method choice MUST NOT define a different internal user type.
 - **FR-005**: Protected host operations MUST reject missing/invalid authentication
   by default. Only explicitly documented non-sensitive public surfaces, including
   necessary login entry/callbacks and existing aggregate health, may be anonymous;
@@ -299,7 +418,7 @@ capture public/private diagnostics and follow documented correction/retry paths.
   provider login HTML/redirects in place of an operation result.
 - **FR-007**: Authentication MUST supply the same trusted actor to web/API and
   module operations; requests cannot select an actor through body/header/profile
-  overrides. Login and first-admin designation MUST NOT manufacture team
+  overrides. Login and initial-Owner designation MUST NOT manufacture team
   membership or bypass future registered action/team/resource checks.
 - **FR-008**: Browser authentication MUST resist session fixation, credential
   theft through browser-readable session material, cross-site request forgery
@@ -309,17 +428,22 @@ capture public/private diagnostics and follow documented correction/retry paths.
   safe renewal/restart/secret-rotation behavior. Local sign-out and expiry MUST
   invalidate the affected session for its next protected request and clear
   stale browser identity; provider-wide sign-out is not promised.
-- **FR-010**: First-admin enrollment MUST be disabled without explicit operator
-  authorization, bound to a nominated verified external issuer/subject and
-  guarded by expiring one-time authorization. First arrival, email match,
-  arbitrary profile claims and a development login MUST NOT qualify.
-- **FR-011**: Successful enrollment MUST atomically persist exactly one initial
-  administrator designation and consumed bootstrap state in the same owner
-  store. Concurrency, interrupted replies and restart/retry MUST NOT create
-  additional administrators, partial committed enrollment or replayable authority.
-- **FR-012**: Completed enrollment MUST remain closed across ordinary restart,
-  upgrade, configuration replay and administrator unavailability. Explicit
-  operator correction/recovery MUST be documented; no public bootstrap reset,
+- **FR-010**: Initial ownership MUST require explicit operator-authorized,
+  expiring one-time installation setup-token admission and successful local or
+  OIDC authentication bound to that setup session. The first eligible login to
+  commit wins without prior nomination of a person. Anonymous arrival, token
+  possession alone, email/role claims and development login MUST NOT qualify.
+- **FR-011**: The initial user/account changes, exactly one installation-wide
+  Owner designation, consumed setup-token authority, resulting session and
+  required security record MUST commit together in host-owned storage before
+  authenticated success is published. Concurrent local/OIDC attempts,
+  interrupted replies and restart/retry MUST NOT create a second initial Owner,
+  partial committed ownership or replayable authority. Losing contenders MUST
+  NOT activate accounts outside trusted onboarding admission.
+- **FR-012**: Consumed initial ownership MUST remain closed across ordinary restart,
+  upgrade, token replacement, connection changes, configuration replay and Owner
+  unavailability. Explicit operator correction/recovery MUST be documented;
+  no public bootstrap reset,
   next-login promotion or silent deletion/re-creation is permitted.
 - **FR-013**: Development login MUST require explicit opt-in, a development
   environment and loopback-only exposure, with a persistent visible mode label.
@@ -336,50 +460,105 @@ capture public/private diagnostics and follow documented correction/retry paths.
 - **FR-016**: Identity/session/bootstrap persistence MUST use host-owned storage
   and the accepted ownership, explicit preparation/migration and complete-set
   recovery boundaries on both supported providers. Upgrade/restart MUST preserve
-  committed users, consumed enrollment and unrelated module assignments/data.
+  committed stable user IDs, exact external associations, consumed ownership
+  and unrelated module assignments/data. Upgrade from the delivered identity
+  format MUST preserve a consumed legacy designation and its user ID, retire
+  unconsumed legacy nomination material and explicitly invalidate old mode-bound
+  sessions rather than reinterpret them. Old migrations/inventory checks MUST
+  NOT be edited or weakened to admit the new format.
 - **FR-017**: Sensitive identity changes and rejected authentication/authority
   attempts MUST produce correlated, sanitized security evidence. Successful
-  user creation and administrator enrollment MUST leave durable owner-local
-  security records alongside their state changes. General audit query/export
+  user creation, credential/association changes and initial ownership MUST leave
+  durable owner-local security records alongside their state changes. General audit query/export
   remains 009; diagnostic failure MUST NOT turn a failed change into success.
-- **FR-018**: Public errors MUST avoid account/nominee enumeration; private
+- **FR-018**: Public errors MUST avoid account/setup-claimant enumeration; private
   diagnostics MUST classify operation, outcome and corrective guidance without
   raw credentials, tokens, login codes, session/one-time authorization material,
   private paths/configuration, exception dumps or unnecessary profile data.
   Metrics MUST NOT use user/subject/session values as labels.
-- **FR-019**: Login and callback inputs, pending attempts, sessions and external
-  provider requests MUST have finite admitted sizes, lifetimes, rate/request
-  budgets and timeouts. Only configured trusted provider destinations may be
-  contacted; operator guidance MUST cover TLS, proxy/origin trust and secrets.
+- **FR-019**: Login, credential/reset/setup inputs, pending attempts, sessions
+  and external requests MUST have finite admitted sizes, lifetimes,
+  rate/request budgets and timeouts. External requests MUST contact only
+  configured trusted destinations, reject forbidden metadata/link-local targets
+  at DNS-answer and connected-peer admission even inside an allowed network,
+  and retain normal TLS validation and deliberately approved private-IdP support.
+  Operator guidance MUST cover production TLS, proxy/origin trust and secrets.
 - **FR-020**: The minimal identity UI MUST present loading, signed-out, signed-in,
-  expired, development and safe failure states, preserve only safe local return
-  destinations, and support keyboard operation, clear focus/error announcements,
+  expired, setup-unclaimed/consumed, credential/reset, development and safe
+  failure states, preserve only safe local return destinations, and support
+  keyboard operation, clear focus/error announcements,
   narrow layouts and enlarged text without exposing protected stale content.
 - **FR-021**: The host MUST document a versioned minimal actor/current-identity
-  contract for trusted consumers and future 006/007 integration. No new MCP tool,
-  job, realtime endpoint or client-credential issuance is required in this slice,
+  and account-admission contract for trusted consumers and future 006/007
+  integration. Authentication method/connection metadata MUST NOT bind a user
+  permanently to one production provider or replace central authorization.
+  Changed mode-bound actor semantics require explicit version/compatibility
+  treatment, not silent reinterpretation of the delivered contract. No new MCP
+  tool, job, realtime endpoint or client-credential issuance is required in this slice,
   and none may acquire identity through a future bypass.
 - **FR-022**: Delivery MUST include independent configured-provider login,
   negative trust/access tests, real both-provider persistence/concurrency/
   migration/recovery evidence, browser/API parity and accessibility checks,
   captured privacy evidence and the retained applicable 001-004 regression gates.
   Deferred/unavailable checks MUST remain explicit, never relabeled as passes.
+- **FR-023**: Operators MUST be able to select local-only, OIDC-only or explicit
+  coexistence with named trusted connections. Disabled methods MUST refuse
+  authentication; renamed/reconfigured connections MUST NOT reinterpret existing
+  associations. Local production accounts MUST retain production TLS, cookie and
+  protected-key requirements, not development exemptions. Outage MUST NOT
+  automatically enable another method, create credentials or grant ownership.
+- **FR-024**: Local account mechanics MUST enforce documented identifier
+  uniqueness, credential policy, protected non-recoverable password storage,
+  bounded failed-attempt/lockout behavior and safe credential change after fresh
+  proof of control. Creation is limited to protected initial setup or trusted
+  authorized admission; credentials MUST NOT be returned or logged.
+- **FR-025**: Local credential recovery MUST require privately delivered,
+  account-bound, expiring one-use reset authorization with non-enumerating
+  request/results and no mandatory external mail service. Reset/change MUST
+  preserve the internal user and Owner designation, invalidate prior sessions
+  for their next protected request and reject replay/wrong-account authorization.
+  Reset MUST NOT add credentials to an OIDC-only account.
+- **FR-026**: Association/removal of an enabled login method MUST be explicit,
+  self-scoped and require fresh proof of control; adding a method also requires
+  proof of that method. An already-associated method MUST NOT be reassigned to
+  another user or merge accounts. Removal MUST NOT leave the account without
+  a usable method; provider outage alone MUST NOT authorize association.
+- **FR-027**: After initial ownership, unknown local/OIDC identities MUST NOT
+  gain active accounts or sessions without trusted onboarding admission.
+  Existing admitted users need no new invitation to sign in. The account
+  boundary MUST support 006's authorized invitation/user-administration workflow
+  without trusting browser-supplied admission or granting team/role/resource
+  permissions itself. Those workflows and granular authorization remain 006,
+  not hidden 005 endpoints or a temporary unrestricted Owner bypass.
+- **FR-028**: Setup authorization MUST be delivered only through the protected
+  installation-operator boundary, kept out of public/logged channels, expire
+  within a documented finite lifetime and bind to the initiating setup session
+  through local/OIDC completion. Before ownership is consumed, explicit
+  replacement MUST invalidate old token/admission material; afterward no
+  generation/replacement/recovery operation may reopen ownership.
+- **FR-029**: Session validation MUST use fresh durable account/session/security
+  state on every protected request. Credential change/reset, authorized account
+  disablement, revocation and security-relevant trust changes MUST invalidate
+  affected sessions by their next protected request. Periodic credential-stamp
+  checks or cross-request positive caches MUST NOT weaken this guarantee.
 
 ### Interfaces and Permission Parity
 
 | Surface | Observable boundary |
 | ------- | ------------------- |
-| Web | Minimal sign-in entry, safe provider handoff/return, identity/mode summary and local sign-out; not the later full console shell. |
-| Host/API | Login protocol boundaries, authenticated current identity and sign-out with explicit error semantics; route/serialization details are planning contracts. |
+| Web | Enabled local/OIDC sign-in, protected initial setup, self-service credential/reset/association states, safe identity summary and local sign-out; not the later administration console. |
+| Host/API | The same login, setup and self-scoped account/session operations with explicit error semantics; route/serialization details are planning contracts. |
 | Trusted module | Read host-established internal actor through a versioned minimal contract, never directly query identity tables or trust client-selected claims. A test-owned consumer proves parity without shipping a new product module. |
-| Bootstrap/operator | Explicit protected installation ceremony bound to the nominated verified identity; neither a general anonymous administration API nor automatic first-login promotion. |
+| Bootstrap/operator | Private one-time setup-token admission followed by bound successful local/OIDC login; one atomic initial-Owner claim, not public first-arrival promotion or a general administration API. |
+| 006 integration | Versioned canonical-user, initial-Owner and authorized account-admission boundary. 006 owns invitation/administration and team/RBAC decisions; 005 enforces account/credential/session invariants. |
 | Health | Existing aggregate liveness/readiness stays explicitly anonymous and non-sensitive; new identity details are excluded. Development contract publication retains environment restrictions. |
 | MCP/jobs/providers/realtime | No runtime surface added. Future 006/007/013/017/018/019 operations must consume the same actor and centrally enforced permission/scope, not session material or a new identity store. |
 
-Current-user and sign-out operations are scoped to the calling session/user,
-not a caller-specified user/team. Bootstrap authorizes only its nominated
-installation administrator. Until 006 supplies granular authorization, unrelated
-admin/resource operations remain unavailable/denied; the designation is not a
+Current-user, credential and association operations are self-scoped, not
+caller-selected user/team administration. Reset/setup have narrowly scoped
+one-use authority, not an ordinary authenticated actor or bearer API credential.
+Until 006 supplies granular authorization, unrelated admin/resource operations
+remain unavailable/denied; the designation is not a
 universal allow flag. Existing restricted maintenance commands retain their
 separate operator boundary, not browser-derived authority.
 
@@ -396,13 +575,21 @@ no `public`, traversal, `ATTACH`, cross-module joins or registry reassignment.
 Identity migrations and their history MUST stay within host ownership and use
 explicit stopped preparation and accepted installation authority, not migrations
 on ordinary request/login/serving. Both fresh installation and upgrade from the
-accepted foundation must be demonstrated. Enrollment state and its durable
-security record use one owner-local transaction; no cross-module ACID or global
+accepted foundation must be demonstrated. Initial ownership, admitted
+account/session changes and their durable security record use one owner-local
+transaction; no cross-module ACID or global
 rollback is claimed. The host maintains stable user keys rather than letting
 optional modules rederive identity from external claims.
 
-Data model/version changes must preserve issuer/subject uniqueness and consumed
-bootstrap. Unsupported/corrupt states fail closed, with documented forward
+The delivered identity format is also an upgrade source, not a disposable
+prototype. A new versioned migration must preserve stable user IDs, exact
+external associations and consumed bootstrap/designated user, plus all module
+assignments/data/history. It must explicitly retire old sessions and unconsumed
+nomination material. Do not edit historical migration bytes, relax exact physical
+inventories, manufacture local credentials or reassign a user based on email.
+No new credential is inferred from old development or OIDC-only records.
+
+Unsupported/corrupt states fail closed, with documented forward
 recovery or explicit compatible restore, never silent data loss or bootstrap
 reset. Backup/restore includes identity records and security state within the
 accepted complete installation set. Secret/session-key handling and stale-backup
@@ -411,16 +598,18 @@ historical privilege rollback or immediate upstream identity revocation.
 
 ### Experience, Security and Operations
 
-Login is deliberately small but accessible. Users can distinguish cancelled
-login, lost/expired session, provider/storage unavailability and a development
-identity without raw errors or account enumeration. UI state clears on refusal;
+Login is deliberately small but accessible. Users can distinguish enabled methods,
+protected setup, cancelled login, lost/expired session, generic credential/reset
+failure, provider/storage unavailability and a development identity without raw
+errors or account enumeration. UI state clears on refusal;
 hidden controls and friendly messages never replace host enforcement.
 Accessibility follows WCAG 2.2 AA for the introduced journey, including keyboard,
 focus, announced state changes, 320-CSS-pixel width and 200% text enlargement.
 
-Production requires configured trusted origins/provider, TLS for non-local
-traffic and documented secrets/proxy handling. No caller controls provider
-discovery locations or login return origins. Invalid provider response, unknown
+Production local and OIDC profiles require configured trusted origins,
+production TLS, protected cookies/keys and documented secrets/proxy handling;
+local credentials do not inherit development relaxations. No caller controls
+provider discovery locations or login return origins. Invalid provider response, unknown
 signing material, identity-store failure and unavailable configuration fail closed.
 Existing valid sessions may remain usable during provider outage only within
 their admitted local lifetime; no immediate provider-wide revocation or offline
@@ -436,28 +625,44 @@ Necessary protocol callbacks and protected session transport are not themselves
 leaks, but sensitive values must not propagate into rendered pages, application
 return destinations, referrers, shared caches or diagnostic captures.
 
-Operations guidance covers initial configuration, enrollment, correction of an
-unconsumed ceremony, sign-out/session limits, secret rotation, explicit upgrade,
-complete-set backup/restore and administrator/IdP loss. Recovery must never
+Operations guidance covers enabled connections, private setup-token issuance/
+delivery/expiry/replacement, initial local-account creation or OIDC login,
+self-service credential/reset/association operations, sign-out/session limits,
+secret rotation, explicit upgrade, complete-set backup/restore and Owner/IdP loss.
+Reset delivery must have a documented private operator-assisted path without
+requiring an external mail vendor; it does not let the operator read passwords
+or silently assume the user's identity. General invitation delivery and
+administrative account recovery workflows remain 006. Recovery must never
 recommend opening anonymous administration, weakening issuer validation or
 enabling development login in production. Trusted in-process modules are not
 sandboxed against hostile code; a minimal actor contract is not such a promise.
 
 ### Key Entities *(if applicable)*
 
-- **Authentication configuration**: Operator-selected identity mode, trusted
-  provider/origins and secret references; no user-controlled provider selection.
-- **External identity**: Validated issuer and subject in a production or explicitly
-  separate development namespace; profile values are descriptive, not keys.
+- **Authentication connection**: Operator-selected stable connection identity,
+  enabled local/OIDC method, trusted origins/provider and secret references.
+  A connection's label is not an external identity key or permission grant.
+- **External association**: Verified issuer/subject linked explicitly to one
+  canonical user through an admitted connection; profile values are descriptive,
+  not keys. Development identity is a separate namespace.
 - **Internal user**: Stable opaque host-owned identity with minimal display data;
-  not an implicit team member or permission grant.
+  independent of local versus OIDC login, not an implicit team member or
+  permission grant.
+- **Local credential**: Account-bound secret verifier and finite failure/lockout
+  state; no recoverable password or implicit credential for an OIDC-only user.
+- **Credential/reset authorization**: Narrowly scoped proof for a self-service
+  account change, bound to one user and finite/one-use where appropriate; not
+  initial ownership or invitation authorization.
+- **Account admission**: Trusted authorization for initial setup or later 006
+  onboarding, distinct from a login assertion, email match or client-supplied flag.
 - **Login attempt/session**: Bounded attempt binding and subsequently established
   local authenticated continuity with finite lifetime and explicit invalidation.
-- **Bootstrap ceremony**: Operator-authorized, expiring, single-use enrollment for
-  a nominated verified external identity; unconfigured, pending and consumed are
-  distinct from a user's current login state.
-- **Initial administrator designation**: Durable installation-level seed attached
-  to exactly one enrolled internal user; future roles/permissions remain 006.
+- **Setup admission**: Operator-authorized, expiring one-time installation token
+  and bound setup session; unconfigured, pending, replaced/expired and consumed
+  are distinct from successful authentication.
+- **Initial-Owner designation**: Durable installation-wide designation attached
+  atomically to the first successfully authenticated eligible user; immutable
+  consumed bootstrap provenance, not a bypass for future 006 permissions.
 - **Security record**: Host-owned bounded operation/outcome/correlation and minimal
   actor reference where known; no secret, raw token or profile dump.
 
@@ -465,14 +670,18 @@ sandboxed against hostile code; a minimal actor contract is not such a promise.
 
 ### Measurable Outcomes
 
-- **SC-001**: A user completes the configured production sign-in, observes the
-  same identity in browser and direct authenticated access, and signs out on
+- **SC-001**: A user completes production sign-in in local-only, OIDC-only and
+  coexistence profiles, observes the same identity in browser and direct
+  authenticated access, and signs out on
   both supported persistence profiles; every tested re-entry retains the same
-  user despite restart or changed display/email values.
-- **SC-002**: Across at least 20 simultaneous eligible enrollment attempts and
-  three subsequent fresh host restarts, exactly one initial administrator and
-  one consumed ceremony remain; all unauthorized, replay and later enrollment
-  attempts produce zero additional designations.
+  user despite restart, changed display/email values or an explicitly associated
+  alternative method. Every disabled-method attempt is refused.
+- **SC-002**: Across at least 20 simultaneous eligible initial-ownership attempts and
+  three subsequent fresh host restarts on each supported persistence profile,
+  exactly one initial Owner, consumed token/setup authority and durable security
+  record remain. Contenders include both local and OIDC identities when both are
+  enabled; all unauthorized, losing, replay and later attempts produce zero
+  additional Owner grants or unapproved active accounts.
 - **SC-003**: Every tested anonymous, forged, expired, wrong-recipient,
   replayed, cross-origin or insufficient-authority request is denied before
   protected data/effects, with consistent browser/direct-access outcomes.
@@ -481,34 +690,50 @@ sandboxed against hostile code; a minimal actor contract is not such a promise.
   development authentications or production administrator grants.
 - **SC-005**: Every introduced identity state is keyboard-operable at narrow
   width and enlarged text with no serious/critical automated accessibility
-  finding. After the trusted login return is received, signed-in or actionable
-  failure state appears within five seconds on a documented local test profile;
+  finding. After final local login/setup input or trusted provider return,
+  signed-in or actionable failure state appears within five seconds on a
+  documented local test profile;
   human/provider interaction time is measured separately, not called app latency.
-- **SC-006**: Clean install, foundation upgrade, interrupted change and corrected
-  recovery preserve all committed identity/bootstrap and unrelated module data
-  on both supported profiles; uncertain attempts never claim known completion.
+- **SC-006**: Clean install, foundation and delivered-identity upgrades,
+  interrupted change and corrected recovery preserve all committed
+  identity/bootstrap and unrelated module data
+  on both supported profiles; old mode-bound sessions are refused after the
+  account-model upgrade and consumed ownership never reopens. Uncertain attempts
+  never claim known completion.
 - **SC-007**: All exercised identity/enrollment outcomes have correlated safe
   evidence, and captured public/private channels disclose zero seeded secret/
   token/authorization canaries outside their required protected authentication
   exchange, and zero unnecessary other-user profile information.
-  The documented sign-in/enroll/sign-out/correction journeys execute against
-  delivered interfaces without an unrecorded manual database edit.
+  The documented sign-in/setup/credential/sign-out/correction journeys execute
+  against delivered interfaces without an unrecorded manual database edit.
+- **SC-008**: Every tested credential creation/change/reset, lockout and explicit
+  method-association flow preserves the canonical user and initial designation;
+  replay/wrong-account/auto-link attempts have zero credential or authority
+  effects, and old sessions are denied on their first request after a committed
+  credential change/reset.
+- **SC-009**: After setup, every tested unadmitted local/OIDC identity is refused
+  account/session creation. Existing users retain sign-in, and Owner designation
+  alone authorizes zero unavailable team/RBAC/user-administration operations.
 
 ### Required Validation
 
 These are required future evidence, **not checks performed by specification**.
 .NET test source lives physically inside its dedicated project under `tests/`,
 never in production slices or linked from production projects.
+FR-022 applies to the entire matrix. References below target this revision;
+historical reports retain their original scenario/requirement meanings.
 
 | Acceptance coverage | Required evidence |
 | ------------------- | ----------------- |
-| US1.1-5; FR-001-004/015/019; SC-001/003/005 | Real protocol interaction with an isolated configured OIDC provider, browser redirect/return and direct identity verification, not a fabricated authenticated principal alone. Exercise issuer/recipient/integrity/time/attempt/replay/key/discovery failures, cancellation, outage and corrected retry. |
-| US2.1-5; FR-010-012/017; SC-002/006/007 | Both real providers: unconfigured/mismatched/expired/replayed enrollment, at least 20 simultaneous eligible attempts, interruptions at commit boundaries and three fresh host restarts. Independently inspect one durable designation, consumed state and owner-local security record; preserve no-success-on-uncertainty proof. |
-| US3.1-5; FR-005-009/021; SC-001/003 | Host/web-adapter/current-user contracts and a separately compiled test-owned module consumer; direct/forwarded anonymous and forged requests, ordinary versus admin identity, denied protected operation, request forgery/origin checks, sign-out/idle/absolute expiry, private-cache and unchanged aggregate health cases. No production test-only privilege endpoint. |
-| US4.1-3; FR-013-014; SC-004 | Positive local dev login and negative environment/bind/origin/unsafe-exposure cases; persisted development identity/session versus production identity and bootstrap after restart/profile change. |
-| US5.1-2; FR-003/011/012/015/016; SC-006 | Real SQLite/PostgreSQL clean install and upgrade from accepted stores, migration/history ownership, concurrent identity uniqueness, interruption, unavailable/corrupt storage and explicit complete-set recovery; compare exact prior module assignment/data sentinels and consumed bootstrap. No in-memory provider substitutes. |
-| US5.3; FR-017-019; SC-007 | Captures of browser/host responses, redirects, logs, traces, metrics and durable security records; secret/identity canaries, safe category/correlation and truthful commit/uncertainty assertions. Invalid inputs and provider request/rate/time budgets require focused negative tests. |
-| US5.4 and UI parts of US1/3/4; FR-020; SC-005/007 | Playwright login/identity/sign-out/expiry/cancel/failure/retry/dev-mode journeys, timing after provider return, keyboard/focus/announcements, narrow width, enlarged text and automated accessibility checks. Record actual profile and results; do not invent a user study. |
+| US1.1-6/8; FR-001-004/015/019/023; SC-001/003/005 | Local-only, OIDC-only and coexistence on real SQLite/PostgreSQL; isolated real OIDC protocol interaction, local password verification and browser/direct identity parity, not fabricated principals alone. Exercise disabled methods, exact association uniqueness, changed labels/trust, issuer/recipient/integrity/time/attempt/replay/key/discovery failures, cancellation/outage and deliberate independent method choice. |
+| US2.1-6; FR-010-012/017/028; SC-002/006/007 | Both real stores: private issuance, invalid/expired/replaced/foreign-bound/replayed setup authorization, eligible local/OIDC races with at least 20 contenders, commit-boundary interruption and three fresh host restarts. Independently inspect one Owner, consumed token/setup state, session and owner-local security record; losing contenders gain no unapproved active account. Token possession without successful authentication must fail. |
+| US3.1-6; FR-024-026/029; SC-008 | Actual local creation, policy/uniqueness/lockout, fresh-proof credential change, private reset delivery/redemption/expiry/replay/wrong-account and explicit method association/removal on both stores. Prove immutable user/Owner identity, no email auto-link/merge, no reset-created password on OIDC-only accounts, final-method protection and next-request invalidation through actual protected requests. Cover concurrent duplicate creation/reset/association and rollback/security evidence. |
+| US4.1-6; FR-005-009/021/029; SC-001/003/009 | Host/web/current-user contracts and a separately compiled trusted test consumer; direct/forwarded anonymous and forged access, ordinary versus Owner actor, denied protected operation, CSRF/origin checks, sign-out/idle/absolute expiry, fresh state after credential/security changes, private caches and unchanged health. Version old/new actor and account-admission compatibility explicitly; no production test-only privilege endpoint. |
+| US1.7; US3.1; US4.6; FR-007/021/027; SC-009 | Unknown local/OIDC login and forged admission after setup fail with no new active user/session. A trusted test consumer exercises the future authorized account-admission boundary and denied counterpart without shipping 006 UI/RBAC or accepting caller-supplied authorization. Existing users can re-enter; initial Owner cannot bypass missing administration permissions. |
+| US5.1-3; FR-013-014; SC-004 | Positive local development and negative environment/bind/origin/unsafe-exposure cases; persisted dev identities/sessions cannot authenticate or claim production ownership, including against production local credentials. |
+| US6.1/2/5; FR-003/011/012/015/016; SC-006 | Real clean install, accepted-foundation and delivered-identity upgrades, exact host/module inventory and migration ownership, corrupt/unavailable stores and interruption/complete-set recovery. Seed consumed and unconsumed legacy states; compare stable user IDs, exact external mappings, module data/history/assignments and consumed Owner user ID. Prove old-session/nomination retirement, no credential manufacture, no migration-byte edits and no consumed-ownership reset. |
+| US6.3; FR-017-019/028; SC-007 | Browser/host responses, redirects, logs, traces, metrics and durable security-record captures with password/setup/reset/session canaries and truthful commit/uncertainty assertions. Controlled DNS/connected-peer cases must reject forbidden-but-allowlisted and mixed destinations without contacting metadata services; retain approved private fixtures and normal TLS. Exercise finite local/external input/rate/deadline limits. |
+| US6.4 and UI parts of US1-5; FR-020; SC-005/007 | Playwright local/OIDC/setup/credential/reset/association/identity/sign-out/expiry/cancel/failure/retry/dev journeys; post-input/return timing, keyboard/focus/announcements, narrow width, enlarged text and automated accessibility. Record actual profiles/results, not an invented user study. |
 
 Retain applicable manifest/storage/composition, module-free bootstrap, health,
 web adapter/OpenAPI and complete local/CI gates. Authentication intentionally
@@ -517,6 +742,15 @@ blanket route restrictions must be deliberately reconciled in plan/implementatio
 not blindly retained or broadly removed. The safe health contract is retained.
 Record exact commands, failures/unavailable checks and all requirement/outcome/
 scenario evidence at implementation.
+
+The existing prohibition on testing the 50,000-session boundary remains binding;
+do not run, substitute or claim that proof. Preserve existing finite local/
+external/maintenance budgets when replanning, including the approved one-second
+local persistence envelope. Moving to a standard account framework does not
+authorize retries, periodic invalidation or longer deadlines to mask contention.
+Preserve review F1/F2 and unchecked T101-T103 until the new plan/tasks explicitly
+reconcile the destination-admission defect and pre-fault SQLite enrollment failure.
+Historical green reports and the rewritten requirements do not diagnose or close them.
 
 No MCP/event/job/realtime contract or reference-module end-to-end behavior is
 introduced here; their tests are inapplicable to this slice, not waived for
@@ -528,36 +762,68 @@ the exact assertion and bounded phase evidence before attributing its cause.
 
 ## Assumptions and Constitutional Review
 
-**Requirements-level defaults:** one operator-configured production OIDC trust
-configuration is sufficient to prove pluggability without requiring several
-providers simultaneously or a vendor-specific product. Internal identity keys
-are issuer/subject, not email. The operator explicitly nominates the initial
-administrator and authorizes enrollment; there is no auto-admin claim mapping,
-production development shortcut or self-service relinking. Local browser session
-access is required; separate machine credential issuance is not. Host-owned
-minimal security records satisfy this slice without pulling general 009 audit
-administration forward. These defaults are visible for the separate clarification
-review and do not represent invented human approval.
+**Locked intent:** The human approved ASP.NET Core Identity for account management,
+maintained external-protocol handlers, production local-only/OIDC-only/coexistence,
+canonical users/shared sessions, explicit associations without email auto-linking,
+and setup-token-protected first-login ownership. This is adopted architecture
+context, not a package/API/store selection by this specification. Next.js remains
+the UI; SAML is a future extension only. Production OIDC and limited development
+identity remain required by constitution VI; approved local production accounts
+supplement OIDC rather than replacing it or weakening bootstrap safety.
 
-**Planning choices, not unresolved product decisions:** exact provider fixture/
-library, login/session flow and protection, API credential representation,
-current-user/actor versioned fields, route/origin topology, enrollment ceremony
-delivery, secret references/rotation, finite durations/sizes/rates/timeouts,
-security-record retention/access and host storage migration design. Consequential
-choices require an ADR and constitutional checks; no library, algorithm, table
-layout or public signature is adopted by this specification.
+The human then approved reworking 005 against the existing 006 boundary:
+005 owns account/authentication/initial-ownership mechanics; 006 owns authorized
+invitations, user administration, teams and RBAC. No 006 stage is executed here.
+
+**Requirements-level defaults for clarification:** There is one installation
+with multiple teams later, not multiple organizations. After protected initial
+setup, new accounts require trusted onboarding admission; valid OIDC proof is
+authentication, not an invitation. Existing admitted users need no repeated
+invitation. Local password lockout constrains local credential attempts across
+all password entry points; it is distinct from an administratively disabled
+account, which denies all methods. No automatic method fallback is permitted.
+Reset has private operator-assisted delivery without requiring SMTP or a vendor;
+general invitation/directory/admin workflows remain 006. Self-service explicit
+association proves both existing-account and new-method control; cross-user
+merge is excluded. These defaults remain visible for a separate clarification
+review and do not invent additional human decisions.
+
+**Planning choices, not unresolved product scope:** exact credential/identifier
+policy and normalization, finite lockout rules, reset/setup token custody,
+generation/expiry/delivery/session binding/replacement and concurrency behavior;
+named connection trust identity and change invalidation; current-user/actor and
+account-admission versioned fields; routes, browser/session mechanisms, key
+rotation, durations/sizes/rates/timeouts, security-record retention/access and
+the new versioned migration/recovery design. These must be explicit and testable
+before implementation, within existing finite budgets.
+
+Evaluate standard Identity persistence first against host ownership, strict
+physical inventories, explicit migrations, transactional user/session/security
+evidence and the one-second SQLite boundary. A narrow persistence adapter is
+an alternative only with evidence, not permission to rebuild account managers.
+Do not silently choose EF stores, packages, tables, public signatures, token
+transport or mail infrastructure here. Dependency provenance/license/lock and
+supported-version review remain required.
+
+**Evidence lifecycle:** Original author/reviewer/design/runtime reports and
+T001-T103 keep their recorded old-scope meaning. The revised author checklist
+assesses this document only. Clarification, replanning, changed quality review,
+task reconciliation and cross-artifact analysis must precede implementation;
+do not reset driver history or retick old quality markers to manufacture them.
+Implementation, convergence, final review and explicit feature acceptance remain
+separate later work on the same feature branch/draft PR.
 
 | Principle | Requirement/application |
 | --------- | ----------------------- |
 | I - Product/brand | Core identity works without optional modules; Köfte prose, `kofte` identifiers; no Hoard dependency. |
 | II - Modularity | FR-007/016/021 retain trusted module lifecycle and a minimal shared actor, not competing login systems or a sandbox. |
 | III - VSA | Host-owned identity slices, native DI/direct handlers and minimal shared contracts; dedicated test-project ownership; no MediatR/AutoMapper or speculative layering. Actual dependency/license review remains implementation. |
-| IV - Storage | FR-003/011/016 and Data Ownership retain real-provider host/module separation, accepted registry/history/path rules and explicit migration evidence. |
-| V - Transactions | Enrollment/designation/security record are one host-owner transaction; no cross-module reads/ACID or automatic global rollback. |
-| VI - Identity/safety | FR-001-019 require production OIDC, limited development, safe non-repeatable bootstrap, default denial, secret protection and bounded trusted external requests; granular 006 remains a separate obligation. |
+| IV - Storage | FR-003/011/016 retain real-provider host/module separation, accepted registry/history/path rules and explicit upgrade from the delivered identity format, not a second account database. |
+| V - Transactions | Initial account/session/Owner/consumption/security evidence share the host-owner commit; credential/reset/association changes require honest owner-local effects, never cross-module ACID or automatic global rollback. |
+| VI - Identity/safety | FR-001-029 require production local/OIDC, separate limited development, safe non-repeatable first-login ownership, no auto-link/open admission, next-request invalidation, default denial and bounded secret/egress protections. 006 still owns central permissions. |
 | VII - MCP | FR-021 provides an actor integration boundary, not an anonymous tool/server; 007/013 still require the same identity/permission model and actual protocol tests. |
-| VIII - Durable work/realtime | No jobs/events/providers/SignalR runtime added; persistent enrollment/session outcomes are local identity state, not a workflow engine or reliable-event guarantee. |
+| VIII - Durable work/realtime | No jobs/events/providers/SignalR runtime added; persistent setup/account/session outcomes are local identity state, not a workflow engine or reliable-event guarantee. |
 | IX - Frontend | FR-020/SC-005 require minimal accessible consistent login states in the existing web foundation; full 008 design system and trusted build-time extensions remain later. |
-| X - Portability | Both supported stores, provider-neutral OIDC, explicit local versus production TLS/secrets/recovery; no mandatory Azure/Kubernetes/managed identity service. |
-| XI - Evidence | FR-022, SC-001-007 and Required Validation map all 22 scenarios and requirements to real provider/protocol/browser/privacy/regression evidence; no inherited failed check becomes passing. |
-| XII - Traceability | Inventory 005 only, accepted 001/004 prerequisites, explicit later-feature exclusions, one stage/branch/PR and subsequent human review/acceptance; not MVP completion. |
+| X - Portability | Both supported stores, production local-only without an IdP, vendor-neutral OIDC and explicit production/development protections; no mandatory Azure/Kubernetes/mail/identity-server service. |
+| XI - Evidence | FR-022, SC-001-009 and Required Validation map all 34 scenarios and 29 requirements to real-store/local/protocol/browser/privacy/regression evidence; no inherited failed check or prohibited capacity boundary becomes a pass. |
+| XII - Traceability | Approved 005 amendment and explicit handoff to existing 006, accepted 001/004 prerequisites, later-feature exclusions, preserved stage history and separate review/acceptance; not MVP completion. |

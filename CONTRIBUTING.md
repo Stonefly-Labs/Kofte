@@ -334,8 +334,14 @@ The [ADR amendment](docs/adr/0007-authentication-bootstrap-boundary.md#human-app
 records ASP.NET Core Identity, production local/OIDC accounts, first-login
 ownership and owner-led onboarding/RBAC. The human also approved a one-time
 installation setup token for initial-claim admission. Update and review the
-affected design/evidence before resuming the blocked implementation, without
-resetting historical ledger/checklist/task evidence or accepting the feature.
+affected design/evidence before resuming the blocked implementation.
+The [specification rework](specs/005-authentication-bootstrap/spec.md) now defines
+005 account/credential/session/initial-Owner mechanics and the handoff to existing
+006 invitations/user administration/teams/RBAC. Six stories/34 scenarios/29
+requirements/nine outcomes have 16/16 author-quality validation; a separate
+clarification pass and revised design/review/task/analysis gates remain.
+Preserve historical ledger, reviewer checklist and task/runtime evidence;
+specification rework is not implementation or feature acceptance.
 
 **The original 005 implementation completed all 100 original tasks**, on
 `feature/005-authentication-bootstrap` and the same draft PR #8.

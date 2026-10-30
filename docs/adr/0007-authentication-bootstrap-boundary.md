@@ -295,9 +295,9 @@ a new passing review, implementation completion or PR readiness:
 4. The initial Owner/superuser can invite/add/onboard users and assign RBAC.
    These capabilities must use central registered authorization and cannot
    become an unguarded per-endpoint bypass or external-claim-to-admin mapping.
-   Reconcile the account/ownership work in 005 with teams, membership, roles and
-   granular permission work in 006; exact delivery/API boundaries still need
-   the amended spec/plan. Do not silently implement all of 006 in 005.
+   The approved delivery boundary below assigns account/ownership mechanics to
+   005 and owner-led administration/teams/RBAC to existing 006. Exact API
+   contracts still require replanning; do not silently implement all of 006 in 005.
 5. Keep an extension seam for future SAML using a vetted handler or federation
    bridge, not a bespoke parser. SAML delivery is not an MVP dependency or
    authorized implementation task.
@@ -332,7 +332,37 @@ Reconcile initial claim, local-account creation, invitation/reset delivery and
 owner permissions before exposing the new flow. Never turn IdP outage into an
 automatic local credential, fallback owner or bootstrap reset.
 
-### Required rework and durable pause
+### Approved 005/006 boundary and specification rework
+
+After the assistant proposed revising 005's account/authentication/initial-Owner
+scope while leaving owner-led invitations/user administration/teams/RBAC in
+existing 006, and clarified that 006 already has an inventory entry, the human
+authorized the work:
+
+> ok yeah, let's do this pls
+
+The [revised specification](../../specs/005-authentication-bootstrap/spec.md)
+records that boundary: 005 owns canonical accounts, local credentials, external
+associations, self-service credential/reset/association mechanics, shared sessions,
+setup-token admission, immutable initial ownership and the versioned integration
+boundary. Existing 006 owns trusted onboarding/invitation/user-administration
+workflows, account disablement decisions and registered team/role/resource
+authorization. No 006 artifact or implementation stage is created here.
+
+Until 006 delivers those workflows, 005 permits protected initial setup and
+existing-user authentication/self-service, not open registration or a temporary
+Owner bypass. A valid unknown OIDC identity is not automatically admitted after
+setup; future authorized onboarding uses 005's account boundary. The complete
+Owner-led onboarding/RBAC journey is a 006 deliverable, not a hidden prerequisite
+requiring both numbered features to be implemented at once.
+
+The specification now has six stories, 34 scenarios, 29 requirements and nine
+outcomes, with independent future-validation mapping. Its built-in author
+checklist is re-evaluated; the prior reviewer-owned quality checklist, detailed
+design/contracts, analysis, task entries and runtime reports remain historical.
+This records specification rework only, not a new technical plan or runtime result.
+
+### Remaining rework and durable pause
 
 Implementation remains paused on `feature/005-authentication-bootstrap` and
 draft PR #8. The driver records **005 / implement / blocked** solely as a
@@ -340,10 +370,11 @@ scheduling guard: no implementation skill, product command or later stage is
 executed by recording this pause. Do not reset prior ledger history or fake
 completed specify/clarify/plan/checklist/analyze entries.
 
-The setup-token decision is resolved; implementation remains blocked for the
-005/006 boundary and reviewed design rework. Before resuming, reconcile that
-boundary and revise requirements/scenarios, research/plan, account/session/actor
-and operator contracts, data/migration/recovery design and their validation mapping.
+The setup-token choice and top-level 005/006 delivery boundary are resolved, and
+the specification is rewritten. Before implementation resumes, separately assess
+the revised requirements/defaults through clarification, then revise research/
+plan, account/session/actor and operator contracts, data/migration/recovery design
+and their validation mapping. Exact integration contracts remain planning work.
 Preserve stable user IDs, exact external mappings, module data/assignments,
 consumed ownership and honest partial effects. A versioned migration and
 explicit old-session invalidation must replace reinterpretation of mode-bound

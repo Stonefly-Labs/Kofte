@@ -3,9 +3,11 @@
 **Rework gate (2026-10-30):** The [approved scope amendment](../../docs/adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
 requires ASP.NET Core Identity, production local/OIDC accounts and first-login
 ownership. This plan is the historical OIDC/Development design, not an execution
-plan for that amendment. Initial-claim admission, persistence/transaction
-integration, versioned contracts/migration and the 005/006 boundary require
-replanning and reviewed evidence before the blocked implementation can resume.
+plan for that amendment. The [revised spec](spec.md) now defines the 005/006
+delivery boundary; setup-token lifecycle, persistence/transaction integration
+and versioned contracts/migration still require replanning and reviewed evidence
+before the blocked implementation can resume. Specification rework does not
+revise this detailed historical plan or prove store compatibility.
 
 **Branch**: `feature/005-authentication-bootstrap` | **Date**: 2026-10-26 | **Spec**: [spec.md](spec.md)
 **Input**: `specs/005-authentication-bootstrap/spec.md`

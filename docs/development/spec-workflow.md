@@ -13,10 +13,17 @@ assets or running a fleet. **Creating this driver does not execute product work.
 records human approval of ASP.NET Core Identity, production local/OIDC accounts,
 first-login ownership and owner-led onboarding/RBAC. The human subsequently
 approved a one-time installation setup token for initial-claim admission;
-that decision is no longer a blocker. Reconcile the 005/006 boundary,
-requirements/design/contracts/migration and reviewed quality/task/
-analysis evidence before resume. Do not reset prior history or treat the old
-passing gates as proof of new semantics. No implementation skill or product
+that decision is no longer a blocker. The
+[specification rewrite](../../specs/005-authentication-bootstrap/spec.md) now
+records the approved boundary: 005 account/credential/session/initial-Owner
+mechanics; existing 006 invitations/user administration/teams/RBAC. Six stories,
+34 scenarios, 29 requirements and nine outcomes have 16/16 built-in author
+validation. This is a controlled scope revision under the blocked feature,
+not a ledger rewind or a newly completed historical specify stage.
+Next is separate clarification of revised defaults, then replanning/contracts/
+migration and reviewed quality/task/analysis evidence before resume.
+Do not reset prior history or treat the old passing gates as proof of new
+semantics. No implementation skill or product
 command ran; begin/block records only the pause, not a completed stage.
 
 The preceding
