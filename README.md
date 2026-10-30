@@ -48,9 +48,11 @@ The draft now covers six stories, 34 scenarios, 29 requirements and nine outcome
 005 owns account/authentication/initial-Owner mechanics; existing 006 owns
 invitations, user administration, teams and RBAC. The built-in author checklist
 remains 16/16 after clarification: all ten coverage categories are Clear and no
-material question or spec change was needed. Replanning and changed review/task/
-analysis gates remain before implementation. Historical quality/runtime evidence
-is not re-certified by this rewrite.
+material question or spec change was needed. The [revised technical plan](specs/005-authentication-bootstrap/plan.md)
+now proposes framework account managers over bounded native persistence,
+versioned contracts and format-3 migration/recovery. Design/changed quality
+review, task reconciliation and analysis remain before implementation.
+Historical quality/runtime evidence is not re-certified by this replan.
 No new behavior is implemented or feature acceptance inferred.
 
 The preceding review checkpoint is retained below.
@@ -66,7 +68,7 @@ That checkpoint recorded zero actionable gaps and left tasks/product/test code u
 This is not feature acceptance or a merge request. T001–T100
 are evidenced: production OIDC login, nominated enrollment, shared session
 boundaries, explicit Development identity and stopped operational recovery.
-The [runtime guide](specs/005-authentication-bootstrap/quickstart.md) now records
+The [historical runtime guide](https://github.com/Stonefly-Labs/Kofte/blob/f10351a599191a5931b05a719cd8d291eba839fb/specs/005-authentication-bootstrap/quickstart.md) records
 all nine public recipes individually plus `all` passing on **each** real
 provider, with exact ordered observations, 77 passing harness negatives and
 verified owned cleanup. Chromium is qualified on local and Linux profiles;

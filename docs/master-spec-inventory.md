@@ -191,8 +191,10 @@ the [rewritten specification](../specs/005-authentication-bootstrap/spec.md).
 005 owns accounts/authentication/initial ownership and self-service credential
 mechanics; existing 006 owns invitations/user administration/teams/RBAC through
 central authorization. Clarification finds no critical ambiguities across all
-ten categories, with zero questions or spec changes. Revised design/review gates
-remain before implementation, which stays blocked.
+ten categories, with zero questions or spec changes. The [revised plan](../specs/005-authentication-bootstrap/plan.md)
+now proposes exact Identity/store, token/credential, versioned-contract and
+format-3 migration/recovery choices. Human design/changed quality review,
+task reconciliation and analysis remain before implementation, which stays blocked.
 SAML remains a future extension, not an MVP prerequisite. The original
 generation prompt below is historical; it does not override this amendment
 or authorize resuming the old OIDC-only/nominated-bootstrap plan.
@@ -226,7 +228,8 @@ and RBAC through central registered authorization. It consumes 005's canonical
 account/session/initial-Owner and authorized account-admission boundary rather
 than creating another identity authority or bypassing credential protections.
 The complete Owner-led administration journey is delivered here, not in 005.
-Exact integration contracts require replanning; no 006 stage or unconditional
+005 now proposes the versioned [account-admission contract](../specs/005-authentication-bootstrap/contracts/account-admission-v1.md);
+006 must review/adopt it in its own planning. No 006 stage or unconditional
 administrator bypass is authorized by this note.
 
 **Purpose / deliverable:** Implement teams, memberships, baseline roles and module-registered granular permissions; resource/team scoped authorization shared across web/API/MCP/jobs.

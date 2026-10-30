@@ -362,6 +362,63 @@ checklist is re-evaluated; the prior reviewer-owned quality checklist, detailed
 design/contracts, analysis, task entries and runtime reports remain historical.
 This records specification rework only, not a new technical plan or runtime result.
 
+### Revised technical design proposal - 2026-10-30
+
+The explicit `/speckit-plan` rework produces a
+[revised plan](../../specs/005-authentication-bootstrap/plan.md),
+[source-backed A1-A12 research](../../specs/005-authentication-bootstrap/research.md),
+[account model](../../specs/005-authentication-bootstrap/data-model.md),
+[HTTP/actor-v2](../../specs/005-authentication-bootstrap/contracts/identity-v2.md),
+[operator-v2](../../specs/005-authentication-bootstrap/contracts/operator-v2.md),
+[account-admission-v1](../../specs/005-authentication-bootstrap/contracts/account-admission-v1.md)
+and [future validation guide](../../specs/005-authentication-bootstrap/quickstart.md).
+These exact technical decisions are **proposed for review**, not new human
+approval, a package adoption, implementation proof or acceptance.
+
+Standard EF Identity stores were evaluated first. They support model
+customization, caller transactions and deferred `AutoSaveChanges`; schema
+ownership alone does not disqualify them. The proposal instead uses five narrow
+framework store interfaces over the existing native SQLite/cancellable
+PostgreSQL owner executor to retain the one-second transaction/cleanup boundary.
+ASP.NET Core Identity managers, validators, normalizer, hashing, lockout and
+reset provider stay framework-owned. The adapter lives in the existing Web Host,
+whose shared framework already includes the Identity assemblies; no EF Identity
+package or new production assembly is selected.
+
+UserManager and check-only SignInManager calls join one owner transaction.
+Failed-count/lockout/rehash writes are not assumed read-only; any failed store
+write prevents commit even if a framework path discards its result.
+Only the existing committed-ticket bridge publishes cookies after known commit.
+Every protected request checks fresh durable account/stamp/version/session/
+epoch/trust, never a periodic positive stamp cache.
+
+Proposed policies are local names of 3-64 restricted ASCII characters, passwords
+of 12-128 UTF-16 units with spaces/no composition rules, framework V3 hashing at
+210,000 iterations, five failed local checks/fifteen-minute lockout; fifteen-minute
+private setup/reset authority and five-minute browser admissions/fresh proofs.
+Local-only production retains HTTPS/Secure cookies/certificate-protected keys.
+Explicit association requires original-account plus new-method proof, never
+email matching; changes/reset/association invalidate old sessions next request.
+Reset uses private operator-assisted file delivery, not compulsory SMTP.
+
+Platform format 3 / identity schema 2 / recovery-v3 append new migration history
+and exact inventories without changing old migration bytes/fingerprints.
+Preserve canonical user IDs, exact external ownership, module state and legacy
+consumed Owner provenance; retire old tickets/unconsumed nominee authority.
+Named connection bindings cannot retarget old identities; trust reconciliation
+conservatively advances the global epoch. Restore remains quarantined, history-
+reconciled and honest about rollback/custody limits.
+Retain v1 definitions as delivered history, explicitly retire old HTTP/actor
+service use, and require v2 identity-aware consumers rather than local-as-OIDC.
+
+The account-admission policy defaults to denial even for initial Owner; future
+006 supplies registered current-actor or validated durable-onboarding authority.
+No new administration/invitation/RBAC endpoint or 006 artifact is delivered.
+Both-provider exact-framework transaction/deadline proof, dependency/license
+closure, human design/changed quality review, refreshed tasks and analysis remain
+adoption/resume gates. Keep F1/F2/T101-T103 and the prohibited session-capacity
+proof unchanged. No product suite or runtime compatibility pass is claimed here.
+
 ### Remaining rework and durable pause
 
 Implementation remains paused on `feature/005-authentication-bootstrap` and
@@ -378,10 +435,10 @@ checklist remain byte-identical, with 16/16 criteria before and after.
 See the [coverage evidence](../development/spec-workflow.md#reworked-005-clarification-assessment---2026-10-30).
 This assesses written requirements, not a new runtime or human approval result.
 
-Before implementation resumes, revise research/plan, account/session/actor and
-operator contracts, data/migration/recovery design and their validation mapping.
-Exact policies, token delivery/binding, persistence choice and integration
-contracts remain planning work, not unanswered product decisions to fabricate.
+The separate plan pass now proposes research/store integration, exact policies,
+token delivery/binding, versioned account/actor/operator contracts, migration/
+recovery and all 34 scenario mappings. Before implementation resumes, review
+that revised technical design and its adoption evidence obligations.
 Preserve stable user IDs, exact external mappings, module data/assignments,
 consumed ownership and honest partial effects. A versioned migration and
 explicit old-session invalidation must replace reinterpretation of mode-bound

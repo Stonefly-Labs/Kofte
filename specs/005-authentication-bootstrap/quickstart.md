@@ -1,59 +1,114 @@
-# Runtime and Validation Guide: 005 Authentication and Bootstrap
+# Validation Guide: Revised 005 Accounts and Initial Ownership
 
-**Status:** Implementation complete (100/100 tasks), not accepted or production-ready.
-The host, identity page, stopped commands and test-owned consumer are delivered
-source, not proposed interfaces. The [implementation record](implementation.md)
-identifies the passing hosted full gate, actual CI, assessed sources and historical failures;
-the command inventory below is not itself a passing complete gate.
-[ADR 0007](../../docs/adr/0007-authentication-bootstrap-boundary.md) has explicit
-human design approval, separate from feature acceptance.
+**Status:** Future implementation/acceptance guide, not delivered new behavior.
+No v2 command, recipe, migration or passing runtime result is created by planning.
+Current old-scope operation remains documented in the
+[local guide](../../docs/development/local-development.md);
+the [original quickstart](https://github.com/Stonefly-Labs/Kofte/blob/f10351a599191a5931b05a719cd8d291eba839fb/specs/005-authentication-bootstrap/quickstart.md)
+and [implementation record](implementation.md) retain historical proof.
+The [plan](plan.md), [data model](data-model.md) and proposed
+[identity](contracts/identity-v2.md) /
+[operator](contracts/operator-v2.md) /
+[account-admission](contracts/account-admission-v1.md) contracts are the target.
 
 ## Prerequisites and safety
 
-Use exact tools/locked restores from the
-[local guide](../../docs/development/local-development.md):
-.NET SDK 10.0.402/runtime 10.0.13, Node 24.22.0/npm 11.19.1 and Python 3.11+.
-SQLite uses native owned private roots. PostgreSQL evidence requires the
-existing pinned disposable fixture and Docker; it must never use an operator's
-database. Keep PostgreSQL ownership/credential/CREATE-denial checks intact.
+Use the existing pinned .NET SDK 10.0.402/runtime 10.0.13, Node 24.22.0/npm
+11.19.1, Python and locked restores. Do not install an IdP/toolchain/product
+package just to read this guide. Keep current Playwright pin/exception and
+dependency/license/notice gates. Exact framework/store compatibility is a
+first implementation gate, not established by public documentation.
 
-Do not install an IdP, product package or toolchain merely to read this guide.
-Use the reviewed OIDC/transitive closure, central pins, locks and notices;
-restore through the existing mechanisms rather than introducing new versions.
-The test-owned issuer binds an owned loopback HTTPS port with an isolated test
-CA, real signed protocol messages and no production certificate-validation
-bypass. Browser tests use actual host/web/issuer processes. Synthetic identity/
-secret/correlation fixtures are generated per run, never committed credentials.
+Own every target/root/process/port/key/certificate. SQLite uses native private
+roots; PostgreSQL uses only the existing pinned disposable fixture, never an
+operator database. Real OIDC uses a test-owned HTTPS issuer/CA with signed
+protocol evidence and no production TLS bypass. Browser evidence requires real
+host/web/issuer processes, not fabricated principals. Keep private captures
+outside Git; do not copy credentials or verifier databases into PR evidence.
 
-The explicit operator setup is:
+**Do not run heavy product/Docker suites on the shared Mac.** Full/provider
+qualification belongs on an owned disposable/hosted runner. Never run, replace
+or claim the 50,000-session boundary test. Hosted Linux does not establish a
+final-source macOS qualification. Preserve all retained deadlines/assertions,
+owned cleanup and actual failed observations.
 
-1. Generate a private explicit v1 config with either development mode or exact
-   production OIDC trust; use the [operator contract](contracts/operator-v1.md).
-2. Stop the owned host. Initialize a genuinely empty store using the existing
-   provider workflow, explicitly upgrade registry v0 to v1 where needed, then
-   execute `--identity prepare`. Observe verified format 2 and
-   private key readiness, not just a zero exit code.
-3. Start the native host/web with `KOFTE_AUTH_CONFIG_FILE` set on both required
-   processes/forwarded workers. Health stays anonymous; `/me` is 401 until
-   deliberate login. This slice does not make `test-postgres` a general
-   production database profile.
-4. In OIDC mode log in as an ordinary user and verify no initial designation.
-   Stop, authorize the exact nominee using private input/output files, restart,
-   log in as that nominee and submit the one-time authorization through the
-   protected form. No command prints the secret; no manual database edit.
-5. Verify `/me`, sign out, retry expired/replayed/other-user authorization and
-   exercise documented correction. No anonymous admin endpoint or second
-   initial administrator is created.
+## First implementation admission proof
 
-These steps are exercised through the delivered test-owned
-consumer and fixture-owning verifier; do not substitute a mocked principal or
-an unexplained private database patch.
+Before broad account implementation, use the actual locked shared-framework
+assemblies with the proposed five-interface store adapter. On each real provider,
+prove framework create/find/name normalization, check-only login/lockout/rehash,
+password change/reset/stamp rotation and external login add/remove all enlist in
+one coordinator transaction. Assert account/session/Owner/consumption/evidence
+atomicity; no manager/store commit or early cookie; rollback on required-event
+failure, ignored framework rehash-update failure and unknown-commit handling.
+Measure the unchanged one-second local
+budget including hash work, contention, cancellation and cleanup, and the
+four-second OIDC budget. An API/source fit alone does not pass.
 
-## Required complete and CI verification
+Use existing owning projects, not a new prototype app or production-linked test:
 
-The following existing commands include the identity
-projects/cases; do not add an optional skip or let
-missing fixture source silently disappear from the required suite inventory.
+```bash
+dotnet test tests/unit/Kofte.Host.Tests/Kofte.Host.Tests.csproj --configuration Release --no-restore --filter FullyQualifiedName~Identity
+dotnet test tests/integration/Kofte.Storage.IntegrationTests/Kofte.Storage.IntegrationTests.csproj --configuration Release --no-restore --filter FullyQualifiedName~Identity
+dotnet test tests/integration/Kofte.Host.IntegrationTests/Kofte.Host.IntegrationTests.csproj --configuration Release --no-restore --filter FullyQualifiedName~Identity
+```
+
+These are **post-implementation** selections, not commands run for this plan.
+Provider fixtures must own their targets; PostgreSQL selection needs the
+documented disposable admission environment. Require named new tests to exist/
+execute and zero skips; the filter alone cannot prove revised coverage.
+Failure blocks store adoption; do not lengthen deadlines, bypass managers or
+quietly fall back to another authentication implementation.
+
+## Operator and browser journeys after implementation
+
+Use the existing built Host DLL path/launch environment from the local guide;
+the following argument sets are proposed operator-v2, not current CLI support.
+Private files below mean actual operator-owned absolute paths, never committed
+example credentials. Do not pass a token/password as a command argument.
+
+1. Prepare strict v2 production configuration and persistent protected keys with
+   local-only, OIDC-only or coexistence. Stop the owned installation; explicitly
+   upgrade registry-v0 if needed and run `--identity prepare`. For delivered
+   format 2, include `--legacy-connections-file` with exact private issuer mapping.
+   Verify format-3 inventory/history and unchanged module/user/Owner evidence,
+   not merely command exit. No password is manufactured for old external users.
+2. Before any ownership has been consumed, run
+   `--identity setup authorize --authorization-file` with a **new private file**.
+   Deliver privately, start the owned host/web behind required production HTTPS,
+   open `/identity`, submit the token and complete local creation or selected
+   OIDC login. Observe one matching browser/API actor with `isInitialOwner:true`,
+   one consumed ceremony/event and no cookie before commit.
+3. Sign out/re-enter with either explicitly associated enabled method; compare
+   exact stable user ID. Attempt unknown post-setup local/OIDC admission, forged
+   flags/references and Owner-only administration. All must fail without a new
+   account or unavailable 006 permissions. Test each disabled method explicitly.
+4. Change the local password using fresh proof; verify the old password and
+   **the very next protected request from every old session** are refused.
+   Exercise five failed attempts/fifteen-minute lockout across all local proof
+   entry points; independently enabled OIDC is not automatic fallback.
+5. Request reset instructions; observe the same operator-assistance response
+   for existing/unknown/ineligible names, with no promised mail/queue.
+   Operator verifies requester privately and runs
+   `--identity password-reset authorize --account-file ... --authorization-file ...`.
+   Deliver privately, redeem with the new password, re-enter as the same user;
+   verify replay/wrong-account/expiry/replacement and old-session denial.
+6. Freshly reauthenticate, explicitly add the other enabled method, then sign
+   in again. Require original-account plus new-method proof, reject another
+   user's association/email match and final-usable-method removal.
+7. Exercise stopped trust/secret/key reconciliation, session revocation and
+   complete-set restore/quarantine correction through documented commands.
+   Consumed Owner never reopens. Lost IdP/Owner access has no new-owner shortcut;
+   unresolved history remains locked and general administration remains 006.
+
+The public consumer below must automate these actual journeys with independent
+observations and no undocumented database patch. Testing can seed/corrupt owned
+fixtures through private test controls, never a shipped endpoint/bypass flag.
+
+## Runnable verification commands after implementation
+
+These existing runner entry points must be updated to require new v2 inventories;
+unchanged old-source passes are not new-scope evidence.
 
 ```bash
 python3 scripts/check_repository.py
@@ -72,201 +127,126 @@ python3 scripts/verify.py --suite failure-propagation --disposable-postgres
 python3 scripts/verify.py --suite all --disposable-postgres --warm-starts 10
 ```
 
-Quality retains exact-version/locked dependency/notice checks, .NET
-format/build/warnings, web Prettier/ESLint/type/build, generated contract and
-Python/repository checks. Regenerate the existing shared OpenAPI/types with
-`npm run generate --workspace packages/bootstrap-contract` after deliberately
-adding the identity operations, then `npm run contract:check`.
-Health bootstrap-v1 remains byte/shape compatible.
+Quality retains .NET format/build/warnings, web formatting/lint/type/build,
+locked dependency/provenance/license/notice checks, generated contract checking
+and repository/tooling tests. Regenerate deliberately changed OpenAPI/types with
+`npm run generate --workspace packages/bootstrap-contract`, then
+`npm run contract:check`; health bootstrap-v1 must stay unchanged.
+Do not install/restore unnecessarily before actual missing-dependency failures
+or approved manifest changes.
 
-For the complete command, use a dedicated workstation or the disposable
-GitHub-hosted Ubuntu entry point instead of assuming shared-machine capacity:
+The disposable hosted complete entry remains:
 
 ```bash
 gh workflow run product-checks.yml --ref feature/005-authentication-bootstrap -f suite=complete
 ```
 
-This runs the exact all-mode command in one job. The ordinary `suite=all` dispatch
-and PR trigger still run the independent ten-job matrix. Record the actual OS,
-source and reports; a hosted Linux complete gate is not a macOS qualification.
-The interrupted final Mac attempts remain incomplete, not retroactively passed.
+It executes the exact all-mode command in one job; ordinary `suite=all` and PR
+trigger retain the independent ten-job matrix. Record exact source/OS/commands/
+named steps/multiplicity/reports and actual CI outcomes; no list labeled green
+without results, passing rerun as diagnosis, missing class, skip/retry/flaky
+browser result, relaxed bounds or unverified cleanup.
 
-Named focused suites help iteration; final implementation evidence must
-reconcile the complete single-run gate and all actual CI contexts at the assessed
-head. Record commands/outcomes/environment, not a command list labeled "green".
-If 004's known PostgreSQL/private-diagnostics or incomplete-cleanup observation
-recurs, capture its exact assertion and phase evidence before attributing a
-cause; never remove it, increase a deadline or replace the failure with a rerun.
+## Proposed version-2 public recipe catalog
+
+Extend the existing separately compiled `Kofte.Identity.Consumer`, not product
+modules. Require explicit `--contract-version 2` in the consumer and owning
+verifier/harness; old binaries/catalogs must fail, not produce a false v2 pass.
+These **target commands are not executable against current old consumer code**.
+After locked restore, Release/production web builds and pinned Chromium setup:
+
+```bash
+dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --contract-version 2 --scenario local-accounts --provider sqlite
+dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --contract-version 2 --scenario all --provider sqlite
+KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --contract-version 2 --scenario all --provider postgres
+```
+
+| Required recipe | Independent observations |
+| --- | --- |
+| `local-accounts` | Real production local-only/coexistence creation/login/change/lockout; stable identity, disabled-method/TLS/development refusal. |
+| `oidc-login` | Real named issuer discovery/authorize/PKCE/token/JWKS, exact stable identity, profile changes and explicit connection bindings. |
+| `trust-refusal` | Wrong issuer/audience/signature/time/state/nonce/PKCE, unsolicited/replayed callbacks, forbidden-but-allowlisted DNS/peer and corrected fresh retry. |
+| `setup-ownership` | Actual private stopped token delivery, browser admission and local/OIDC claim; token alone and foreign/expired/replaced admission fail. |
+| `ownership-race` | At least twenty eligible mixed-method contenders, exact one Owner/account/session/consumption/event, no losing unknown accounts; commit barriers and three fresh restarts. |
+| `credential-reset` | Actual private operator-assisted delivery, one-use account-bound reset/change, same ID and next-request session invalidation; no external-only password. |
+| `method-association` | Fresh original/new proof, same canonical user, cross-user/auto-link/replay/final-method refusal and security-version invalidation. |
+| `account-admission` | Default-denied Owner/ordinary/forged reference, test-host-only authorized continuation, unique/idempotent account effects and no role/team grant. |
+| `actor-compatibility` | Separately compiled actor-v2/direct/adapter equality; explicit v1 endpoint/DI refusal, no local-as-OIDC coercion. |
+| `session-boundary` | Fresh durable account/stamp/epoch/trust, 401/403/503, CSRF, sign-out/expiry, renewal/security races and two-user cache isolation. |
+| `development-isolation` | Explicit synthetic success and visible labeling; every non-development/exposed/profile-change refusal, no production authority. |
+| `upgrade-preservation` | Real format-1/2-to-3/idempotent preparation, exact user/external/Owner/module/history preservation and old ticket/nomination retirement. |
+| `interrupted-recovery` | Real prepare/credential/claim commit and private-file/key barriers, uncertainty/quarantine/history-bound complete restore correction. |
+| `private-evidence` | Seeded password/setup/reset/session/protocol canaries, every public/private channel, truthful diagnostics/events/capacity/sink/cleanup failures. |
+
+Run all fourteen individually **and** `all` on each provider, comparing exact
+ordered observations and version, not exit/count alone. Keep existing owning
+recipe/harness timeouts (120s individual/600s aggregate), bounded inputs and
+fixture cleanup; share owned fixture setup where safe, never relax assertions/
+deadlines to accommodate extra recipes. Old nominated recipe names are retired
+explicitly and historical reports are not rewritten.
 
 ## Acceptance matrix
 
-All 22 scenarios are covered explicitly below; each row also identifies the
-applicable requirements/outcomes. Real-store rows execute on both providers.
-Use independent exact IDs, sentinel data, event/revision/history comparisons
-and captured effects, not only status codes or positive counts.
-FR-022 applies to the complete matrix and retained gates: required independent
-protocol, real-provider, browser, contract and privacy evidence cannot be
-replaced by a unit-only or partial passing selection.
+Suite keys: **I** real-provider integration; **C** direct/adapter/separate-consumer
+contract; **B** actual browser/a11y; **R** recovery/crash; **P** privacy capture;
+**F** retained failure-propagation. Both real stores apply to persistence rows.
+FR-022 applies to every row, and SC-007 to captured security evidence.
 
-| Scenarios | Required observation / suite |
-| --- | --- |
-| US1.1 | Actual browser discovery/authorize/code+PKCE/token/JWKS flow, exact `/me`/UI/consumer identity equality and provider credentials confined to the exchange; integration/contract/browser. FR-001/002/004/021; SC-001/003. |
-| US1.2 | Concurrent first login + changed safe profile + three fresh restarts preserve exact internal ID/designation; no email/profile identity key. Integration/contract, FR-003/004/016; SC-001/006. |
-| US1.3 | Same profile/different subjects and identical subject across sequential configured issuers remain distinct, with no inherited designation. Explicit trust-change session reconciliation. Integration/contract, FR-003/007/014; SC-001/003. |
-| US1.4 | Independent signed wrong-issuer/audience/key/algorithm/time/nonce/state/PKCE cases; unsolicited/replayed/duplicate callbacks and concurrent attempt consumption create no unauthorized session. Integration/contract/browser, FR-002/008/019; SC-003/007. |
-| US1.5 | Cancellation, invalid config, provider/discovery/JWKS/token outage, unknown key and response/time/request caps fail boundedly; corrected retry requires a fresh login, no redirect loop/dev fallback. Integration/browser/failure-propagation, FR-015/018/019; SC-003/005/007. |
-| US2.1 | Fresh disabled ceremony + ordinary valid login cannot enroll; no public nominee/history/secret disclosure. Integration/contract/privacy, FR-010/018; SC-002/003/007. |
-| US2.2 | Delivered stopped nominate/file delivery + exact signed-in nominee + protected submission commits one designation/consumption/event in same store. Integration/contract/browser, FR-010/011/017; SC-002/007. |
-| US2.3 | Non-nominee, development, forged, expired, replaced-token and replay attempts leave exact state/events unchanged; safe non-enumerating errors. Integration/contract/privacy, FR-010-014/018; SC-002/003/004. |
-| US2.4 | At least twenty simultaneous eligible HTTP contenders; real child crash barriers before commit, after commit and before reply; exactly one durable designation/consumed generation/event or neither, never success on uncertainty; three fresh host restarts. Integration/recovery/contract, FR-011/015/017; SC-002/006/007. |
-| US2.5 | Replay original authorization/config, restart/upgrade and unavailable admin cannot reopen. Explicit pending replacement works only before consumption; IdP-loss and stale-backup recovery never nominate another initial admin. Recovery/contract, FR-012/016; SC-002/006. |
-| US3.1 | Direct and Next-adapted `/me` plus test-owned operation deny anonymous/forged/bearer/mixed credentials with 401 and no provider HTML/redirect/protected data. Contract/browser, FR-005/006/008; SC-003. |
-| US3.2 | UI/direct/adapter/separate consumer compare exact ID/mode/designation; spoofed headers/body/profile cannot select a user or permission. Contract/browser, FR-004/007/021; SC-001/003. |
-| US3.3 | Non-granted test-owned action stays 403 even for first admin; cross-origin/null/missing Origin, CSRF pair/type confusion and hidden UI cannot cause effects. No production test route. Integration/contract/browser, FR-005-008; SC-003. |
-| US3.4 | Durable sign-out, idle/absolute boundaries, renewal/revocation race, wrong-mode/epoch, key loss and ordinary rotation/restart behavior; next-request denial and stale UI cleared. Integration/contract/browser, FR-008/009/014/015; SC-001/003/004. |
-| US3.5 | Exact anonymous health methods/schema, Development-only OpenAPI and unknown-route rules preserved; two-user cache/SSR/adapter isolation. Contract/browser/privacy, FR-005/008/018; SC-003/007. |
-| US4.1 | Explicit local synthetic identity selection agrees across UI/API/consumer with persistent visible Development label and no implicit administration. Unit/contract/browser, FR-013/014/020; SC-004/005. |
-| US4.2 | Negative environment/listener/origin/backend/exposure-switch combinations reject before serving/login; no deployed test/TLS bypass. Unit/integration/contract, FR-013/015/019; SC-004. |
-| US4.3 | Persist dev users/tickets, reconcile to Production OIDC and restart; old tickets denied, equal profiles not merged, production ceremony untouched. Integration/contract, FR-003/010/014; SC-004/006. |
-| US5.1 | Real clean prepare, exact v1-to-v2 upgrade and idempotent current prepare; old/unknown/corrupt schema/history refusals, read-only serving, all original module ID/assignments/sentinels/history/revision sums unchanged. Integration/recovery/contract, FR-003/016; SC-006. |
-| US5.2 | Store unavailable/corrupt, migration/key preparation interrupted, lost leases, commit uncertainty, complete v1/v2 recovery/restore quarantine and interrupted reconciliation. Corrected public recipe retains committed identities/consumption/module data; no manual DB edit. Integration/recovery/failure-propagation, FR-009/011/012/015/016; SC-006. |
-| US5.3 | Capture successful/rejected login/enrollment/session expiry/sign-out and operator actions across public responses/redirects, pages, logs/spans/metrics/IPC/durable events. Seeded canaries excluded outside protected exchange; truthful correlation/durability, record capacity/retention/sink failures and zero other-user profile disclosure. Privacy/contract/integration, FR-017-019; SC-007. |
-| US5.4 | Every identity state at 320px/200% text, keyboard/focus/announcements, axe zero serious/critical, safe local return and correction/retry. Measure provider-return to actionable UI <= five seconds on documented actual profile, provider interaction separately. Browser, FR-020; SC-005/007. |
+| Scenario | FR / SC | Required observation and suites |
+| --- | --- | --- |
+| US1.1 | FR-001/004/023; SC-001 | Enabled local/OIDC/coexistence identity equality and real credential/protocol proof. I/C/B |
+| US1.2 | FR-003/004; SC-001/006 | Same exact user after restart/profile change/explicit association. I/C/B |
+| US1.3 | FR-003/026; SC-003/008 | Equal profile/different key never merges/admits; exact issuer/subject ownership. I/C |
+| US1.4 | FR-002/008/019; SC-003 | Independent invalid/replayed/unsolicited evidence; no session/effect. I/C/B |
+| US1.5 | FR-015/019/023; SC-003/005 | Outage/cancel/config bounded refusal; no redirect loop/automatic fallback. I/B/F |
+| US1.6 | FR-001/023; SC-001 | Each profile works, disabled methods refuse; local has production TLS/keys. I/C/B |
+| US1.7 | FR-027; SC-009 | Unknown post-setup local/OIDC users create no active account/session. I/C/B |
+| US1.8 | FR-003/023/029; SC-003/008 | Label/disable/trust changes do not retarget; affected old sessions fail. I/C |
+| US2.1 | FR-010/018/028; SC-002/003 | No admission means no Owner; no claimant/token disclosure. I/C/P |
+| US2.2 | FR-010/011/017/028; SC-002 | Actual private issue/bound login, one atomic account/Owner/consumption/session/event. I/C/B |
+| US2.3 | FR-010/012/014/028; SC-002/004 | Wrong/expired/replaced/foreign/replayed/dev material has zero privileged effects. I/C/P |
+| US2.4 | FR-011/015/017; SC-002/006 | Twenty mixed contenders, real commit/reply barriers, three restarts, exact singleton and no losing unadmitted accounts. I/C/R |
+| US2.5 | FR-012/016; SC-002/006 | Config/token/restart/provider/Owner-loss replay preserves consumed legacy/new user ID. I/C/R |
+| US2.6 | FR-015/028; SC-002/003 | Failed/cancelled login and replacement preserve only current unexpired browser admission. I/C/B |
+| US3.1 | FR-024/027; SC-008/009 | Protected/trusted local creation, normalization uniqueness/policy; forged admission denied. I/C |
+| US3.2 | FR-024/029; SC-008 | Fresh change preserves ID/Owner; old password and next protected old-session request fail. I/C/B |
+| US3.3 | FR-025/029; SC-008 | Private reset delivery, account/expiry/one-use, non-enumeration/no vendor and immediate old-session denial. I/C/B/P |
+| US3.4 | FR-025; SC-003/008 | Invalid/replay/other-user reset changes no credential/session/Owner; no OIDC-only password. I/C/P |
+| US3.5 | FR-026/029; SC-008 | Dual fresh proof, unassigned-only add, no merge/final-method removal, old sessions denied. I/C/B |
+| US3.6 | FR-019/024; SC-008 | Shared bounded failed-count/lockout across local entry points, safe denial/recovery. I/C/B |
+| US4.1 | FR-005/006/008; SC-003 | Anonymous/forged/bearer/mixed direct/adapter deny, no HTML/provider challenge. C/B |
+| US4.2 | FR-004/007/021; SC-001/003 | Exact actor-v2/UI/API identity/context/Owner parity; spoofed claims grant nothing. C/B |
+| US4.3 | FR-005/007/008; SC-003/009 | Ordinary/Owner insufficient authority and CSRF/origin denial before effects. I/C/B |
+| US4.4 | FR-009/029; SC-003 | Durable sign-out/idle/absolute/renewal race next-request denial; stale UI cleared. I/C/B |
+| US4.5 | FR-005/008/018; SC-003 | Unchanged aggregate health/methods, private caching/two-user SSR isolation. C/B/P |
+| US4.6 | FR-027/029; SC-008/009 | Reset/change/test-authorized disable/revoke/trust each deny next request; no Owner bypass. I/C |
+| US5.1 | FR-013/014/020; SC-004/005 | Explicit synthetic login and persistent Development label/parity. C/B |
+| US5.2 | FR-013/015; SC-004 | Environment/listener/origin/backend/unsafe-exposure negatives refuse. I/C |
+| US5.3 | FR-014/016; SC-004/006 | Persisted dev users/tickets never become production local/OIDC/Owner. I/C/R |
+| US6.1 | FR-016; SC-006 | Clean/foundation/delivered upgrade, exact host/module ownership/history, read-only serve. I/C/R |
+| US6.2 | FR-011/015/016; SC-006 | Store/corruption/key/lease/commit interruptions and corrected recovery, no replacement Owner. I/C/R/F |
+| US6.3 | FR-017/018/019; SC-007 | Safe classified correlated outcomes in all channels; zero seeded secret/profile leakage, failing sinks fail check. I/C/P |
+| US6.4 | FR-020; SC-005/007 | All introduced states at 320px/200% text, keyboard/focus/announcements, zero serious/critical a11y, <=5s final-input/return result. B |
+| US6.5 | FR-003/012/016; SC-006 | Exact legacy users/external/consumed Owner/modules retained; old sessions/nomination retired, no fabricated password. I/C/R |
 
-Boundary corpus additionally covers numeric limits in identity-v1 at
-limit/one-over except the human-rejected installation session boundary, and
-every exact method/path/body/header/cookie/redirect allowlist,
-including individual Set-Cookie preservation and no automatic proxy retry.
-Record actual request counts/bytes/time and no effects after timeout.
-Required audit-capacity failure rolls back its owner mutation; expired record
-pruning never deletes installation-retained events.
-The [ADR amendment](../../docs/adr/0007-authentication-bootstrap-boundary.md#human-directed-verification-scope-amendment-installation-session-capacity)
-removes the 50,000-session proof, exclusive seed helpers and numeric corpus
-cases from both providers. It is not skipped or replaced; the runtime cap is
-unchanged and is not claimed verified. Historical results remain historical.
+Numeric boundary corpus covers new/retained admitted limits except the forbidden
+installation-session-capacity proof. No secret-bearing screenshots/HAR/traces;
+private transient buffers are scanned then discarded. Require actual measured
+times/counts/bytes and no late effect after timeout, not summary totals.
 
-## Delivered guide consumer
+## Retained failures and stop conditions
 
-The separately compiled executable `tests/contract/Kofte.Identity.Consumer`
-has an explicit scenario catalog. It owns private host/web/issuer/provider
-fixtures and exits nonzero if expected observations are missing, source is
-absent, cleanup unverified or a scanner fails. Required scenarios:
+F1/T101 requires forbidden DNS/connected-peer rejection inside encompassing
+approved CIDRs, including mapped/mixed cases, without contacting metadata
+services. F2/T102 preserves run `41098819181`'s exact **pre-key-damage**
+SQLite enrollment setup 503 versus expected 200; diagnose its phase/root cause,
+then require the equivalent new setup/key-custody regression. A passing rerun,
+renamed flow or old green report does not close it. T103 requires changed-source
+complete qualification and traceability. If 004's deferred failure recurs,
+capture its exact phase/assertion before attributing cause.
 
-| Scenario | Required delivered recipe |
-| --- | --- |
-| `oidc-login` | Browser code flow, exact current identity/parity and stable profile-change mapping. |
-| `trust-refusal` | Independent negative evidence, duplicate/replay and bounded corrected retry. |
-| `nominated-enrollment` | Actual stopped nomination/file delivery + protected completion; no config/first-arrival shortcut. |
-| `enrollment-race` | Twenty eligible contenders, exact atomic state/event and three process restarts. |
-| `session-boundary` | Direct/adapter/consumer parity, 401/403, CSRF, expiry, durable sign-out and revocation race. |
-| `development-isolation` | Explicit local success, all exposure/environment refusals and persisted profile transition. |
-| `upgrade-preservation` | Clean/v1/v2 preparation plus exact unrelated module sentinel/history ownership. |
-| `interrupted-recovery` | Actual commit/prepare barriers, uncertain reply and stopped complete-set restore/reconciliation. |
-| `private-evidence` | Useful correlated safe outcomes plus canary scans of all channels and recording failures. |
-
-After locked restore, the Release solution build, the production Next build
-and pinned Chromium installation, invoke a specific recipe or `all`:
-
-```bash
-dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario oidc-login --provider sqlite
-dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario all --provider sqlite
-KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario all --provider postgres
-```
-
-The owning native guide harness executes all nine individually and `all` for
-each provider, requiring every exact ordered observation. PostgreSQL uses only
-the pinned owned disposable server, with independent databases and roles;
-whole-server failure cases use a dedicated server. Ordinary local development
-still needs neither Docker nor a real IdP.
-
-**Executed catalog qualification (T094):** the 77-case
-`*IdentityConsumerHarnessTests` selection passes in 4.541s; the ten-case
-`*SqliteIdentityGuideTests` and `*PostgresIdentityGuideTests` selections pass
-in 492.959s/654.153s with zero skipped and each required class present.
-Each covers the nine rows above individually plus `all`, invoking the DLL
-through `IdentityConsumerHarness` and comparing every exact ordered observation
-against `IdentityScenarioCatalog`, not trusting a zero exit or aggregate count.
-The [implementation evidence](implementation.md#t094-t095-complete-public-catalog-and-delivered-documentation)
-records exact commands, unchanged bounds, source/profile and safe report.
-Browser/a11y qualification is independent; this catalog is not the final gate.
-
-### Earlier implementation evidence (historical)
-
-The pending-task/provider statements below describe those earlier checkpoints.
-T092/T094 now qualify both-provider operations and the entire catalog; historical
-failures stay failed. Use the delivered recipes above for current execution.
-
-`development-isolation` is now delivered for execution after the existing
-Release/Next builds and pinned Chromium setup:
-`dotnet tests/contract/Kofte.Identity.Consumer/bin/Release/net10.0/Kofte.Identity.Consumer.dll --scenario development-isolation --provider sqlite`.
-Its actual SQLite run validates all 88 exposure refusals, visible browser/API/
-actor equality and pending/consumed persisted transitions, with 135 independently
-checked named observations. Hosted `c5e65f2` also passes the exact frozen catalog
-on SQLite and PostgreSQL, closing T078; see [implementation evidence](implementation.md).
-
-Hosted `49ef96e` now also passes the strengthened `session-boundary` command
-on each provider with all nineteen ordered observations independently checked.
-Two-user SSR/DOM isolation, invalid-Origin/ungranted denial, expiry and
-sign-out/uncertainty close T066/T067/T069/T070. Consolidated real format,
-preparation and read-only-startup preservation closes T079.
-Recovery-v2 backup/actual-state verification has passing SQLite and hosted
-`f52150f` PostgreSQL coverage. Separately named test-owned quarantine restore
-and strict private decision parsing now pass actual SQLite preservation/binding/
-tamper/refusal tests; their new PostgreSQL proof remains pending. The marker
-blocks all six ordinary stopped commands. The separate `reconcile-restore`
-command now has actual SQLite v1/v2 activation, fresh protected keys, immutable
-private decision/epoch/ring intent and killed-worker retry evidence. Historical
-uncertainty stays locked; recovered consumed enrollment wins over a contrary
-attestation. New PostgreSQL reconciliation and remaining partial-write/key/
-public operations recipe evidence are still pending. See the
-[delivered command and custody limits](../../docs/development/local-development.md).
-Identity-bearing sets continue to refuse the legacy ungated restore path.
-Actual SQLite key-custody tests now also cover live missing/foreign/undecryptable
-rings, stopped original-custody correction and epoch revocation, actual retained
-key/certificate overlap, coordinated client-secret correction and recovery
-artifact separation. The optional private `keyDecryptionCertificates` member
-retains old decryptors while the separate current pair encrypts new keys;
-see the local guide for bounds/custody/retirement limitations. New PostgreSQL
-key evidence is pending, so T083 remains unchecked.
-Sixteen actual SQLite restore cases now also prove explicit retry after empty/
-partially flushed intent, key-inventory and committed-result journals, plus
-unchanged refusal of complete conflicting/unknown/invalid pending state.
-Live installation-specific exclusive authority is required for partial-scratch
-cleanup; staging-key and new PostgreSQL journal proof remain pending.
-This progress does not make the remaining operations recipes executable or
-turn the non-green full matrix into accepted feature evidence.
-
-The built host also now accepts stopped `--identity maintain` on a prepared
-installation: at most 128 expired session-evidence rows, terminal attempts and
-expired admission windows per category/invocation. Repeat explicitly for
-another batch; live-host refusal and preservation have passing SQLite evidence.
-Hosted `20d751c` PostgreSQL host/storage and both-provider recovery also pass
-the new cases, closing T087. This does not deliver
-the recovery/operations consumer recipes above.
-
-The contract suite must also execute each scenario individually for both real
-providers through its owning harness and validate named observations, not
-trust a summary count. The new project/source is test-only; no product reference,
-auth bypass flag or fixture endpoint is deployed. Browser/a11y timing remains
-actual Playwright evidence, not replaced by the consumer's JSON assertions.
-
-## Limits and completion gates
-
-Only prepared configuration and custody permit serving. Production OIDC
-requires exact HTTPS trust and a protected client secret; ingress must preserve
-the admitted public origin without trusting arbitrary proxy headers. Session
-revocation is local, not provider-wide logout. No administrator reassignment,
-IdP-loss reset, arbitrary OS-copy detection or old-instance fencing is supplied.
-Complete-set backups do not contain private key custody; restored identity is
-quarantined until a manifest-bound stopped decision and fresh protected ring
-are committed. Unknown consumed history stays locked. See the
-[operator contract](contracts/operator-v1.md) and
-[local guide](../../docs/development/local-development.md) for private files,
-capacities, retention, key/certificate overlap and explicit correction.
-
-Specs 006–009 and 022–024 remain future work; authentication/designation is not
-a permission engine, team model, MCP deployment or full audit subsystem.
-The current stage remains **implement** on the same branch/draft PR until the
-complete local gate, assessed-head CI and traceability genuinely pass.
-Converge, final review and explicit human acceptance are separate later stages.
-Reviewer-owned checklists are unchanged; no intermediate merge is requested.
+Plan completion is not implementation, current checklist approval or acceptance.
+The driver remains blocked pending human design/changed quality review, task
+reconciliation and analysis; no implementation or next numbered feature runs
+from this guide. Later implement/converge/review/accept remain separate on the
+same branch/draft PR.

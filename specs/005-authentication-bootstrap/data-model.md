@@ -1,257 +1,302 @@
-# Data Model: Host Identity v1 / Platform Format 2
+# Data Model: Account Schema 2 / Platform Format 3
 
-**Status:** Proposed; no tables or migrations delivered by planning.
-**Owner:** Host core identity in `kofte_system` (PostgreSQL) or the existing
-separate `platform/platform.db` (SQLite), never an optional module.
+**Status:** Proposed revised design; no migration or tables delivered here.
+**Owner:** Host `kofte_system` (PostgreSQL) / existing `platform/platform.db`
+(SQLite). [Research A1-A12](research.md) and [plan](plan.md) govern.
+The [previous model](https://github.com/Stonefly-Labs/Kofte/blob/f10351a599191a5931b05a719cd8d291eba839fb/specs/005-authentication-bootstrap/data-model.md)
+remains the historical format-2 definition, not new-scope evidence.
 
-**Rework gate (2026-10-30):** This is the original mode-bound model. The
-[approved scope amendment](../../docs/adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
-requires provider-independent users, optional local/external login methods and
-atomic first-login ownership. New storage/migration design is not yet approved;
-do not reinterpret these rows or reset consumed bootstrap to implement it.
+## Physical ownership and common invariants
 
-## Physical ownership and compatibility
+Keep the three registry table names, installation ID, module assignments,
+allocator markers/revision sum and original history intact. Append reviewed
+provider-specific `003_accounts.sql`; platform `registry_version` /
+SQLite `user_version` become 3; identity schema becomes 2. Old migration bytes/
+digests and format-1/2 fingerprints are immutable. Serving never migrates.
 
-Keep the three accepted registry tables, original migration-1 digest, existing
-installation ID, module registration revisions and assignments unchanged.
-Append a provider-specific migration 2 to `__kofte_registry_migrations`;
-advance the installation `registry_version` and SQLite `user_version` to 2.
-Do not rename tables, reinterpret module versions or edit migration-1 bytes.
-Identity schema version 1 is a component of platform format 2.
+The exact format-3 inventory is three registry tables plus these fourteen:
 
-The exact format-2 table inventory is the three registry tables plus the eight
-identity tables below. Validate their actual columns/types/nullability/PK/FK/
-UNIQUE/CHECK/index definitions and the two ordered migration digests; reject
-unexpected tables, views, triggers, routines, defaults or generated objects.
-PostgreSQL tables/indexes/history stay in `kofte_system`; SQLite preserves
-private root/file/sidecar checks and foreign keys, without `ATTACH`.
-Module contexts/history/markers/allocator version remain unchanged.
+```text
+__kofte_identity_metadata     __kofte_users
+__kofte_auth_connections      __kofte_external_identities
+__kofte_external_logins       __kofte_login_attempts
+__kofte_sessions              __kofte_bootstrap
+__kofte_setup_admissions       __kofte_credential_proofs
+__kofte_password_resets        __kofte_account_operations
+__kofte_identity_events        __kofte_identity_admission
+```
 
-Use provider-specific SQL in the existing platform migration mechanism rather
-than introducing another migration framework. This is host-local platform
-persistence; it does not relax module-owned EF Core requirements. Explicit
-preparation holds the accepted exclusive stopped-installation scope and
-validates the complete inventory before writing. Serving never migrates.
+Verify actual columns/types/nullability/PK/FK/UNIQUE/CHECK/collations/indexes/
+triggers/routines/defaults/generated objects and all three ordered migration
+digests. Add independently frozen format-3 native-catalog fingerprints, not
+weakened old fingerprints or an allow-all object inventory. SQLite foreign keys,
+canonical/private file/sidecar ownership and SQLite-owned header checks remain;
+no `ATTACH`, independent live-header file reader or cross-module connection.
 
-## Common values
+IDs are nonempty UUIDs; public canonical lowercase `D`. UTC instants; checked
+nonnegative 64-bit counters; overflow refuses rather than wraps. Fixed enums
+have DB CHECKs. Exact opaque keys use PostgreSQL deterministic `C` / SQLite
+BINARY comparison. All values are parameters; physical names are host constants.
+Display is nullable escaped text, at most 128 Unicode scalars, without controls.
+Issuer stays at most 2,048 UTF-8 bytes; subject is nonempty printable ASCII,
+at most 255 bytes. No email/profile-based identity key.
 
-IDs are nonempty random UUIDs, rendered canonical lowercase `D` form publicly.
-Times are UTC instants; decisions use the host clock, with documented clock
-synchronization and at most 60 seconds OIDC evidence skew. All counters are
-nonnegative checked 64-bit integers; overflow refuses the operation.
-Persist enum values as fixed bounded strings with database CHECK constraints.
-All SQL values are parameters; physical identifiers are fixed host constants.
+## Entities and validation
 
-External identity keys are `(mode, issuer, subject)`, compared byte-for-byte,
-case-sensitively: PostgreSQL deterministic `C` collation / SQLite BINARY.
-No trimming, lowercasing, URL-path normalization, email matching or provider-label
-remapping. Production issuer is the exact configured validated OIDC issuer;
-subject is a nonempty at-most-255-byte printable ASCII OIDC `sub`. Issuer is
-at most 2,048 UTF-8 bytes. Unsupported values fail before persistence.
-Development issuer is the fixed separate `kofte:development:v1` namespace,
-with a configured synthetic subject, never a production issuer.
+### Metadata and authentication connections
 
-## Entities and constraints
+`__kofte_identity_metadata`: singleton 1; installation FK; schema version 2;
+checked security revision; session epoch; context `production|development`;
+configuration trust digest; reconciliation time. Every committed identity change
+updates the owner revision, never the module revision sum. Missing/duplicate/
+mismatched metadata is corruption, not new setup.
 
-### `__kofte_identity_metadata`
+`__kofte_auth_connections`: connection GUID PK; kind `local|oidc|development`;
+immutable exact issuer for OIDC/development; safe label; enabled/retired state;
+checked trust revision/digest; creation/update times. At most one local, eight
+configured OIDC and one reserved Development connection; at most 10,000 archived
+legacy OIDC connections, 10,010 total connection rows, never implicit active trust.
+No client secret, certificate/private key or provider token columns.
+UNIQUE `(connection_id,kind,issuer)` supports exact binding constraints.
+An OIDC connection ID's issuer/kind cannot change. Retired IDs cannot be reused.
+Development is a separate context/namespace and never an eligible Owner method.
 
-Singleton key 1; installation ID FK to the accepted installation; identity
-schema version 1; checked `security_revision`; random nonempty `session_epoch`;
-active identity mode; trusted-configuration digest; last explicit
-reconciliation time.
+### Canonical user and local credential
 
-Every identity/security mutation updates the revision in its owner transaction.
-Do not increment the accepted registry's module revision sum for identity
-changes. Session epoch changes invalidate all previously issued tickets/attempts;
-switching mode or issuer/client/public-origin trust requires explicit stopped
-configuration reconciliation, never request-driven conversion. The trust digest
-excludes display text and rotatable secret values; their ordinary changes do
-not relink users. Startup rejects an unacknowledged trust change.
-Missing/duplicate/mismatched metadata is corruption, not a fresh-install signal.
+`__kofte_users`: user GUID PK; context; username and normalized username;
+nullable local password hash; nullable safe display; `enabled` flag;
+framework security/concurrency stamps; checked account/security revisions;
+framework failed-count, lockout-enabled and nullable lockout-end; created/updated
+times. UNIQUE normalized username (BINARY/C); UNIQUE `(user_id,context)` for
+context-enforcing FKs. At most 10,000 users.
 
-### `__kofte_users`
+Names/password policy is [A3](research.md#a3---one-provider-independent-user-with-explicit-methods).
+External-only names use reserved generated prefixes, have no password and
+cannot pass local login/reset. The first explicit password association changes
+that generated name through UserManager; local names are subsequently reserved
+to the same user even after password removal. No public rename/user-delete API.
+Development users cannot acquire production credentials or associations.
 
-`user_id` PK; identity mode; optional safe display name; created/updated UTC.
-At most 10,000 users; no password, email identity key, external privileges,
-team memberships or implicit administrator field.
+Password hashes use Identity V3/SHA-512 only, bounded to 1 KiB; admit work factors
+from 100,000 through 210,000 before expensive framework verification (weaker
+supported hashes require framework rehash), and never persist
+plaintext, reversible passwords or password-derived request fingerprints.
+Normal new hashes use configured Identity V3 210,000 iterations. Unexpected
+hash encodings/work factors fail closed with private corruption/configuration
+diagnostics, not an unbounded verifier or invented credential.
 
-Display text is optional and at most 128 Unicode scalar values after rejecting
-controls; render as escaped text. Display changes may update this value only,
-never user ID/mode/access. No account linking or user deletion endpoint in 005.
+Adapter setters mutate the scoped account; Create/Update and association writes
+use the current owner transaction. Update compares expected account revision/
+concurrency stamp and rotates/increments them. Map only known duplicate/concurrency
+outcomes to typed Identity failures; unrelated store errors propagate.
+Record a failed store write in the enclosing operation even if a manager
+discards its result; that operation cannot commit. Security-stamp change,
+credential/association change or account enablement change
+advances security version and invalidates affected sessions/proofs. Failed-count/
+local lockout changes do not disable independent OIDC authentication.
 
-### `__kofte_external_identities`
+### Exact external identity ownership and connection login
 
-PK/UNIQUE `(mode, issuer, subject)`; `user_id` UNIQUE FK to users with matching
-mode; created UTC. A user has exactly one mapping in this slice; no cross-mode
-or profile-based merge. Validate complete user/mapping correspondence at
-startup/maintenance; database constraints prevent concurrent duplicate mapping.
+`__kofte_external_identities`: identity GUID PK; context; exact issuer/subject;
+user/context FK; created time. UNIQUE `(context,issuer,subject)` and
+UNIQUE `(external_identity_id,user_id)` and
+`(external_identity_id,context,issuer,subject,user_id)` for composite FKs;
+a verified external identity has one canonical owner across connections.
+At most 80,000 owned external identities. Preserve legacy exact key bytes.
 
-Concurrent first login selects/inserts under an owner transaction. A known
-UNIQUE conflict is reconciled by reading the exact committed key, never by
-catching every storage failure as "existing user". Preserve its established
-designation. Unknown commit outcome yields no session/cookie/success response.
+`__kofte_external_logins`: connection ID, context, exact subject (`ProviderKey`),
+external-identity ID, user ID, kind/issuer and created time.
+PK `(connection_id,subject)`; UNIQUE `(user_id,connection_id)`;
+FKs to the connection's fixed issuer/kind and external identity's exact
+issuer/subject/user/context. One external login per user per connection, up to
+eight enabled production external methods/user; disabled archived mappings
+remain preserved. At most 80,000 production connection bindings.
+Development bindings remain separate, at most one per synthetic user.
 
-### `__kofte_login_attempts`
+Creating a binding requires host-verified protocol evidence plus setup/trusted
+admission or explicit existing-user association proof. Existing canonical
+issuer/subject ownership never auto-adds a new connection binding and never
+merges another user. Label changes are not binding changes.
 
-Random attempt ID PK; digest of random browser binding; mode; exact configured
-issuer/client configuration digest; session epoch; admitted local return path;
-created/expiry UTC; state `pending` or `consumed`; consumed UTC nullable.
+### Attempt, session and fresh account-control proof
 
-Do not store raw authorization code, PKCE verifier, provider token, raw state
-or nonce. Framework protected state/correlation/nonce handle the protocol
-exchange; bind the local attempt ID into protected authentication properties.
-Pending expires after five minutes; at most 256 installation-wide and eight
-per browser binding. Expired/consumed rows can be pruned in bounded batches.
+`__kofte_login_attempts`: attempt GUID PK; browser digest; context; connection/
+trust revision; epoch; purpose `login|reauthenticate|associate`; optional setup
+admission or target user/origin session/proof IDs as required by purpose;
+allowlisted return path; created/expiry; pending/consumed state/time.
+DB CHECKs enforce the purpose-specific nullable combinations.
+No raw code, state, nonce, PKCE verifier or provider tokens. Use framework
+protected authentication properties to bind the local attempt ID/purpose.
+Five-minute expiry clipped to dependent proof/setup expiry; 256 pending total,
+eight/browser. Callback consumes it in the resulting owner transaction.
 
-`pending -> consumed` is a compare-and-update in the same transaction that
-creates/maps the user and stores the session. A cancelled/invalid/timed-out
-exchange never creates an authenticated ticket. A consumed attempt cannot be
-reused even with otherwise valid evidence; restart does not resurrect it.
+`__kofte_sessions`: reference digest PK; user/context FK; authentication method/
+connection/trust revision; copied epoch/account security version/stamp digest;
+protected minimal v2 ticket; created/last-seen/idle/absolute expiry;
+active/revoked/expired state and terminal time.
+New independent random 256-bit references; no raw reference/provider claims.
+Production and Development use different cookie/protection purposes.
+Eight active/user and unchanged 50,000 installation runtime cap; 30-minute
+idle/eight-hour absolute, no silent eviction or extension past absolute.
+The installation session-capacity boundary is expressly **not tested**.
 
-### `__kofte_sessions`
+Every protected request checks fresh durable metadata, session, enabled user,
+context/version/stamp, connection trust, times and designation. No positive
+cross-request cache or periodic stamp admission. Renewal uses conditional update
+and cannot resurrect terminal state. Sign-out publishes success only after known
+revocation/event commit; uncertainty clears UI without claiming confirmed effect.
 
-Session-reference digest PK; user ID FK; mode; copied session epoch; encrypted
-minimal local authentication ticket; created/last-seen UTC; idle/absolute
-expiry UTC; state `active`, `revoked` or `expired`; terminal UTC nullable.
-Generate a new 256-bit random reference for every new session; never reuse a
-pre-login reference. Store no raw reference, provider token/claims or CSRF token.
-Use domain-separated SHA-256 over random references, not password hashing.
-Ticket protection uses an installation/purpose-bound Data Protection protector.
+`__kofte_credential_proofs`: random proof GUID PK; user FK; current session
+digest FK; account security version/stamp digest; proof method/connection;
+purpose `account-maintenance`; created/expiry; pending/consumed state/time.
+Five minutes, one pending proof/session, at most 256 pending installation-wide.
+No browser-readable proof secret: resolve by current session and consume once.
+Local proof uses check-only framework authentication; external proof validates
+fresh signed `auth_time` for the exact existing association. Successful reauth
+replaces/revokes the old session and binds this proof to the newly committed one.
 
-At most eight active sessions per user and 50,000 installation-wide; overflow
-refuses new sessions, never silently revokes a different user/session.
-The [human-directed verification amendment](../../docs/adr/0007-authentication-bootstrap-boundary.md#human-directed-verification-scope-amendment-installation-session-capacity)
-removes installation-wide session boundary testing, not this runtime policy;
-that boundary is not claimed verified.
-Idle lifetime is 30 minutes; absolute lifetime eight hours. Activity can
-advance idle expiry to `min(now + 30 minutes, absolute expiry)` but cannot
-extend absolute expiry. Cookie lifetime cannot override these server limits.
+### Setup singleton and admitted setup browser
 
-Every protected request retrieves/validates the row, current user/mode/epoch,
-times and current designation. No cross-request positive authentication cache.
-Renewal uses compare-and-update so it cannot resurrect a revoked session.
-`active -> revoked/expired` is terminal. Sign-out success requires confirmed
-revocation and its owner-local record; uncertainty returns 503, clears local
-identity and never claims known server revocation. No provider-wide logout.
+`__kofte_bootstrap`: singleton 1; installation FK; state
+`disabled|pending|consumed|recovery_locked`; generation; nullable token digest/
+expiry; nullable initial user/context FK; consumed time/generation; provenance
+`local|oidc|legacy-nominated` only when consumed; nullable consumed connection.
+Initial context must be production. Strict state/nullable CHECKs.
+No nominee issuer/subject or browser-submitted role/owner fields in schema 2.
 
-### `__kofte_bootstrap`
+`disabled -> pending` and pending replacement require stopped authorization;
+increment generation, expire old setup admissions and invalidate their attempts.
+Token is random 256 bits, fifteen minutes; digest binds installation/generation.
+`pending -> consumed` locks/CASes the singleton with authenticated eligible
+local/OIDC proof, unexpired browser admission and current trust/epoch.
+Set the Owner, consume authority, create/admit user and session and append the
+single immutable Owner event in **one commit**. No earlier user/session commit.
+Consumption wins over all competing admissions; losing tentative accounts roll
+back. Expiry is unusable pending state, not implicit authorization.
+Consumed never returns to pending/disabled; recovery_locked never promotes
+the next login. Initial designation is provenance, not a universal permission.
 
-Exactly one row, key 1. Fields: installation ID; state `disabled`, `pending`,
-`consumed` or `recovery_locked`; checked ceremony generation; optional nominee
-issuer/subject, random authorization digest and expiry; optional initial user
-ID UNIQUE FK; consumed UTC; consumed generation. A database CHECK enforces
-valid nullable-field combinations. Initial user must be a production user.
+`__kofte_setup_admissions`: random reference digest PK; browser-binding digest;
+installation/setup-generation/epoch; created/expiry; active/consumed/revoked
+state/time. Only an opaque Secure HttpOnly cookie contains the raw reference.
+Five-minute lifetime clipped to token expiry; 256 active total, eight/browser.
+Admission needs the private token and Origin/CSRF. Token possession is not an
+actor/session. One pending generation can have multiple admitted contenders.
+Failed/cancelled authentication leaves authority unconsumed until expiry;
+replacement/disable/consume invalidates every earlier admission by singleton
+generation/state even before bounded cleanup removes terminal rows.
 
-Initial prepared state is `disabled`, with no nominee/token/designation.
-`disabled -> pending` and `pending -> pending` replacement require stopped
-operator authorization; replacement increments generation and invalidates the
-old secret. Pending expires after fifteen minutes, without becoming an
-automatic eligibility grant.
+### Password reset and trusted account-operation idempotency
 
-`pending -> consumed` requires authenticated exact production nominee and
-constant-time match of a domain-separated digest bound to installation and
-generation. Atomically set the initial user/consumed time, erase usable pending
-nomination/token fields, increment revision and append the durable enrollment
-record. Row lock/CAS (PostgreSQL) or immediate write transaction (SQLite), the
-singleton and UNIQUE constraints are all enforced. Twenty eligible contenders
-produce one committed transition; later contenders get non-enumerating conflict.
-The initial designation is derived from this row, not cookie/IdP claims.
+`__kofte_password_resets`: authorization GUID PK; user/context FK; framework
+token digest; issuance security-stamp digest; checked generation; created/expiry;
+pending/consumed/revoked state/time. UNIQUE token digest and at most one pending
+authorization/user. Fifteen minutes, at most 256 pending; replacement revokes
+old authority. OIDC-only/development/disabled users are ineligible.
+Do not store raw Data Protection reset tokens, passwords or delivery paths.
 
-`consumed` never returns to pending/disabled through login, config, upgrades,
-ordinary restart or available commands. `recovery_locked` blocks enrollment
-after uncertain historical restore/reconciliation; it does not nominate a
-replacement initial administrator. It may retain the verified recovered
-initial user. Missing historical designation requires a separately reviewed
-recovery decision, not deleting this row.
+Issuance writes a private output file and the matching pending digest with
+explicit cross-filesystem uncertainty handling. Redemption validates digest,
+account/state/expiry and framework token then performs `ResetPasswordAsync`.
+Password/stamp/security version, reset consumption, session/proof invalidation
+and required event share one commit; clear local failed-count/lockout with the
+framework APIs, never administrative disablement. No automatic login. Invalid token/account
+or policy input changes no credential/session/Owner state.
 
-### `__kofte_identity_events`
+`__kofte_account_operations`: operation UUID PK; trusted initiating actor ID
+(current actor or future verified onboarding-grant initiator);
+allowlisted operation kind; nonsecret intent descriptor; affected user;
+result account revision; durable event ID; completion time.
+Record only known committed operations in the owner transaction.
+At most 1,000,000 installation-retained records, bounded by mandatory event
+capacity. No plaintext or hash of password/protocol/reset evidence.
+An authorized same-operation/same-nonsecret-intent retry returns the prior result
+as already committed without changing credentials; conflicting intent fails.
+It never asserts that newly resubmitted password bytes were installed.
+Do not replay automatically or use this table to retry unknown commits blindly.
 
-Random event ID PK; checked security revision; event code from a fixed
-allowlist; UTC; generated 32-lowercase-hex correlation; optional internal user
-ID FK; outcome `committed`; retention class `installation` or `session`.
-No external issuer/subject/profile, raw session/authorization reference,
-tokens, paths, provider response or exception text.
+### Security evidence and admission counters
 
-`user_created`, `initial_administrator_enrolled`, and explicit operator
-security-reconciliation records are immutable installation-retained records.
-Session created/revoked/observed-expired records are retained for 30 days.
-Required records share the changed state's transaction. A rejected/outage/
-uncertain operation instead emits bounded sanitized diagnostics; it cannot
-manufacture a committed durable event.
+`__kofte_identity_events` keeps immutable old event IDs/codes/revisions/times/
+users/correlations/retention. New allowlisted installation events cover account
+model upgrade, setup authorization/disable/Owner claim, credential/reset/proof/
+association and account-state changes; session-class events remain bounded.
+Successful mutations share their owner's transaction. Known denied local
+checks commit only failed-attempt/lockout state and its sanitized security event,
+never a partial account/association/session. Rejected/uncertain operations emit
+bounded safe diagnostics without fabricating committed events.
 
-Capacity: at most 1,000,000 installation-retained and 200,000 session records.
-Warn at 90%; refuse a required mutation if its record cannot be stored.
-Prune only expired session-class records in batches of at most 128, within
-the enclosing budget; an explicit stopped maintenance command can continue
-bounded pruning. Never silently trim installation evidence or omit a required
-event. No query/export/browser administration API; 009 may later evolve this
-contract with explicit migration/retention decisions.
+Retain installation evidence for identity lifetime; session/attempt-class
+security records thirty days. Capacity remains 1,000,000 installation /
+200,000 expiring records; warn at 90%, refuse required writes at capacity.
+Prune expired non-installation records only, at most 128 per category/batch,
+inside existing budgets. No general audit query/export surface (009).
 
-### `__kofte_identity_admission`
+`__kofte_identity_admission` keeps fixed category/window/key-digest/count/expiry
+rows. Extend exact category CHECKs for setup/local/reset/proof/association
+limits in identity-v2. At most 4,096 live windows, bounded pruning; no raw IP/
+username/subject, arbitrary label or store-unavailable admission fallback.
 
-Fixed-category window/key digest PK; UTC window start/expiry; checked count.
-Contains only bounded hashed browser/peer keys, never raw IP, identity, token
-or arbitrary metric dimension. Enforce identity-v1 rate limits transactionally
-across restart; at most 4,096 live windows. Reject at capacity, prune expired
-windows in at-most-128-row batches. Request diagnostics remain available when
-the identity store itself fails; no success-shaped rate-limit fallback.
+Indexes cover normalized-name uniqueness; external ownership/login keys;
+user/connection bindings; session user/state/expiry; attempt/admission/proof/
+reset expiry and owner; operation ID; event retention. Provider-specific exact
+definitions/fingerprints are implemented and independently verified later.
 
-## Transaction and failure invariants
+## Migration and compatibility
 
-- User + exact external mapping + `user_created` + attempt consumption + new
-  session/event are one host-store commit. Existing-user login leaves mapping
-  and initial designation stable.
-- The validated-login coordinator constructs the minimal local ticket and
-  commits that entire unit before publishing a cookie. The request-local
-  ticket-store bridge returns the newly generated reference only for that
-  known committed session; `ITicketStore.StoreAsync` must not independently
-  recreate it or split mapping/evidence into an earlier OIDC-event commit.
-  Never place raw reference/verified external evidence in caller-controlled
-  ticket fields. Contract tests cover cookie-publication failure, concurrent
-  mapping resolution and no cookie on an uncertain commit.
-- Enrollment singleton + designation + consumed state + revision + immutable
-  event are one host-store commit, not a cross-module transaction.
-- Validate store authority, constraints and current state before effects.
-  Retry only a specifically identified known-not-committed conflict within the
-  original budget; never retry an uncertain commit automatically.
-- Crash tests synchronize real child processes immediately before commit,
-  after durable commit and before response. Reopen independently to distinguish
-  no commit, exactly one commit and uncertain acknowledgement. No count-only
-  assertion substitutes for exact original IDs/data/security records.
-- Session/runtime writes use the normal host lease/identity transaction, not
-  elevated maintenance credentials. Schema/preparation/operator changes require
-  the accepted exclusive stopped scope. No module DbConnection or table access.
+| Source | Explicit stopped transformation / required preservation |
+| --- | --- |
+| Registry v0 | Existing explicit registry upgrade first; no table-free auto-repair. |
+| Platform 1 | Verify exact v1; apply immutable migration 2 then new 3 in the reviewed preparation boundary. Initialize schema-2 state without inventing historical users/ownership. |
+| Platform 2 | Verify exact v2/history/key/installation/module ownership and private complete issuer-to-connection map; then migration 3. |
+| Existing users | Keep exact IDs/context/display/times; add generated reserved names, fresh stamps/revisions, enabled legacy admission; null passwords, zero local failures. No dev-to-production conversion. |
+| External mappings | Keep exact issuer/subject/user; map each legacy production issuer to one explicitly chosen stable connection ID, archived/disabled when not currently trusted. Preserve separate Development mapping. Missing/conflicting map refuses before writes. |
+| Consumed bootstrap | Preserve exact user/time/consumed generation and old event; provenance becomes legacy-nominated, never an available setup grant. |
+| Pending/disabled bootstrap | Retire all nominee/token material, advance generation, leave disabled; fresh setup token only if history is genuinely unconsumed. |
+| Recovery-locked bootstrap | Keep locked and retain any verified consumed user/provenance; never infer never-owned. |
+| Sessions/attempts/windows | Delete obsolete mode-bound rows in migration, advance epoch and record explicit invalidation; never deserialize/relabel them as v2. |
+| Module/registry state | Exact installation/module IDs, assignments, revision sums, allocator markers, user data/sentinels and migration histories unchanged except reviewed platform version/history. |
+| Already format 3 | Verify exact catalog/history/data invariants; idempotent prepare, no new Owner/token/key reset. |
 
-## Key material and recovery model
+Migration 3 must rebuild SQLite constrained tables in a foreign-key-safe order
+with FK enforcement retained and transactional copies validated before removal.
+PostgreSQL alters/copies only platform-owned definitions. Keep legacy event rows
+byte/value-equivalent despite necessary checked event-code/constraint evolution.
+Validate exact final catalogs, all original history digests and preservation
+snapshots; a killed worker yields verified old or new schema, not partial success.
+No migration SQL or fingerprint is generated by this planning document.
 
-The separately owned persistent key ring is installation/purpose-bound and
-certificate-protected in OIDC mode; local development may use private
-owner-only filesystem protection. Missing/foreign/undecryptable key material
-fails closed rather than creating replacement keys on serve. Normal framework
-rotation in a valid ring retains usable retired keys and does not revoke
-sessions; explicit session-epoch change does. Client/certificate secrets
-are private referenced files, not identity DB columns or recovery metadata.
+## Keys, complete-set recovery and failure
 
-Recovery-v2 adds an identity summary to the existing exact complete-set
-manifest: identity schema version, security revision, session epoch, bootstrap
-state/consumed generation, counts and a SHA-256 digest of the deterministic
-identity security snapshot. This is private backup metadata, not health/API
-output. Verify the actual restored rows/constraints/history, not only the
-manifest's self-description. The full platform DB/dump already contains all
-identity rows; do not back up only the summary.
+Production local and OIDC both require persistent certificate-protected,
+installation/purpose-bound keys; Development alone retains its restricted local
+profile. Missing/foreign/undecryptable keys fail closed; rotation keeps required
+decryptors and does not alone revoke sessions. DB commit and private output/key
+file effects are not atomic; durable quarantine/intent and explicit correction
+must preserve known committed state instead of blind retry.
 
-Accept recovery-v1 only for actual platform format 1, recovery-v2 only for
-format 2. Preserve exact platform/all-module artifact inventories and hashes.
-Old binaries reject format 2. A v1 restore requires explicit upgrade before
-identity serving; it is never proof bootstrap was historically unused.
+Recovery-v3 accepts format 3 only; v1/v2 readers remain format-specific.
+Its private summary includes schema/security revision/epoch/context/trust,
+connections, counts for all fourteen identity tables, bootstrap provenance/
+consumed user/generation and deterministic complete security-snapshot digest.
+Hash actual restored rows in fixed table/column/key order and verify catalog/
+history; a self-described manifest alone is insufficient. Full DB/dump and exact
+module artifacts remain required; private keys/config/setup/reset files stay out.
 
-Restore into stopped quarantine. Before exposure, explicit reconciliation
-invalidates restored tickets/attempts/admission windows and pending ceremony,
-advances epoch, provisions new protected keys and records its operator decision.
-Retain committed users/mappings/events/designation and unrelated module data.
-An explicit operator decision that historical enrollment never occurred may
-leave verified unconsumed state disabled for a later deliberate nomination;
-it cannot override any recovered consumed state/event. If history is unknown
-or a consumed designation cannot be recovered, keep `recovery_locked`; no
-next-login promotion. Forward recovery or a compatible complete restore is
-supported, not Down migration or rollback-proof security.
+Restore into stopped quarantine with the existing out-of-snapshot control marker.
+Manifest-bound operator reconciliation advances epoch, invalidates restored
+sessions/attempts/setup/proofs/resets/windows, provisions fresh protected keys,
+records the decision and only then clears activation quarantine. Keep account
+IDs/stamps/credential hashes/mappings/events/consumed Owner and all module data.
+Restored credentials may reflect an older snapshot; explicitly warn that users
+must reconcile/reset affected credentials before exposure where historical
+security cannot be established. Snapshot integrity is not rollback-proof history.
+Consumed evidence overrides any contrary never-owned attestation.
+Unknown/unrecoverable historical ownership remains recovery-locked.
+
+Keep the existing finite preparation/acquisition/cleanup limits and crash
+barriers. Retry only known-not-committed boundaries within the original budget.
+Unknown commit acknowledgement publishes no cookie/success. Independently reopen
+and inspect exact state, not counts alone. Forward recovery or compatible
+complete restore is supported; Down migration and automatic owner replacement
+are not. F1/F2/T101-T103 remain separate unresolved qualification obligations.

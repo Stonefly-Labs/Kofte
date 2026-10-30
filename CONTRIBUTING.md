@@ -340,14 +340,19 @@ The [specification rework](specs/005-authentication-bootstrap/spec.md) now defin
 006 invitations/user administration/teams/RBAC. Six stories/34 scenarios/29
 requirements/nine outcomes retain 16/16 author-quality validation after the
 separate clarification pass: all ten categories Clear, zero questions and no
-spec/checklist changes. Replanning and revised review/task/analysis gates remain.
+spec/checklist changes. The [revised technical plan](specs/005-authentication-bootstrap/plan.md)
+now proposes Identity/store integration, v2 contracts, format-3 upgrade/recovery
+and complete future validation. Human design/changed quality review, task
+reconciliation and analysis remain before implementation.
 Preserve historical ledger, reviewer checklist and task/runtime evidence;
 specification rework is not implementation or feature acceptance.
 
 **The original 005 implementation completed all 100 original tasks**, on
 `feature/005-authentication-bootstrap` and the same draft PR #8.
-Use the [current runtime guide](specs/005-authentication-bootstrap/quickstart.md)
+Use the [delivered local guide](docs/development/local-development.md)
 for delivered commands and the implementation record for exact results.
+The revised feature quickstart is explicitly future v2 validation, not current
+command support.
 The nine named public recipes and `all` pass on both real providers with exact
 ordered observations and verified cleanup; 77 harness negatives also pass.
 Use explicit stopped preparation, private configuration/key custody and the

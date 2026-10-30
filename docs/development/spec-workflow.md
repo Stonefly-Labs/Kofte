@@ -22,8 +22,11 @@ validation. This is a controlled scope revision under the blocked feature,
 not a ledger rewind or a newly completed historical specify stage.
 The separate clarification pass now finds all ten categories Clear, with zero
 questions, unchanged spec and author checklist, and 16/16 to 16/16 author
-criteria. Replanning/contracts/migration and reviewed quality/task/analysis
-evidence remain before resume; see the coverage assessment below.
+criteria. The separate [revised plan](../../specs/005-authentication-bootstrap/plan.md)
+now proposes framework/store integration, credential/setup policy, v2 contracts,
+format-3 migration/recovery and future validation. Human design/changed quality
+review, task reconciliation and analysis remain before resume; see the
+clarification and replan assessments below.
 Do not reset prior history or treat the old passing gates as proof of new
 semantics. No implementation skill or product
 command ran; begin/block records only the pause, not a completed stage.
@@ -65,10 +68,64 @@ No material question is deferred or outstanding. Exact identifier/password/
 lockout policies, setup/reset token lifetime/delivery/binding, session/actor/
 account API shapes, store compatibility and migration mechanisms remain assigned
 to planning. This does not select stores/packages, weaken finite budgets or
-approve a new design. **Next:**
+approve a new design. **Next at that checkpoint:**
 `/speckit-plan SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap`
 in a separate invocation, on the same branch/draft PR. Implementation remains
-blocked for revised plan/contracts/migration and quality/task/analysis gates.
+blocked; the subsequent explicit planning invocation is recorded below.
+
+### Reworked 005 technical plan - 2026-10-30
+
+**Result:** Phase 0 research and Phase 1 design are written, with design-level
+constitutional gates assessed before and after. No unresolved product ambiguity
+or constitutional conflict was found; exact technical choices are proposed for
+review, not new human approval, runtime compatibility or feature acceptance.
+The explicit feature directory resolves to the same original branch/draft PR.
+`setup-plan.sh --json` preserves the existing plan rather than overwriting it;
+the resolved project override governs this revision. No before/after plan hooks
+are configured.
+
+Artifacts: revised plan/research/data-model/quickstart, new HTTP/actor-v2 and
+operator-v2 contracts, and account-admission-v1 for existing 006. Source-backed
+A1-A12 decisions are new; historical R1-R12 retain their original meaning through
+the pre-rework Git snapshot. Old v1 contract files stay byte-identical.
+
+Standard EF stores were evaluated first: they can customize schema and share
+transactions/defer saves, but do not supply the existing bounded native SQLite
+executor. The proposed narrow store adapter lives in the existing Web Host,
+uses shared-framework Identity managers/validators/hasher/lockout/reset and the
+current owner transaction/committed-cookie bridge. No EF Identity package,
+new project, custom account manager, periodic positive-auth cache or weakened
+deadline is selected. Actual pinned-manager/store/deadline/cleanup proof on both
+providers is the first implementation adoption gate.
+
+The design defines production-local protection, explicit connection ownership,
+private fifteen-minute setup/reset authority, five-minute bound admission/fresh
+proof, exact local policy/lockout, next-request session invalidation and a
+deny-default future account policy. Format 3 / schema 2 / recovery-v3 preserve
+old migrations/catalog fingerprints, canonical IDs/exact external associations,
+module state and consumed legacy ownership; old tickets and pending nomination
+are retired explicitly. The future guide maps all 34 scenarios/29 FRs/nine SCs
+and requires fourteen version-2 public recipes plus `all` on each provider.
+
+The spec, both checklists, historical runtime/analysis reports and all 103 task
+entries/markers remain unchanged; only the tasks' non-task pause notice changes.
+F1/F2/T101-T103 remain open. No product/dependency/migration/test source changes,
+heavy local product suite, prohibited session-capacity proof or new numbered
+feature. Ledger history, feature pointer and active start time remain unchanged;
+the helper updates only the blocked implementation reason.
+
+Stage validation: `python3 scripts/check_repository.py` passed;
+`python3 -m unittest discover -s scripts/tests -v` passed all 170 tests;
+`git diff --check` passed. Preservation assertions cover ledger history/pointers,
+unchanged spec/checklists/v1 contracts/runtime reports/migration bytes, all 103
+task entries, original inventory prompts and complete scenario/requirement/
+outcome mapping. These are documentation/tooling checks, not new runtime proof.
+
+**Next:** Human review of the proposed design and changed requirements-quality
+criteria, then separately invoked task reconciliation and cross-artifact
+analysis. Plain `/drive-speckit` still selects blocked implementation, not a
+rewound plan/checklist stage. Do not resume implementation, mark old gates newly
+passed or request a merge between stages.
 
 ### Earlier 005 checkpoints (historical)
 

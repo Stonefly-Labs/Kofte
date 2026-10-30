@@ -521,9 +521,11 @@ One-time installation setup-token admission and the 005/006 delivery boundary
 are now human-approved. The rewritten spec covers 005 account/authentication/
 initial-Owner mechanics; existing 006 delivers invitations/user administration/
 teams/RBAC. Clarification finds all ten categories Clear, with zero questions,
-unchanged spec and 16/16 author criteria. Remaining design/review rework still
-blocks implementation. Existing reviewer/design/runtime evidence does not
-certify the amended semantics. The same PR remains draft,
+unchanged spec and 16/16 author criteria. The [revised plan](../specs/005-authentication-bootstrap/plan.md)
+now proposes native Identity store integration, versioned contracts and
+format-3 migration/recovery. Design/changed quality review, task reconciliation
+and analysis still block implementation. Existing reviewer/runtime evidence does
+not certify the amended semantics. The same PR remains draft,
 not accepted or ready to merge.
 
 The earlier implementation increments below retain the source/signature
@@ -910,7 +912,7 @@ Module providers own spec validation and state reconciliation; the host owns com
 ## 9. HTTP API and authentication/authorization
 
 - HTTP+JSON OpenAPI API is the authoritative application interface. Use consistent pagination, filtering, idempotency keys for mutations, Problem Details for failures, and optimistic concurrency for state changes.
-- Approved account-model rework uses ASP.NET Core Identity for production local accounts and OIDC through maintained handlers, with stable internal users and shared application sessions/authorization. The revised 005 spec requires local-only, OIDC-only and explicit coexistence, protected first-login ownership and self-service account mechanics; existing 006 owns invitations/user administration/teams/RBAC. Production local accounts are not the development identity profile. Future SAML remains an extension seam, not an MVP dependency. See the [scope amendment](adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership); persistence, token lifecycle and versioned integration contracts still require reviewed design before implementation.
+- Approved account-model rework uses ASP.NET Core Identity for production local accounts and OIDC through maintained handlers, with stable internal users and shared application sessions/authorization. The revised 005 spec requires local-only, OIDC-only and explicit coexistence, protected first-login ownership and self-service account mechanics; existing 006 owns invitations/user administration/teams/RBAC. Production local accounts are not the development identity profile. Future SAML remains an extension seam, not an MVP dependency. The [technical proposal](adr/0007-authentication-bootstrap-boundary.md#revised-technical-design-proposal---2026-10-30) evaluates EF stores first and selects narrow adapters over the existing bounded executor, HTTP/actor-v2, deny-default account admission and format-3/recovery-v3. Exact-runtime/dependency proof and human design/quality review remain before implementation; this is not adopted runtime behavior.
 - Köfte owns a stable internal subject identity mapping, teams/roles, named permissions, policy checks, service principals and audit records independent of IdP specifics.
 - Every actionable endpoint and job invocation checks **principal + action + resource/team scope**. Frontend gating is UX, not security.
 - No arbitrary user-provided code execution, pipeline credentials or secrets included in API responses. Use secret references and provider-specific secure stores.

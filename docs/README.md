@@ -24,9 +24,11 @@ assigns account/authentication/initial-Owner mechanics to 005 and invitations,
 user administration, teams and RBAC to existing 006. It has six stories, 34
 scenarios, 29 requirements, nine outcomes and 16/16 author-checklist validation.
 Clarification finds all ten categories Clear with zero questions and unchanged
-spec/author-checklist bytes (16/16 to 16/16). Replanning/contracts and changed
-review/task/analysis gates remain before implementation. The old reviewer/design/
-runtime evidence is historical, not re-certified. No new code, stage completion
+spec/author-checklist bytes (16/16 to 16/16). The [revised plan](../specs/005-authentication-bootstrap/plan.md)
+now proposes framework/store integration, v2 contracts and format-3 migration/
+recovery. Design/changed quality review, task reconciliation and analysis remain
+before implementation. Old reviewer/runtime evidence is historical, not
+re-certified. No new code, historical ledger-stage completion
 or acceptance.
 
 The preceding review checkpoint remains historical:
@@ -40,7 +42,7 @@ zero actionable gaps across 51 requirements/outcomes/scenarios, twelve plan
 decisions, all 100 tasks and twelve principles. Tasks, product/test code and
 reviewer-owned checklists are unchanged; actual full/current-head CI reports
 each pass the same 313 named steps. This is not feature acceptance.
-The [runtime guide](../specs/005-authentication-bootstrap/quickstart.md) covers
+The [historical runtime guide](https://github.com/Stonefly-Labs/Kofte/blob/f10351a599191a5931b05a719cd8d291eba839fb/specs/005-authentication-bootstrap/quickstart.md) covers
 delivered sign-in, enrollment, session/Development and stopped operator commands.
 All nine public recipes individually and `all` pass on each provider, with
 exact ordered observations and 77 passing harness negatives. Local and Linux
