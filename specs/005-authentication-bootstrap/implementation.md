@@ -1,8 +1,8 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement running; 96/100 complete (T001-T096). Actual `b629b5f` Linux passes all ten product contexts and repository checks. Its exact local all-mode run was deliberately interrupted to stop shared-machine container churn, leaving six incomplete reports. The standalone verifier/service lifetime correction below is being qualified separately; exact final-source all-mode and actual Linux evidence remain required. T097-T100 remain unchecked.
+**Result:** implement running; 96/100 complete (T001-T096). Published code `4e16d36` is running the unchanged complete command and separate ten-job matrix on GitHub-hosted Ubuntu; its repository checks pass. All final-source product reports and traceability/publication gates remain required. Interrupted Mac attempts remain incomplete, not a final macOS qualification. T097-T100 remain unchecked.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-30.
-**Assessed baseline:** published `b629b5f393d518708bfe83de01f5095af2780250`; actual Linux merge `21747f57488b4ccc996f19f1671a26a90e51a801`. The subsequent service-lifetime working-tree evidence is distinguished below; earlier assessments retain their original baselines.
+**Assessed baseline:** published product/test/tooling `4e16d36f5cd54fd3da3e81d6641ef1d8f0598f4f`; hosted complete run `41072051400`, matrix `41072560598` and passing repository run `41072565753`. This documentation checkpoint does not change that code; earlier assessments retain their original baselines.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
 `specs/005-authentication-bootstrap`.
 **Checkpoint:** [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8).
@@ -14,6 +14,33 @@ adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
 
 ## T097 in progress: current full-gate and assessed-head failures
+
+### Actual hosted execution and publication provenance, 2026-10-30
+
+The unchanged exact command is now executing in
+[run 41072051400](https://github.com/Stonefly-Labs/Kofte/actions/runs/41072051400)
+at `4e16d36f5cd54fd3da3e81d6641ef1d8f0598f4f`. The actual job inventory contains
+one `complete-gate` job with `ubuntu-24.04` labels in the GitHub Actions runner
+group, not a Mac runner. All pinned setup steps passed and verification started.
+The separate [matrix 41072560598](https://github.com/Stonefly-Labs/Kofte/actions/runs/41072560598)
+assesses the same feature SHA; its ten contexts are not substituted for the
+single-command complete gate. [Repository run 41072565753](https://github.com/Stonefly-Labs/Kofte/actions/runs/41072565753)
+passes. Required lightweight checks also pass locally, including all
+**170 Python tests in 8.011s**. No new local product/Docker run is started.
+
+Initial GitHub push/dispatch HTTP 500 errors cleared with bounded transport/API
+retries, not test retries. The branch ref and workflow blob at `4e16d36` were
+verified; the PR's cached head still reports `ae7806f`. This documentation-only
+checkpoint preserves the code under qualification and final publication must verify the
+same draft PR follows its actual branch. No source or PR-head success is inferred
+from an API error or stale metadata.
+
+Only the verified superseded `ae7806f` product run **41067933477** was cancelled
+after the new runs were established. Its nine other contexts passed; contract
+was cancelled and its retained report remains unfinished. All ten targeted
+reports have `completeGate=false`, at revision
+`66a750d91bdb002f200c63695721dce8f82b0f1f`. That is historical partial evidence,
+not qualification of `4e16d36` or a complete all-mode result.
 
 ### Move the unchanged complete command to a dedicated hosted runner, 2026-10-30
 

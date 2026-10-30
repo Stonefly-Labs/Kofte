@@ -484,7 +484,10 @@ work. All nine public recipes individually and `all` now pass on each provider,
 with exact observations and owned cleanup. Local/Linux Chromium, focused
 privacy/accessibility and strict browser completeness are qualified. Final
 dependency/contract reconciliation and fresh zero-finding audits pass;
-complete local/CI/traceability evidence remains T097–T100.
+complete-command/CI/traceability evidence remains T097–T100.
+Final complete-command execution is hosted Ubuntu, separately from the ten-job
+matrix; interrupted Mac attempts are not a final macOS qualification. Placement
+does not change any product/test deadline or architectural boundary.
 Identity remains host-owned in platform format 2, never module tables or a
 second authentication authority in Next. Only the immutable actor-v1 crosses
 the module boundary. OIDC requires exact HTTPS ingress/provider/network trust;

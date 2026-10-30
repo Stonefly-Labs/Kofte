@@ -23,7 +23,12 @@ Chromium qualification is recorded; private browser reports must prove complete
 first-attempt success without skips/retries. See the
 [current evidence](../specs/005-authentication-bootstrap/implementation.md#t094-t095-complete-public-catalog-and-delivered-documentation).
 Final dependency/contract checks and zero-finding npm/NuGet audits pass.
-T097–T100 retain complete local/actual CI and traceability gates.
+T097–T100 retain complete-command/actual CI and traceability gates.
+The exact full command now runs in one GitHub-hosted Ubuntu `suite=complete`
+job, separately from the ten-job matrix. Repository checks pass on `4e16d36`;
+the product runs remain in progress. Do not restart heavy product tests on a
+shared workstation or turn the interrupted Mac attempts into a passing profile.
+The following increments preserve historical evidence.
 Tracing identifies lazy issuer-key generation inside the first JWKS response.
 The repaired fixture prepares keys before serving without changing runtime
 budgets. Its guarded regression, both complete provider CI jobs and 265 public

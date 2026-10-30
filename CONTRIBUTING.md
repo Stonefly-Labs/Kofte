@@ -343,8 +343,12 @@ The [operator contract](specs/005-authentication-bootstrap/contracts/operator-v1
 defines session/revocation/key overlap, retention/capacity and IdP-loss/OS-copy/
 rollback limits. Granular permissions, teams, MCP, full UI/audit and deployment/
 release work remain 006–009/022–024. Final dependency/contract checks and fresh
-npm/NuGet audits pass with no findings. T097–T100 still require complete local/
-assessed-head CI and traceability evidence, not human approval.
+npm/NuGet audits pass with no findings. T097–T100 still require the complete
+command, actual current-source CI and traceability evidence, not human approval.
+Run the complete command through the documented `suite=complete` hosted Ubuntu
+job, separately from the ten-job matrix; do not restart heavy product tests on
+a shared workstation. Interrupted Mac attempts remain incomplete, and hosted
+qualification is not a final macOS pass. Existing test/product deadlines remain.
 Converge/review/acceptance are later stages. The following increments are
 historical, not current unimplemented-capability statements or acceptance.
 The [implementation record](specs/005-authentication-bootstrap/implementation.md)

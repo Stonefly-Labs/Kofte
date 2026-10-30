@@ -48,18 +48,23 @@ strict browser completeness rejects missing cases, skips and retries.
 
 The [current evidence](specs/005-authentication-bootstrap/implementation.md#t094-t095-complete-public-catalog-and-delivered-documentation)
 also records final dependency/contract checks and zero npm/NuGet advisory findings.
-Complete-local-gate, assessed-head CI and traceability tasks T097–T100 remain.
-**Latest qualification:** `b629b5f` passes all ten actual Linux product contexts
-and repository checks. Its local all-mode run was deliberately stopped after a
-shared-machine resource complaint; the six partial reports remain incomplete,
-not passing. The verifier continuation gives its twelve separate PostgreSQL
-composition-consumer invocations one owned service, retaining fresh targets,
-private credentials, health checks and verified final cleanup. Final-source
-qualification remains required. The following sequence is historical evidence.
-The remaining exact full gate is being moved to the workflow's manually
-dispatched `suite=complete` job on GitHub-hosted Ubuntu, separate from the
-ordinary ten-job PR matrix. Interrupted Mac attempts remain incomplete; this
-does not claim a final macOS pass or change any test or product deadline.
+Complete-command, current-source CI and traceability tasks T097–T100 remain.
+**Current qualification:** published code `4e16d36` is running the unchanged
+[complete command](https://github.com/Stonefly-Labs/Kofte/actions/runs/41072051400)
+in one GitHub-hosted Ubuntu job, separately from its
+[ten-job matrix](https://github.com/Stonefly-Labs/Kofte/actions/runs/41072560598).
+[Repository checks](https://github.com/Stonefly-Labs/Kofte/actions/runs/41072565753)
+pass on that source. No further local product/Docker run is being started.
+Interrupted Mac attempts remain incomplete; hosted qualification does not
+claim a final macOS pass or change any test or product deadline.
+The verifier gives its twelve separate PostgreSQL composition consumers one
+owned service, retaining fresh targets, private credentials, health checks and
+verified final cleanup.
+
+The following sequence is historical evidence. Earlier `b629b5f` passes all ten
+Linux product contexts and repository checks, but its local all-mode run was
+deliberately stopped after a shared-machine resource complaint. Its six partial
+reports remain incomplete, not passing.
 Request tracing found lazy RSA key generation inside the test issuer's first
 JWKS response. Keys are now prepared before serving, with a red/green regression
 and unchanged runtime budgets. At repaired head `32d0d91`, both **complete
