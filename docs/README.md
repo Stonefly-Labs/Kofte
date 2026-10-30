@@ -24,8 +24,10 @@ first-attempt success without skips/retries. See the
 [current evidence](../specs/005-authentication-bootstrap/implementation.md#t094-t095-complete-public-catalog-and-delivered-documentation).
 Final dependency/contract checks and zero-finding npm/NuGet audits pass.
 T097–T100 retain complete local/actual CI and traceability gates.
-Earlier failures are not waived or diagnosed by subsets. The ledger is
-`running`; no human approval blocks this engineering work.
+Earlier failures are not waived or diagnosed by subsets. Resumed unchanged-head
+native attempts still fail; completed `f68dd98` CI fails both integrations and
+the propagation baseline. Database wait samples do not establish the cause.
+The ledger is `blocked` on engineering evidence, not human approval.
 Use the [operator contract](../specs/005-authentication-bootstrap/contracts/operator-v1.md)
 and [local guide](development/local-development.md) for private setup/trust,
 nomination, session/key custody, bounded maintenance and quarantined recovery.

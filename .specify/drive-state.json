@@ -31,7 +31,7 @@
     "directory": "specs/005-authentication-bootstrap",
     "status": "blocked",
     "branch": "feature/005-authentication-bootstrap",
-    "reason": "T097 remains incomplete: uninstrumented PostgreSQL healthy identity requests still return 503; separate fixture-creation and retained 20x10 acquisition/register deadline failures are reproduced. Temporary probes are removed. Finite native diagnostics now retain source-known PostgreSQL fixture codes without raw logs. No root-cause repair or passing complete local/assessed-head CI is established; no human approval is requested.",
+    "reason": "T097 remains incomplete at f68dd98: unchanged both-provider native selection fails in 720.188s and isolated PostgreSQL initial healthy login fails expected 303/actual 503 in 90.400s. Independent WAL/commit observations do not establish its cause. Latest assessed-head CI 40958406127 fails both native integrations and propagation baseline; retained storage/composition pass. Fixture cleanup refusal is preserved; its exact owned service is stopped, not deleted. Repair healthy refusals and fixture/acquisition failures, then rerun the exact complete local gate and actual fixed-head CI. No approval gate or later stage.",
     "started_at": "2026-10-26T21:30:18+00:00"
   },
   "history": [

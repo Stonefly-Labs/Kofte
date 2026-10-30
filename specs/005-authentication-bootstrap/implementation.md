@@ -2,7 +2,7 @@
 
 **Result:** implement incomplete; 96/100 complete (T001-T096). Chromium, the complete both-provider public catalog and final dependency reconciliation are qualified. Complete local/assessed-head CI and traceability gates remain T097-T100; historical failed native/composition/propagation results are not waived or diagnosed by focused passes. The ledger records the reproduced engineering failures as blocked; no human approval is requested.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-29.
-**Assessed baseline:** current full-gate local attempt and hosted assessment of published `30178ebf77916be706806d9a02bbede479596108`, plus explicitly identified temporary diagnostic experiments and uninstrumented subsets below. Earlier assessments, including `c7f68a786ebc51c935d8df455d926d79d88a8725`, retain their original baselines.
+**Assessed baseline:** resumed native diagnosis and completed hosted assessment of published `f68dd98a049ca205e1849074170c6b3636e41023`; the earlier full-gate attempt at `30178ebf77916be706806d9a02bbede479596108` and all other experiments retain their original baselines below.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
 `specs/005-authentication-bootstrap`.
 **Checkpoint:** [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8).
@@ -14,6 +14,85 @@ adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
 
 ## T097 in progress: current full-gate and assessed-head failures
+
+### Resumed unchanged-head investigation, 2026-10-29
+
+The original clean branch and open draft PR were verified, both checklist gates
+passed (16/16 and 36/36), and the blocked implement stage was resumed through
+the driver. No hooks are configured. These new attempts assess `f68dd98` with
+existing uninstrumented Release binaries, not a fresh-build or complete-gate
+qualification. No product, test, dependency, approved-intent or task-marker
+change is retained.
+
+The system `dotnet` initially refused the pinned SDK selection; selecting the
+existing `artifacts/toolchain/dotnet-10.0.402` installation resolved that tool
+failure without installation or pin changes. Actual tools are SDK 10.0.402 /
+runtime 10.0.13, Node 24.22.0, npm 11.19.1 and Python 3.15.0, on macOS arm64,
+18 logical CPUs and 64 GiB RAM. Commands below set
+`KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true` and use the unchanged owned verifier
+runner, private XML projection/disposal and 900-second command bound.
+
+| Exact native command, before the runner's private XML options | Actual result |
+| --- | --- |
+| `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-build --no-restore -c Release --filter-class '*OidcBudgetTests' --filter-class '*IdentityFailureTests' --filter-not-trait Suite=browser --max-threads 4 --minimum-expected-tests 90` | **Failed**, exit 2, 720.188s. Safe report `identity-healthy-baseline-both-1155cc212ca34dcaa008e644599bcb0d.json`. Eight PostgreSQL method names fail across healthy login/context, recording/commit-failure setup, rate, DNS, invalid evidence and provider-failure cases. Captured codes include exhausted/before-deadline request failure, `postgres_unconfirmed_creation_preserved` and `postgres_container_cleanup_incomplete`. No passing count is inferred from this failed selection. |
+| `dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-build --no-restore -c Release --filter-class '*PostgresIdentityFailureTests' --filter-method '*LostStoreAuthorityOrCorruptTicketCannotServeAWarmedIdentityAndNeedsExplicitCorrection' --filter-trait Provider=postgres --max-threads 4 --minimum-expected-tests 2` | **Failed**, exit 2, 90.400s. Safe report `identity-commit-wait-probe-postgres-a8b6405d0aa847c9b4be283e252aa82e.json`. The failure is expected 303 / actual 503 in the **initial healthy login**, `IdentityFailureTests.cs:237`, before either intended lost-authority/corrupt-ticket mutation. This is not evidence that the outage assertions fail. |
+
+Independent read-only PostgreSQL sampling was restricted to services created
+by these attempts. It returned only closed state/wait categories and numeric
+durations, never SQL text, identities, credentials or application payloads.
+During the broad selection, active `IO/WalSync` samples reached 1,776ms of
+transaction age, and `LWLock/WALWrite` reached 508ms. Transaction age is **not**
+time spent in that wait. A separate exact-`COMMIT` selection observed only up
+to 205ms of query age in `WalSync`; the narrowed attempt observed one 35ms
+commit sample and 21 unavailable samples during service startup/shutdown.
+These observations do **not** correlate a slow WAL flush to the failed
+request, establish a root cause or rule out scheduling/other phases.
+The narrowed run is instrumented diagnosis, not qualification.
+An independent loopback TLS socket comparison was also inconclusive; no
+speculative socket/runtime change is retained.
+
+The broad fixture's explicit cleanup refusal preserved its owned service.
+After verifying its exact ID and both run/project ownership labels, the
+investigation stopped that container and verified `Running=false`, `exited`.
+It did **not** delete the container, volume or uncertain-creation evidence,
+and does not claim successful fixture cleanup. No sampler/helper remains
+running. Temporary source was removed and the product/test diff is empty.
+
+The previously pending
+[product run 40958406127](https://github.com/Stonefly-Labs/Kofte/actions/runs/40958406127)
+is now complete: **seven product contexts pass; both integrations and
+failure-propagation fail**. Assessed merge
+`0cd6f16dc8bb60783c2e00e94e5e300ee15fe44e` has directly verified main
+`3e416813233c9d291eb20cf72d5882dbddf3e1b6` and feature
+`f68dd98a049ca205e1849074170c6b3636e41023` parents.
+[Repository run 40958406343](https://github.com/Stonefly-Labs/Kofte/actions/runs/40958406343)
+passes independently.
+
+| Latest Linux safe report | Actual result |
+| --- | --- |
+| `integration-sqlite-9c728cc1e4b548ecbc5a88d55443fcf3.json` | Failed, 729.921s. Native fails in 301.225s at ordinary-production enrollment login and corrected invalid-evidence login, with `identity_fixture_request_deadline_exhausted`. Retained storage passes 236/zero skipped; composition passes 57/zero skipped. |
+| `integration-postgres-bbddd21d272a4f04952eb75f9fab393e.json` | Failed, 1100.359s. Native fails in 390.825s at corrected invalid-evidence login, with `identity_fixture_request_deadline_exhausted`. Retained storage passes 211/zero skipped; composition passes 59/zero skipped. |
+| `failure-propagation-none-a2ded7c18559421fa73bb67022f3d52e.json` | Failed, 1035.269s. Isolated quality baseline passes; the subsequent **whole PostgreSQL integration baseline** reaches its inherited 900.365s parent timeout. No successful propagation baseline/injection is inferred. |
+
+The Linux SQLite failures and the pre-session protocol failures in earlier
+runs cannot be attributed to PostgreSQL WAL from these local observations.
+The newer retained-storage passes also do not diagnose the earlier
+acquisition/registration failures.
+
+Evidence-only checkpoint checks: `python3 scripts/check_repository.py`
+**passed**; `python3 -m unittest discover -s scripts/tests -v` **passed all
+159 tests**; `git diff --check` **passed**. No new product build or complete
+all-suite gate was run for this documentation/ledger checkpoint, and neither
+failed native selection is substituted for one.
+
+**Decision:** block implement again, not complete it. T097-T100 remain
+unchecked. Next engineering work must isolate the healthy request's exhausted
+phase and the fixture/acquisition failures, establish a repair without
+relaxing durability, deadlines, contenders or required coverage, then rerun the
+exact complete local gate and actual fixed-head CI. No approval is requested,
+installation-session boundary proof executed, or later stage started.
+
+### Prior complete-gate attempt at 30178eb
 
 The exact command
 `python3 scripts/verify.py --suite all --disposable-postgres --warm-starts 10`
