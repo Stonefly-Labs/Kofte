@@ -329,7 +329,15 @@ That checkpoint required human merge before 005. PR #7 is now human-merged;
 004's accepted ledger and all five acceptance artifact hashes were verified
 on updated main before beginning the new feature.
 
-**005 / implement is complete, with all 100 tasks evidenced**, on
+**Current 005 work is paused for approved account/ownership scope rework.**
+The [ADR amendment](docs/adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
+records ASP.NET Core Identity, production local/OIDC accounts, first-login
+ownership and owner-led onboarding/RBAC. Initial-claim admission remains
+unanswered; a setup token is recommended, not approved. Update and review the
+affected design/evidence before resuming the blocked implementation, without
+resetting historical ledger/checklist/task evidence or accepting the feature.
+
+**The original 005 implementation completed all 100 original tasks**, on
 `feature/005-authentication-bootstrap` and the same draft PR #8.
 Use the [current runtime guide](specs/005-authentication-bootstrap/quickstart.md)
 for delivered commands and the implementation record for exact results.
@@ -362,8 +370,9 @@ Actual run `41098819181` fails recovery; earlier green evidence is preserved,
 not substituted for that failure or its diagnosis. Exactly T101-T103 are
 appended unchecked, preserving all original task bytes/markers, product/test
 source, historical reports and reviewer-owned checklists.
-**Implement T101-T103 is next**, followed later by converge/review and explicit
-human acceptance; the same PR remains draft with no intermediate merge request.
+That review selected implement T101-T103; the subsequent scope-rework pause
+blocks continuation. Later converge/review and explicit human acceptance remain
+separate; the same PR stays draft with no intermediate merge request.
 The following increments are
 historical, not current unimplemented-capability statements or acceptance.
 The [implementation record](specs/005-authentication-bootstrap/implementation.md)

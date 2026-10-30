@@ -1,5 +1,12 @@
 # Implementation Plan: 005 - Authentication and Bootstrap Administration
 
+**Rework gate (2026-10-30):** The [approved scope amendment](../../docs/adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
+requires ASP.NET Core Identity, production local/OIDC accounts and first-login
+ownership. This plan is the historical OIDC/Development design, not an execution
+plan for that amendment. Initial-claim admission, persistence/transaction
+integration, versioned contracts/migration and the 005/006 boundary require
+replanning and reviewed evidence before the blocked implementation can resume.
+
 **Branch**: `feature/005-authentication-bootstrap` | **Date**: 2026-10-26 | **Spec**: [spec.md](spec.md)
 **Input**: `specs/005-authentication-bootstrap/spec.md`
 **Constitution**: Adopted v2.0.1

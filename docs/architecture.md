@@ -62,7 +62,7 @@ The following is a **proposed stack** for implementation, not a claim that every
 | Jobs                | Custom minimal persisted job abstractions built on hosted workers; evaluate library later | Durable states/retries without forcing heavy orchestrator     |
 | Events              | In-process pub/sub abstraction, durable outbox when side effects require it               | Decoupled modules, future transport flexibility               |
 | MCP                 | .NET MCP server SDK (verify stable package/API)                                           | Tools and resource discovery for assistants                   |
-| AuthN               | ASP.NET Core authentication integration + pluggable OIDC                                  | No required identity vendor; optional local/dev auth          |
+| AuthN               | ASP.NET Core Identity account management + local/OIDC authentication                       | Approved scope rework; no required identity vendor; development remains separate |
 | AuthZ               | Central RBAC/permission service + resource/team scope                                     | Same policy for UI/API/jobs/MCP                               |
 | Validation          | FluentValidation or equivalent permissively licensed validation                           | Validation local to each vertical slice                       |
 | Telemetry           | OpenTelemetry, structured logging, health checks                                          | Vendor-neutral traces, logs, metrics                          |
@@ -513,7 +513,13 @@ damage; its cause is not diagnosed. Run `41098819181` is not green.
 Exactly T101-T103 are appended for the existing-policy correction, diagnosis
 and changed-source qualification. No architecture decision, product/test code,
 original task marker or historical report changes in this review stage.
-**Implement is next** on the same draft PR, not acceptance or merge.
+That review selected implement; the subsequent
+[scope amendment](adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
+now pauses continuation for ASP.NET Core Identity, production local/OIDC
+accounts and first-login ownership with owner-led onboarding/RBAC.
+The initial-claim safeguard is unresolved; recommended setup-token admission
+has not been approved. Existing design/checklist evidence does not certify
+the amended semantics. The same PR remains draft, not accepted or ready to merge.
 
 The earlier implementation increments below retain the source/signature
 investigation and record the adopted maintained
@@ -899,7 +905,7 @@ Module providers own spec validation and state reconciliation; the host owns com
 ## 9. HTTP API and authentication/authorization
 
 - HTTP+JSON OpenAPI API is the authoritative application interface. Use consistent pagination, filtering, idempotency keys for mutations, Problem Details for failures, and optimistic concurrency for state changes.
-- Pluggable identity with OIDC integration as a first-class path; optional local development identity is a **development-only** default, not a production security assumption.
+- Approved account-model rework uses ASP.NET Core Identity for production local accounts and OIDC through maintained handlers, with stable internal users and shared application sessions/authorization. Local-only, OIDC-only and explicitly enabled coexistence must be designed; production local accounts are not the development identity profile. Future SAML remains an extension seam, not an MVP dependency. See the [scope amendment](adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership); storage integration and protected first-login ownership require reviewed design before implementation.
 - Köfte owns a stable internal subject identity mapping, teams/roles, named permissions, policy checks, service principals and audit records independent of IdP specifics.
 - Every actionable endpoint and job invocation checks **principal + action + resource/team scope**. Frontend gating is UX, not security.
 - No arbitrary user-provided code execution, pipeline credentials or secrets included in API responses. Use secret references and provider-specific secure stores.

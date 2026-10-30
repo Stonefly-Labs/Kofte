@@ -6,6 +6,12 @@ final complete gates and human feature acceptance remain incomplete.
 **Version:** HTTP `/api/identity/v1`; JSON `version: "1"`; actor-v1.
 **Owner:** Host identity; browser adapters are transports, not authenticators.
 
+**Scope rework (2026-10-30):** This describes the delivered old contract, not
+the approved local/OIDC/first-owner target. The
+[ADR amendment](../../../docs/adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
+requires reviewed versioned account/session/actor changes before implementation.
+Production local accounts must not reuse development's relaxed security profile.
+
 ## Origin and credential boundary
 
 One configured public origin. In OIDC mode it is HTTPS, without credentials,

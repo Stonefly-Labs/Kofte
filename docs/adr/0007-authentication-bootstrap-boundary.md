@@ -4,6 +4,11 @@
 **Date:** 2026-10-26
 **Spec:** [005 - Authentication and bootstrap administration](../../specs/005-authentication-bootstrap/spec.md)
 
+**Current scope authority:** The [2026-10-30 amendment](#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
+approves revised account/ownership direction and pauses implementation for
+design rework. The original implementation approval and delivered behavior
+below do not approve or implement those new semantics.
+
 ## Context
 
 Accepted 001-004 provide a module-free host/web, strict routes/configuration,
@@ -260,3 +265,88 @@ Production bounded readers, no-store responses, abort handling, deadlines,
 TLS and ownership/privacy checks remain unchanged. Actual Linux native and
 public browser execution must validate this candidate; an upstream report
 or a local pass alone is not feature completion.
+
+## Human-approved scope amendment: local accounts and first-login ownership
+
+On 2026-10-30, after the proposed ASP.NET Core Identity/local-account
+rearchitecture, the human explicitly directed:
+
+> ok, yeah, I approve. Also, I wanna do first login ownership. e.g. first person to login (either local or oidc) becomes super user, then can invite/add/onboard new users, assign rbac and such
+
+This approves the following product/design direction, not feature 005 acceptance,
+a new passing review, implementation completion or PR readiness:
+
+1. Use ASP.NET Core Identity for standard account management, with maintained
+   framework handlers for external protocols. Do not invent a password/account
+   framework or require an external identity-server product. Keep Next.js UI.
+2. Support production local accounts and OIDC with one stable internal user
+   identity and shared application session/actor/authorization boundaries.
+   The design must support local-only, OIDC-only and explicit coexistence,
+   named external connections and optional explicitly associated login methods.
+   Never associate accounts by matching email/display text. Development remains
+   a separate limited profile, not production local accounts.
+3. Replace exact-person nomination as the target bootstrap experience with
+   **first successful local or OIDC login claims initial ownership**. All
+   supported methods compete for one installation-wide atomic transition, not
+   one owner per provider. Development is ineligible. Subsequent logins cannot
+   become owners through this ceremony. Restarts, provider changes, owner loss
+   and restore must not reopen consumed ownership. Existing consumed bootstrap
+   and its user ID must be preserved through migration, not claimed again.
+4. The initial Owner/superuser can invite/add/onboard users and assign RBAC.
+   These capabilities must use central registered authorization and cannot
+   become an unguarded per-endpoint bypass or external-claim-to-admin mapping.
+   Reconcile the account/ownership work in 005 with teams, membership, roles and
+   granular permission work in 006; exact delivery/API boundaries still need
+   the amended spec/plan. Do not silently implement all of 006 in 005.
+5. Keep an extension seam for future SAML using a vetted handler or federation
+   bridge, not a bespoke parser. SAML delivery is not an MVP dependency or
+   authorized implementation task.
+6. Evaluate standard EF Core Identity stores first, against actual platform
+   ownership, migrations, transaction/evidence and finite deadline guarantees.
+   Narrow custom Identity persistence adapters remain an alternative if needed;
+   this is not approval to reimplement Identity managers or credential policy.
+   Store selection, exact package adoption and compatibility proof remain open.
+
+### Unanswered initial-claim safeguard
+
+First-login ownership is approved; **unrestricted public first-login ownership
+is not an approved security design**. The first-claim admission mechanism has
+not been decided. A public race could let an unintended identity become owner.
+The constitution's explicit, safe, non-repeatable bootstrap requirement remains
+binding; no constitutional waiver or weakening is proposed.
+
+The assistant asked whether to use a one-time installation setup token
+(recommended, independent of the person's identity) or localhost-only setup.
+The human was unavailable, so neither choice is recorded as approved.
+The recommended token would authorize a setup session without nominating a
+specific local/OIDC person; the first successful login in admitted setup would
+win. Do not implement it as a settled requirement or assume silence is approval.
+Reconcile initial claim, local-account creation, invitation/reset delivery and
+owner permissions before exposing the new flow. Never turn IdP outage into an
+automatic local credential, fallback owner or bootstrap reset.
+
+### Required rework and durable pause
+
+Implementation remains paused on `feature/005-authentication-bootstrap` and
+draft PR #8. The driver records **005 / implement / blocked** solely as a
+scheduling guard: no implementation skill, product command or later stage is
+executed by recording this pause. Do not reset prior ledger history or fake
+completed specify/clarify/plan/checklist/analyze entries.
+
+Before resuming, resolve the initial-claim safeguard and the 005/006 boundary,
+then revise requirements/scenarios, research/plan, account/session/actor and
+operator contracts, data/migration/recovery design and their validation mapping.
+Preserve stable user IDs, exact external mappings, module data/assignments,
+consumed ownership and honest partial effects. A versioned migration and
+explicit old-session invalidation must replace reinterpretation of mode-bound
+rows/tickets; do not edit old migration bytes or loosen inventory checks.
+Production local login must retain production TLS, cookies and key protection.
+
+Re-review the changed requirements-quality criteria, reconcile dependency-ordered
+tasks and perform cross-artifact analysis before code work. The old checked
+checklists, completed tasks and green reports apply only to their recorded
+OIDC/Development scope; they do not prove the amended design. Do not uncheck or
+tick historical evidence to manufacture a new gate. Preserve review F1/F2 and
+unchecked T101-T103 until the rework explicitly reconciles and verifies them.
+Subsequent implementation/convergence/review and explicit human acceptance
+remain separate; no merge or new numbered feature is authorized.

@@ -14,7 +14,15 @@ The [technology-stack exploration](kofte-technology-stack-architecture.md) is hi
 
 ## Working in the repository
 
-**Current Spec Kit checkpoint: 005 / review requires changes; implement is next.**
+**Current Spec Kit checkpoint: 005 / implement is blocked for approved scope rework.**
+The [ADR amendment](adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
+records approved ASP.NET Core Identity, production local/OIDC accounts,
+first-login ownership and owner-led onboarding/RBAC. The initial-claim
+safeguard remains unanswered; the recommended setup token is not approved.
+Requirements/design/contracts and review evidence must be reconciled before
+implementation resumes. No new code, stage completion or feature acceptance.
+
+The preceding review checkpoint remains historical:
 The [final review](../specs/005-authentication-bootstrap/review.md) identifies
 a MEDIUM forbidden-DNS-destination admission defect and an unresolved
 current SQLite recovery enrollment-setup failure, before key damage.
@@ -37,8 +45,8 @@ T097–T100 now have the complete hosted command (ten passed all-scope reports,
 313 named steps, every `completeGate=true`), all ten actual PR product contexts,
 passing repository checks and full requirement/assertion traceability.
 The historical passing reports do not erase current run `41098819181`'s failed
-recovery context or diagnose its cause. **Implement T101-T103 is next** on
-the same draft PR, not feature acceptance or an intermediate merge.
+recovery context or diagnose its cause. T101-T103 remain unchecked on the
+same draft PR, now behind the scope-rework gate, not feature acceptance or merge.
 The full command ran in one GitHub-hosted Ubuntu `suite=complete` job,
 separately from the ten-job matrix. Do not restart heavy product tests on a
 shared workstation or turn the interrupted Mac attempts into a passing profile.

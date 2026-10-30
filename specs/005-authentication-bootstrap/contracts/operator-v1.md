@@ -6,6 +6,13 @@ Final complete gates and feature acceptance remain separate.
 **Authority:** Existing admitted stopped-installation maintenance, not browser
 administrator status, a web endpoint or an arbitrary worker invocation.
 
+**Scope rework (2026-10-30):** The
+[approved amendment](../../../docs/adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
+replaces nominated bootstrap as the target with first-login ownership and adds
+production local accounts. This remains the delivered old operator contract.
+The initial-claim safeguard is unanswered; a setup token is recommended, not
+approved. No new configuration/command or automatic fallback owner exists.
+
 ## Strict configuration and production trust
 
 The environment key `KOFTE_AUTH_CONFIG_FILE` is admitted by the

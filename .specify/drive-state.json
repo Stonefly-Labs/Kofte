@@ -25,7 +25,15 @@
       "next_step": "implement"
     }
   },
-  "active": null,
+  "active": {
+    "spec": "005",
+    "step": "implement",
+    "directory": "specs/005-authentication-bootstrap",
+    "status": "blocked",
+    "branch": "feature/005-authentication-bootstrap",
+    "reason": "Human paused implementation and approved ASP.NET Core Identity with production local/OIDC accounts and first-successful-login ownership (2026-10-30). Preserve prior stage history and T101-T103; do not execute the old implementation plan. Before resume: resolve the unanswered initial-claim safeguard (one-time setup token recommended, not approved), reconcile owner onboarding/RBAC boundary with 006, revise 005 requirements/design/contracts/migration and review quality/tasks/analysis evidence. No unrestricted public owner race, automatic bootstrap reopening, feature acceptance or new-stage completion is authorized. See ADR 0007 scope amendment.",
+    "started_at": "2026-10-30T17:52:49+00:00"
+  },
   "history": [
     {
       "spec": null,

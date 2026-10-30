@@ -5,7 +5,16 @@
 **Created**: 2026-10-26
 **Status**: Draft
 **Constitution**: 2.0.1; principles I-XII assessed below
-**Input**: Exact fenced inventory 005 prompt:
+**Scope rework (2026-10-30):** The human approved ASP.NET Core Identity,
+production local/OIDC accounts and first-successful-login ownership with
+owner-led onboarding/RBAC. The [ADR amendment](../../docs/adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
+records the decision and unanswered initial-claim safeguard.
+**Implementation is blocked.** The requirements/scenarios below retain the
+original OIDC-only baseline, including its now-superseded exclusions and
+nominated bootstrap; they must be reconciled and reviewed before new code.
+No existing checklist, analysis or acceptance result certifies the new scope.
+
+**Original input (historical)**: Exact fenced inventory 005 generation prompt:
 
 ```text
 Specify Köfte feature 005: Authentication and bootstrap administration. Scope: MVP, required for initial release. Read docs/product-charter.md, docs/product-vision.md, docs/architecture.md and the project constitution first; do not invent product requirements that conflict with them.

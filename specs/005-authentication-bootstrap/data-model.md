@@ -4,6 +4,12 @@
 **Owner:** Host core identity in `kofte_system` (PostgreSQL) or the existing
 separate `platform/platform.db` (SQLite), never an optional module.
 
+**Rework gate (2026-10-30):** This is the original mode-bound model. The
+[approved scope amendment](../../docs/adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
+requires provider-independent users, optional local/external login methods and
+atomic first-login ownership. New storage/migration design is not yet approved;
+do not reinterpret these rows or reset consumed bootstrap to implement it.
+
 ## Physical ownership and compatibility
 
 Keep the three accepted registry tables, original migration-1 digest, existing

@@ -6,9 +6,20 @@ assets or running a fleet. **Creating this driver does not execute product work.
 
 ## Invocation and current progress
 
-**Current checkpoint: 005 / review requires changes; implement is next**, on
+**Current checkpoint: 005 / implement is blocked for approved scope rework**, on
 `feature/005-authentication-bootstrap`, with recorded directory
 `specs/005-authentication-bootstrap`. The
+[ADR amendment](../adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
+records human approval of ASP.NET Core Identity, production local/OIDC accounts,
+first-login ownership and owner-led onboarding/RBAC. The human was unavailable
+to answer the initial-claim safeguard question: a one-time setup token is a
+recommendation, not an approved requirement. Resolve it and the 005/006 boundary,
+reconcile requirements/design/contracts/migration and reviewed quality/task/
+analysis evidence before resume. Do not reset prior history or treat the old
+passing gates as proof of new semantics. No implementation skill or product
+command ran; begin/block records only the pause, not a completed stage.
+
+The preceding
 [final review](../../specs/005-authentication-bootstrap/review.md) identifies
 one MEDIUM forbidden-DNS-destination admission defect and one unresolved current
 qualification failure: SQLite enrollment setup returns 503 instead of 200,
@@ -22,8 +33,9 @@ plan decisions, all 100 tasks and twelve principles. It leaves tasks,
 product/test/tooling source and reviewer-owned checklists unchanged and verifies
 actual complete/current-head reports with the same 313 passing named steps.
 Current run `41098819181` has a failed recovery context; earlier green reports
-do not diagnose or replace it. **Implement T101-T103 is next on a later
-invocation**, not acceptance, PR readiness, merge or a new numbered feature.
+do not diagnose or replace it. T101-T103 remain unchecked; the later approved
+scope amendment now blocks that continuation. No acceptance, PR readiness,
+merge or new numbered feature is authorized.
 T092's focused operations join now has actual Linux qualification. T093 also
 requires exact private Playwright discovery/execution completeness, not just
 zero exit: no missing case, skip, retry or flaky result. Its complete local
