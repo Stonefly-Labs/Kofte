@@ -80,7 +80,8 @@ baseline still fail. A real socket regression identifies the local injection's
 reserved-port transport blackhole; an owned protocol-refusing listener repairs
 that fixture without relaxing budgets. On published `e371245`, the complete local
 failure-propagation suite now passes all healthy baselines and all five injections
-in 730.130s. A new exact full local gate is running in a separate clean checkout.
+in 730.130s. Its independent exact full local gate has finished: nine suite
+groups pass, but the SQLite composition `all` consumer fails; no complete pass.
 Linux at `e371245` finishes nine contexts successfully, including all 84 retained
 composition contracts; only its isolated healthy PostgreSQL baseline times out.
 Subsequent safe timings at `5ee4367` locate the aggregate cost, and SQLite recovery
@@ -89,6 +90,11 @@ reusing the nominal web port for the host; the fixture now guarantees distinct
 ports. Overlapping only pre-barrier registry-worker startup reduces the unchanged
 400-process PostgreSQL proof from 86.862s to 48.242s locally. All twenty rounds,
 ten contenders, readiness gates, ownership assertions and budgets remain intact.
+Actual `13d4e9c` Linux integration passes, but the isolated baseline exposes
+overlapping exclusive warmup leases. A held-lease regression reproduces that
+failure on both providers. The corrected two-phase fixture overlaps runtime
+startup, restores serial warmup, then releases the unchanged registration
+barrier; all six regression/retained cases pass, including 800 fresh race workers.
 Full repaired-source qualification continues; no complete-gate pass is claimed.
 Historical failures remain failed; no universal issuer-key explanation is claimed.
 Continue on the same branch/draft PR #8. Converge, review and explicit feature

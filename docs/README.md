@@ -49,13 +49,19 @@ A real socket regression identifies and repairs the local reserved-port
 blackhole with an owned protocol-refusing listener, without increasing budgets.
 Published `e371245` now passes the complete local propagation suite in 730.130s,
 including all healthy baselines and five injections. Exact full local qualification
-is running in a separate clean checkout. That Linux assessment finishes nine
+finishes with nine passing suite groups but a failed SQLite composition `all`
+consumer; completeGate remains false. That Linux assessment finishes nine
 contexts successfully; only isolated PostgreSQL propagation times out.
 Subsequent safe timings locate the cost and a SQLite recovery configuration
 rejection. A forced regression now prevents host/web ephemeral-port reuse, and
 overlapping only pre-barrier startup reduces the unchanged 400-process ownership
 proof from 86.862s to 48.242s locally. Original rounds, contenders, readiness
-checks and deadlines remain; actual repaired-source qualification continues.
+checks and deadlines remain. Actual Linux at `13d4e9c` exposes overlapping
+exclusive warmup acquisitions in the isolated baseline. The corrected fixture
+overlaps runtime startup but restores serial warmup before the unchanged
+registration barrier. A real held-lease regression fails before repair on both
+providers; all six relevant cases pass afterward, including 800 race workers.
+Actual repaired-source qualification continues.
 The remaining gates are engineering work, not human approval; no failed
 result is replaced by a subset or attributed universally to issuer keys.
 Use the [operator contract](../specs/005-authentication-bootstrap/contracts/operator-v1.md)

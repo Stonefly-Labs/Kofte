@@ -1095,10 +1095,13 @@ exclusive xUnit collection. Their intended ten-way workload is unchanged, but
 unrelated hosted lifecycle fixtures do not compete with that benchmark's fixed
 acquisition budgets. Worker counts, rounds, retry rules and product deadlines
 are not reduced or relaxed.
-Each separate-process round launches all ten fresh workers before awaiting their
-individual ready messages, then releases the original registration barrier only
-after every message is validated. This overlaps cold startup, not the ownership
-operation's contenders or rounds; children remain separately owned and disposed.
+Each separate-process round launches all ten fresh workers and validates their
+startup messages, explicitly prepares each exclusive warmup lease serially, then
+releases the original registration barrier only after every waiting message is
+validated. Only runtime startup overlaps, not exclusive warmup acquisitions.
+The ownership operation retains its original contenders, rounds, deadlines and
+retries; children remain separately owned and disposed. A real held-lease
+regression verifies that startup cannot acquire maintenance before preparation.
 Composition fixtures also exclude the prepared identity's nominal web port when
 allocating a host port. If the kernel reuses it, the candidate stays bound while
 one replacement is allocated, guaranteeing distinct ports without retry loops.

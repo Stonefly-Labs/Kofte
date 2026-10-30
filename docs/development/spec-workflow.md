@@ -52,14 +52,20 @@ repair, with unchanged budgets. Timeout reports now retain strictly validated
 failed child evidence; CI adds bounded safe recipe timings after contract
 failure, without replacing the failed required command.
 Published `e371245` passes complete local propagation in 730.130s, all baselines
-and five injections; a separate clean checkout is running the exact full gate.
+and five injections; its independent exact full gate finishes with nine passing
+suite groups but a failed SQLite composition `all` consumer, not a complete pass.
 That Linux assessment finishes nine contexts successfully, including all retained
 composition contracts; only the isolated PostgreSQL baseline times out. Subsequent
 safe timing evidence identifies its phase costs and a SQLite recovery configuration
 rejection. A forced host/web port-collision regression now passes, and overlapping
 only pre-barrier worker startup reduces the unchanged 400-process ownership proof
 from 86.862s to 48.242s locally. All rounds, contenders, readiness assertions,
-original selectors and budgets remain; repaired-source qualification continues.
+original selectors and budgets remain. Actual `13d4e9c` Linux integration
+passes, but its isolated baseline exposes overlapping exclusive warmup leases.
+The corrected two-phase fixture overlaps only runtime startup, restores serial
+warmup, then releases the unchanged registration barrier. A held-lease regression
+fails before repair on each provider; all six relevant cases pass afterward,
+including the same 800 fresh race workers. Repaired-source qualification continues.
 Qualification and Linux diagnosis continue. The preserved earlier fixture remains
 stopped, not deleted or claimed cleaned up. Do not advance stages, waive the
 failed gates or attribute every historical failure to lazy key generation.

@@ -1,8 +1,8 @@
 # Implementation Evidence: 005 - Authentication and Bootstrap Administration
 
-**Result:** implement running; 96/100 complete (T001-T096). Published `e371245` passes complete local propagation in 730.130s; its exact full local gate is running independently. That Linux assessment finishes nine product contexts successfully. Subsequent `5ee4367` timing evidence retains the healthy PostgreSQL aggregate timeout and a SQLite recovery configuration rejection. A forced host/web port-collision regression now passes, and pre-barrier startup overlap reduces the unchanged 400-process proof from 86.862s to 48.242s locally. Full repaired-source qualification continues; no complete-gate pass is claimed. T097-T100 remain unchecked. No human approval is requested.
+**Result:** implement running; 96/100 complete (T001-T096). The independent exact full local gate at `e371245` finishes with nine passing suite groups and a failed SQLite composition consumer; completeGate remains false. Actual `13d4e9c` Linux integration passes in 613.840s, but its isolated healthy baseline exposes a pre-registration warmup acquisition collision, not a timeout. The corrected two-phase fixture overlaps runtime startup while restoring serial warmup leases before the unchanged ten-contender registration barrier. A held-lease regression fails on both providers before repair; all six regression/retained cases now pass, including the same 800 fresh race workers. Full repaired-source qualification continues; T097-T100 remain unchecked. No human approval is requested.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-30.
-**Assessed baseline:** published timing diagnostic `5ee43672cfc82f59659274f3eddc3d1c4c8d579f`; actual Linux merge `6a4f6f3efe15d2d08b383b408079fdeda4cecf8c`. The subsequent working-tree port/startup repairs are distinguished below; earlier assessments retain their original baselines.
+**Assessed baseline:** published port/startup repair `13d4e9c88577745e975a8e1630f8d9d77b8a7b0b`; actual Linux merge `250825b1a6af9c801c5fbe1db50fd3766c8e911b`. The subsequent two-phase warmup correction is distinguished below; earlier assessments retain their original baselines.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
 `specs/005-authentication-bootstrap`.
 **Checkpoint:** [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8).
@@ -14,6 +14,71 @@ adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
 
 ## T097 in progress: current full-gate and assessed-head failures
+
+### Separate runtime startup from exclusive warmup, 2026-10-30
+
+Actual [run 41010829036](https://github.com/Stonefly-Labs/Kofte/actions/runs/41010829036)
+assesses merge `250825b1a6af9c801c5fbe1db50fd3766c8e911b`, whose verified parents
+are main `3e416813233c9d291eb20cf72d5882dbddf3e1b6` and feature
+`13d4e9c88577745e975a8e1630f8d9d77b8a7b0b`.
+[Repository run 41010828872](https://github.com/Stonefly-Labs/Kofte/actions/runs/41010828872)
+passes. Complete independent PostgreSQL integration passes in **613.840s**:
+native 121/231.738s, storage 211/230.213s and composition 59/151.724s, zero
+skipped (`integration-postgres-3b7f297bd99543c384472afe3082a13c.json`).
+
+Its isolated healthy baseline instead fails in **768.419s**, below 900 seconds.
+Native 121 passes in 317.961s and composition 59 passes in 228.672s, but storage
+fails `PostgresRegistrationConcurrencyTests.TwentyRoundsOfTenSeparateProcessesKeepActualOwnershipUnique`
+with **`storage_busy; operation=acquire`**
+(`failure-propagation-none-785b6f14d7404e98bc76949469e7d2d4.json`).
+The startup overlap had also overlapped the exclusive **warmup** maintenance
+acquisitions, which are outside the intended registration race. That is a
+fixture regression, not a reason to lengthen the two-second acquisition budget
+or add warmup retries.
+
+The corrected fixture starts all ten fresh processes and validates their
+startup messages, prepares each worker's original warmup lease **serially**,
+then validates every waiting message before releasing the unchanged registration
+barrier. Cold runtime startup overlaps; exclusive pre-race initialization does
+not. All twenty rounds, ten actual registration contenders, 400 fresh children
+per provider, original retries, 45-second child/60-second round budgets,
+exclusive collection, ownership assertions and verified cleanup remain.
+
+New `FreshWorkerWaitsForExplicitPreparationBeforeAcquiringMaintenance` holds
+a real parent lease while a fresh child starts, then releases it, explicitly
+prepares the child and completes actual registration with exact inventory and
+owned exit. The two-provider command below first **fails both cases** with the
+same `storage_busy; operation=acquire`; both corrected cases then pass in the
+combined selection:
+
+```text
+dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-method '*FreshWorkerWaitsForExplicitPreparationBeforeAcquiringMaintenance' --max-threads 4 --minimum-expected-tests 2 --output Detailed --show-stdout None --show-stderr None
+```
+
+The combined complete relevant selection **passes 6/zero skipped, 103.323s**:
+
+```text
+dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release --filter-method '*FreshWorkerWaitsForExplicitPreparationBeforeAcquiringMaintenance' --filter-method '*TwentyRoundsOfTenSeparateProcessesKeepActualOwnershipUnique' --max-threads 4 --minimum-expected-tests 6 --output Detailed --show-stdout None --show-stderr None
+```
+
+The retained PostgreSQL race cases take 30.619s/37.955s; SQLite takes
+12.940s/16.390s. These are case timings, not a substituted whole-gate result.
+Focused `dotnet format Kofte.slnx --verify-no-changes --no-restore --include
+tests/integration/Kofte.Storage.IntegrationTests/Registry/RegistrationConcurrencyTests.cs
+tests/integration/Kofte.Storage.IntegrationTests/Registry/RegistrationWorker.cs`
+passes; `dotnet build Kofte.slnx --no-restore -c Release -warnaserror` passes
+with zero warnings/errors, and all 165 repository Python tests pass.
+
+The earlier independent exact all-suite run at clean published `e371245`
+has also finished, exit 1: quality 37.806s, unit 48.780s, SQLite 456.033s,
+PostgreSQL 489.619s, recovery 976.022s, browser 76.032s, privacy 418.617s,
+startup 12.871s and complete propagation 772.450s pass. Contract fails in
+708.925s: `SqliteCompositionPublicContractTests.AllRequiresEveryActualStandaloneScenarioAndItsCompleteSemanticEvidence`
+returns `composition_consumer_failed`
+(`contract-both-7fa0a7d5b68944ac8f78bcc974ef6504.json`).
+All ten reports retain `scope:all` and **completeGate false**. That report
+does not identify the inner recipe; the later 85-case pass does not establish
+its historical cause or replace the failed full gate.
 
 ### Forced port-collision repair and measured worker startup, 2026-10-30
 

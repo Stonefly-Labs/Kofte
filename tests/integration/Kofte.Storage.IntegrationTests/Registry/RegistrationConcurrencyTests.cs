@@ -16,6 +16,29 @@ public abstract class RegistrationConcurrencyTests
 {
     protected abstract string Provider { get; }
 
+    [Fact]
+    public async Task FreshWorkerWaitsForExplicitPreparationBeforeAcquiringMaintenance()
+    {
+        await using var fixture = await RegistryFixture.CreateAsync(Provider, TestContext.Current.CancellationToken);
+        using var deadline = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
+        deadline.CancelAfter(TimeSpan.FromSeconds(60));
+        await using var maintenance =
+            await new StorageMaintenance(fixture.NewInstallation()).AcquireAsync(deadline.Token);
+        await using var child = OwnedProcesses.Start(
+            Start(fixture, ["--registration-worker", "same", "0", "0"]), captureOutput: false);
+        using var reader = new StreamReader(child.StandardOutput);
+        await ReadEventAsync(reader, "storage_worker_started", deadline.Token);
+        await maintenance.DisposeAsync();
+        await child.StandardInput.WriteLineAsync("prepare");
+        await child.StandardInput.FlushAsync(deadline.Token);
+        await ReadEventAsync(reader, "storage_worker_waiting", deadline.Token);
+        await child.StandardInput.WriteLineAsync("start");
+        await child.StandardInput.FlushAsync(deadline.Token);
+        await ReadEventAsync(reader, "storage_worker_ready", deadline.Token);
+        Assert.Equal(0, (await child.WaitAsync(deadline.Token)).ExitCode);
+        await fixture.AssertInventoryAsync(1, 1, deadline.Token);
+    }
+
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
@@ -63,14 +86,14 @@ public abstract class RegistrationConcurrencyTests
                     var reader = new StreamReader(child.StandardOutput);
                     children.Add((child, reader));
                 }
-                await Task.WhenAll(children.Select(async pair =>
+                await Task.WhenAll(children.Select(pair =>
+                    ReadEventAsync(pair.Reader, "storage_worker_started", deadline.Token)));
+                foreach (var (child, reader) in children)
                 {
-                    var line = await pair.Reader.ReadLineAsync(deadline.Token);
-                    using var waiting = JsonDocument.Parse(line ?? throw new InvalidOperationException("storage_worker_missing"));
-                    Assert.True(waiting.RootElement.GetProperty("eventCode").GetString() != "storage_worker_failed",
-                        Failure(waiting.RootElement));
-                    Assert.Equal("storage_worker_waiting", waiting.RootElement.GetProperty("eventCode").GetString());
-                }));
+                    await child.StandardInput.WriteLineAsync("prepare");
+                    await child.StandardInput.FlushAsync(deadline.Token);
+                    await ReadEventAsync(reader, "storage_worker_waiting", deadline.Token);
+                }
                 foreach (var (child, _) in children)
                 {
                     await child.StandardInput.WriteLineAsync("start");
@@ -108,6 +131,15 @@ public abstract class RegistrationConcurrencyTests
         var operation = result.TryGetProperty("operation", out var phase) &&
             phase.GetString() is "acquire" or "register" ? phase.GetString() : "setup";
         return $"{code}; operation={operation}";
+    }
+
+    private static async Task ReadEventAsync(StreamReader reader, string expected, CancellationToken token)
+    {
+        var line = await reader.ReadLineAsync(token);
+        using var message = JsonDocument.Parse(line ?? throw new InvalidOperationException("storage_worker_missing"));
+        Assert.True(message.RootElement.GetProperty("eventCode").GetString() != "storage_worker_failed",
+            Failure(message.RootElement));
+        Assert.Equal(expected, message.RootElement.GetProperty("eventCode").GetString());
     }
 
     private static async Task AssertRoundAsync(RegistryFixture fixture, bool same, int round)

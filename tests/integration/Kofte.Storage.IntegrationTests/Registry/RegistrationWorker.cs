@@ -53,7 +53,10 @@ public static class RegistrationWorker
                 int.TryParse(roundText, out var round) && round is >= 0 and < 20 &&
                 int.TryParse(indexText, out var index) && index is >= 0 and < 10)
             {
-                // Complete cold provider initialization before the shared registration race starts.
+                Console.WriteLine("""{"eventCode":"storage_worker_started"}""");
+                if (await Console.In.ReadLineAsync(budget.Token) != "prepare")
+                    throw new InvalidOperationException("storage_worker_preparation_required");
+                // Warmup leases remain serial; only registration contends at the shared barrier.
                 operation = StorageOperation.Acquire;
                 await using (await new StorageMaintenance(installation).AcquireAsync(budget.Token)) { }
                 Console.WriteLine("""{"eventCode":"storage_worker_waiting"}""");
