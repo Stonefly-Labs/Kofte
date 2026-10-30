@@ -1142,6 +1142,23 @@ skip tests, retry failures or relax product deadlines.
 
 ## Focused checks currently available
 
+Use a dedicated execution environment for the full gate; do not assume a shared
+workstation is available for container-heavy validation. The existing Product
+checks workflow supports one complete all-mode run on GitHub-hosted Ubuntu:
+
+```bash
+gh workflow run product-checks.yml --ref feature/005-authentication-bootstrap -f suite=complete
+```
+
+`suite=all` still means the ordinary independent ten-job matrix; `suite=complete`
+runs the unchanged `python3 scripts/verify.py --suite all --disposable-postgres
+--warm-starts 10` command in one job. Its four-hour outer allowance covers the
+aggregate command and setup; ordinary matrix jobs retain 90 minutes, and all
+inner suite, native, runtime and product deadlines are unchanged. Retain exact
+source/profile/report evidence. Hosted Linux results never become a macOS pass.
+SIGTERM/SIGINT now latch a stop request independently of cleanup errors, so a
+failed cleanup cannot silently schedule another suite or certify a partial run.
+
 Run the repository checks and the smallest affected product commands:
 
 ```bash

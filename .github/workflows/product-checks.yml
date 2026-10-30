@@ -8,9 +8,9 @@ on:
   workflow_dispatch:
     inputs:
       suite:
-        description: Run the full matrix or targeted browser diagnostics
+        description: Run the matrix, the single complete gate, or browser diagnostics
         type: choice
-        options: [all, browser]
+        options: [all, complete, browser]
         default: all
 
 permissions:
@@ -20,12 +20,14 @@ jobs:
   verification:
     name: ${{ matrix.name }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: ${{ matrix.name == 'complete-gate' && 240 || 90 }}
     strategy:
       fail-fast: false
       matrix:
         include: >-
           ${{ fromJSON(
+            github.event_name == 'workflow_dispatch' && inputs.suite == 'complete' &&
+            '[{"name":"complete-gate","arguments":"--suite all --disposable-postgres --warm-starts 10","postgres":true,"browser":true}]' ||
             github.event_name == 'workflow_dispatch' && inputs.suite == 'browser' &&
             '[{"name":"browser","arguments":"--suite browser --disposable-postgres","postgres":true,"browser":true}]' ||
             '[

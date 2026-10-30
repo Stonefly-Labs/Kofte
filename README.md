@@ -56,6 +56,10 @@ not passing. The verifier continuation gives its twelve separate PostgreSQL
 composition-consumer invocations one owned service, retaining fresh targets,
 private credentials, health checks and verified final cleanup. Final-source
 qualification remains required. The following sequence is historical evidence.
+The remaining exact full gate is being moved to the workflow's manually
+dispatched `suite=complete` job on GitHub-hosted Ubuntu, separate from the
+ordinary ten-job PR matrix. Interrupted Mac attempts remain incomplete; this
+does not claim a final macOS pass or change any test or product deadline.
 Request tracing found lazy RSA key generation inside the test issuer's first
 JWKS response. Keys are now prepared before serving, with a red/green regression
 and unchanged runtime budgets. At repaired head `32d0d91`, both **complete

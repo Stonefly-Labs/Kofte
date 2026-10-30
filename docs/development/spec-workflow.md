@@ -21,6 +21,12 @@ reviewed graph/archives/notices, generated contracts and zero-finding npm/NuGet
 audits. T097–T100 retain complete local/assessed-head CI and traceability/
 publication gates. These are engineering gates, not an approval request
 or permission to advance to converge.
+The remaining complete command is scheduled through Product checks'
+`workflow_dispatch` input `suite=complete` on a disposable GitHub-hosted Ubuntu
+runner, separately from the ordinary ten-job PR matrix. Do not restart a heavy
+local run on a shared workstation merely because the older guide says "local".
+Record the actual profile: the interrupted Mac attempts are not passing gates,
+and hosted evidence does not establish a final macOS qualification.
 The [current evidence](../../specs/005-authentication-bootstrap/implementation.md#t097-in-progress-current-full-gate-and-assessed-head-failures)
 preserves actual sources/results and historical failures. Correlated tracing
 identifies expensive lazy RSA generation in the issuer fixture's first JWKS

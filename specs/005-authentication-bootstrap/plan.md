@@ -94,6 +94,14 @@ removes the 50,000-session boundary tests and associated corpus cases, not the
 runtime cap. Do not run or replace that proof or claim verified scalability
 at the boundary. All other validation and feature acceptance gates remain.
 
+**Execution scheduling continuation (2026-10-30):** Run the remaining exact
+complete command on a disposable GitHub-hosted Ubuntu runner, independently of
+the ordinary ten-job CI matrix, rather than burden the shared Mac. Record the
+actual profile and retain the interrupted final Mac attempts as incomplete.
+This changes execution placement, not test content, deadlines, provider
+coverage, the session-capacity amendment or human feature acceptance. The
+earlier passing Mac full gate remains evidence only for its recorded source.
+
 ## Constitution Check
 
 **Pre-research assessment:** accepted 001-004 source and the clarified spec

@@ -1695,7 +1695,7 @@ def fail(code):
     raise VerificationError(code)
 
 
-def main(argv=None, root=ROOT, environment=None):
+def main(argv=None, root=ROOT, environment=None, *, stop_requested=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--suite", choices=("all", *SUITES), required=True)
     parser.add_argument("--provider", choices=("sqlite", "postgres", "both"))
@@ -1709,7 +1709,8 @@ def main(argv=None, root=ROOT, environment=None):
     source_environment = dict(os.environ if environment is None else environment)
     arguments.postgres_connection = source_environment.get("KOFTE_POSTGRES_CONNECTION")
     reports = []
-    for suite, provider in groups(arguments.suite, arguments.provider):
+    selections = groups(arguments.suite, arguments.provider)
+    for suite, provider in selections:
         report = Report(root, suite, provider, arguments.suite)
         passed = False
         interrupted = False
@@ -1733,22 +1734,28 @@ def main(argv=None, root=ROOT, environment=None):
         finally:
             report.finish(passed)
             reports.append(report)
-        if interrupted:
+        if interrupted or stop_requested is not None and stop_requested.is_set():
             break
-    complete = arguments.suite == "all" and all(r.data["outcome"] == "passed" for r in reports)
+    cancelled = stop_requested is not None and stop_requested.is_set()
+    complete = (arguments.suite == "all" and len(reports) == len(selections) and not cancelled
+                and all(r.data["outcome"] == "passed" for r in reports))
     for report in reports:
         report.data["completeGate"] = complete
         report.save()
-    return 0 if all(r.data["outcome"] == "passed" for r in reports) else 1
+    return 0 if not cancelled and all(r.data["outcome"] == "passed" for r in reports) else 1
 
 
 if __name__ == "__main__":
+    stop_requested = threading.Event()
+
     def interrupted(_number, _frame):
+        stop_requested.set()
         raise KeyboardInterrupt
 
     signal.signal(signal.SIGTERM, interrupted)
+    signal.signal(signal.SIGINT, interrupted)
     try:
-        raise SystemExit(main())
+        raise SystemExit(main(stop_requested=stop_requested))
     except (VerificationError, OSError, subprocess.TimeoutExpired, KeyboardInterrupt):
         print(json.dumps({"eventCode": "verification_setup_failed"}), flush=True)
         raise SystemExit(1)

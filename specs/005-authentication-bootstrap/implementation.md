@@ -15,6 +15,49 @@ is now wired but feature 005 is not accepted.
 
 ## T097 in progress: current full-gate and assessed-head failures
 
+### Move the unchanged complete command to a dedicated hosted runner, 2026-10-30
+
+The next `ae7806f` Mac attempt was also stopped after the execution-profile
+concern. Quality **43.373s**, unit **54.181s** and complete SQLite integration
+**488.416s** passed. PostgreSQL records `verification_input_invalid`
+**15.742s** during the stopping attempt; recovery was still running when the
+runner was terminated. No underlying product assertion is inferred and no
+partial report is promoted: all five remain `completeGate=false`.
+The graceful SIGTERM did not prevent subsequent suite scheduling. The exact
+owned verifier was therefore suspended before terminating only its verified
+descendants and the verifier itself. Process exit was confirmed; its one
+label/identity-verified leftover container, network and volume were removed,
+and the owned project inventory was empty. Unrelated work and remote CI were
+not stopped.
+
+The continuation latches SIGTERM/SIGINT independently of cleanup/error
+classification. A requested stop cannot schedule another suite, return zero
+after a partial pass, or set `completeGate=true` without all selected groups.
+Focused regressions cover both a just-passed suite and a masked cleanup error,
+with nonzero exit, exactly one attempted group and no private canary disclosure.
+All **170 Python tests** and required repository/whitespace checks pass.
+No new product/Docker test run is started on the Mac.
+
+Product checks gains an explicit `workflow_dispatch` choice `suite=complete`.
+It runs the exact existing command
+`python3 scripts/verify.py --suite all --disposable-postgres --warm-starts 10`
+in one GitHub-hosted Ubuntu job. Ordinary PR/default dispatch still runs the
+same ten independent contexts. The new aggregate job has a four-hour outer
+allowance; normal jobs retain 90 minutes and every original inner suite,
+command, fixture, runtime and product budget remains. This is placement and
+stop-control repair, not permission to skip, retry, lower contention or combine
+targeted reports into a passing complete gate.
+
+Final evidence must explicitly distinguish hosted Linux qualification from
+the incomplete Mac attempts. The earlier exact `e0dba6f` Mac all-mode pass is
+not relabeled: its production `src`, `apps` and `packages` trees are individually
+identical to `ae7806f`, verified by Git tree IDs
+`e587e7df7ea90195b902e1cd80fd455817e63289`,
+`554d389c86c01b23d601a9c9ea6f2b287fda22d4` and
+`c363a1fe37b0e8d4fc1d8a4c34a93ea1c1b6d6fd`.
+Later changes are tests/tooling/docs; that equality explains preserved product
+provenance, not a claim that the final test/tooling source passed on macOS.
+
 ### Contain shared-machine work and join the standalone service lifetime, 2026-10-30
 
 The actual [b629b5f product run](https://github.com/Stonefly-Labs/Kofte/actions/runs/41058328622)

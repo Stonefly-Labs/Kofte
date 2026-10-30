@@ -922,6 +922,37 @@ class VerifyTests(unittest.TestCase):
         self.assertEqual("suite-runtime", privacy.data["steps"][-1]["name"])
         self.assertNotIn("credential-canary", privacy.path.read_text())
 
+    def test_requested_stop_never_schedules_another_suite_or_certifies_a_partial_pass(self):
+        original_report = verify.Report
+        for cleanup_failure in (False, True):
+            reports = []
+            stopped = Mock()
+            stopped.is_set.return_value = False
+
+            def execute(*_args):
+                stopped.is_set.return_value = True
+                if cleanup_failure:
+                    raise OSError("private-cleanup-canary")
+
+            def construct(_root, suite, _provider, invocation):
+                with patch.object(verify.subprocess, "run", return_value=subprocess.CompletedProcess(
+                    [], 0, b"a" * 40 + b"\n", b"",
+                )):
+                    report = original_report(_root, suite, _provider, invocation)
+                reports.append(report)
+                return report
+
+            with self.subTest(cleanup_failure=cleanup_failure), \
+                    patch.object(verify, "Report", side_effect=construct), \
+                    patch.object(verify, "execute_suite", side_effect=execute) as run:
+                self.assertEqual(1, verify.main(
+                    ["--suite", "all"], self.root, {}, stop_requested=stopped))
+            run.assert_called_once()
+            self.assertEqual(1, len(reports))
+            self.assertFalse(reports[0].data["completeGate"])
+            self.assertEqual("failed" if cleanup_failure else "passed", reports[0].data["outcome"])
+            self.assertNotIn("private-cleanup-canary", reports[0].path.read_text())
+
     def test_unimplemented_required_suites_fail_before_tool_invocation(self):
         arguments = Mock()
         for suite, code in verify.UNIMPLEMENTED.items():

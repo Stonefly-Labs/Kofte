@@ -49,7 +49,7 @@ These steps are exercised through the delivered test-owned
 consumer and fixture-owning verifier; do not substitute a mocked principal or
 an unexplained private database patch.
 
-## Required local and CI verification
+## Required complete and CI verification
 
 The following existing commands include the identity
 projects/cases; do not add an optional skip or let
@@ -79,8 +79,20 @@ Python/repository checks. Regenerate the existing shared OpenAPI/types with
 adding the identity operations, then `npm run contract:check`.
 Health bootstrap-v1 remains byte/shape compatible.
 
+For the complete command, use a dedicated workstation or the disposable
+GitHub-hosted Ubuntu entry point instead of assuming shared-machine capacity:
+
+```bash
+gh workflow run product-checks.yml --ref feature/005-authentication-bootstrap -f suite=complete
+```
+
+This runs the exact all-mode command in one job. The ordinary `suite=all` dispatch
+and PR trigger still run the independent ten-job matrix. Record the actual OS,
+source and reports; a hosted Linux complete gate is not a macOS qualification.
+The interrupted final Mac attempts remain incomplete, not retroactively passed.
+
 Named focused suites help iteration; final implementation evidence must
-reconcile the complete local run and all actual CI contexts at the assessed
+reconcile the complete single-run gate and all actual CI contexts at the assessed
 head. Record commands/outcomes/environment, not a command list labeled "green".
 If 004's known PostgreSQL/private-diagnostics or incomplete-cleanup observation
 recurs, capture its exact assertion and phase evidence before attributing a
