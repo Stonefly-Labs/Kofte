@@ -208,10 +208,13 @@ class VerifyTests(unittest.TestCase):
     def test_integration_and_recovery_cannot_omit_the_independent_restore_command_group(self):
         path = self.root / "storage.xml"
         for provider, prefix in (("sqlite", "Sqlite"), ("postgres", "Postgres")):
-            for name in (f"integration-{provider}", f"recovery-{provider}-native"):
-                with self.subTest(name=name):
+            for name, restore in (
+                (name, prefix + group)
+                for name in (f"integration-{provider}", f"recovery-{provider}-native")
+                for group in ("IdentityRestoreCommandTests", "IdentityRestoreJournalTests")
+            ):
+                with self.subTest(name=name, group=restore):
                     required = verify.required_native_classes(name, [])
-                    restore = prefix + "IdentityRestoreCommandTests"
                     passed = [case for case in required if case != restore]
                     path.write_text("<assemblies>" + "".join(
                         f'<test type="Kofte.Host.Identity.{case}" result="Pass" />' for case in passed
@@ -1190,6 +1193,13 @@ class VerifyTests(unittest.TestCase):
                                      verify.required_native_classes(recipes.args[0], recipes.args[1]))
                 self.assertEqual(["--minimum-expected-tests", "1"], public.args[1][-2:])
                 self.assertEqual("true", public.kwargs["environment"]["KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE"])
+                self.assertNotIn("--parallel", public.args[1])
+                composition = next(call for call in command.call_args_list
+                                   if call.args[0] == "composition-public-contracts").args[1]
+                self.assertEqual("collections", composition[composition.index("--parallel") + 1])
+                self.assertEqual(str(min(4, verify.os.cpu_count() or 1)),
+                                 composition[composition.index("--max-threads") + 1])
+                self.assertEqual(["--minimum-expected-tests", "86"], composition[-2:])
                 author = next(i for i, call in enumerate(command.call_args_list)
                               if call.args[0] == "manifest-author-build")
                 contracts = next(i for i, call in enumerate(command.call_args_list)

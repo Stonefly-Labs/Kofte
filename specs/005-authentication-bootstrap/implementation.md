@@ -2,7 +2,7 @@
 
 **Result:** implement running; 96/100 complete (T001-T096). The latest actual Linux propagation baseline at `e0dba6f` still times out after passing host/storage, not a complete qualification. Independent stopped-operator groups now preserve every original case and assertion within the unchanged runner bound; full quality, all affected SQLite cases and the entire PostgreSQL integration selection pass. Exact final local all-mode and actual Linux qualification remain mandatory; T097-T100 remain unchecked.
 **Stage / date:** implement, 2026-10-26; continued 2026-10-30.
-**Assessed baseline:** published fixture warmup `e0dba6f3bf1630649281e3de3fe9942bf60d6a56`; actual Linux merge `bdf34b3f624c5b45f527cbf7f092fe61bbf55e76`. The subsequent operator-grouping working-tree evidence is distinguished below; earlier assessments retain their original baselines.
+**Assessed baseline:** published operator grouping `5d10e36d6d2b6204b10130455ad6d929dc603ca3`; actual Linux merge `bbb3f60450646076abeb007190fcadc4d99308a5`. Subsequent collection/journal grouping working-tree evidence is distinguished below; earlier assessments retain their original baselines.
 **Branch / directory:** `feature/005-authentication-bootstrap` /
 `specs/005-authentication-bootstrap`.
 **Checkpoint:** [draft PR #8](https://github.com/Stonefly-Labs/Kofte/pull/8).
@@ -14,6 +14,82 @@ adoption and setup sections record the actual code increments; authentication
 is now wired but feature 005 is not accepted.
 
 ## T097 in progress: current full-gate and assessed-head failures
+
+### Bound independent contract collections and separate restore journals, 2026-10-30
+
+The final actual `e0dba6f` matrix passes eight contexts and repository checks;
+retained composition still reaches 900.064s
+(`contract-both-c27d45d732d0415bba9ab4cbbb3d27c2.json`).
+The prior `2912449` passing retained selection took 866.024s. Its native
+aggregate case time is 862.830s: this selection was effectively entirely serial.
+The assembly deliberately defaults to no parallelization for other contracts
+that mutate ambient console state. That default remains unchanged.
+
+Only the existing `composition-public-contracts` command now opts into
+[independent collection execution](https://xunit.net/docs/running-tests-in-parallel),
+capped at the smaller of four threads and the actual available CPUs, using the
+pinned runner's verified `--parallel collections --max-threads` interface.
+The same `*Composition*` selector, 86-case minimum, original 900-second command
+bound, public recipes and every assertion remain. The native-parent service
+inventory regression retains exclusive collection execution because it counts
+all fixture-owned databases/roles; independent consumers still own fresh targets
+and verified disposal. Ambient-state and other identity/platform selections
+retain their original serial default.
+
+All **86** retained composition cases pass, zero skipped, **162.935s**, inside
+the original bound, with safe native aggregate evidence
+(`composition-collection-qualification-both-742d0c88a9b24d848eb9fa5a26d1c430.json`):
+
+```text
+dotnet build tests/contract/Kofte.Platform.ContractTests --no-restore -c Release -warnaserror -m:1 -nr:false
+KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/contract/Kofte.Platform.ContractTests --no-restore -c Release --filter-class '*Composition*' --parallel collections --max-threads 4 --output Detailed --show-stdout None --show-stderr None --minimum-expected-tests 86
+```
+
+The command is executed through the native verifier's existing private-XML,
+zero-skip/case-count and cleanup validation, not only its exit status.
+Complete quality also passes **37.493s**
+(`quality-none-b0a392ee7caf4d028d7592506210f5da.json`), including all 166 Python
+tests and bounded-selector assertions. These working-tree results over `5d10e36`
+precede the further journal grouping below, and do not replace full qualification.
+
+Actual `5d10e36` propagation still reaches its whole healthy PostgreSQL bound
+(`failure-propagation-none-11ddc4f20e164193bdd5ac877b808115.json`):
+host **121/297.008s** and storage **212/384.596s** pass, zero skipped;
+composition is interrupted after **218.321s**, whole baseline **900.400s**.
+The independent restore class alone accounts for 198.331 aggregate case-seconds.
+Its partial/conflicting-journal cases now form a third independently owned
+operator group, with the same shared restore assertions and original
+provider/recovery selectors, four-thread cap, deadlines and physical operations.
+Both native inventories require the journal class too. No case is removed,
+duplicated, retried away or replaced by mocked effects. The new dedicated test
+source brings the intended scope to **295** paths. Final repaired-source local
+and Linux qualification is still mandatory.
+
+The `5d10e36` assessed merge has verified main `3e4168...` and feature `5d10e36...`
+parents and identical tree `1841fb6f60984ef19ed0dd83b6342e6070348a15`.
+After the journal split, actual pre/post-build discovery again preserves all
+**68** original provider-qualified method/argument cases with zero duplicates;
+the shared restore assertion body remains byte-identical apart from its helper's
+visibility. The omission regression now detects all **eight** provider/suite/group
+mutations. Complete quality **passes, 40.869s**
+(`quality-none-ae5b52a91da9490489e825f5201f2757.json`), including required
+repository/166 Python/whitespace and all existing .NET/web/contracts/dependency
+checks. All **34** SQLite operator cases pass, zero skipped, **27.738s**.
+The entire PostgreSQL selection **passes, 439.716s**
+(`integration-postgres-35248f8bf7c243f09f95feaee732a7f2.json`):
+host **121/187.697s**, storage **212/181.935s**, composition **59/69.890s**,
+all zero skipped. Native host evidence requires all **ten** selected classes.
+
+```text
+dotnet build tests/integration/Kofte.Host.IntegrationTests --no-restore -c Release -warnaserror -m:1 -nr:false
+python3 scripts/verify.py --suite quality
+dotnet test --project tests/integration/Kofte.Host.IntegrationTests --no-build --no-restore -c Release --filter-trait Provider=sqlite --filter-class '*IdentityPreparationTests' --filter-class '*IdentityRestoreCommandTests' --filter-class '*IdentityRestoreJournalTests' --max-threads 4 --minimum-expected-tests 34 --output Detailed --show-stdout None --show-stderr None
+python3 scripts/verify.py --suite integration --provider postgres --disposable-postgres
+git diff --check
+```
+
+These are working-tree observations over `5d10e36`, not an exclusive-CPU
+comparison or a replacement for the required final-source all/CI gates.
 
 ### Separate independent stopped-operator groups within the existing runner bound, 2026-10-30
 

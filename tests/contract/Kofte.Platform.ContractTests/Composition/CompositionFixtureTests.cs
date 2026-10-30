@@ -5,6 +5,10 @@ using Npgsql;
 
 namespace Kofte.Platform.ContractTests.Composition;
 
+[CollectionDefinition("composition-service-inventory", DisableParallelization = true)]
+public sealed class CompositionServiceInventoryCollection;
+
+[Collection("composition-service-inventory")]
 public sealed class CompositionFixtureTests
 {
     [Fact]

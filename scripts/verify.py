@@ -178,7 +178,8 @@ IDENTITY_SCENARIOS = (
     "interrupted-recovery", "private-evidence",
 )
 IDENTITY_HOST_CASES = (
-    "IdentityStartupTests", "IdentityPreparationTests", "IdentityRestoreCommandTests", "IdentityKeyTests",
+    "IdentityStartupTests", "IdentityPreparationTests", "IdentityRestoreCommandTests",
+    "IdentityRestoreJournalTests", "IdentityKeyTests",
     "EnrollmentTests", "EnrollmentConcurrencyTests", "OidcBudgetTests", "DevelopmentBoundaryTests",
     "IdentityFailureTests",
 )
@@ -318,7 +319,9 @@ def required_native_classes(name, command):
         if name == f"storage-integration-{provider}":
             return prefixed(provider, IDENTITY_STORAGE_CASES)
         if name == f"recovery-{provider}-native":
-            return prefixed(provider, ("IdentityPreparationTests", "IdentityRestoreCommandTests", "IdentityKeyTests"))
+            return prefixed(provider, (
+                "IdentityPreparationTests", "IdentityRestoreCommandTests", "IdentityRestoreJournalTests", "IdentityKeyTests",
+            ))
         if name == f"storage-recovery-{provider}":
             return prefixed(provider, ("IdentityRecoveryTests",))
         if name in (f"identity-browser-native-{provider}", f"identity-privacy-browser-native-{provider}"):
@@ -1523,6 +1526,7 @@ def execute_suite(runner, suite, provider, arguments):
             runner.command("composition-public-contracts", [
                 "dotnet", "test", "--project", "tests/contract/Kofte.Platform.ContractTests",
                 "--no-restore", "-c", "Release", *public_selector, "--filter-class", "*Composition*",
+                "--parallel", "collections", "--max-threads", str(min(4, os.cpu_count() or 1)),
                 "--output", "Detailed", "--show-stdout", "None", "--show-stderr", "None",
                 "--minimum-expected-tests", "86" if provider == "both" else "1",
             ], environment=public_environment)

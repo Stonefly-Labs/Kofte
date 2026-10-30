@@ -135,6 +135,13 @@ independently owned restore-command cases from preparation/reconciliation
 within the unchanged four-thread runner. Pre/post-build discovery preserves
 all 68 provider-qualified operator cases exactly, and fail-closed inventories
 require both groups. No test assertion, contention, cleanup or deadline is relaxed.
+Retained composition's assembly-wide serial default also explains its aggregate
+cost. Only its independent collections now use a bounded at-most-four-thread
+override, while the global service-inventory regression stays exclusive and all
+other contract defaults remain. All 86 original cases pass in 162.935s.
+Actual `5d10e36` still reaches the whole PostgreSQL propagation limit; journal
+recovery cases are now separated into a third independently owned operator group
+without changing assertions or the native thread cap. Qualification continues.
 Historical failures remain failed; no universal issuer-key explanation is claimed.
 Continue on the same branch/draft PR #8. Converge, review and explicit feature
 acceptance are later stages; designation grants no module permissions.

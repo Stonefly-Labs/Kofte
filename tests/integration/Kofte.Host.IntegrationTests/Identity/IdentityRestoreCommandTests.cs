@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Kofte.Host.IntegrationTests.Identity;
 
-public abstract class IdentityRestoreCommandTests : IdentityCommandTests
+public abstract class IdentityRestoreCommandTests : IdentityRestoreTests
 {
     [Fact]
     public Task ActualRestoreCommandKeepsItsDecisionEpochAndFreshKeysAcrossRetry() => RestoreCommandAsync(null);
@@ -33,22 +33,11 @@ public abstract class IdentityRestoreCommandTests : IdentityCommandTests
     public Task ActualRestoreCommandKeepsItsDecisionEpochAndFreshKeysAcrossInterruptedRetry(string phase) =>
         RestoreCommandAsync(phase);
 
-    [Theory]
-    [InlineData("restore_intent_partial")]
-    [InlineData("restore_keys_partial")]
-    [InlineData("restore_result_partial")]
-    [InlineData("restore_intent_empty")]
-    public Task ActualRestoreCommandResumesARealPartiallyFlushedJournal(string phase) =>
-        RestoreCommandAsync(phase);
+}
 
-    [Theory]
-    [InlineData("unknown")]
-    [InlineData("binding")]
-    [InlineData("invalid")]
-    public Task ActualRestoreCommandNeverDiscardsACompleteConflictingOrInvalidJournal(string fault) =>
-        RestoreCommandAsync("restore_state_written", invalidPending: fault);
-
-    private async Task RestoreCommandAsync(string? phase, bool legacy = false, string? invalidPending = null)
+public abstract class IdentityRestoreTests : IdentityCommandTests
+{
+    protected async Task RestoreCommandAsync(string? phase, bool legacy = false, string? invalidPending = null)
     {
         await using var fixture = await IdentityFixture.CreateAsync(Provider, Token);
         Configure(fixture);
