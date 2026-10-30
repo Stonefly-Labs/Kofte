@@ -50,8 +50,12 @@ invitations, user administration, teams and RBAC. The built-in author checklist
 remains 16/16 after clarification: all ten coverage categories are Clear and no
 material question or spec change was needed. The [revised technical plan](specs/005-authentication-bootstrap/plan.md)
 now proposes framework account managers over bounded native persistence,
-versioned contracts and format-3 migration/recovery. Design/changed quality
-review, task reconciliation and analysis remain before implementation.
+versioned contracts and format-3 migration/recovery. The
+[reviewer checklist](specs/005-authentication-bootstrap/checklists/quality.md#revised-scope-requirements-quality---2026-10-30)
+now appends **28 unchecked revised-scope criteria (CHK037-CHK064)**, preserving
+all 36 original checked items and their historical review evidence.
+Generation evaluates no item; changed quality review, task reconciliation and
+analysis remain before implementation.
 Historical quality/runtime evidence is not re-certified by this replan.
 No new behavior is implemented or feature acceptance inferred.
 

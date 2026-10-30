@@ -24,9 +24,11 @@ The separate clarification pass now finds all ten categories Clear, with zero
 questions, unchanged spec and author checklist, and 16/16 to 16/16 author
 criteria. The separate [revised plan](../../specs/005-authentication-bootstrap/plan.md)
 now proposes framework/store integration, credential/setup policy, v2 contracts,
-format-3 migration/recovery and future validation. Human design/changed quality
-review, task reconciliation and analysis remain before resume; see the
-clarification and replan assessments below.
+format-3 migration/recovery and future validation. The explicit checklist pass
+now appends 28 revised-scope criteria, CHK037-CHK064, all unchecked, preserving
+the 36 original checked items and historical review verbatim.
+Reviewer assessment, task reconciliation and analysis remain before resume;
+see the clarification, replan and checklist records below.
 Do not reset prior history or treat the old passing gates as proof of new
 semantics. No implementation skill or product
 command ran; begin/block records only the pause, not a completed stage.
@@ -126,6 +128,50 @@ criteria, then separately invoked task reconciliation and cross-artifact
 analysis. Plain `/drive-speckit` still selects blocked implementation, not a
 rewound plan/checklist stage. Do not resume implementation, mark old gates newly
 passed or request a merge between stages.
+
+### Reworked 005 checklist generation - 2026-10-30
+
+**Result:** Append-only generation, not requirements-quality assessment.
+The [existing reviewer checklist](../../specs/005-authentication-bootstrap/checklists/quality.md#revised-scope-requirements-quality---2026-10-30)
+now adds **28 unchecked criteria, CHK037-CHK064**. All original file bytes,
+CHK001-CHK036 markers and the complete 2026-10-26 assisted-review evidence remain
+unchanged. Its 36 historical satisfied items are not a revised-scope pass;
+the file now contains 64 criteria, with all 28 current criteria awaiting review.
+
+The explicit invocation sets
+`SPECIFY_FEATURE_DIRECTORY=specs/005-authentication-bootstrap` and names
+`checklists/quality.md` as the append-only target. Prerequisites ran once with
+`--json --template checklist-template`; absolute feature directory and the
+resolved canonical checklist template matched this checkout. No before/after
+checklist hooks are configured. The scope, standard depth and reviewer/PR
+audience are clear from the request and existing checklist; no clarification
+question or new product decision was needed.
+
+The new questions cover production local/OIDC/coexistence, protected first-login
+ownership, credential/reset/association and next-request session requirements,
+the 005/006 default-deny contract, versioned compatibility/migration/recovery,
+finite/privacy/accessibility evidence and retained F1/F2 limitations.
+All 28 questions carry revised-source references and assess written requirements,
+not executed behavior, API procedures or code correctness.
+
+The human's positive design feedback is not a request to evaluate or mark these
+criteria. No new item is assessed, no old item is re-certified and no requirements
+gap/pass is inferred from generation. Spec, author checklist, all design
+artifacts/contracts, 103 task entries/markers and runtime/review evidence remain
+unchanged. F1/F2/T101-T103 remain open.
+
+The driver helper updates only the active blocked implementation reason; history,
+feature pointer and original start time are preserved. No historical checklist
+stage is reset/completed. Publication records repository/Python/whitespace and
+append-only preservation checks, not product/runtime evidence. No product,
+dependency, migration or test source changes; no heavy local product suite or
+prohibited session-capacity proof.
+
+**Next:** Explicit reviewer assessment of CHK037-CHK064 against the revised
+005 requirements/design, with findings and evidence before marking any item.
+Only after that gate may separately requested task reconciliation and analysis
+proceed. Implementation and acceptance remain blocked/later on the same feature
+branch/draft PR. No intermediate merge or new numbered feature.
 
 ### Earlier 005 checkpoints (historical)
 
