@@ -117,6 +117,13 @@ or refuses within its original budget. The entire SQLite integration selection
 also passes: native host 212, storage 240 and composition 57, zero skipped.
 These are focused working-tree results,
 not complete-gate qualification; repaired-source local/Linux assessment continues.
+The subsequent actual `9210931` Linux assessment passes eight contexts and
+repository checks, but retained composition and the entire isolated PostgreSQL
+baseline still time out. The fixture continuation retains its already-owned
+administrative connection through all original ownership-verified cleanup,
+then closes it before releasing service ownership. Real backend observations,
+five isolation/authority/outage cases and the entire 121/212/59-case PostgreSQL
+selection pass; no deadline, durability or cleanup guard changes.
 Historical failures remain failed; no universal issuer-key explanation is claimed.
 Continue on the same branch/draft PR #8. Converge, review and explicit feature
 acceptance are later stages; designation grants no module permissions.

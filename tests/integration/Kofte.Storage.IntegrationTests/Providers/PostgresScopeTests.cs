@@ -32,7 +32,9 @@ public sealed class PostgresScopeTests
                 active.Parameters.AddWithValue("second", "kofte_fixture_admin_" + second.Postgres.RunId);
                 Assert.Equal(2L, await active.ExecuteScalarAsync(token));
             }
+            var originalBackends = first.Postgres.AdministrationBackends.ToArray();
             await first.DisposeAsync();
+            Assert.Equal(originalBackends, first.Postgres.AdministrationBackends);
             await second.Postgres.ValidateOwnershipAsync(token);
             await using var command = new NpgsqlCommand("""
                 SELECT NOT EXISTS (SELECT 1 FROM pg_catalog.pg_database WHERE datname=@database)

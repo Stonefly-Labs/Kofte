@@ -17,6 +17,7 @@ public sealed partial class PostgresResources : IAsyncDisposable
     private readonly string ownership;
     private string adminConnection = "";
     private NpgsqlDataSource? administration;
+    private readonly HashSet<int> administrationBackends = [];
     private PostgresService? service;
     private PostgresAssemblyFixture? sharedOwner;
     private uint databaseOid, roleOid, provisionerOid;
@@ -25,6 +26,7 @@ public sealed partial class PostgresResources : IAsyncDisposable
     public string RunId { get; } = Guid.NewGuid().ToString("N");
     public string ConnectionString { get; private set; } = "";
     public string ProvisioningConnectionString { get; private set; } = "";
+    public IReadOnlyCollection<int> AdministrationBackends => administrationBackends;
 
     private PostgresResources()
     {
@@ -123,6 +125,7 @@ public sealed partial class PostgresResources : IAsyncDisposable
             ? administration.CreateConnection()
             : new NpgsqlConnection(builder.ConnectionString);
         await connection.OpenAsync(budget.Token);
+        administrationBackends.Add(connection.ProcessID);
         await using var command = new NpgsqlCommand(sql, connection);
         return await command.ExecuteScalarAsync(budget.Token);
     }
@@ -276,35 +279,41 @@ public sealed partial class PostgresResources : IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         if (disposed) return;
-        if (administration is not null)
-        {
-            await administration.DisposeAsync();
-            administration = null;
-        }
-        if (unconfirmedCreation && (service is null || sharedOwner is not null))
-            throw new InvalidOperationException("postgres_unconfirmed_creation_preserved");
         using var cleanup = new CancellationTokenSource(TimeSpan.FromSeconds(60));
-        if (sharedOwner is null && service is not null && service.Resources.Any(resource => resource.Kind == "container"))
-            await service.SetPausedAsync(false, cleanup.Token);
-        if (databaseOid != 0)
+        try
         {
-            await ValidateOwnershipAsync(cleanup.Token);
-            await AdminAsync($"DROP DATABASE \"{database}\" WITH (FORCE)", cleanup.Token);
-            databaseOid = 0;
+            if (unconfirmedCreation && (service is null || sharedOwner is not null))
+                throw new InvalidOperationException("postgres_unconfirmed_creation_preserved");
+            if (sharedOwner is null && service is not null && service.Resources.Any(resource => resource.Kind == "container"))
+                await service.SetPausedAsync(false, cleanup.Token);
+            if (databaseOid != 0)
+            {
+                await ValidateOwnershipAsync(cleanup.Token);
+                await AdminAsync($"DROP DATABASE \"{database}\" WITH (FORCE)", cleanup.Token);
+                databaseOid = 0;
+            }
+            if (roleOid != 0)
+            {
+                if (await AdminAsync($"SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_roles r WHERE r.rolname='{role}' AND r.oid={roleOid} AND pg_catalog.shobj_description(r.oid,'pg_authid')='{ownership}')", cleanup.Token) is not true)
+                    throw new InvalidOperationException("postgres_role_ownership_refused");
+                await AdminAsync($"DROP ROLE \"{role}\"", cleanup.Token);
+                roleOid = 0;
+            }
+            if (provisionerOid != 0)
+            {
+                if (await AdminAsync($"SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_roles r WHERE r.rolname='{provisioner}' AND r.oid={provisionerOid} AND pg_catalog.shobj_description(r.oid,'pg_authid')='{ownership}')", cleanup.Token) is not true)
+                    throw new InvalidOperationException("postgres_role_ownership_refused");
+                await AdminAsync($"DROP ROLE \"{provisioner}\"", cleanup.Token);
+                provisionerOid = 0;
+            }
         }
-        if (roleOid != 0)
+        finally
         {
-            if (await AdminAsync($"SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_roles r WHERE r.rolname='{role}' AND r.oid={roleOid} AND pg_catalog.shobj_description(r.oid,'pg_authid')='{ownership}')", cleanup.Token) is not true)
-                throw new InvalidOperationException("postgres_role_ownership_refused");
-            await AdminAsync($"DROP ROLE \"{role}\"", cleanup.Token);
-            roleOid = 0;
-        }
-        if (provisionerOid != 0)
-        {
-            if (await AdminAsync($"SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_roles r WHERE r.rolname='{provisioner}' AND r.oid={provisionerOid} AND pg_catalog.shobj_description(r.oid,'pg_authid')='{ownership}')", cleanup.Token) is not true)
-                throw new InvalidOperationException("postgres_role_ownership_refused");
-            await AdminAsync($"DROP ROLE \"{provisioner}\"", cleanup.Token);
-            provisionerOid = 0;
+            if (administration is not null)
+            {
+                await administration.DisposeAsync();
+                administration = null;
+            }
         }
         if (service is not null && sharedOwner is null) await service.CleanupAsync(cleanup.Token);
         root.Dispose();

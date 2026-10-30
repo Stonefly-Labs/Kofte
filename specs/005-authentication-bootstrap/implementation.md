@@ -15,6 +15,59 @@ is now wired but feature 005 is not accepted.
 
 ## T097 in progress: current full-gate and assessed-head failures
 
+### Retain the fixture administration pool through verified teardown, 2026-10-30
+
+Actual [product run 41035775363](https://github.com/Stonefly-Labs/Kofte/actions/runs/41035775363)
+at `9210931f3e2568f2c1d8261cb446d34530b333c5` finishes **eight of ten**
+contexts successfully; [repository run 41035775099](https://github.com/Stonefly-Labs/Kofte/actions/runs/41035775099)
+passes. Assessed merge `28679489630814a3e1a2f62bec2549d1a1d91adb` has verified
+main `3e416813233c9d291eb20cf72d5882dbddf3e1b6` and feature `9210931...` parents;
+both trees equal `3ac610b1a4a7e1425d205392e190d86e54be6fc1`.
+Both integrations, recovery, browser, privacy, startup, quality and unit pass.
+Retained composition still reaches its unchanged 900-second command bound
+(`contract-both-d768a099c1904f42aa60c5611d488204.json`); the independent
+24-recipe diagnostic passes in 970.355s, not a replacement pass.
+Propagation's entire healthy PostgreSQL baseline reaches 900.400s
+(`failure-propagation-none-2f07fcd11074445a94e6e4a699663dfd.json`):
+native **121/352.554s** and storage **212/407.945s** pass without skips,
+then composition is interrupted after 139.469s. Its separate integration job
+passes all **121/212/59** cases in 1084.625s. No failed gate is waived.
+
+Inspection finds another redundant fixture cost: `PostgresResources.DisposeAsync`
+closes its private administrative pool **before** its six ownership/drop commands.
+Those commands therefore create fresh authenticated connections despite already
+having a live, exclusively owned one. A real PostgreSQL backend observation records
+eight administrative backends across a two-database isolation case before repair.
+Cleanup now retains that same one-slot pool until every original database/role
+ownership check and drop finishes. A `finally` still closes it on refusal; success
+closes it before service teardown or releasing the shared owner's borrow.
+No database, role, owner marker, SQL assertion, authority check, pause/resume,
+deadline, durability setting or retry changes.
+
+The existing real isolation/archive test now independently records actual server
+backend IDs before disposal and requires **no new backend** during cleanup,
+alongside its exact removed-target/role/connection observations and surviving
+second scope. That case and all four real corrected-authority/outage cases
+**pass, 5/zero skipped, 13.353s**:
+
+```text
+dotnet build tests/integration/Kofte.Storage.IntegrationTests --no-restore -c Release -warnaserror -m:1 -nr:false
+KOFTE_TEST_POSTGRES_ALLOW_DISPOSABLE=true dotnet test --project tests/integration/Kofte.Storage.IntegrationTests --no-build --no-restore -c Release --filter-class '*PostgresScopeTests' --filter-class '*CorrectedRetryTests' --minimum-expected-tests 2 --output Detailed --show-stdout None --show-stderr None
+python3 scripts/verify.py --suite quality
+python3 scripts/verify.py --suite integration --provider postgres --disposable-postgres
+```
+
+Quality **passes, 34.121s** (`quality-none-20050bada02c46c291e630433158d2ad.json`),
+including repository/165 Python/whitespace, format/build, web and dependency checks.
+The entire PostgreSQL selection **passes, 484.871s**:
+host **121/199.582s**, storage **212/211.352s**, composition **59/73.757s**,
+zero skipped (`integration-postgres-57fc3ee0f2a044a4996b321942b4ab6c.json`).
+These assess the repair working tree over `9210931`, not its old source.
+Local diagnostic builds disable shared MSBuild-server reuse after an initial
+parallel-node `MSB4166` build failure; the isolated warning-free build passes.
+That build failure is not counted as the backend regression's failure.
+Full repaired-source local/Linux qualification remains required.
+
 ### Let SQLite own live header validation, 2026-10-30
 
 Actual [product run 41019501863](https://github.com/Stonefly-Labs/Kofte/actions/runs/41019501863)
