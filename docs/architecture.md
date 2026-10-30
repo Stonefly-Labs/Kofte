@@ -517,9 +517,10 @@ That review selected implement; the subsequent
 [scope amendment](adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
 now pauses continuation for ASP.NET Core Identity, production local/OIDC
 accounts and first-login ownership with owner-led onboarding/RBAC.
-The initial-claim safeguard is unresolved; recommended setup-token admission
-has not been approved. Existing design/checklist evidence does not certify
-the amended semantics. The same PR remains draft, not accepted or ready to merge.
+One-time installation setup-token admission is now human-approved; remaining
+design/review rework still blocks implementation. Existing design/checklist
+evidence does not certify the amended semantics. The same PR remains draft,
+not accepted or ready to merge.
 
 The earlier implementation increments below retain the source/signature
 investigation and record the adopted maintained

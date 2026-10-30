@@ -10,8 +10,9 @@ administrator status, a web endpoint or an arbitrary worker invocation.
 [approved amendment](../../../docs/adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
 replaces nominated bootstrap as the target with first-login ownership and adds
 production local accounts. This remains the delivered old operator contract.
-The initial-claim safeguard is unanswered; a setup token is recommended, not
-approved. No new configuration/command or automatic fallback owner exists.
+One-time installation setup-token admission is now human-approved, but its
+design/validation remain pending. No new configuration/command or automatic
+fallback owner exists.
 
 ## Strict configuration and production trust
 

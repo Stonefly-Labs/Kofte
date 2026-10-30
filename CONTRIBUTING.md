@@ -332,8 +332,8 @@ on updated main before beginning the new feature.
 **Current 005 work is paused for approved account/ownership scope rework.**
 The [ADR amendment](docs/adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
 records ASP.NET Core Identity, production local/OIDC accounts, first-login
-ownership and owner-led onboarding/RBAC. Initial-claim admission remains
-unanswered; a setup token is recommended, not approved. Update and review the
+ownership and owner-led onboarding/RBAC. The human also approved a one-time
+installation setup token for initial-claim admission. Update and review the
 affected design/evidence before resuming the blocked implementation, without
 resetting historical ledger/checklist/task evidence or accepting the feature.
 

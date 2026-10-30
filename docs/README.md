@@ -17,8 +17,8 @@ The [technology-stack exploration](kofte-technology-stack-architecture.md) is hi
 **Current Spec Kit checkpoint: 005 / implement is blocked for approved scope rework.**
 The [ADR amendment](adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
 records approved ASP.NET Core Identity, production local/OIDC accounts,
-first-login ownership and owner-led onboarding/RBAC. The initial-claim
-safeguard remains unanswered; the recommended setup token is not approved.
+first-login ownership and owner-led onboarding/RBAC. A one-time installation
+setup token is now approved for initial-claim admission.
 Requirements/design/contracts and review evidence must be reconciled before
 implementation resumes. No new code, stage completion or feature acceptance.
 

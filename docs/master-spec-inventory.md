@@ -186,8 +186,9 @@ production local/OIDC accounts with stable users and shared sessions; the first
 successful local or OIDC login claims initial ownership. That Owner can
 invite/add/onboard users and assign RBAC through central authorization.
 The [ADR amendment](adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
-records approval and the required rework; initial-claim admission and the exact
-005/006 delivery boundary remain unresolved, so implementation is blocked.
+records approval, including one-time installation setup-token admission, and
+the required rework. The exact 005/006 delivery boundary and reviewed design
+remain unresolved, so implementation is blocked.
 SAML remains a future extension, not an MVP prerequisite. The original
 generation prompt below is historical; it does not override this amendment
 or authorize resuming the old OIDC-only/nominated-bootstrap plan.

@@ -493,8 +493,9 @@ Do not execute the old implementation plan or treat these task/checklist
 markers as proof of the newly approved account/ownership model. The
 [ADR amendment](../../docs/adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
 records ASP.NET Core Identity, production local/OIDC accounts, first-login
-ownership and owner-led onboarding/RBAC, with an unanswered initial-claim
-safeguard. Resolve that decision and the 005/006 boundary; revise and review
-the requirements/design/contracts/migration, quality criteria, task mapping and
+ownership and owner-led onboarding/RBAC. The human subsequently approved a
+one-time installation setup token for initial-claim admission. Reconcile the
+005/006 boundary; revise and review the requirements/design/contracts/migration,
+quality criteria, task mapping and
 analysis before resuming the blocked implement stage. All 103 prior task
 bytes/markers remain historical; F1/F2 and T101-T103 are not closed by approval.

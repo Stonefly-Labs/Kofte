@@ -307,20 +307,27 @@ a new passing review, implementation completion or PR readiness:
    this is not approval to reimplement Identity managers or credential policy.
    Store selection, exact package adoption and compatibility proof remain open.
 
-### Unanswered initial-claim safeguard
+### Approved initial-claim safeguard
 
-First-login ownership is approved; **unrestricted public first-login ownership
-is not an approved security design**. The first-claim admission mechanism has
-not been decided. A public race could let an unintended identity become owner.
-The constitution's explicit, safe, non-repeatable bootstrap requirement remains
-binding; no constitutional waiver or weakening is proposed.
+The initial approval checkpoint left first-claim admission unanswered because
+the human was unavailable. On 2026-10-30, the human explicitly resolved it:
 
-The assistant asked whether to use a one-time installation setup token
-(recommended, independent of the person's identity) or localhost-only setup.
-The human was unavailable, so neither choice is recorded as approved.
-The recommended token would authorize a setup session without nominating a
-specific local/OIDC person; the first successful login in admitted setup would
-win. Do not implement it as a settled requirement or assume silence is approval.
+> one time setup token is cool
+
+Use a **one-time installation setup token** to authorize a setup session without
+nominating a specific local/OIDC person. The first successful local or OIDC
+login in admitted setup claims initial ownership. The token is setup admission,
+not an authentication credential or an independent administrative grant.
+Ownership and token consumption must commit atomically; consumed ownership
+cannot be claimed again by replaying or replacing the token.
+
+This resolves the admission choice, not the remaining implementation design.
+Token generation, private delivery, expiry, setup-session binding and
+concurrent/failure behavior still need explicit design and validation.
+**Unrestricted public first-login ownership is not approved.** The constitution's
+explicit, safe, non-repeatable bootstrap requirement remains binding; no
+constitutional waiver or weakening is proposed.
+
 Reconcile initial claim, local-account creation, invitation/reset delivery and
 owner permissions before exposing the new flow. Never turn IdP outage into an
 automatic local credential, fallback owner or bootstrap reset.
@@ -333,9 +340,10 @@ scheduling guard: no implementation skill, product command or later stage is
 executed by recording this pause. Do not reset prior ledger history or fake
 completed specify/clarify/plan/checklist/analyze entries.
 
-Before resuming, resolve the initial-claim safeguard and the 005/006 boundary,
-then revise requirements/scenarios, research/plan, account/session/actor and
-operator contracts, data/migration/recovery design and their validation mapping.
+The setup-token decision is resolved; implementation remains blocked for the
+005/006 boundary and reviewed design rework. Before resuming, reconcile that
+boundary and revise requirements/scenarios, research/plan, account/session/actor
+and operator contracts, data/migration/recovery design and their validation mapping.
 Preserve stable user IDs, exact external mappings, module data/assignments,
 consumed ownership and honest partial effects. A versioned migration and
 explicit old-session invalidation must replace reinterpretation of mode-bound

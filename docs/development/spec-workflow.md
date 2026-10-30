@@ -11,10 +11,10 @@ assets or running a fleet. **Creating this driver does not execute product work.
 `specs/005-authentication-bootstrap`. The
 [ADR amendment](../adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
 records human approval of ASP.NET Core Identity, production local/OIDC accounts,
-first-login ownership and owner-led onboarding/RBAC. The human was unavailable
-to answer the initial-claim safeguard question: a one-time setup token is a
-recommendation, not an approved requirement. Resolve it and the 005/006 boundary,
-reconcile requirements/design/contracts/migration and reviewed quality/task/
+first-login ownership and owner-led onboarding/RBAC. The human subsequently
+approved a one-time installation setup token for initial-claim admission;
+that decision is no longer a blocker. Reconcile the 005/006 boundary,
+requirements/design/contracts/migration and reviewed quality/task/
 analysis evidence before resume. Do not reset prior history or treat the old
 passing gates as proof of new semantics. No implementation skill or product
 command ran; begin/block records only the pause, not a completed stage.

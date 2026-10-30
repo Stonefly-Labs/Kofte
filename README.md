@@ -42,8 +42,8 @@ The human approved ASP.NET Core Identity, production local/OIDC accounts and
 **first successful login claims initial ownership**, followed by owner-led
 invitations/onboarding and RBAC. The
 [ADR amendment](docs/adr/0007-authentication-bootstrap-boundary.md#human-approved-scope-amendment-local-accounts-and-first-login-ownership)
-records this direction, the required design/review rework and the unanswered
-initial-claim safeguard. A one-time setup token is recommended, not approved.
+records this direction, the approved one-time installation setup token for
+initial-claim admission and the remaining design/review rework.
 No new behavior is implemented or feature acceptance inferred.
 
 The preceding review checkpoint is retained below.
