@@ -300,6 +300,35 @@ class RuntimeSupportTests(unittest.TestCase):
                 diagnostic.clear()
                 self.assertEqual({}, diagnostic.safe_fields())
 
+    def test_native_exception_kinds_keep_only_fixed_metadata_for_known_failed_cases(self):
+        name = "Kofte.Storage.IntegrationTests.Composition.PostgresKnownTests.KnownCase"
+        owner, method = name.rsplit(".", 1)
+        path = self.root / "storage.xml"
+        failure = (
+            '<failure exception-type="Microsoft.EntityFrameworkCore.DbUpdateException">'
+            '<message>Microsoft.EntityFrameworkCore.DbUpdateException : credential-canary\n'
+            '---- Npgsql.PostgresException (0x80004005): 57014: credential-canary\n'
+            '---- System.TimeoutException : credential-canary\n'
+            '---- Unknown.CredentialException : credential-canary</message></failure>'
+        )
+        path.write_text(
+            f'<assemblies><test type="{owner}" method="{method}" result="Pass">'
+            '<failure exception-type="System.ArgumentException"/></test>'
+            '<test type="unknown" method="unknown" result="Fail">'
+            '<failure exception-type="System.InvalidOperationException"/></test>'
+            f'<test type="{owner}" method="{method}" result="Fail">'
+            + failure + '</test></assemblies>'
+        )
+        diagnostic = support.CommandDiagnostics("storage", tests=[name])
+        diagnostic.read_storage_report(path)
+        self.assertEqual({
+            "failedStorageTests": [name],
+            "storageFailureKinds": ["db_update", "postgres", "postgres_query_cancelled", "timeout"],
+        }, diagnostic.safe_fields())
+        self.assertNotIn("credential", json.dumps(vars(diagnostic), default=str))
+        diagnostic.clear()
+        self.assertEqual({}, diagnostic.safe_fields())
+
     def test_completed_contract_methods_exclude_theory_arguments_unknown_names_and_late_output(self):
         name = "Kofte.Platform.ContractTests.Composition.KnownTests.KnownCase"
         diagnostic = support.CommandDiagnostics("contract", tests=[name])

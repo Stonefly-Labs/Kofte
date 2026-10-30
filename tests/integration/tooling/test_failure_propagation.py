@@ -264,6 +264,7 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
             for kind in ("host", "storage", "contract", "consumer"):
                 test_key = f"failed{kind.title()}Tests"
                 code_key = f"{kind}FailureCodes"
+                kind_key = f"{kind}FailureKinds"
                 operation_key = f"{kind}FailureOperations"
                 scenario_key = f"{kind}FailureScenarios"
                 location_key = f"{kind}FailureLocations"
@@ -271,7 +272,7 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
                 report_key = f"{kind}DiagnosticCode"
                 phase_key = f"{kind}BrowserPhases"
                 if not any(key in step for key in (
-                    test_key, code_key, operation_key, scenario_key, location_key, status_key, report_key, phase_key,
+                    test_key, code_key, kind_key, operation_key, scenario_key, location_key, status_key, report_key, phase_key,
                 )):
                     continue
                 diagnostic = api.command_diagnostics(step["command"])
@@ -279,6 +280,7 @@ def checked_evidence(report, suite, provider, expected_step, expected_command, e
                     raise error("failure_child_report_unsafe")
                 for key, allowed in (
                     (test_key, diagnostic.tests), (code_key, diagnostic.codes),
+                    (kind_key, diagnostic.native_failure_kinds if kind != "consumer" else ()),
                     (operation_key, diagnostic.storage_operations),
                     (scenario_key, diagnostic.scenarios),
                     (status_key, {

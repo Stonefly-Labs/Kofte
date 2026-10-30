@@ -142,6 +142,12 @@ other contract defaults remain. All 86 original cases pass in 162.935s.
 Actual `5d10e36` still reaches the whole PostgreSQL propagation limit; journal
 recovery cases are now separated into a third independently owned operator group
 without changing assertions or the native thread cap. Qualification continues.
+Actual `f961c7e` completes that baseline in 741.277s, but fails one real
+composition fixture's initial module save: this is not a timeout or a green gate.
+Native diagnostics now retain only a fixed exception/SQLSTATE taxonomy,
+revalidated by the isolated parent, never raw exception content.
+The earlier exact `e0dba6f` local all-mode assessment passes all ten contexts;
+that does not qualify subsequent source. Final qualification continues.
 Historical failures remain failed; no universal issuer-key explanation is claimed.
 Continue on the same branch/draft PR #8. Converge, review and explicit feature
 acceptance are later stages; designation grants no module permissions.

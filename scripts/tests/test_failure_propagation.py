@@ -313,6 +313,7 @@ class FailurePropagationTests(unittest.TestCase):
         name = sorted(verify.command_diagnostics(command).tests)[0]
         evidence["steps"][0].update(
             command=command, failedStorageTests=[name], storageFailureCodes=["Busy"],
+            storageFailureKinds=["db_update", "postgres_query_cancelled"],
             storageDiagnosticCode="unavailable",
             storageFailureOperations=["acquire"],
             storageFailureScenarios=["valid-dependency", "session-boundary"],
@@ -326,6 +327,7 @@ class FailurePropagationTests(unittest.TestCase):
         result = checked()
         self.assertEqual([name], result["steps"][0]["failedStorageTests"])
         self.assertEqual(["Busy"], result["steps"][0]["storageFailureCodes"])
+        self.assertEqual(["db_update", "postgres_query_cancelled"], result["steps"][0]["storageFailureKinds"])
         self.assertEqual("unavailable", result["steps"][0]["storageDiagnosticCode"])
         self.assertEqual(["acquire"], result["steps"][0]["storageFailureOperations"])
         self.assertEqual(["valid-dependency", "session-boundary"],
@@ -337,6 +339,9 @@ class FailurePropagationTests(unittest.TestCase):
             ("failedStorageTests", [name, name]),
             ("storageFailureCodes", ["credential-canary"]),
             ("storageFailureCodes", []),
+            ("storageFailureKinds", ["credential-canary"]),
+            ("storageFailureKinds", ["timeout", "timeout"]),
+            ("storageFailureKinds", []),
             ("storageDiagnosticCode", "credential-canary"),
             ("storageFailureOperations", ["credential-canary"]),
             ("storageFailureScenarios", ["credential-canary"]),

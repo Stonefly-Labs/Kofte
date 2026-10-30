@@ -17,6 +17,42 @@ is now wired but feature 005 is not accepted.
 
 ### Bound independent contract collections and separate restore journals, 2026-10-30
 
+**Subsequent actual observation:** published `f961c7e1ff3358e983ffe40cf0f0fcd352436618`,
+actual assessed merge `063f088fbe2f0bb34f0fa41b7ff8858fedd3aeb0`, no longer
+times out the whole PostgreSQL propagation baseline. That baseline instead
+**fails, 741.277s**: host **121/266.961s** and storage **212/305.775s** pass;
+composition **fails/168.170s**, exit 2. Its one reported failing case is
+`PostgresCompositionPreflightTests.NoStorageRecipeIsRejectedWithoutInvokingItsFactory`;
+source locations show the initial **alpha module `SaveChangesAsync` during
+fixture preparation**, before the recipe/factory refusal assertion. The safe
+report does not reveal the underlying exception, so a timeout, product failure
+or universal cause is not inferred. Other matrix contexts remain distinct;
+this is not qualification.
+
+The continuation adds a finite native failure-kind catalog: exact framework
+exception names and nine fixed PostgreSQL states become fixed labels only,
+scoped to known failed cases in private native XML. Unknown exceptions,
+arguments, messages, credentials, rows and paths remain discarded. The isolated
+parent revalidates the finite labels, uniqueness and bounds, rejecting malformed,
+unknown and empty collections; raw exception contents are never published.
+Focused regressions fail against the previous parser and pass after the change,
+including passed/unknown case exclusion and credential canaries. Complete quality
+**passes, 37.182s**, including **167 Python tests**
+(`quality-none-ea6c27ddc7ff4c34ba61ade822fac6a6.json`).
+This diagnostic correction does not claim to repair an unobserved exception or
+relax any native test, selector, thread cap, failure or time budget.
+
+Meanwhile the independent-object exact **`e0dba6f` local all-mode gate passes**,
+exit 0, all ten reports `completeGate=true`: quality **38.511s**, unit **49.621s**,
+SQLite integration **428.467s**, PostgreSQL integration **436.068s**,
+recovery **987.184s**, contract **1844.603s**, browser **78.186s**,
+privacy **416.459s**, startup **14.605s**, propagation **717.083s**.
+It assessed the original command
+`python3 scripts/verify.py --suite all --disposable-postgres --warm-starts 10`
+in its private independent Git-object checkout; successful owned scratch cleanup
+completed. These real results remain attached to that older exact source.
+They are not combined with newer subsets to qualify `f961c7e` or this continuation.
+
 The final actual `e0dba6f` matrix passes eight contexts and repository checks;
 retained composition still reaches 900.064s
 (`contract-both-c27d45d732d0415bba9ab4cbbb3d27c2.json`).

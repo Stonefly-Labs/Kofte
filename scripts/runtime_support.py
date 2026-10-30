@@ -74,6 +74,32 @@ class CommandDiagnostics:
         r"(?m)^[ \t]*(identity_browser_profile_[a-z_]{1,100}):([12]):"
         r"(0|[1-9][0-9]{0,4})[ \t]*\r?$",
     )
+    native_exception_types = {
+        "Microsoft.EntityFrameworkCore.DbUpdateException": "db_update",
+        "Kofte.Platform.Modules.Storage.StorageException": "storage",
+        "Npgsql.PostgresException": "postgres",
+        "Npgsql.NpgsqlException": "npgsql",
+        "System.TimeoutException": "timeout",
+        "System.OperationCanceledException": "cancelled",
+        "System.Threading.Tasks.TaskCanceledException": "cancelled",
+        "System.ArgumentException": "argument",
+        "System.InvalidOperationException": "invalid_operation",
+        "System.ObjectDisposedException": "object_disposed",
+        "System.IO.IOException": "io",
+        "System.Net.Sockets.SocketException": "socket",
+    }
+    native_postgres_states = {
+        "57014": "postgres_query_cancelled", "57P01": "postgres_admin_shutdown",
+        "53300": "postgres_connection_limit", "42501": "postgres_privilege_denied",
+        "23505": "postgres_unique_violation", "42P01": "postgres_undefined_table",
+        "08006": "postgres_connection_failure", "40001": "postgres_serialization_failure",
+        "40P01": "postgres_deadlock",
+    }
+    native_failure_kinds = frozenset((*native_exception_types.values(), *native_postgres_states.values()))
+    native_exception_header = re.compile(
+        r"(?m)^[ \t]*(?:-{2,}[ \t]*)?(" + "|".join(re.escape(name) for name in native_exception_types)
+        + r")(?:[ \t]*\(0x[0-9A-Fa-f]{8}\))?[ \t]*:[ \t]*(?:([A-Z0-9]{5}):)?",
+    )
 
     def __init__(self, kind, codes=(), tests=(), *, scenarios=(), source_lines=None):
         self.kind, self.codes = kind, frozenset(codes)
@@ -83,6 +109,7 @@ class CommandDiagnostics:
         self.failures = Failures()
         self.sources, self.dependency_codes = set(), set()
         self.failed_tests, self.storage_codes = set(), set()
+        self.failure_kinds = set()
         self.completed_methods = set()
         self.failed_operations = set()
         self.failed_scenarios = set()
@@ -172,11 +199,19 @@ class CommandDiagnostics:
                 continue
             if len(self.failed_tests) < 32:
                 self.failed_tests.add(name)
+            for failure in test.findall("failure"):
+                kind = self.native_exception_types.get(failure.get("exception-type"))
+                if kind is not None:
+                    self.failure_kinds.add(kind)
             for scenario in self.scenarios:
                 if test.get("name") == name + f'(scenario: \\"{scenario}\\")':
                     self.failed_scenarios.add(scenario)
             for message in test.findall("failure/message"):
                 text = message.text or ""
+                for exception_type, state in self.native_exception_header.findall(text):
+                    self.failure_kinds.add(self.native_exception_types[exception_type])
+                    if exception_type == "Npgsql.PostgresException" and state in self.native_postgres_states:
+                        self.failure_kinds.add(self.native_postgres_states[state])
                 if self.kind == "host" and len(text) <= 256:
                     assertion = self.http_assertion.fullmatch(text.strip())
                     if assertion and len(self.failed_statuses) < 32:
@@ -346,6 +381,7 @@ class CommandDiagnostics:
                     **({"contractCompletedMethods": sorted(self.completed_methods)} if self.kind == "contract"
                        and self.completed_methods else {}),
                     **({f"{prefix}FailureCodes": sorted(self.storage_codes)} if self.storage_codes else {}),
+                    **({f"{prefix}FailureKinds": sorted(self.failure_kinds)} if self.failure_kinds else {}),
                     **({f"{prefix}FailureOperations": sorted(self.failed_operations)} if self.failed_operations else {}),
                     **({f"{prefix}FailureScenarios": sorted(self.failed_scenarios)} if self.failed_scenarios else {}),
                     **({f"{prefix}FailureLocations": sorted(self.sources)} if self.sources else {}),
@@ -365,6 +401,7 @@ class CommandDiagnostics:
             self.failed_tests.clear()
             self.completed_methods.clear()
             self.storage_codes.clear()
+            self.failure_kinds.clear()
             self.failed_operations.clear()
             self.failed_scenarios.clear()
             self.failed_statuses.clear()
